@@ -240,8 +240,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void UpdateCounts()
 		{
-			LogEntryCount = _logFile.GetProperty(LogFileProperties.LogEntryCount);
-			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.GetProperty(LogFileProperties.LogEntryCount);
+			LogEntryCount = _logFile.GetProperty(Core.LogFiles.Properties.LogEntryCount);
+			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.GetProperty(Core.LogFiles.Properties.LogEntryCount);
 			UpdateNoEntriesExplanation();
 		}
 
@@ -252,10 +252,10 @@ namespace Tailviewer.Ui.ViewModels
 			ILogFile source = dataSource.UnfilteredLogFile;
 			ILogFile filtered = dataSource.FilteredLogFile;
 
-			if (filtered.GetProperty(LogFileProperties.LogEntryCount) == 0)
+			if (filtered.GetProperty(Core.LogFiles.Properties.LogEntryCount) == 0)
 			{
 				IEnumerable<ILogEntryFilter> chain = dataSource.QuickFilterChain;
-				var emptyReason = source.GetProperty(LogFileProperties.EmptyReason);
+				var emptyReason = source.GetProperty(Core.LogFiles.Properties.EmptyReason);
 				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
 					NoEntriesExplanation = string.Format("Can't find \"{0}\"", Path.GetFileName(dataSource.FullFileName));
@@ -276,7 +276,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file matching \"{1}\"", Path.GetFileName(dataSource.FullFileName), folderDataSource.LogFileSearchPattern);
 					NoEntriesSubtext = dataSource.FullFileName;
 				}
-				else if (source.GetProperty(LogFileProperties.Size) == Size.Zero)
+				else if (source.GetProperty(Core.LogFiles.Properties.Size) == Size.Zero)
 				{
 					NoEntriesExplanation = "The data source is empty";
 					NoEntriesSubtext = null;

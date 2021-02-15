@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 		: AbstractLogColumnPresenter<TimeSpan?>
 	{
 		public ElapsedTimeColumnPresenter(TextSettings textSettings)
-			: base(LogFileColumns.ElapsedTime, textSettings)
+			: base(Columns.ElapsedTime, textSettings)
 		{
 		}
 
@@ -19,7 +19,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 			if (logFile != null)
 			{
 				var culture = CultureInfo.CurrentCulture;
-				var maximum = ElapsedTimeFormatter.ToString(logFile.GetProperty(LogFileProperties.EndTimestamp) - logFile.GetProperty(LogFileProperties.StartTimestamp), culture);
+				var maximum = ElapsedTimeFormatter.ToString(logFile.GetProperty(Core.LogFiles.Properties.EndTimestamp) - logFile.GetProperty(Core.LogFiles.Properties.StartTimestamp), culture);
 				var maximumWidth = textSettings.EstimateWidthUpperLimit(maximum);
 				Width = maximumWidth;
 			}

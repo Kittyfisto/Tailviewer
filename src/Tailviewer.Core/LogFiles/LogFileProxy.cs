@@ -51,8 +51,8 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(taskScheduler));
 
 			_taskScheduler = taskScheduler;
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
+			_properties.SetValue(LogFiles.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
 			_sourceProperties = new LogFilePropertyList();
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
@@ -136,7 +136,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+				_properties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
 			}
 		}
 
@@ -186,7 +186,7 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed => _isDisposed;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get
 			{
@@ -194,7 +194,7 @@ namespace Tailviewer.Core.LogFiles
 				if (logFile != null)
 					return logFile.Columns;
 
-				return LogFileColumns.Minimum;
+				return LogFiles.Columns.Minimum;
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace Tailviewer.Core.LogFiles
 		#region Properties
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get
 			{
@@ -238,17 +238,27 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public void SetProperty(IPropertyDescriptor property, object value)
+		{
+			_properties.SetValue(property, value);
+		}
+
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_properties.SetValue(property, value);
 		}
 
 		/// <inheritdoc />
@@ -260,7 +270,7 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));

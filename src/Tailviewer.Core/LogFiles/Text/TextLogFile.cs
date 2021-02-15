@@ -112,14 +112,14 @@ namespace Tailviewer.Core.LogFiles.Text
 			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
 			_entries = new List<LogLine>();
 
-			_localProperties = new LogFilePropertyList(LogFileProperties.Minimum);
-			_localProperties.SetValue(LogFileProperties.Name, _fileName);
-			_localProperties.Add(TextLogFileProperties.LineCount);
-			_localProperties.Add(TextLogFileProperties.MaxCharactersInLine);
-			_localProperties.SetValue(TextLogFileProperties.LineCount, 0);
-			_localProperties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
+			_localProperties = new LogFilePropertyList(LogFiles.Properties.Minimum);
+			_localProperties.SetValue(LogFiles.Properties.Name, _fileName);
+			_localProperties.Add(TextProperties.LineCount);
+			_localProperties.Add(TextProperties.MaxCharactersInLine);
+			_localProperties.SetValue(TextProperties.LineCount, 0);
+			_localProperties.SetValue(TextProperties.MaxCharactersInLine, 0);
 
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
 			SynchronizePropertiesWithUser();
 			_syncRoot = new object();
 
@@ -127,7 +127,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
 			var encoding = overwrittenEncoding ?? defaultEncoding;
 			_encoding = encoding ?? Encoding.UTF8;
-			_properties.SetValue(LogFileProperties.Encoding, encoding);
+			_properties.SetValue(LogFiles.Properties.Encoding, encoding);
 
 			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
 
@@ -141,26 +141,36 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
+		public override IReadOnlyList<IColumnDescriptor> Columns => LogFiles.Columns.Minimum;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get { return _properties.Properties; }
 		}
 
 		/// <inheritdoc />
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public override void SetProperty(IPropertyDescriptor property, object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -170,7 +180,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -185,41 +195,41 @@ namespace Tailviewer.Core.LogFiles.Text
 
 			lock (_syncRoot)
 			{
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
+				if (Equals(column, LogFiles.Columns.Index) ||
+				    Equals(column, LogFiles.Columns.OriginalIndex))
 				{
 					GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.LogEntryIndex))
+				else if (Equals(column, LogFiles.Columns.LogEntryIndex))
 				{
 					GetIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.LineNumber) ||
-				         Equals(column, LogFileColumns.OriginalLineNumber))
+				else if (Equals(column, LogFiles.Columns.LineNumber) ||
+				         Equals(column, LogFiles.Columns.OriginalLineNumber))
 				{
 					GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.LogLevel))
+				else if (Equals(column, LogFiles.Columns.LogLevel))
 				{
 					GetLogLevel(sourceIndices, (LevelFlags[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.Timestamp))
+				else if (Equals(column, LogFiles.Columns.Timestamp))
 				{
 					GetTimestamp(sourceIndices, (DateTime?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.DeltaTime))
+				else if (Equals(column, LogFiles.Columns.DeltaTime))
 				{
 					GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.ElapsedTime))
+				else if (Equals(column, LogFiles.Columns.ElapsedTime))
 				{
 					GetElapsedTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				else if (Equals(column, LogFiles.Columns.OriginalDataSourceName))
 				{
 					GetDataSourceName(sourceIndices, (string[]) (object) destination, destinationIndex);
 				}
-				else if (Equals(column, LogFileColumns.RawContent))
+				else if (Equals(column, LogFiles.Columns.RawContent))
 				{
 					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
 				}
@@ -254,9 +264,9 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					var info = new FileInfo(_fileName);
 					var fileSize = info.Length;
-					_localProperties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
-					_localProperties.SetValue(LogFileProperties.Created, info.CreationTime);
-					_localProperties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
+					_localProperties.SetValue(LogFiles.Properties.LastModified, info.LastWriteTime);
+					_localProperties.SetValue(LogFiles.Properties.Created, info.CreationTime);
+					_localProperties.SetValue(LogFiles.Properties.Size, Size.FromBytes(fileSize));
 					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
 					SynchronizePropertiesWithUser();
 
@@ -265,8 +275,8 @@ namespace Tailviewer.Core.LogFiles.Text
 						FileAccess.Read,
 						FileShare.ReadWrite))
 					{
-						var format = _localProperties.GetValue(LogFileProperties.Format);
-						var certainty = _localProperties.GetValue(LogFileProperties.FormatDetectionCertainty);
+						var format = _localProperties.GetValue(LogFiles.Properties.Format);
+						var certainty = _localProperties.GetValue(LogFiles.Properties.FormatDetectionCertainty);
 						if (format == null || certainty != Certainty.Sure)
 						{
 							format = TryFindFormat(stream, out certainty);
@@ -281,12 +291,12 @@ namespace Tailviewer.Core.LogFiles.Text
 								}
 							}
 
-							_localProperties.SetValue(LogFileProperties.Format, format);
-							_localProperties.SetValue(LogFileProperties.FormatDetectionCertainty, certainty);
+							_localProperties.SetValue(LogFiles.Properties.Format, format);
+							_localProperties.SetValue(LogFiles.Properties.FormatDetectionCertainty, certainty);
 						}
 
 						var encoding = format?.Encoding ?? _encoding;
-						_localProperties.SetValue(LogFileProperties.Encoding, encoding);
+						_localProperties.SetValue(LogFiles.Properties.Encoding, encoding);
 						using (var reader = new StreamReaderEx(stream, encoding))
 						{
 							// We change the error flag explicitly AFTER opening
@@ -294,7 +304,7 @@ namespace Tailviewer.Core.LogFiles.Text
 							// not allowed to access the file (in which case a different
 							// error must be set).
 
-							_localProperties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
+							_localProperties.SetValue(LogFiles.Properties.EmptyReason, ErrorFlags.None);
 							if (stream.Length >= _lastStreamPosition)
 							{
 								stream.Position = _lastStreamPosition;
@@ -358,8 +368,8 @@ namespace Tailviewer.Core.LogFiles.Text
 							}
 
 							_lastStreamPosition = stream.Position;
-							_localProperties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
-							_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
+							_localProperties.SetValue(TextProperties.LineCount, _entries.Count);
+							_localProperties.SetValue(LogFiles.Properties.LogEntryCount, _entries.Count);
 						}
 					}
 
@@ -418,7 +428,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			// of ALL changes (even if they didn't want them yet) before we enter the
 			// EndOfSourceReached state.
 			Listeners.Flush();
-			_localProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_localProperties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
 			SynchronizePropertiesWithUser();
 		}
 
@@ -445,7 +455,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			var processed = Percentage.Of(streamPosition, fileSize).Clamped();
 			if (processed >= Percentage.FromPercent(99) && !allow100Percent)
 				processed = Percentage.FromPercent(99);
-			_localProperties.SetValue(LogFileProperties.PercentageProcessed, processed);
+			_localProperties.SetValue(LogFiles.Properties.PercentageProcessed, processed);
 		}
 
 		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
@@ -506,7 +516,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -525,7 +535,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.LogEntryIndex.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.LogEntryIndex.DefaultValue;
 					}
 				}
 			}
@@ -541,7 +551,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Message
-						: LogFileColumns.RawContent.DefaultValue;
+						: LogFiles.Columns.RawContent.DefaultValue;
 				}
 			}
 		}
@@ -559,14 +569,14 @@ namespace Tailviewer.Core.LogFiles.Text
 						var line = GetLogLine(index);
 						buffer[destinationIndex + i] = line != null
 							? line.Value.Timestamp - startTimestamp
-							: LogFileColumns.ElapsedTime.DefaultValue;
+							: LogFiles.Columns.ElapsedTime.DefaultValue;
 					}
 				}
 				else
 				{
 					for (int i = 0; i < indices.Count; ++i)
 					{
-						buffer[destinationIndex + i] = LogFileColumns.ElapsedTime.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.ElapsedTime.DefaultValue;
 					}
 				}
 
@@ -592,7 +602,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Level
-						: LogFileColumns.LogLevel.DefaultValue;
+						: LogFiles.Columns.LogLevel.DefaultValue;
 				}
 			}
 		}
@@ -611,7 +621,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -629,19 +639,19 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void SetDoesNotExist()
 		{
-			_localProperties.SetValue(LogFileProperties.Created, null);
-			_localProperties.SetValue(LogFileProperties.Size, null);
-			_localProperties.SetValue(LogFileProperties.Format, null);
-			_localProperties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
-			_localProperties.SetValue(LogFileProperties.Encoding, null);
-			_localProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_localProperties.SetValue(LogFiles.Properties.Created, null);
+			_localProperties.SetValue(LogFiles.Properties.Size, null);
+			_localProperties.SetValue(LogFiles.Properties.Format, null);
+			_localProperties.SetValue(LogFiles.Properties.FormatDetectionCertainty, Certainty.None);
+			_localProperties.SetValue(LogFiles.Properties.Encoding, null);
+			_localProperties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
 			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 
 		private void SetError(ErrorFlags error)
 		{
-			_localProperties.SetValue(LogFileProperties.EmptyReason, error);
+			_localProperties.SetValue(LogFiles.Properties.EmptyReason, error);
 			SynchronizePropertiesWithUser();
 			SetEndOfSourceReached();
 		}
@@ -727,13 +737,13 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void SynchronizePropertiesWithUser()
 		{
-			_localProperties.SetValue(TextLogFileProperties.MaxCharactersInLine, _maxCharactersInLine);
-			_localProperties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
-			_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
-			_localProperties.SetValue(LogFileProperties.StartTimestamp, _startTimestamp);
-			_localProperties.SetValue(LogFileProperties.EndTimestamp, _endTimestamp);
-			_localProperties.SetValue(LogFileProperties.Duration, _duration);
-			_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
+			_localProperties.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine);
+			_localProperties.SetValue(TextProperties.LineCount, _entries.Count);
+			_localProperties.SetValue(LogFiles.Properties.LogEntryCount, _entries.Count);
+			_localProperties.SetValue(LogFiles.Properties.StartTimestamp, _startTimestamp);
+			_localProperties.SetValue(LogFiles.Properties.EndTimestamp, _endTimestamp);
+			_localProperties.SetValue(LogFiles.Properties.Duration, _duration);
+			_localProperties.SetValue(LogFiles.Properties.LogEntryCount, _entries.Count);
 
 			// We want to update the user-facing properties in a single synchronized OP
 			// so that the properties as retrieved by the user are in sync

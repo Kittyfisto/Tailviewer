@@ -58,7 +58,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 			const int maximumLineCount = 1000;
 			_maximumWaitTime = maximumWaitTime;
-			_logLinesArray = new LogEntryArray(maximumLineCount, LogFileColumns.Index, LogFileColumns.RawContent);
+			_logLinesArray = new LogEntryArray(maximumLineCount, Columns.Index, Columns.RawContent);
 			_matchesBuffer = new List<LogLineMatch>();
 			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);
 

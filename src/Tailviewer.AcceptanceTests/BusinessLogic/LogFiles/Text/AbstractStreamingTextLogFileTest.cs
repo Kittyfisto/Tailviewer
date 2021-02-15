@@ -49,18 +49,18 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			var logFile = Create();
 			logFile.Count.Should().Be(0);
 			logFile.OriginalCount.Should().Be(0);
-			logFile.GetProperty(LogFileProperties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
-			logFile.GetProperty(LogFileProperties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
-			logFile.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
-			logFile.GetProperty(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the log file didn't have enough time to check the source");
+			logFile.GetProperty(Properties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetProperty(Properties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None, "because the log file didn't have enough time to check the source");
 
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(0);
-			logFile.GetProperty(LogFileProperties.Size).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(LogFileProperties.Created).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
-			logFile.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+			logFile.GetProperty(Properties.Size).Should().BeNull("because the source file does not exist");
+			logFile.GetProperty(Properties.Created).Should().BeNull("because the source file does not exist");
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 		}
 	}
 }

@@ -68,7 +68,7 @@ namespace Tailviewer.Test
 			container.RegisterInstance<ILogFileSettings>(settings);
 
 			var logFile = container.CreateTextLogFile("foo");
-			logFile.GetProperty(LogFileProperties.Encoding).Should().Be(Encoding.UTF32);
+			logFile.GetProperty(Properties.Encoding).Should().Be(Encoding.UTF32);
 		}
 	}
 }

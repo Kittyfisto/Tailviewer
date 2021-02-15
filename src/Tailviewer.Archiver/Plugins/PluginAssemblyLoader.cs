@@ -13,6 +13,7 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Plugins.Issues;
 using Tailviewer.Core;
 using Tailviewer.Ui.Outline;
+using Tailviewer.Ui.Properties;
 using Constants = Tailviewer.Core.Constants;
 
 namespace Tailviewer.Archiver.Plugins
@@ -39,7 +40,8 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(ILogFileIssuesPlugin),
 				typeof(ILogFileFormatMatcherPlugin),
 				typeof(ICustomLogFileFormatCreatorPlugin),
-				typeof(ITextLogFileParserPlugin)
+				typeof(ITextLogFileParserPlugin),
+				typeof(IPropertyPresenterPlugin)
 			};
 		}
 

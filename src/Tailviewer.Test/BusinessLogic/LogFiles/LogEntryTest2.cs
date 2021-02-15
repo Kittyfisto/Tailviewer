@@ -17,10 +17,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		public override ILogEntry CreateEmpty()
 		{
-			return new LogEntry(new ILogFileColumnDescriptor[0]);
+			return new LogEntry(new IColumnDescriptor[0]);
 		}
 
-		public override ILogEntry Create(params ILogFileColumnDescriptor[] columns)
+		public override ILogEntry Create(params IColumnDescriptor[] columns)
 		{
 			return new LogEntry(columns);
 		}

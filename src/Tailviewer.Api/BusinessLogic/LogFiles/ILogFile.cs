@@ -13,14 +13,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     as it wants and the columns do not have to be known to Tailviewer either: A log file may introduce its own column and simply return it via <see cref="Columns"/>.
 	/// </remarks>
 	/// <remarks>
-	///     An ILogFile may offer a set of properties which are each described via an <see cref="ILogFilePropertyDescriptor"/> object and which each may hold a single object.
+	///     An ILogFile may offer a set of properties which are each described via an <see cref="IReadOnlyPropertyDescriptor"/> object and which each may hold a single object.
 	///     There exists a set of properties which Tailviewer knows (such as File Size, First Timestamp, Last Modification Time, etc...) but a log file may introduce more properties
 	///     which Tailviewer doesn't know. In the end, these properties will be shown to the user.
 	/// </remarks>
 	/// <remarks>
 	///     Last but not least, an ILogFile holds log entries and allows Tailviewer to access them via one of these following methods (or their overloaded versions):
 	///     - <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)"/>
-	///     - <see cref="GetColumn{T}(IReadOnlyList{LogLineIndex},ILogFileColumnDescriptor{T},T[],int,LogFileQueryOptions)"/>
+	///     - <see cref="GetColumn{T}(IReadOnlyList{LogLineIndex},IColumnDescriptor{T},T[],int,LogFileQueryOptions)"/>
 	///     Tailviewer will call these methods to access portions of the log file. Depending on the size of the log file, Tailviewer might access only a portion of the log file,
 	///     for example 1000 log entries beginning with the 5000th one. And even then, it may only be interested in the Index and RawContent column (ignoring any others).
 	///     Any implementation of this log file must make sure to properly implement this interface if there shall be any success in getting tailviewer to understand a source.
@@ -30,7 +30,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <remarks>
 	///     Out of boundary access:  
 	///     As agreed upon within this library, accessing rows outside of the boundaries of a log file is allowed and must not throw.
-	///     Instead all invalid cells which are accessed must return their <see cref="ILogFileColumnDescriptor.DefaultValue"/>.
+	///     Instead all invalid cells which are accessed must return their <see cref="IColumnDescriptor.DefaultValue"/>.
 	///     Callers which are interested in finding out if they have accessed invalid portions of a log file are encouraged to include the Index column in their query
 	///     and to then check if a particular row's Index is set to <see cref="LogLineIndex.Invalid"/>. If it is, then the entire row wasn't part of the data source.
 	///
@@ -47,7 +47,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
-		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <summary>
 		///     Adds a new listener to this log file.
@@ -71,30 +71,51 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The properties offered by this log file.
 		/// </summary>
-		IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
+		IReadOnlyList<IReadOnlyPropertyDescriptor> Properties { get; }
 
 		/// <summary>
 		///     Retrieves the value for the given property.
 		/// </summary>
 		/// <remarks>
 		///     When the property doesn't exist or when the property isn't available, then
-		///     <see cref="ILogFilePropertyDescriptor.DefaultValue" /> is returned instead.
+		///     <see cref="IReadOnlyPropertyDescriptor.DefaultValue" /> is returned instead.
 		/// </remarks>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <returns></returns>
-		object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
+		object GetProperty(IReadOnlyPropertyDescriptor property);
 
 		/// <summary>
 		///     Retrieves the value for the given property.
 		/// </summary>
 		/// <remarks>
 		///     When the property doesn't exist or when the property isn't available, then
-		///     <see cref="ILogFilePropertyDescriptor{T}.DefaultValue" /> is returned instead.
+		///     <see cref="IReadOnlyPropertyDescriptor{T}.DefaultValue" /> is returned instead.
 		/// </remarks>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <returns></returns>
-		T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property);
+
+		/// <summary>
+		///     Sets the value of the given property.
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <exception cref="NoSuchPropertyException">When the given property does not belong to this log file</exception>
+		void SetProperty(IPropertyDescriptor property, object value);
+
+		/// <summary>
+		///     Retrieves the value for the given property.
+		/// </summary>
+		/// <remarks>
+		///     When the property doesn't exist or when the property isn't available, then
+		///     <see cref="IReadOnlyPropertyDescriptor{T}.DefaultValue" /> is returned instead.
+		/// </remarks>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <exception cref="NoSuchPropertyException">When the given property does not belong to this log file</exception>
+		void SetProperty<T>(IPropertyDescriptor<T> property, T value);
 
 		/// <summary>
 		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
@@ -115,7 +136,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
-		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
 		/// <summary>
 		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies

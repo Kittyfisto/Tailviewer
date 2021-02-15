@@ -166,10 +166,10 @@ namespace Tailviewer.Test.Ui.Controls
 			var entries = new List<IReadOnlyLogEntry>();
 			for (int i = 0; i < 1000; ++i)
 			{
-				entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
+				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -214,10 +214,10 @@ namespace Tailviewer.Test.Ui.Controls
 			var entries = new List<IReadOnlyLogEntry>();
 			for (int i = 0; i < 52; ++i)
 			{
-				entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
+				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -244,10 +244,10 @@ namespace Tailviewer.Test.Ui.Controls
 			var entries = new List<IReadOnlyLogEntry>();
 			for (int i = 0; i < 51; ++i)
 			{
-				entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
+				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -257,10 +257,10 @@ namespace Tailviewer.Test.Ui.Controls
 
 
 			_control.FollowTail = true;
-			_logFile.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
+			_logFile.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.RawContent, "Foobar" },
-				{LogFileColumns.LogLevel, LevelFlags.Info }
+				{Columns.RawContent, "Foobar" },
+				{Columns.LogLevel, LevelFlags.Info }
 			}));
 			_control.OnLogFileModified(_logFile, new LogFileSection(0, _logFile.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));

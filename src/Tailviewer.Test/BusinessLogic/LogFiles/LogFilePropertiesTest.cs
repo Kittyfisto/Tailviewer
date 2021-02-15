@@ -13,39 +13,39 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestWellKnown()
 		{
-			LogFileProperties.LogEntryCount.Should().NotBeNull();
-			LogFileProperties.Name.Should().NotBeNull();
-			LogFileProperties.StartTimestamp.Should().NotBeNull();
-			LogFileProperties.EndTimestamp.Should().NotBeNull();
-			LogFileProperties.Duration.Should().NotBeNull();
-			LogFileProperties.LastModified.Should().NotBeNull();
-			LogFileProperties.StartTimestamp.Should().NotBeNull();
-			LogFileProperties.Created.Should().NotBeNull();
-			LogFileProperties.Size.Should().NotBeNull();
-			LogFileProperties.PercentageProcessed.Should().NotBeNull();
-			LogFileProperties.EmptyReason.Should().NotBeNull();
-			LogFileProperties.Format.Should().NotBeNull();
-			LogFileProperties.FormatDetectionCertainty.Should().NotBeNull();
-			LogFileProperties.Encoding.Should().NotBeNull();
+			Properties.LogEntryCount.Should().NotBeNull();
+			Properties.Name.Should().NotBeNull();
+			Properties.StartTimestamp.Should().NotBeNull();
+			Properties.EndTimestamp.Should().NotBeNull();
+			Properties.Duration.Should().NotBeNull();
+			Properties.LastModified.Should().NotBeNull();
+			Properties.StartTimestamp.Should().NotBeNull();
+			Properties.Created.Should().NotBeNull();
+			Properties.Size.Should().NotBeNull();
+			Properties.PercentageProcessed.Should().NotBeNull();
+			Properties.EmptyReason.Should().NotBeNull();
+			Properties.Format.Should().NotBeNull();
+			Properties.FormatDetectionCertainty.Should().NotBeNull();
+			Properties.Encoding.Should().NotBeNull();
 		}
 
 		[Test]
 		public void TestCombineWithMinimum1()
 		{
-			LogFileProperties.CombineWithMinimum(null).Should().Equal(LogFileProperties.Minimum);
+			Properties.CombineWithMinimum(null).Should().Equal(Properties.Minimum);
 		}
 
 		[Test]
 		public void TestCombineWithMinimum2()
 		{
-			LogFileProperties.CombineWithMinimum(LogFileProperties.Minimum).Should().Equal(LogFileProperties.Minimum);
+			Properties.CombineWithMinimum(Properties.Minimum).Should().Equal(Properties.Minimum);
 		}
 
 		[Test]
 		public void TestCombineWithMinimum3()
 		{
-			var property = new Mock<ILogFilePropertyDescriptor>().Object;
-			LogFileProperties.CombineWithMinimum(property).Should().Equal(LogFileProperties.Minimum
+			var property = new Mock<IReadOnlyPropertyDescriptor>().Object;
+			Properties.CombineWithMinimum(property).Should().Equal(Properties.Minimum
 			                                                                               .Concat(new [] {property}));
 		}
 	}

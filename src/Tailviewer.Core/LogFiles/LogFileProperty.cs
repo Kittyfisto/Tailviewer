@@ -14,7 +14,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static bool IsAssignableFrom(ILogFilePropertyDescriptor property, object value)
+		public static bool IsAssignableFrom(IReadOnlyPropertyDescriptor property, object value)
 		{
 			var type = property.DataType;
 			if (value == null)

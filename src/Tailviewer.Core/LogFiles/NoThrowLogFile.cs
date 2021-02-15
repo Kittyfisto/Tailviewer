@@ -63,7 +63,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get
 			{
@@ -74,7 +74,7 @@ namespace Tailviewer.Core.LogFiles
 				catch (Exception e)
 				{
 					BlameExceptionOnPlugin(e);
-					return new ILogFileColumnDescriptor[0];
+					return new IColumnDescriptor[0];
 				}
 			}
 		}
@@ -106,7 +106,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get
 			{
@@ -117,36 +117,60 @@ namespace Tailviewer.Core.LogFiles
 				catch (Exception e)
 				{
 					BlameExceptionOnPlugin(e);
-					return new ILogFilePropertyDescriptor[0];
+					return new IReadOnlyPropertyDescriptor[0];
 				}
 			}
 		}
 
 		/// <inheritdoc />
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
 			try
 			{
-				return _logFile.GetProperty(propertyDescriptor);
+				return _logFile.GetProperty(property);
 			}
 			catch (Exception e)
 			{
 				BlameExceptionOnPlugin(e);
-				return propertyDescriptor.DefaultValue;
+				return property.DefaultValue;
 			}
 		}
 
 		/// <inheritdoc />
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			try
 			{
-				return _logFile.GetProperty(propertyDescriptor);
+				return _logFile.GetProperty(property);
 			}
 			catch (Exception e)
 			{
 				BlameExceptionOnPlugin(e);
-				return propertyDescriptor.DefaultValue;
+				return property.DefaultValue;
+			}
+		}
+
+		public void SetProperty(IPropertyDescriptor property, object value)
+		{
+			try
+			{
+				_logFile.SetProperty(property, value);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
+			}
+		}
+
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			try
+			{
+				_logFile.SetProperty(property, value);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
 			}
 		}
 
@@ -165,7 +189,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));

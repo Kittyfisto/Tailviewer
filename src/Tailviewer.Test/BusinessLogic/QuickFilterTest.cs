@@ -27,9 +27,9 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					Value = "foobar"
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index = 0, RawContent="hello foobar!", LogLevel = LevelFlags.Other}).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index = 0, RawContent="FOOBAR", LogLevel = LevelFlags.Other}).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index = 0, RawContent="FOOBA", LogLevel = LevelFlags.Other}).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index = 0, RawContent="hello foobar!", LogLevel = LevelFlags.Other}).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index = 0, RawContent="FOOBAR", LogLevel = LevelFlags.Other}).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index = 0, RawContent="FOOBA", LogLevel = LevelFlags.Other}).Should().BeFalse();
 		}
 
 		[Test]
@@ -41,9 +41,9 @@ namespace Tailviewer.Test.BusinessLogic
 					IgnoreCase = true,
 					MatchType = FilterMatchType.WildcardFilter
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index=0, RawContent="Hello World!", LogLevel = LevelFlags.Other}).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index=0, RawContent="hELlo wORld!", LogLevel = LevelFlags.Other }).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index=0, RawContent="Hello Wold!", LogLevel = LevelFlags.Other}).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index=0, RawContent="Hello World!", LogLevel = LevelFlags.Other}).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index=0, RawContent="hELlo wORld!", LogLevel = LevelFlags.Other }).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index=0, RawContent="Hello Wold!", LogLevel = LevelFlags.Other}).Should().BeFalse();
 		}
 
 		[Test]
@@ -54,8 +54,8 @@ namespace Tailviewer.Test.BusinessLogic
 					Value = "foo",
 					IsInverted = true
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index=0, RawContent="foo", LogLevel=LevelFlags.Other}).Should().BeFalse();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry(LogFileColumns.Minimum){Index=0, RawContent="bar", LogLevel=LevelFlags.Other }).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index=0, RawContent="foo", LogLevel=LevelFlags.Other}).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogEntry(Columns.Minimum){Index=0, RawContent="bar", LogLevel=LevelFlags.Other }).Should().BeTrue();
 		}
 	}
 }

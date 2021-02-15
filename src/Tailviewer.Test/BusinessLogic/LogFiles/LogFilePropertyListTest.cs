@@ -16,8 +16,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction()
 		{
-			var properties = new LogFilePropertyList(LogFileProperties.Created);
-			properties.GetValue(LogFileProperties.Created).Should().Be(LogFileProperties.Created.DefaultValue);
+			var properties = new LogFilePropertyList(Properties.Created);
+			properties.GetValue(Properties.Created).Should().Be(Properties.Created.DefaultValue);
 		}
 
 		[Test]
@@ -26,13 +26,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var properties = new LogFilePropertyList();
 			properties.Properties.Should().BeEmpty();
 
-			properties.Add(LogFileProperties.Created);
-			properties.Properties.Should().Equal(new object[]{LogFileProperties.Created});
+			properties.Add(Properties.Created);
+			properties.Properties.Should().Equal(new object[]{Properties.Created});
 
-			properties.SetValue(LogFileProperties.Created, new DateTime(2021, 02, 14, 12, 13, 01));
-			new Action(()=> properties.Add(LogFileProperties.Created)).Should().NotThrow("because adding properties again should be tolerate and just not do anything");
-			properties.Properties.Should().Equal(new object[] {LogFileProperties.Created});
-			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2021, 02, 14, 12, 13, 01));
+			properties.SetValue(Properties.Created, new DateTime(2021, 02, 14, 12, 13, 01));
+			new Action(()=> properties.Add(Properties.Created)).Should().NotThrow("because adding properties again should be tolerate and just not do anything");
+			properties.Properties.Should().Equal(new object[] {Properties.Created});
+			properties.GetValue(Properties.Created).Should().Be(new DateTime(2021, 02, 14, 12, 13, 01));
 		}
 
 		[Test]
@@ -40,11 +40,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetValue5()
 		{
 			var properties = new LogFilePropertyList();
-			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+			properties.SetValue(Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			properties.GetValue(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
-			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.GetValue(Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 		}
 
 		[Test]
@@ -52,11 +52,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetValue6()
 		{
 			var properties = new LogFilePropertyList();
-			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+			properties.SetValue((IReadOnlyPropertyDescriptor)Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			properties.GetValue(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
-			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue((IReadOnlyPropertyDescriptor)Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.GetValue(Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 		}
 
 		[Test]
@@ -64,12 +64,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestReset()
 		{
 			var properties = new LogFilePropertyList();
-			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
-			properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Of(50, 100));
+			properties.SetValue(Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(Properties.PercentageProcessed, Percentage.Of(50, 100));
 
 			properties.Reset();
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
-			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+			properties.GetValue(Properties.EmptyReason).Should().Be(Properties.EmptyReason.DefaultValue);
+			properties.GetValue(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
 		}
 
 		[Test]
@@ -77,19 +77,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestClear()
 		{
 			var properties = new LogFilePropertyList();
-			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
-			properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Of(50, 100));
+			properties.SetValue(Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(Properties.PercentageProcessed, Percentage.Of(50, 100));
 
 			properties.Clear();
 			properties.Properties.Should().BeEmpty();
-			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
-			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(LogFileProperties.PercentageProcessed.DefaultValue);
+			properties.GetValue(Properties.EmptyReason).Should().Be(Properties.EmptyReason.DefaultValue);
+			properties.GetValue(Properties.PercentageProcessed).Should().Be(Properties.PercentageProcessed.DefaultValue);
 
-			properties.TryGetValue(LogFileProperties.EmptyReason, out _).Should().BeFalse();
-			properties.TryGetValue(LogFileProperties.PercentageProcessed, out _).Should().BeFalse();
+			properties.TryGetValue(Properties.EmptyReason, out _).Should().BeFalse();
+			properties.TryGetValue(Properties.PercentageProcessed, out _).Should().BeFalse();
 		}
 
-		protected override ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties)
+		protected override ILogFileProperties Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties)
 		{
 			var list = new LogFilePropertyList(properties.Select(x => x.Key).ToArray());
 			foreach (var pair in properties)

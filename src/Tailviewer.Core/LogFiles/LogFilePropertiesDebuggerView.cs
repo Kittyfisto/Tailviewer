@@ -23,11 +23,11 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-		public Dictionary<ILogFilePropertyDescriptor, object> Items
+		public Dictionary<IReadOnlyPropertyDescriptor, object> Items
 		{
 			get
 			{
-				var properties = new Dictionary<ILogFilePropertyDescriptor, object>(_properties.Properties.Count);
+				var properties = new Dictionary<IReadOnlyPropertyDescriptor, object>(_properties.Properties.Count);
 				foreach (var property in _properties.Properties)
 					properties.Add(property, _properties.GetValue(property));
 

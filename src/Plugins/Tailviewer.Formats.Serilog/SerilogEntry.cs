@@ -84,14 +84,14 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
-		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
+		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			if (Equals(column, LogFileColumns.RawContent))
+			if (Equals(column, Core.LogFiles.Columns.RawContent))
 			{
 				return (T) (object) _rawContent;
 			}
 
-			if (Equals(column, LogFileColumns.Message))
+			if (Equals(column, Core.LogFiles.Columns.Message))
 			{
 				return (T)(object)Message;
 			}
@@ -99,22 +99,22 @@ namespace Tailviewer.Formats.Serilog
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+		public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public object GetValue(ILogFileColumnDescriptor column)
+		public object GetValue(IColumnDescriptor column)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+		public bool TryGetValue(IColumnDescriptor column, out object value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { throw new NotImplementedException(); }
 		}

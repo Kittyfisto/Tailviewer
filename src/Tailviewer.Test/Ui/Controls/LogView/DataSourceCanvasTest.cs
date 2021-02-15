@@ -55,16 +55,16 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			dataSource1.Setup(x => x.FullFileName).Returns(@"B:\a really long file name.log");
 
 			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
-			var mergedLogFile = new InMemoryLogFile(LogFileColumns.SourceId);
-			mergedLogFile.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			var mergedLogFile = new InMemoryLogFile(Columns.SourceId);
+			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.SourceId, new LogLineSourceId(1) },
-				{LogFileColumns.RawContent, "foo" }
+				{Columns.SourceId, new LogLineSourceId(1) },
+				{Columns.RawContent, "foo" }
 			});
-			mergedLogFile.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.SourceId, new LogLineSourceId(0) },
-				{LogFileColumns.RawContent, "bar" }
+				{Columns.SourceId, new LogLineSourceId(0) },
+				{Columns.RawContent, "bar" }
 			});
 			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile);
 
@@ -93,16 +93,16 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			dataSource1.Setup(x => x.CharacterCode).Returns(@"TH");
 
 			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
-			var mergedLogFile = new InMemoryLogFile(LogFileColumns.SourceId);
-			mergedLogFile.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			var mergedLogFile = new InMemoryLogFile(Columns.SourceId);
+			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.SourceId, new LogLineSourceId(1) },
-				{LogFileColumns.RawContent, "foo" }
+				{Columns.SourceId, new LogLineSourceId(1) },
+				{Columns.RawContent, "foo" }
 			});
-			mergedLogFile.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.SourceId, new LogLineSourceId(0) },
-				{LogFileColumns.RawContent, "bar" }
+				{Columns.SourceId, new LogLineSourceId(0) },
+				{Columns.RawContent, "bar" }
 			});
 			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile);
 

@@ -8,8 +8,8 @@ namespace Tailviewer.Core.LogFiles
 	///     be forwarded and eventually displayed to the user.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public sealed class CustomLogFileColumnDescriptor<T>
-		: ILogFileColumnDescriptor<T>
+	public sealed class CustomColumnDescriptor<T>
+		: IColumnDescriptor<T>
 	{
 		private readonly string _id;
 		private readonly string _displayName;
@@ -18,7 +18,7 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="id">Identifies this column amongst all other columns: Two columns are equal if their id is</param>
-		public CustomLogFileColumnDescriptor(string id)
+		public CustomColumnDescriptor(string id)
 			: this(id, id)
 		{}
 
@@ -27,7 +27,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="id">Identifies this column amongst all other columns: Two columns are equal if their id is</param>
 		/// <param name="displayName">The human readable name of this column</param>
-		public CustomLogFileColumnDescriptor(string id, string displayName)
+		public CustomColumnDescriptor(string id, string displayName)
 		{
 			_id = id ?? throw new ArgumentNullException(nameof(id));
 			_displayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
@@ -45,12 +45,12 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public T DefaultValue => default(T);
 
-		object ILogFileColumnDescriptor.DefaultValue => DefaultValue;
+		object IColumnDescriptor.DefaultValue => DefaultValue;
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
-			var other = obj as CustomLogFileColumnDescriptor<T>;
+			var other = obj as CustomColumnDescriptor<T>;
 			if (other == null)
 				return false;
 

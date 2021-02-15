@@ -5,7 +5,7 @@ namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
 	/// </summary>
-	public static class LogFileColumn
+	public static class ColumnDescriptorExtensions
 	{
 		/// <summary>
 		///     Tests if the given value is compatible with the given column's type.
@@ -13,7 +13,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static bool IsAssignableFrom(ILogFileColumnDescriptor column, object value)
+		public static bool IsAssignableFrom(this IColumnDescriptor column, object value)
 		{
 			var type = column.DataType;
 			if (value == null)

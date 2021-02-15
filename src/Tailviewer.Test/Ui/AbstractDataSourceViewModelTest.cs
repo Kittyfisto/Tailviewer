@@ -177,7 +177,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestExists1()
 		{
-			_logFile.Setup(x => x.GetProperty(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.None);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeTrue();
 		}
@@ -185,7 +185,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestExists2([Values(ErrorFlags.SourceCannotBeAccessed, ErrorFlags.SourceDoesNotExist)] ErrorFlags emptyReason)
 		{
-			_logFile.Setup(x => x.GetProperty(LogFileProperties.EmptyReason)).Returns(emptyReason);
+			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(emptyReason);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeFalse();
 		}
@@ -198,11 +198,11 @@ namespace Tailviewer.Test.Ui
 			var changes = new List<string>();
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 
-			_logFile.Setup(x => x.GetProperty(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
+			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeFalse();
 
-			_logFile.Setup(x => x.GetProperty(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.None);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeTrue();
 			changes.Should().Equal("Exists", "Exists");

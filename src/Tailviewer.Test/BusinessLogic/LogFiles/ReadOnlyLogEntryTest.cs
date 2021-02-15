@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override IReadOnlyLogEntry CreateEmpty()
 		{
-			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>());
+			return new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>());
 		}
 
 		[Test]
@@ -34,9 +34,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualSameValue()
 		{
-			var values = new Dictionary<ILogFileColumnDescriptor, object>
+			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.RawContent, "Starbuck"}
+				{Columns.RawContent, "Starbuck"}
 			};
 			var entry = new LogEntry(values);
 			var equalEntry = new LogEntry(values);
@@ -49,13 +49,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualDifferentValue()
 		{
-			var values = new Dictionary<ILogFileColumnDescriptor, object>
+			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.RawContent, "Starbuck"}
+				{Columns.RawContent, "Starbuck"}
 			};
-			var otherValues = new Dictionary<ILogFileColumnDescriptor, object>
+			var otherValues = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.RawContent, "Apollo"}
+				{Columns.RawContent, "Apollo"}
 			};
 			var entry = new LogEntry(values);
 			var otherEntry = new LogEntry(otherValues);
@@ -68,11 +68,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualBothEmpty_DifferentColumns()
 		{
-			var entry = new LogEntry(LogFileColumns.RawContent);
-			var otherEntry = new LogEntry(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+			var entry = new LogEntry(Columns.RawContent);
+			var otherEntry = new LogEntry(Columns.RawContent, Columns.Timestamp);
 			Equals(entry, otherEntry).Should().BeFalse();
 
-			var equalReadOnlyEntry = new ReadOnlyLogEntry(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(Columns.RawContent, Columns.Timestamp);
 			Equals(entry, equalReadOnlyEntry).Should().BeFalse();
 		}
 	}

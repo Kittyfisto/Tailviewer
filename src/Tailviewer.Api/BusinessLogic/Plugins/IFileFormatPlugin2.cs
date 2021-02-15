@@ -9,7 +9,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 	/// </summary>
 	/// <remarks>
 	///     This interface has been introduced to allow a more fine-grained selection of files and can be implemented
-	///     in favour of <see cref="IFileFormatPlugin"/> if the plugin author needs this fine grained control.
+	///     in favor of <see cref="IFileFormatPlugin"/> if the plugin author needs this fine grained control.
 	/// </remarks>
 	public interface IFileFormatPlugin2
 		: IFileFormatPlugin

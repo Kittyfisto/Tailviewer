@@ -28,6 +28,8 @@ using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
+using Tailviewer.Ui.Controls.SidePanel.Outline;
+using Tailviewer.Ui.Properties;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -179,6 +181,9 @@ namespace Tailviewer
 
 					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
 					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
+
+					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
+					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);
 
 					var ioScheduler = new IoScheduler(taskScheduler);
 					services.RegisterInstance<IIoScheduler>(ioScheduler);

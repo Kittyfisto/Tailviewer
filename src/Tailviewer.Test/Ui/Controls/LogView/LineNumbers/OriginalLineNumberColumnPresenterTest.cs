@@ -45,14 +45,14 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		public void TestUpdateLineNumbers2()
 		{
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.GetProperty(LogFileProperties.LogEntryCount)).Returns(4);
-			logFile.Setup(x => x.GetProperty(TextLogFileProperties.LineCount)).Returns(1000);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(4);
+			logFile.Setup(x => x.GetProperty(TextProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-			                               It.Is<ILogFileColumnDescriptor<int>>(y => y == LogFileColumns.OriginalLineNumber),
+			                               It.Is<IColumnDescriptor<int>>(y => y == Columns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
 			                               It.IsAny<LogFileQueryOptions>()))
-				.Callback((IReadOnlyList<LogLineIndex> section, ILogFileColumnDescriptor<int> unused, int[] indices, int unused2,LogFileQueryOptions unused3) =>
+				.Callback((IReadOnlyList<LogLineIndex> section, IColumnDescriptor<int> unused, int[] indices, int unused2,LogFileQueryOptions unused3) =>
 				{
 					indices[0] = 42;
 					indices[1] = 101;

@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		protected override IReadOnlyLogEntry CreateDefault()
 		{
 			// TODO: Swap
-			var buffer = new LogEntryArray(1, LogFileColumns.Minimum);
+			var buffer = new LogEntryArray(1, Columns.Minimum);
 			return buffer[0];
 		}
 

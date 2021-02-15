@@ -18,18 +18,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCreateDefault()
 		{
 			var entry = CreateDefault();
-			entry.Columns.Should().Equal(LogFileColumns.Minimum);
-			entry.DeltaTime.Should().Be(LogFileColumns.DeltaTime.DefaultValue);
-			entry.ElapsedTime.Should().Be(LogFileColumns.ElapsedTime.DefaultValue);
-			entry.Index.Should().Be(LogFileColumns.Index.DefaultValue);
-			entry.LineNumber.Should().Be(LogFileColumns.LineNumber.DefaultValue);
-			entry.LogEntryIndex.Should().Be(LogFileColumns.LogEntryIndex.DefaultValue);
-			entry.LogLevel.Should().Be(LogFileColumns.LogLevel.DefaultValue);
-			entry.OriginalIndex.Should().Be(LogFileColumns.OriginalIndex.DefaultValue);
-			entry.OriginalLineNumber.Should().Be(LogFileColumns.OriginalLineNumber.DefaultValue);
-			entry.OriginalDataSourceName.Should().Be(LogFileColumns.OriginalDataSourceName.DefaultValue);
-			entry.RawContent.Should().Be(LogFileColumns.RawContent.DefaultValue);
-			entry.Timestamp.Should().Be(LogFileColumns.Timestamp.DefaultValue);
+			entry.Columns.Should().Equal(Columns.Minimum);
+			entry.DeltaTime.Should().Be(Columns.DeltaTime.DefaultValue);
+			entry.ElapsedTime.Should().Be(Columns.ElapsedTime.DefaultValue);
+			entry.Index.Should().Be(Columns.Index.DefaultValue);
+			entry.LineNumber.Should().Be(Columns.LineNumber.DefaultValue);
+			entry.LogEntryIndex.Should().Be(Columns.LogEntryIndex.DefaultValue);
+			entry.LogLevel.Should().Be(Columns.LogLevel.DefaultValue);
+			entry.OriginalIndex.Should().Be(Columns.OriginalIndex.DefaultValue);
+			entry.OriginalLineNumber.Should().Be(Columns.OriginalLineNumber.DefaultValue);
+			entry.OriginalDataSourceName.Should().Be(Columns.OriginalDataSourceName.DefaultValue);
+			entry.RawContent.Should().Be(Columns.RawContent.DefaultValue);
+			entry.Timestamp.Should().Be(Columns.Timestamp.DefaultValue);
 			new Action(() =>
 			{
 				var unused = entry.SourceId;
@@ -39,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue1()
 		{
-			var column = new Mock<ILogFileColumnDescriptor<int>>();
+			var column = new Mock<IColumnDescriptor<int>>();
 			column.Setup(x => x.DefaultValue).Returns(42);
 
 			var entry = CreateEmpty();
@@ -51,7 +51,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue2()
 		{
-			var column = new Mock<ILogFileColumnDescriptor>();
+			var column = new Mock<IColumnDescriptor>();
 			column.Setup(x => x.DefaultValue).Returns(42);
 
 			var entry = CreateEmpty();

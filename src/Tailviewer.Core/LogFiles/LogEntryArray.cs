@@ -14,21 +14,21 @@ namespace Tailviewer.Core.LogFiles
 		: ILogEntries
 	{
 		private readonly int _length;
-		private IReadOnlyList<ILogFileColumnDescriptor> _columns;
-		private IReadOnlyDictionary<ILogFileColumnDescriptor, IColumnData> _dataByColumn;
+		private IReadOnlyList<IColumnDescriptor> _columns;
+		private IReadOnlyDictionary<IColumnDescriptor, IColumnData> _dataByColumn;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="columns"></param>
-		public LogEntryArray(int length, IEnumerable<ILogFileColumnDescriptor> columns)
+		public LogEntryArray(int length, IEnumerable<IColumnDescriptor> columns)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
 
 			_length = length;
 			_columns = columns.ToList();
-			var dataByColumn = new Dictionary<ILogFileColumnDescriptor, IColumnData>(_columns.Count);
+			var dataByColumn = new Dictionary<IColumnDescriptor, IColumnData>(_columns.Count);
 			foreach (var column in _columns)
 			{
 				dataByColumn.Add(column, CreateColumnData(column, length));
@@ -40,21 +40,21 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="columns"></param>
-		public LogEntryArray(int length, params ILogFileColumnDescriptor[] columns)
-			: this(length, (IEnumerable<ILogFileColumnDescriptor>)columns)
+		public LogEntryArray(int length, params IColumnDescriptor[] columns)
+			: this(length, (IEnumerable<IColumnDescriptor>)columns)
 		{}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _columns;
 
 		/// <inheritdoc />
-		public bool Contains(ILogFileColumnDescriptor column)
+		public bool Contains(IColumnDescriptor column)
 		{
 			return _dataByColumn.ContainsKey(column);
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
+		public void CopyTo<T>(IColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -70,7 +70,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
+		public void CopyTo<T>(IColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -86,7 +86,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, IList<T> destination, int destinationIndex)
+		public void CopyTo<T>(IColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, IList<T> destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -102,7 +102,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(ILogFileColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -119,7 +119,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(ILogFileColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices)
+		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -136,7 +136,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, LogFileSection section, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogFile source, LogFileSection section, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -149,7 +149,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -162,7 +162,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumnDescriptor column,
+		public void CopyFrom(IColumnDescriptor column,
 		                     int destinationIndex,
 		                     IReadOnlyLogEntries source,
 		                     IReadOnlyList<int> sourceIndices)
@@ -187,7 +187,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void FillDefault(ILogFileColumnDescriptor column, int destinationIndex, int length)
+		public void FillDefault(IColumnDescriptor column, int destinationIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -240,7 +240,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <returns></returns>
 		/// <exception cref="ArgumentException">When this buffer doesn't hold the given column</exception>
 		/// <exception cref="ArgumentNullException">When <paramref name="column"/> is null</exception>
-		public IEnumerable<T> Column<T>(ILogFileColumnDescriptor<T> column)
+		public IEnumerable<T> Column<T>(IColumnDescriptor<T> column)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -268,7 +268,7 @@ namespace Tailviewer.Core.LogFiles
 				_index = index;
 			}
 
-			public override T GetValue<T>(ILogFileColumnDescriptor<T> column)
+			public override T GetValue<T>(IColumnDescriptor<T> column)
 			{
 				T value;
 				if (!TryGetValue(column, out value))
@@ -277,7 +277,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public override bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+			public override bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
 				IColumnData data;
 				if (!_array._dataByColumn.TryGetValue(column, out data))
@@ -290,7 +290,7 @@ namespace Tailviewer.Core.LogFiles
 				return true;
 			}
 
-			public override object GetValue(ILogFileColumnDescriptor column)
+			public override object GetValue(IColumnDescriptor column)
 			{
 				object value;
 				if (!TryGetValue(column, out value))
@@ -299,7 +299,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public override bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+			public override bool TryGetValue(IColumnDescriptor column, out object value)
 			{
 				IColumnData data;
 				if (!_array._dataByColumn.TryGetValue(column, out data))
@@ -312,9 +312,9 @@ namespace Tailviewer.Core.LogFiles
 				return true;
 			}
 
-			public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _array._columns;
+			public override IReadOnlyList<IColumnDescriptor> Columns => _array._columns;
 
-			public override void SetValue(ILogFileColumnDescriptor column, object value)
+			public override void SetValue(IColumnDescriptor column, object value)
 			{
 				IColumnData data;
 				if (!_array._dataByColumn.TryGetValue(column, out data))
@@ -323,7 +323,7 @@ namespace Tailviewer.Core.LogFiles
 				data[_index] = value;
 			}
 
-			public override void SetValue<T>(ILogFileColumnDescriptor<T> column, T value)
+			public override void SetValue<T>(IColumnDescriptor<T> column, T value)
 			{
 				IColumnData data;
 				if (!_array._dataByColumn.TryGetValue(column, out data))
@@ -333,13 +333,13 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private static IColumnData CreateColumnData(ILogFileColumnDescriptor column, int length)
+		private static IColumnData CreateColumnData(IColumnDescriptor column, int length)
 		{
 			dynamic tmp = column;
 			return CreateColumnData(tmp, length);
 		}
 
-		private static IColumnData CreateColumnData<T>(ILogFileColumnDescriptor<T> column, int length)
+		private static IColumnData CreateColumnData<T>(IColumnDescriptor<T> column, int length)
 		{
 			return new ColumnData<T>(column, length);
 		}
@@ -357,10 +357,10 @@ namespace Tailviewer.Core.LogFiles
 			: IColumnData
 			, IEnumerable<T>
 		{
-			private readonly ILogFileColumnDescriptor<T> _column;
+			private readonly IColumnDescriptor<T> _column;
 			private readonly T[] _data;
 
-			public ColumnData(ILogFileColumnDescriptor<T> column, int length)
+			public ColumnData(IColumnDescriptor<T> column, int length)
 			{
 				if (column == null)
 					throw new ArgumentNullException(nameof(column));

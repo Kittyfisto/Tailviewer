@@ -12,12 +12,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public abstract class ReadOnlyLogEntriesTest
 	{
-		private IReadOnlyLogEntries CreateEmpty(params ILogFileColumnDescriptor[] columns)
+		private IReadOnlyLogEntries CreateEmpty(params IColumnDescriptor[] columns)
 		{
-			return CreateEmpty((IEnumerable<ILogFileColumnDescriptor>)columns);
+			return CreateEmpty((IEnumerable<IColumnDescriptor>)columns);
 		}
 
-		protected abstract IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumnDescriptor> columns);
+		protected abstract IReadOnlyLogEntries CreateEmpty(IEnumerable<IColumnDescriptor> columns);
 
 		private IReadOnlyLogEntries Create(params IReadOnlyLogEntry[] entries)
 		{
@@ -38,33 +38,33 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEmptyConstruction2()
 		{
-			var entries = new LogEntryList(LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime, LogFileColumns.RawContent);
+			var entries = new LogEntryList(Columns.DeltaTime, Columns.ElapsedTime, Columns.RawContent);
 			entries.Count.Should().Be(0);
 			entries.Columns.Should()
-			       .Equal(new object[] { LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime, LogFileColumns.RawContent },
+			       .Equal(new object[] { Columns.DeltaTime, Columns.ElapsedTime, Columns.RawContent },
 			              "because the order columns should've been preserved");
 		}
 
 		[Test]
 		public void TestCopyToRangeUnknownColumn()
 		{
-			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
-			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, 0, new TimeSpan?[0], 0, 0))
+			var buffer = CreateEmpty(Columns.DeltaTime);
+			new Action(() => buffer.CopyTo(Columns.ElapsedTime, 0, new TimeSpan?[0], 0, 0))
 				.Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
 		public void TestCopyToByIndicesUnknownColumn()
 		{
-			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
-			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, new int[0], new TimeSpan?[0], 0))
+			var buffer = CreateEmpty(Columns.DeltaTime);
+			new Action(() => buffer.CopyTo(Columns.ElapsedTime, new int[0], new TimeSpan?[0], 0))
 				.Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
 		public void TestCopyToRangeNullColumn()
 		{
-			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
+			var buffer = CreateEmpty(Columns.DeltaTime);
 			new Action(() => buffer.CopyTo(null, 0, new TimeSpan?[0], 0, 0))
 				.Should().Throw<ArgumentNullException>();
 		}
@@ -72,7 +72,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyToByIndicesNullColumn()
 		{
-			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
+			var buffer = CreateEmpty(Columns.DeltaTime);
 			new Action(() => buffer.CopyTo(null, new int[0], new TimeSpan?[0], 0))
 				.Should().Throw<ArgumentNullException>();
 		}
@@ -80,16 +80,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyToRangeNullDestination()
 		{
-			var buffer = CreateEmpty(LogFileColumns.RawContent);
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, 0, null, 0, 0))
+			var buffer = CreateEmpty(Columns.RawContent);
+			new Action(() => buffer.CopyTo(Columns.RawContent, 0, null, 0, 0))
 				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestCopyToByIndicesNullDestination()
 		{
-			var buffer = CreateEmpty(LogFileColumns.RawContent);
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new int[0], null, 0))
+			var buffer = CreateEmpty(Columns.RawContent);
+			new Action(() => buffer.CopyTo(Columns.RawContent, new int[0], null, 0))
 				.Should().Throw<ArgumentNullException>();
 		}
 
@@ -97,9 +97,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that regions before the buffer ")]
 		public void TestCopyToRangeInvalidSourceIndex1()
 		{
-			var buffer = CreateEmpty(LogFileColumns.RawContent);
+			var buffer = CreateEmpty(Columns.RawContent);
 			var destination = new[] {"foo"};
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, -1, destination, 0, 1))
+			new Action(() => buffer.CopyTo(Columns.RawContent, -1, destination, 0, 1))
 				.Should().NotThrow();
 			destination[0].Should().BeNull();
 		}
@@ -108,11 +108,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that invalid index accesses are treated as default values for that index")]
 		public void TestCopyToRangeInvalidSourceIndex2()
 		{
-			var entry = ReadOnlyLogEntry.Create(new[] { LogFileColumns.RawContent },
+			var entry = ReadOnlyLogEntry.Create(new[] { Columns.RawContent },
 			                                    new[] { "stuff" });
 			var buffer = Create(entry);
 			var destination = new[] { "f", "o", "o" };
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, 0, destination, 0, 3))
+			new Action(() => buffer.CopyTo(Columns.RawContent, 0, destination, 0, 3))
 				.Should().NotThrow();
 			destination[0].Should().Be("stuff");
 			destination[1].Should().BeNull("because the second index we access (1) isn't valid and thus should be served with null");
@@ -123,11 +123,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that invalid index accesses are treated as default values for that index")]
 		public void TestCopyToRangeInvalidSourceIndex3()
 		{
-			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent},
+			var entry = ReadOnlyLogEntry.Create(new[] {Columns.RawContent},
 			                                    new[] {"stuff"});
 			var buffer = Create(entry);
 			var destination = new[] { "f", "o", "o" };
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, -1, destination, 0, 3))
+			new Action(() => buffer.CopyTo(Columns.RawContent, -1, destination, 0, 3))
 				.Should().NotThrow();
 			destination[0].Should().BeNull("because the first index we access (-1) isn't valid and thus should be served with null");
 			destination[1].Should().Be("stuff");
@@ -138,9 +138,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that invalid index accesses are treated as default values for that index")]
 		public void TestCopyToByIndicesInvalidSourceIndex()
 		{
-			var buffer = CreateEmpty(LogFileColumns.RawContent);
+			var buffer = CreateEmpty(Columns.RawContent);
 			var destination = new[] {"foo"};
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] {-1}, destination, 0))
+			new Action(() => buffer.CopyTo(Columns.RawContent, new[] {-1}, destination, 0))
 				.Should().NotThrow();
 			destination[0].Should().BeNull();
 		}
@@ -149,10 +149,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that invalid index accesses are treated as default values for that index")]
 		public void TestCopyToPartiallyInvalidSourceIndices()
 		{
-			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent}, new[] {"bar"});
+			var entry = ReadOnlyLogEntry.Create(new[] {Columns.RawContent}, new[] {"bar"});
 			var buffer = Create(entry);
 			var destination = new[] { "foo", "stuff" };
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] { -1, 0 }, destination, 0))
+			new Action(() => buffer.CopyTo(Columns.RawContent, new[] { -1, 0 }, destination, 0))
 				.Should().NotThrow();
 			destination[0].Should().BeNull();
 			destination[1].Should().Be("bar");
@@ -161,8 +161,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyToNullIndices()
 		{
-			var buffer = CreateEmpty(LogFileColumns.RawContent);
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, null, new string[0], 0))
+			var buffer = CreateEmpty(Columns.RawContent);
+			new Action(() => buffer.CopyTo(Columns.RawContent, null, new string[0], 0))
 				.Should().Throw<ArgumentNullException>();
 		}
 
@@ -171,7 +171,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		                            [Range(0, 2)] int destinationIndex,
 		                            [Range(1, 2)] int count)
 		{
-			var entries = Enumerable.Range(0, sourceIndex + count).Select(i => ReadOnlyLogEntry.Create(new[] {LogFileColumns.DeltaTime},
+			var entries = Enumerable.Range(0, sourceIndex + count).Select(i => ReadOnlyLogEntry.Create(new[] {Columns.DeltaTime},
 			                                                                             new object[] {TimeSpan.FromSeconds(i)}));
 			var buffer = Create(entries);
 
@@ -181,7 +181,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				dest[i] = TimeSpan.FromTicks(42);
 			}
 
-			buffer.CopyTo(LogFileColumns.DeltaTime, sourceIndex, dest, destinationIndex, count);
+			buffer.CopyTo(Columns.DeltaTime, sourceIndex, dest, destinationIndex, count);
 			for (int i = 0; i < destinationIndex; ++i)
 			{
 				dest[i].Should().Be(TimeSpan.FromTicks(42));
@@ -199,7 +199,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyToByIndices([Range(0, 2)] int destinationIndex)
 		{
 			var entries = Enumerable.Range(0, 5)
-			                        .Select(i => ReadOnlyLogEntry.Create(new[] {LogFileColumns.DeltaTime},
+			                        .Select(i => ReadOnlyLogEntry.Create(new[] {Columns.DeltaTime},
 			                                                             new object[] {TimeSpan.FromSeconds(i)}));
 			var source = Create(entries);
 
@@ -213,7 +213,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				4, 1, 2, 3
 			};
-			source.CopyTo(LogFileColumns.DeltaTime, sourceIndices, dest, destinationIndex);
+			source.CopyTo(Columns.DeltaTime, sourceIndices, dest, destinationIndex);
 			for (int i = 0; i < destinationIndex; ++i)
 			{
 				dest[i].Should().Be(TimeSpan.FromTicks(42));
@@ -228,7 +228,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestReuseEnumerator()
 		{
-			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent},
+			var entry = ReadOnlyLogEntry.Create(new[] {Columns.RawContent},
 			                                    new[] {"Foo"});
 			var entries = Create(entry);
 
@@ -248,37 +248,37 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestAccessAllColumnsByLogEntry()
 		{
-			var columns = new List<ILogFileColumnDescriptor>();
+			var columns = new List<IColumnDescriptor>();
 			var values = new List<object>();
 
-			columns.Add(LogFileColumns.RawContent);
+			columns.Add(Columns.RawContent);
 			values.Add("Foo");
 
-			columns.Add(LogFileColumns.DeltaTime);
+			columns.Add(Columns.DeltaTime);
 			values.Add(TimeSpan.FromSeconds(10));
 
-			columns.Add(LogFileColumns.ElapsedTime);
+			columns.Add(Columns.ElapsedTime);
 			values.Add(TimeSpan.FromDays(44));
 
-			columns.Add(LogFileColumns.Index);
+			columns.Add(Columns.Index);
 			values.Add(new LogLineIndex(10));
 
-			columns.Add(LogFileColumns.OriginalIndex);
+			columns.Add(Columns.OriginalIndex);
 			values.Add(new LogLineIndex(9001));
 
-			columns.Add(LogFileColumns.LineNumber);
+			columns.Add(Columns.LineNumber);
 			values.Add(5);
 
-			columns.Add(LogFileColumns.OriginalLineNumber);
+			columns.Add(Columns.OriginalLineNumber);
 			values.Add(7);
 
-			columns.Add(LogFileColumns.LogEntryIndex);
+			columns.Add(Columns.LogEntryIndex);
 			values.Add(new LogEntryIndex(1));
 
-			columns.Add(LogFileColumns.Timestamp);
+			columns.Add(Columns.Timestamp);
 			values.Add(new DateTime(2017, 12, 19, 12, 45, 33));
 
-			columns.Add(LogFileColumns.LogLevel);
+			columns.Add(Columns.LogLevel);
 			values.Add(LevelFlags.Error);
 
 			var entry = ReadOnlyLogEntry.Create(columns, values);
@@ -299,7 +299,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestAccessNotRetrievedColumn()
 		{
-			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent},
+			var entry = ReadOnlyLogEntry.Create(new[] {Columns.RawContent},
 			                                    new[] {"Foo"});
 			var entries = Create(entry);
 			var actualEntry = entries.First();

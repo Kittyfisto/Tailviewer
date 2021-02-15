@@ -226,6 +226,7 @@
     <Compile Include="Ui\Controls\FlatImage.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\DoubleOneToHiddenConverter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
@@ -310,11 +311,12 @@
       <DependentUpon>DefaultLogFileOutline.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutlineViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\DefaultPropertyPresenter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\EncodingPropertyPresenter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\PropertyPresenterRegistry.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyConverter.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />

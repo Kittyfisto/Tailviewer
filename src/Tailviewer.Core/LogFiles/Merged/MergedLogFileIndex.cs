@@ -134,7 +134,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 					}
 					else
 					{
-						destination[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+						destination[destinationIndex + i] = Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -172,7 +172,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 					}
 					else
 					{
-						destination[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+						destination[destinationIndex + i] = Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -191,7 +191,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 					}
 					else
 					{
-						destination[destinationIndex + i] = LogFileColumns.SourceId.DefaultValue;
+						destination[destinationIndex + i] = Columns.SourceId.DefaultValue;
 					}
 				}
 			}
@@ -443,8 +443,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		/// <summary>
 		///     Retrieves the content the given modifications concern.
-		///     Only retrieves the <see cref="LogFileColumns.Index" />, <see cref="LogFileColumns.LogEntryIndex" />
-		///     and <see cref="LogFileColumns.Timestamp" /> columns (as these are the only ones required in order to
+		///     Only retrieves the <see cref="Columns.Index" />, <see cref="Columns.LogEntryIndex" />
+		///     and <see cref="Columns.Timestamp" /> columns (as these are the only ones required in order to
 		///     merge stuff).
 		/// </summary>
 		/// <param name="pendingModifications"></param>
@@ -453,11 +453,11 @@ namespace Tailviewer.Core.LogFiles.Merged
 		private static IReadOnlyList<MergedLogFileSection> GetEntries(
 			IEnumerable<MergedLogFilePendingModification> pendingModifications)
 		{
-			var columns = new ILogFileColumnDescriptor[]
+			var columns = new IColumnDescriptor[]
 			{
-				LogFileColumns.Index,
-				LogFileColumns.LogEntryIndex,
-				LogFileColumns.Timestamp
+				Columns.Index,
+				Columns.LogEntryIndex,
+				Columns.Timestamp
 			};
 
 			var sections = new List<MergedLogFileSection>();
@@ -519,9 +519,9 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 			foreach (var entry in entries)
 			{
-				var index = entry.GetValue(LogFileColumns.Index);
-				var entryIndex = entry.GetValue(LogFileColumns.LogEntryIndex);
-				var timestamp = entry.GetValue(LogFileColumns.Timestamp);
+				var index = entry.GetValue(Columns.Index);
+				var entryIndex = entry.GetValue(Columns.LogEntryIndex);
+				var timestamp = entry.GetValue(Columns.Timestamp);
 
 				if (index.IsValid &&
 				    entryIndex

@@ -60,7 +60,7 @@ namespace Tailviewer.Core.LogFiles
 			_fileName = fileName;
 
 			_buffer = new InMemoryLogFile();
-			_buffer.SetValue(LogFileProperties.Created, DateTime.Now);
+			_buffer.SetValue(LogFiles.Properties.Created, DateTime.Now);
 
 			_cancellationTokenSource = new CancellationTokenSource();
 
@@ -76,7 +76,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _buffer.Count;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _buffer.Columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _buffer.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -91,18 +91,28 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _buffer.Properties;
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _buffer.Properties;
 
 		/// <inheritdoc />
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			return _buffer.GetProperty(propertyDescriptor);
+			return _buffer.GetProperty(property);
 		}
 
 		/// <inheritdoc />
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			return _buffer.GetProperty(propertyDescriptor);
+			return _buffer.GetProperty(property);
+		}
+
+		public void SetProperty(IPropertyDescriptor property, object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -112,14 +122,14 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			_buffer.GetColumn(sourceSection, column, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
-		                         ILogFileColumnDescriptor<T> column,
+		                         IColumnDescriptor<T> column,
 		                         T[] destination,
 		                         int destinationIndex,
 		                         LogFileQueryOptions queryOptions)
@@ -166,7 +176,7 @@ namespace Tailviewer.Core.LogFiles
 				{
 					if (!_setStartTimestamp && eventRecord.TimeCreated != null)
 					{
-						_buffer.SetValue(LogFileProperties.StartTimestamp, eventRecord.TimeCreated);
+						_buffer.SetValue(LogFiles.Properties.StartTimestamp, eventRecord.TimeCreated);
 						_setStartTimestamp = true;
 					}
 
@@ -177,12 +187,12 @@ namespace Tailviewer.Core.LogFiles
 					bool first = true;
 					foreach (var line in lines)
 					{
-						var values = new Dictionary<ILogFileColumnDescriptor, object>
+						var values = new Dictionary<IColumnDescriptor, object>
 						{
-							{LogFileColumns.RawContent, FormatLine(line, first)},
-							{LogFileColumns.LogLevel, logLevel},
-							{LogFileColumns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
-							{LogFileColumns.Timestamp, eventRecord.TimeCreated}
+							{LogFiles.Columns.RawContent, FormatLine(line, first)},
+							{LogFiles.Columns.LogLevel, logLevel},
+							{LogFiles.Columns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
+							{LogFiles.Columns.Timestamp, eventRecord.TimeCreated}
 						};
 						_buffer.Add(new ReadOnlyLogEntry(values));
 						first = false;
@@ -210,7 +220,7 @@ namespace Tailviewer.Core.LogFiles
 				{
 					Log.ErrorFormat("Unable to create event log reader: {0}", e);
 
-					_buffer.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					_buffer.SetValue(LogFiles.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 
 					_loggedException = true;
 				}

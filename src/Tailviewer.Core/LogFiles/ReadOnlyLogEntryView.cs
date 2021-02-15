@@ -13,15 +13,15 @@ namespace Tailviewer.Core.LogFiles
 		: IReadOnlyLogEntry
 	{
 		private readonly IReadOnlyLogEntry _logEntry;
-		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
+		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <param name="columns"></param>
-		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, params ILogFileColumnDescriptor[] columns)
-			: this(logEntry, (IReadOnlyList<ILogFileColumnDescriptor>)columns)
+		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, params IColumnDescriptor[] columns)
+			: this(logEntry, (IReadOnlyList<IColumnDescriptor>)columns)
 		{}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <param name="columns"></param>
-		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, IReadOnlyList<ILogFileColumnDescriptor> columns)
+		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, IReadOnlyList<IColumnDescriptor> columns)
 		{
 			_logEntry = logEntry;
 			_columns = columns;
@@ -42,8 +42,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.RawContent))
-					throw new NoSuchColumnException(LogFileColumns.RawContent);
+				if (!_columns.Contains(LogFiles.Columns.RawContent))
+					throw new NoSuchColumnException(LogFiles.Columns.RawContent);
 
 				return _logEntry.RawContent;
 			}
@@ -54,8 +54,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.Index))
-					throw new NoSuchColumnException(LogFileColumns.Index);
+				if (!_columns.Contains(LogFiles.Columns.Index))
+					throw new NoSuchColumnException(LogFiles.Columns.Index);
 
 				return _logEntry.Index;
 			}
@@ -66,8 +66,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalIndex))
-					throw new NoSuchColumnException(LogFileColumns.OriginalIndex);
+				if (!_columns.Contains(LogFiles.Columns.OriginalIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalIndex);
 
 				return _logEntry.OriginalIndex;
 			}
@@ -78,8 +78,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LogEntryIndex))
-					throw new NoSuchColumnException(LogFileColumns.LogEntryIndex);
+				if (!_columns.Contains(LogFiles.Columns.LogEntryIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.LogEntryIndex);
 
 				return _logEntry.LogEntryIndex;
 			}
@@ -90,8 +90,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LineNumber))
-					throw new NoSuchColumnException(LogFileColumns.LineNumber);
+				if (!_columns.Contains(LogFiles.Columns.LineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.LineNumber);
 
 				return _logEntry.LineNumber;
 			}
@@ -102,8 +102,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(LogFileColumns.OriginalLineNumber);
+				if (!_columns.Contains(LogFiles.Columns.OriginalLineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalLineNumber);
 
 				return _logEntry.OriginalLineNumber;
 			}
@@ -114,8 +114,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+				if (!_columns.Contains(LogFiles.Columns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalDataSourceName);
 
 				return _logEntry.OriginalDataSourceName;
 			}
@@ -126,8 +126,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.SourceId))
-					throw new NoSuchColumnException(LogFileColumns.SourceId);
+				if (!_columns.Contains(LogFiles.Columns.SourceId))
+					throw new NoSuchColumnException(LogFiles.Columns.SourceId);
 
 				return _logEntry.SourceId;
 			}
@@ -138,8 +138,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LogLevel))
-					throw new NoSuchColumnException(LogFileColumns.LogLevel);
+				if (!_columns.Contains(LogFiles.Columns.LogLevel))
+					throw new NoSuchColumnException(LogFiles.Columns.LogLevel);
 
 				return _logEntry.LogLevel;
 			}
@@ -150,8 +150,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.Timestamp))
-					throw new NoSuchColumnException(LogFileColumns.Timestamp);
+				if (!_columns.Contains(LogFiles.Columns.Timestamp))
+					throw new NoSuchColumnException(LogFiles.Columns.Timestamp);
 
 				return _logEntry.Timestamp;
 			}
@@ -162,8 +162,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.ElapsedTime))
-					throw new NoSuchColumnException(LogFileColumns.ElapsedTime);
+				if (!_columns.Contains(LogFiles.Columns.ElapsedTime))
+					throw new NoSuchColumnException(LogFiles.Columns.ElapsedTime);
 
 				return _logEntry.ElapsedTime;
 			}
@@ -174,15 +174,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.DeltaTime))
-					throw new NoSuchColumnException(LogFileColumns.DeltaTime);
+				if (!_columns.Contains(LogFiles.Columns.DeltaTime))
+					throw new NoSuchColumnException(LogFiles.Columns.DeltaTime);
 
 				return _logEntry.DeltaTime;
 			}
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
+		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -191,7 +191,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+		public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 		{
 			if (!_columns.Contains(column))
 			{
@@ -203,7 +203,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFileColumnDescriptor column)
+		public object GetValue(IColumnDescriptor column)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -212,7 +212,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+		public bool TryGetValue(IColumnDescriptor column, out object value)
 		{
 			if (!_columns.Contains(column))
 			{
@@ -224,7 +224,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return _columns; }
 		}

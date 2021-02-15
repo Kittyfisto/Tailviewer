@@ -123,7 +123,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		T GetValue<T>(ILogFileColumnDescriptor<T> column);
+		T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <summary>
 		///    Tries to lookup the value of this log entry for the given column.
@@ -131,7 +131,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
+		bool TryGetValue<T>(IColumnDescriptor<T> column, out T value);
 
 		/// <summary>
 		///     Returns the value of this log entry for the given column.
@@ -140,7 +140,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		object GetValue(ILogFileColumnDescriptor column);
+		object GetValue(IColumnDescriptor column);
 
 		/// <summary>
 		///    Tries to lookup the value of this log entry for the given column.
@@ -148,11 +148,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue(ILogFileColumnDescriptor column, out object value);
+		bool TryGetValue(IColumnDescriptor column, out object value);
 
 		/// <summary>
 		///     The columns offered by this log entry.
 		/// </summary>
-		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		IReadOnlyList<IColumnDescriptor> Columns { get; }
 	}
 }

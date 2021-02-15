@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	{
 		#region Overrides of AbstractLogFilePropertiesTest
 
-		protected override ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties)
+		protected override ILogFileProperties Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties)
 		{
 			var collection = new ConcurrentLogFilePropertyCollection(properties.Select(x => x.Key));
 			foreach (var pair in properties)

@@ -13,33 +13,33 @@ namespace Tailviewer.Core.LogFiles
 	public sealed class LogFilePropertyList
 		: ILogFileProperties
 	{
-		private readonly List<ILogFilePropertyDescriptor> _propertyDescriptors;
-		private readonly Dictionary<ILogFilePropertyDescriptor, IPropertyStorage> _values;
+		private readonly List<IReadOnlyPropertyDescriptor> _propertyDescriptors;
+		private readonly Dictionary<IReadOnlyPropertyDescriptor, IPropertyStorage> _values;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="propertiesDescriptor"></param>
-		public LogFilePropertyList(params ILogFilePropertyDescriptor[] propertiesDescriptor)
-			: this((IEnumerable<ILogFilePropertyDescriptor>) propertiesDescriptor)
+		public LogFilePropertyList(params IReadOnlyPropertyDescriptor[] propertiesDescriptor)
+			: this((IEnumerable<IReadOnlyPropertyDescriptor>) propertiesDescriptor)
 		{
 		}
 
 		/// <summary>
 		/// </summary>
 		/// <param name="properties"></param>
-		public LogFilePropertyList(IEnumerable<ILogFilePropertyDescriptor> properties)
+		public LogFilePropertyList(IEnumerable<IReadOnlyPropertyDescriptor> properties)
 		{
 			if (properties == null)
 				throw new ArgumentNullException(nameof(properties));
 
-			_propertyDescriptors = new List<ILogFilePropertyDescriptor>(properties);
-			_values = new Dictionary<ILogFilePropertyDescriptor, IPropertyStorage>();
+			_propertyDescriptors = new List<IReadOnlyPropertyDescriptor>(properties);
+			_values = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyStorage>();
 			foreach (var propertyDescriptor in _propertyDescriptors)
 				_values.Add(propertyDescriptor, CreateValueStorage(propertyDescriptor));
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get
 			{
@@ -69,7 +69,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(ILogFilePropertyDescriptor property, object value)
+		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -90,7 +90,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(ILogFilePropertyDescriptor<T> property, T value)
+		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -111,7 +111,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public bool TryGetValue(IReadOnlyPropertyDescriptor property, out object value)
 		{
 			if (!_values.TryGetValue(property, out var storage))
 			{
@@ -124,7 +124,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public bool TryGetValue<T>(IReadOnlyPropertyDescriptor<T> property, out T value)
 		{
 			if (!_values.TryGetValue(property, out var storage))
 			{
@@ -137,7 +137,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor property)
+		public object GetValue(IReadOnlyPropertyDescriptor property)
 		{
 			if (!TryGetValue(property, out var value))
 				return property.DefaultValue;
@@ -146,7 +146,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> property)
+		public T GetValue<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			if (!TryGetValue(property, out var value))
 				return property.DefaultValue;
@@ -166,13 +166,13 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private IPropertyStorage CreateValueStorage(ILogFilePropertyDescriptor propertyDescriptor)
+		private IPropertyStorage CreateValueStorage(IReadOnlyPropertyDescriptor propertyDescriptor)
 		{
 			dynamic tmp = propertyDescriptor;
 			return CreateValueStorage(tmp);
 		}
 
-		private IPropertyStorage CreateValueStorage<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		private IPropertyStorage CreateValueStorage<T>(IReadOnlyPropertyDescriptor<T> propertyDescriptor)
 		{
 			return new PropertyStorage<T>(propertyDescriptor);
 		}
@@ -193,10 +193,10 @@ namespace Tailviewer.Core.LogFiles
 		private sealed class PropertyStorage<T>
 			: IPropertyStorage
 		{
-			private readonly ILogFilePropertyDescriptor<T> _property;
+			private readonly IReadOnlyPropertyDescriptor<T> _property;
 			private T _value;
 
-			public PropertyStorage(ILogFilePropertyDescriptor<T> property)
+			public PropertyStorage(IReadOnlyPropertyDescriptor<T> property)
 			{
 				_property = property;
 				_value = property.DefaultValue;
@@ -249,7 +249,7 @@ namespace Tailviewer.Core.LogFiles
 		/// Adds the given property to this list.
 		/// </summary>
 		/// <param name="property"></param>
-		public void Add<T>(ILogFilePropertyDescriptor<T> property)
+		public void Add<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			if (!_values.ContainsKey(property))
 			{

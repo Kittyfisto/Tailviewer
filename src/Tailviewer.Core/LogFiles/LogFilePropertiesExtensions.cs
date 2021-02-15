@@ -17,9 +17,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="computedProperties"></param>
 		/// <returns></returns>
 		public static ILogFileProperties Except(this ILogFileProperties that,
-		                                        params ILogFilePropertyDescriptor[] computedProperties)
+		                                        params IReadOnlyPropertyDescriptor[] computedProperties)
 		{
-			return that.Except((IReadOnlyList<ILogFilePropertyDescriptor>)computedProperties);
+			return that.Except((IReadOnlyList<IReadOnlyPropertyDescriptor>)computedProperties);
 		}
 
 		/// <summary>
@@ -30,7 +30,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="computedProperties"></param>
 		/// <returns></returns>
 		public static ILogFileProperties Except(this ILogFileProperties that,
-		                                        IReadOnlyList<ILogFilePropertyDescriptor> computedProperties)
+		                                        IReadOnlyList<IReadOnlyPropertyDescriptor> computedProperties)
 		{
 			return new LogFilePropertiesView(that, that.Properties.Except(computedProperties).ToList());
 		}

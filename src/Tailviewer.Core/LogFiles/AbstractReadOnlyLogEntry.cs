@@ -12,55 +12,55 @@ namespace Tailviewer.Core.LogFiles
 		: IReadOnlyLogEntry
 	{
 		/// <inheritdoc />
-		public string RawContent => GetValue(LogFileColumns.RawContent);
+		public string RawContent => GetValue(LogFiles.Columns.RawContent);
 
 		/// <inheritdoc />
-		public LogLineIndex Index => GetValue(LogFileColumns.Index);
+		public LogLineIndex Index => GetValue(LogFiles.Columns.Index);
 
 		/// <inheritdoc />
-		public LogLineIndex OriginalIndex => GetValue(LogFileColumns.OriginalIndex);
+		public LogLineIndex OriginalIndex => GetValue(LogFiles.Columns.OriginalIndex);
 
 		/// <inheritdoc />
-		public LogEntryIndex LogEntryIndex => GetValue(LogFileColumns.LogEntryIndex);
+		public LogEntryIndex LogEntryIndex => GetValue(LogFiles.Columns.LogEntryIndex);
 
 		/// <inheritdoc />
-		public int LineNumber => GetValue(LogFileColumns.LineNumber);
+		public int LineNumber => GetValue(LogFiles.Columns.LineNumber);
 
 		/// <inheritdoc />
-		public int OriginalLineNumber => GetValue(LogFileColumns.OriginalLineNumber);
+		public int OriginalLineNumber => GetValue(LogFiles.Columns.OriginalLineNumber);
 
 		/// <inheritdoc />
-		public string OriginalDataSourceName => GetValue(LogFileColumns.OriginalDataSourceName);
+		public string OriginalDataSourceName => GetValue(LogFiles.Columns.OriginalDataSourceName);
 
 		/// <inheritdoc />
-		public LogLineSourceId SourceId => GetValue(LogFileColumns.SourceId);
+		public LogLineSourceId SourceId => GetValue(LogFiles.Columns.SourceId);
 
 		/// <inheritdoc />
-		public LevelFlags LogLevel => GetValue(LogFileColumns.LogLevel);
+		public LevelFlags LogLevel => GetValue(LogFiles.Columns.LogLevel);
 
 		/// <inheritdoc />
-		public DateTime? Timestamp => GetValue(LogFileColumns.Timestamp);
+		public DateTime? Timestamp => GetValue(LogFiles.Columns.Timestamp);
 
 		/// <inheritdoc />
-		public TimeSpan? ElapsedTime => GetValue(LogFileColumns.ElapsedTime);
+		public TimeSpan? ElapsedTime => GetValue(LogFiles.Columns.ElapsedTime);
 
 		/// <inheritdoc />
-		public TimeSpan? DeltaTime => GetValue(LogFileColumns.DeltaTime);
+		public TimeSpan? DeltaTime => GetValue(LogFiles.Columns.DeltaTime);
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFileColumnDescriptor<T> column);
+		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
+		public abstract bool TryGetValue<T>(IColumnDescriptor<T> column, out T value);
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFileColumnDescriptor column);
+		public abstract object GetValue(IColumnDescriptor column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue(ILogFileColumnDescriptor column, out object value);
+		public abstract bool TryGetValue(IColumnDescriptor column, out object value);
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)

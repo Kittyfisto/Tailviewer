@@ -20,107 +20,107 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public string RawContent
 		{
-			get { return GetValue(LogFileColumns.RawContent); }
-			set { SetValue(LogFileColumns.RawContent, value); }
+			get { return GetValue(LogFiles.Columns.RawContent); }
+			set { SetValue(LogFiles.Columns.RawContent, value); }
 		}
 
 		/// <inheritdoc />
 		public LogLineIndex Index
 		{
-			get { return GetValue(LogFileColumns.Index); }
-			set { SetValue(LogFileColumns.Index, value); }
+			get { return GetValue(LogFiles.Columns.Index); }
+			set { SetValue(LogFiles.Columns.Index, value); }
 		}
 
 		/// <inheritdoc />
 		public LogLineIndex OriginalIndex
 		{
-			get { return GetValue(LogFileColumns.OriginalIndex); }
-			set { SetValue(LogFileColumns.OriginalIndex, value); }
+			get { return GetValue(LogFiles.Columns.OriginalIndex); }
+			set { SetValue(LogFiles.Columns.OriginalIndex, value); }
 		}
 
 		/// <inheritdoc />
 		public LogEntryIndex LogEntryIndex
 		{
-			get { return GetValue(LogFileColumns.LogEntryIndex); }
-			set { SetValue(LogFileColumns.LogEntryIndex, value); }
+			get { return GetValue(LogFiles.Columns.LogEntryIndex); }
+			set { SetValue(LogFiles.Columns.LogEntryIndex, value); }
 		}
 
 		/// <inheritdoc />
 		public int LineNumber
 		{
-			get { return GetValue(LogFileColumns.LineNumber); }
-			set { SetValue(LogFileColumns.LineNumber, value); }
+			get { return GetValue(LogFiles.Columns.LineNumber); }
+			set { SetValue(LogFiles.Columns.LineNumber, value); }
 		}
 
 		/// <inheritdoc />
 		public int OriginalLineNumber
 		{
-			get { return GetValue(LogFileColumns.OriginalLineNumber); }
-			set { SetValue(LogFileColumns.OriginalLineNumber, value); }
+			get { return GetValue(LogFiles.Columns.OriginalLineNumber); }
+			set { SetValue(LogFiles.Columns.OriginalLineNumber, value); }
 		}
 
 		/// <inheritdoc />
 		public string OriginalDataSourceName
 		{
-			get { return GetValue(LogFileColumns.OriginalDataSourceName); }
-			set { SetValue(LogFileColumns.OriginalDataSourceName, value); }
+			get { return GetValue(LogFiles.Columns.OriginalDataSourceName); }
+			set { SetValue(LogFiles.Columns.OriginalDataSourceName, value); }
 		}
 
 		/// <inheritdoc />
 		public LogLineSourceId SourceId
 		{
-			get { return GetValue(LogFileColumns.SourceId); }
-			set { SetValue(LogFileColumns.SourceId, value); }
+			get { return GetValue(LogFiles.Columns.SourceId); }
+			set { SetValue(LogFiles.Columns.SourceId, value); }
 		}
 
 		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
-			get { return GetValue(LogFileColumns.LogLevel); }
-			set { SetValue(LogFileColumns.LogLevel, value); }
+			get { return GetValue(LogFiles.Columns.LogLevel); }
+			set { SetValue(LogFiles.Columns.LogLevel, value); }
 		}
 
 		/// <inheritdoc />
 		public DateTime? Timestamp
 		{
-			get { return GetValue(LogFileColumns.Timestamp); }
-			set { SetValue(LogFileColumns.Timestamp, value); }
+			get { return GetValue(LogFiles.Columns.Timestamp); }
+			set { SetValue(LogFiles.Columns.Timestamp, value); }
 		}
 
 		/// <inheritdoc />
 		public TimeSpan? ElapsedTime
 		{
-			get { return GetValue(LogFileColumns.ElapsedTime); }
-			set { SetValue(LogFileColumns.ElapsedTime, value); }
+			get { return GetValue(LogFiles.Columns.ElapsedTime); }
+			set { SetValue(LogFiles.Columns.ElapsedTime, value); }
 		}
 
 		/// <inheritdoc />
 		public TimeSpan? DeltaTime
 		{
-			get { return GetValue(LogFileColumns.DeltaTime); }
-			set { SetValue(LogFileColumns.DeltaTime, value); }
+			get { return GetValue(LogFiles.Columns.DeltaTime); }
+			set { SetValue(LogFiles.Columns.DeltaTime, value); }
 		}
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFileColumnDescriptor<T> column);
+		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
+		public abstract bool TryGetValue<T>(IColumnDescriptor<T> column, out T value);
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFileColumnDescriptor column);
+		public abstract object GetValue(IColumnDescriptor column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue(ILogFileColumnDescriptor column, out object value);
+		public abstract bool TryGetValue(IColumnDescriptor column, out object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue(ILogFileColumnDescriptor column, object value);
+		public abstract void SetValue(IColumnDescriptor column, object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue<T>(ILogFileColumnDescriptor<T> column, T value);
+		public abstract void SetValue<T>(IColumnDescriptor<T> column, T value);
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)

@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		private double _lineNumberWidth;
 
 		public OriginalLineNumberColumnPresenter(TextSettings textSettings)
-			: base(LogFileColumns.OriginalLineNumber, textSettings)
+			: base(Columns.OriginalLineNumber, textSettings)
 		{}
 
 		public IEnumerable<LineNumberFormatter> LineNumbers => Values.Cast<LineNumberFormatter>();
@@ -26,7 +26,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		{
 			int lineNumberCharacterCount;
 			if (logFile != null)
-				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.GetProperty(TextLogFileProperties.LineCount)));
+				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.GetProperty(TextProperties.LineCount)));
 			else
 				lineNumberCharacterCount = 0;
 

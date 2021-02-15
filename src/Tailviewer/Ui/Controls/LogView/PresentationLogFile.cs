@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_indices = new LogEntryList(IndexedColumns);
 
-			_array = new LogEntryArray(MaximumLineCount, LogFileColumns.RawContent);
+			_array = new LogEntryArray(MaximumLineCount, Core.LogFiles.Columns.RawContent);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_syncRoot = new object();
 			
@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		[Pure]
-		private static bool IsIndexedColumn(ILogFileColumnDescriptor column)
+		private static bool IsIndexedColumn(IColumnDescriptor column)
 		{
 			return IndexedColumns.Contains(column);
 		}
@@ -76,11 +76,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     The columns which are actually stored in this log file.
 		/// </summary>
-		private static IReadOnlyList<ILogFileColumnDescriptor> IndexedColumns => new ILogFileColumnDescriptor[]
+		private static IReadOnlyList<IColumnDescriptor> IndexedColumns => new IColumnDescriptor[]
 		{
-			LogFileColumns.PresentationStartingLineNumber,
-			LogFileColumns.PresentationLineCount,
-			LogFileColumns.RawContentMaxPresentationWidth
+			Core.LogFiles.Columns.PresentationStartingLineNumber,
+			Core.LogFiles.Columns.PresentationLineCount,
+			Core.LogFiles.Columns.RawContentMaxPresentationWidth
 		};
 
 		public double MaximumWidth => _maxWidth;
@@ -186,13 +186,13 @@ namespace Tailviewer.Ui.Controls.LogView
 						if (_indices.Count > 0)
 						{
 							var last = _indices[_indices.Count - 1];
-							var maxWidth = last.GetValue(LogFileColumns.PresentationStartingLineNumber) +
-							               last.GetValue(LogFileColumns.PresentationLineCount);
-							index.SetValue(LogFileColumns.PresentationStartingLineNumber, maxWidth);
+							var maxWidth = last.GetValue(Core.LogFiles.Columns.PresentationStartingLineNumber) +
+							               last.GetValue(Core.LogFiles.Columns.PresentationLineCount);
+							index.SetValue(Core.LogFiles.Columns.PresentationStartingLineNumber, maxWidth);
 						}
 						_indices.Add(index);
-						_maxWidth = Math.Max(_maxWidth, index.GetValue(LogFileColumns.RawContentMaxPresentationWidth));
-						_lineCount += index.GetValue(LogFileColumns.PresentationLineCount);
+						_maxWidth = Math.Max(_maxWidth, index.GetValue(Core.LogFiles.Columns.RawContentMaxPresentationWidth));
+						_lineCount += index.GetValue(Core.LogFiles.Columns.PresentationLineCount);
 					}
 				}
 			}
@@ -204,8 +204,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineCount = 0;
 			foreach (var tmp in _indices)
 			{
-				_maxWidth = Math.Max(_maxWidth, tmp.GetValue(LogFileColumns.RawContentMaxPresentationWidth));
-				_lineCount += tmp.GetValue(LogFileColumns.PresentationLineCount);
+				_maxWidth = Math.Max(_maxWidth, tmp.GetValue(Core.LogFiles.Columns.RawContentMaxPresentationWidth));
+				_lineCount += tmp.GetValue(Core.LogFiles.Columns.PresentationLineCount);
 			}
 		}
 
@@ -214,8 +214,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			int numLines;
 			var width = EstimateWidth(logEntry.RawContent, out numLines);
 			var index = new LogEntry();
-			index.SetValue(LogFileColumns.RawContentMaxPresentationWidth, width);
-			index.SetValue(LogFileColumns.PresentationLineCount, numLines);
+			index.SetValue(Core.LogFiles.Columns.RawContentMaxPresentationWidth, width);
+			index.SetValue(Core.LogFiles.Columns.PresentationLineCount, numLines);
 			return index;
 		}
 
@@ -248,12 +248,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_source.SetProperty(property, value);
+		}
+
 		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -295,18 +300,23 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
+		public override IReadOnlyList<IColumnDescriptor> Columns => Core.LogFiles.Columns.Combine(_source.Columns, IndexedColumns);
 
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _source.Properties;
 
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			return _source.GetProperty(propertyDescriptor);
+			return _source.GetProperty(property);
 		}
 
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			return _source.GetProperty(propertyDescriptor);
+			return _source.GetProperty(property);
+		}
+
+		public override void SetProperty(IPropertyDescriptor property, object value)
+		{
+			_source.SetProperty(property, value);
 		}
 	}
 }

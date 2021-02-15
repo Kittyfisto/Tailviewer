@@ -53,9 +53,9 @@ namespace Tailviewer.Core.IO
 			_formatMatcher = formatMatcher;
 			_fileName = fileName;
 			_defaultEncoding = defaultEncoding ?? throw new ArgumentNullException(nameof(defaultEncoding));
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.Encoding, defaultEncoding);
-			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
+			_properties = new ConcurrentLogFilePropertyCollection(Properties.Minimum);
+			_properties.SetValue(Properties.Encoding, defaultEncoding);
+			_properties.SetValue(Properties.FormatDetectionCertainty, Certainty.None);
 			_listener = new NoThrowTextFileListener(listener);
 			_lineOffsets = new List<long>();
 			_listenerOnReadBuffer = new List<string>();
@@ -127,9 +127,9 @@ namespace Tailviewer.Core.IO
 				else
 				{
 					var info = new FileInfo(_fileName);
-					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
-					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
-					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
+					_properties.SetValue(Properties.LastModified, info.LastWriteTime);
+					_properties.SetValue(Properties.Created, info.CreationTime);
+					_properties.SetValue(Properties.Size, Size.FromBytes(info.Length));
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -205,7 +205,7 @@ namespace Tailviewer.Core.IO
 			// not allowed to access the file (in which case a different
 			// error must be set).
 
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
+			_properties.SetValue(Properties.EmptyReason, ErrorFlags.None);
 			if (stream.Length >= _lastPosition)
 			{
 				stream.Position = _lastPosition;
@@ -334,13 +334,13 @@ namespace Tailviewer.Core.IO
 
 		private void UpdateProgress()
 		{
-			_properties.SetValue(LogFileProperties.PercentageProcessed, CalculateProgress());
+			_properties.SetValue(Properties.PercentageProcessed, CalculateProgress());
 		}
 
 		[Pure]
 		private Percentage CalculateProgress()
 		{
-			var fileSize = _properties.GetValue(LogFileProperties.Size);
+			var fileSize = _properties.GetValue(Properties.Size);
 			var position = _lastPosition;
 			if (fileSize == null)
 				return Percentage.HundredPercent; //< We've fully read the non-existant file...
@@ -359,27 +359,27 @@ namespace Tailviewer.Core.IO
 		/// <returns></returns>
 		private Encoding DetermineEncoding(FileStream stream)
 		{
-			var format = _properties.GetValue(LogFileProperties.Format);
-			var certainty = _properties.GetValue(LogFileProperties.FormatDetectionCertainty);
+			var format = _properties.GetValue(Properties.Format);
+			var certainty = _properties.GetValue(Properties.FormatDetectionCertainty);
 			if (format == null || certainty != Certainty.Sure)
 			{
 				format = TryFindFormatOf(stream, out certainty);
-				_properties.SetValue(LogFileProperties.Format, format);
-				_properties.SetValue(LogFileProperties.FormatDetectionCertainty, certainty);
+				_properties.SetValue(Properties.Format, format);
+				_properties.SetValue(Properties.FormatDetectionCertainty, certainty);
 
 				if (format != null)
 				{
 					var encoding = format.Encoding ?? _defaultEncoding;
-					var previousEncoding = _properties.GetValue(LogFileProperties.Encoding);
+					var previousEncoding = _properties.GetValue(Properties.Encoding);
 					if (!Equals(encoding, previousEncoding))
 					{
 						Log.DebugFormat("Log File '{0}' is now interpreted using {1} (previous: {2})", _fileName, encoding.EncodingName, previousEncoding.EncodingName);
-						_properties.SetValue(LogFileProperties.Encoding, encoding);
+						_properties.SetValue(Properties.Encoding, encoding);
 					}
 				}
 			}
 
-			return _properties.GetValue(LogFileProperties.Encoding);
+			return _properties.GetValue(Properties.Encoding);
 		}
 
 		[Pure]
@@ -430,9 +430,9 @@ namespace Tailviewer.Core.IO
 
 		private void Reset()
 		{
-			_properties.SetValue(LogFileProperties.StartTimestamp, null);
-			_properties.SetValue(LogFileProperties.EndTimestamp, null);
-			_properties.SetValue(LogFileProperties.Duration, null);
+			_properties.SetValue(Properties.StartTimestamp, null);
+			_properties.SetValue(Properties.EndTimestamp, null);
+			_properties.SetValue(Properties.Duration, null);
 
 			_lineOffsets.Clear();
 			_listener.OnReset(_properties);
@@ -440,7 +440,7 @@ namespace Tailviewer.Core.IO
 
 		private void SetError(ErrorFlags error)
 		{
-			_properties.SetValue(LogFileProperties.EmptyReason, error);
+			_properties.SetValue(Properties.EmptyReason, error);
 			SetEndOfSourceReached();
 		}
 
@@ -451,15 +451,15 @@ namespace Tailviewer.Core.IO
 
 		private void SetEndOfSourceReached()
 		{
-			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(Properties.PercentageProcessed, Percentage.HundredPercent);
 			_listener.OnEndOfSourceReached(_properties);
 		}
 
 		private void SetDoesNotExist()
 		{
 			_properties.Reset();
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
-			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_properties.SetValue(Properties.PercentageProcessed, Percentage.HundredPercent);
 			_listener.OnReset(_properties);
 		}
 
