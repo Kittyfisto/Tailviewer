@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Parsers;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
 {

@@ -8,7 +8,8 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -118,31 +119,31 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the data source disposes of all of its resources")]
 		public void TestDispose1()
 		{
-			LogFileProxy permanentLogFile;
+			LogSourceProxy permanentLogSource;
 			LogFileSearchProxy permanentSearch;
 
-			LogFileProxy permanentFindAllLogFile;
+			LogSourceProxy permanentFindAllLogSource;
 			LogFileSearchProxy permanentFindAllSearch;
 
 			SingleDataSource source;
 			using (source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()}))
 			{
-				permanentLogFile = (LogFileProxy) source.FilteredLogFile;
-				permanentLogFile.IsDisposed.Should().BeFalse();
+				permanentLogSource = (LogSourceProxy) source.FilteredLogSource;
+				permanentLogSource.IsDisposed.Should().BeFalse();
 
 				permanentSearch = (LogFileSearchProxy) source.Search;
 				permanentSearch.IsDisposed.Should().BeFalse();
 
-				permanentFindAllLogFile = (LogFileProxy) source.FindAllLogFile;
-				permanentFindAllLogFile.IsDisposed.Should().BeFalse();
+				permanentFindAllLogSource = (LogSourceProxy) source.FindAllLogSource;
+				permanentFindAllLogSource.IsDisposed.Should().BeFalse();
 
 				permanentFindAllSearch = (LogFileSearchProxy) source.FindAllSearch;
 				permanentFindAllSearch.IsDisposed.Should().BeFalse();
 			}
 			source.IsDisposed.Should().BeTrue();
-			permanentLogFile.IsDisposed.Should().BeTrue();
+			permanentLogSource.IsDisposed.Should().BeTrue();
 			permanentSearch.IsDisposed.Should().BeTrue();
-			permanentFindAllLogFile.IsDisposed.Should().BeTrue();
+			permanentFindAllLogSource.IsDisposed.Should().BeTrue();
 			permanentFindAllSearch.IsDisposed.Should().BeTrue();
 		}
 
@@ -164,7 +165,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				_scheduler.Run(2);
-				dataSource.UnfilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				dataSource.UnfilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				dataSource.TotalCount.Should().Be(27, "because the data source contains that many lines");
 				dataSource.DebugCount.Should().Be(1, "because the data source contains one debug line");
@@ -180,7 +181,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSearch1()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), logFile, TimeSpan.Zero))
 			{
 				logFile.AddEntry("Hello foobar world!");
@@ -196,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestHideEmptyLines1()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			var settings = CreateDataSource();
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
@@ -212,7 +213,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestIsSingleLine()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			var settings = CreateDataSource();
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
@@ -231,22 +232,22 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestClearScreen()
 		{
 			var settings = CreateDataSource();
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Foo");
 			logFile.AddEntry("Bar");
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
 				dataSource.ClearScreen();
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				logFile.AddEntry("Hello!");
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(1, "because newer log entries should still appear");
-				dataSource.FilteredLogFile.GetEntry(0).RawContent.Should().Be("Hello!");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because newer log entries should still appear");
+				dataSource.FilteredLogSource.GetEntry(0).RawContent.Should().Be("Hello!");
 			}
 		}
 
@@ -256,7 +257,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestClearScreenShowAll()
 		{
 			var settings = CreateDataSource();
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Foo");
 			logFile.AddEntry("Bar");
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
@@ -265,11 +266,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 				dataSource.ClearScreen();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				dataSource.ShowAll();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2, "because we've just shown everything again");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2, "because we've just shown everything again");
 			}
 		}
 

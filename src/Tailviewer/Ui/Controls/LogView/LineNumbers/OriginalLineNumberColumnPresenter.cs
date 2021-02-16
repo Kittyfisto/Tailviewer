@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.LineNumbers
@@ -17,16 +18,16 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		private double _lineNumberWidth;
 
 		public OriginalLineNumberColumnPresenter(TextSettings textSettings)
-			: base(Columns.OriginalLineNumber, textSettings)
+			: base(LogColumns.OriginalLineNumber, textSettings)
 		{}
 
 		public IEnumerable<LineNumberFormatter> LineNumbers => Values.Cast<LineNumberFormatter>();
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{
 			int lineNumberCharacterCount;
-			if (logFile != null)
-				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.GetProperty(TextProperties.LineCount)));
+			if (logSource != null)
+				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logSource.GetProperty(TextProperties.LineCount)));
 			else
 				lineNumberCharacterCount = 0;
 

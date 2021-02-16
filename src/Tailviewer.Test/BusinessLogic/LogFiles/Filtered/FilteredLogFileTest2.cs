@@ -3,7 +3,7 @@ using System.Threading;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 {
@@ -13,9 +13,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogFile CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
 		{
-			return new FilteredLogFile(taskScheduler, TimeSpan.Zero, new EmptyLogFile(), new WildcardFilter("*", true),
+			return new FilteredLogSource(taskScheduler, TimeSpan.Zero, new EmptyLogSource(), new WildcardFilter("*", true),
 			                           null);
 		}
 

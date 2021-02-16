@@ -5,7 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -15,21 +15,21 @@ namespace Tailviewer.Test.BusinessLogic
 		[SetUp]
 		public void SetUp()
 		{
-			_logFile = new Mock<ILogFile>();
-			_listener = new Mock<ILogFileListener>();
+			_logFile = new Mock<ILogSource>();
+			_listener = new Mock<ILogSourceListener>();
 			_changes = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogFile file, LogFileSection section) => _changes.Add(section));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+			         .Callback((ILogSource file, LogFileSection section) => _changes.Add(section));
 		}
 
-		private Mock<ILogFileListener> _listener;
+		private Mock<ILogSourceListener> _listener;
 		private List<LogFileSection> _changes;
-		private Mock<ILogFile> _logFile;
+		private Mock<ILogSource> _logFile;
 
 		[Test]
 		public void TestCurrentLineChanged1()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
 			notifier.OnRead(1);
 			notifier.OnRead(2);
 			notifier.OnRead(3);
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged2()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
 			_changes.Clear();
 
 			notifier.OnRead(1);
@@ -68,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged3()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
 			notifier.OnRead(4);
 			_changes.Should().Equal(new[]
 				{
@@ -80,7 +80,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged4()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(1000);
 			_changes.Should().Equal(new[]
 				{
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged5()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
@@ -112,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged6()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(-1);
 			_changes.Should().Equal(new[]
 				{
@@ -123,7 +123,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestInvalidate1()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
 			notifier.OnRead(1);
 			notifier.Invalidate(0, 1);
 			_changes.Should().Equal(new[]
@@ -140,7 +140,7 @@ namespace Tailviewer.Test.BusinessLogic
 			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate2()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
 			notifier.OnRead(10);
 			notifier.OnRead(12);
 			notifier.Invalidate(0, 12);
@@ -160,7 +160,7 @@ namespace Tailviewer.Test.BusinessLogic
 			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate3()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
 			notifier.OnRead(10);
 			notifier.OnRead(20);
 			notifier.OnRead(22);
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.BusinessLogic
 			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate4()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
 			notifier.OnRead(9);
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			notifier.OnRead(9);
@@ -208,7 +208,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that only the first of subsequent sequential reset events is forwarded")]
 		public void TestInvalidate5()
 		{
-			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
+			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
 			notifier.OnRead(1);
 			notifier.OnRead(-1);
 			_changes.Should().Equal(new[] {LogFileSection.Reset});

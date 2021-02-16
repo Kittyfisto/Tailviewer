@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Ui.Outline;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -21,11 +21,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private readonly ILogFileOutlinePlugin _plugin;
 		private readonly IServiceContainer _services;
 
-		public LogFileOutlineViewModelProxy(ILogFileOutlinePlugin plugin, IServiceContainer services, ILogFile logFile)
+		public LogFileOutlineViewModelProxy(ILogFileOutlinePlugin plugin, IServiceContainer services, ILogSource logSource)
 		{
 			_plugin = plugin;
 			_services = services;
-			_innerViewModel = TryCreateViewModel(services, plugin, logFile);
+			_innerViewModel = TryCreateViewModel(services, plugin, logSource);
 		}
 
 		#region Implementation of INotifyPropertyChanged
@@ -38,11 +38,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		private static ILogFileOutlineViewModel TryCreateViewModel(IServiceContainer services,
 		                                                           ILogFileOutlinePlugin plugin,
-		                                                           ILogFile logFile)
+		                                                           ILogSource logSource)
 		{
 			try
 			{
-				return plugin.CreateViewModel(services, logFile);
+				return plugin.CreateViewModel(services, logSource);
 			}
 			catch (Exception e)
 			{

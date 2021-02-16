@@ -8,7 +8,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
@@ -21,7 +23,7 @@ namespace Tailviewer.Test.Ui.Controls
 	public sealed class LogEntryListViewTest
 	{
 		private LogEntryListView _control;
-		private InMemoryLogFile _logFile;
+		private InMemoryLogSource _logSource;
 		private TestKeyboard _keyboard;
 		private TestMouse _mouse;
 		private DeltaTimeColumnPresenter _deltaTimesColumn;
@@ -43,7 +45,7 @@ namespace Tailviewer.Test.Ui.Controls
 			DispatcherExtensions.ExecuteAllEvents();
 
 
-			_logFile = new InMemoryLogFile();
+			_logSource = new InMemoryLogSource();
 
 			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}
@@ -51,7 +53,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestCtor()
 		{
-			_control.LogFile.Should().BeNull();
+			_control.LogSource.Should().BeNull();
 			_control.FollowTail.Should().BeFalse();
 		}
 
@@ -59,8 +61,8 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that an empty log file can be represented")]
 		public void TestSetLogFile1()
 		{
-			new Action(() => _control.LogFile = _logFile).Should().NotThrow();
-			_control.LogFile.Should().BeSameAs(_logFile);
+			new Action(() => _control.LogSource = _logSource).Should().NotThrow();
+			_control.LogSource.Should().BeSameAs(_logSource);
 
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -74,13 +76,13 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verfies that a log file with one line can be represented")]
 		public void TestSetLogFile2()
 		{
-			_logFile.AddEntry("Foobar", LevelFlags.Debug);
+			_logSource.AddEntry("Foobar", LevelFlags.Debug);
 
-			new Action(() => _control.LogFile = _logFile).Should().NotThrow();
+			new Action(() => _control.LogSource = _logSource).Should().NotThrow();
 
 			_control.VisibleTextLines.Count.Should().Be(1, "Because the log file contains one log line");
-			_control.VisibleTextLines[0].LogEntry.RawContent.Should().Be(_logFile[0].RawContent);
-			_control.VisibleTextLines[0].LogEntry.LogLevel.Should().Be(_logFile[0].LogLevel);
+			_control.VisibleTextLines[0].LogEntry.RawContent.Should().Be(_logSource[0].RawContent);
+			_control.VisibleTextLines[0].LogEntry.LogLevel.Should().Be(_logSource[0].LogLevel);
 
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -96,16 +98,16 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 46; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Debug);
+				_logSource.AddEntry("Foobar", LevelFlags.Debug);
 			}
 
-			new Action(() => _control.LogFile = _logFile).Should().NotThrow();
+			new Action(() => _control.LogSource = _logSource).Should().NotThrow();
 
 			_control.VisibleTextLines.Count.Should().Be(46, "Because the view can display 46 lines and we've added as many");
 			for (int i = 0; i < 46; ++i)
 			{
-				_control.VisibleTextLines[i].LogEntry.RawContent.Should().Be(_logFile[i].RawContent);
-				_control.VisibleTextLines[i].LogEntry.LogLevel.Should().Be(_logFile[i].LogLevel);
+				_control.VisibleTextLines[i].LogEntry.RawContent.Should().Be(_logSource[i].RawContent);
+				_control.VisibleTextLines[i].LogEntry.LogLevel.Should().Be(_logSource[i].LogLevel);
 			}
 
 			DispatcherExtensions.ExecuteAllEvents();
@@ -123,10 +125,10 @@ namespace Tailviewer.Test.Ui.Controls
 			const int lineCount = 53;
 			for (int i = 0; i < lineCount; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Debug);
+				_logSource.AddEntry("Foobar", LevelFlags.Debug);
 			}
 
-			new Action(() => _control.LogFile = _logFile).Should().NotThrow();
+			new Action(() => _control.LogSource = _logSource).Should().NotThrow();
 
 			// It takes some "time" until the control has done its layouting
 			DispatcherExtensions.ExecuteAllEvents();
@@ -134,8 +136,8 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.VisibleTextLines.Count.Should().Be(52, "Because the view can display 48 of the 49 lines that we've added");
 			for (int i = 0; i < 52; ++i)
 			{
-				_control.VisibleTextLines[i].LogEntry.RawContent.Should().Be(_logFile[i].RawContent);
-				_control.VisibleTextLines[i].LogEntry.LogLevel.Should().Be(_logFile[i].LogLevel);
+				_control.VisibleTextLines[i].LogEntry.RawContent.Should().Be(_logSource[i].RawContent);
+				_control.VisibleTextLines[i].LogEntry.LogLevel.Should().Be(_logSource[i].LogLevel);
 			}
 
 			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
@@ -148,8 +150,8 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verfies that when a log file is set, its maximum number of characters for all lines is queried and used to calculate the maximum value of the horizontal scrollbar")]
 		public void TestSetLogFile5()
 		{
-			_logFile.AddEntry(new string('f', 221), LevelFlags.Debug);
-			new Action(() => _control.LogFile = _logFile).Should().NotThrow();
+			_logSource.AddEntry(new string('f', 221), LevelFlags.Debug);
+			new Action(() => _control.LogSource = _logSource).Should().NotThrow();
 
 			_control.HorizontalScrollBar.Visibility.Should().Be(Visibility.Visible, "Because a scroll bar is necessary to view all contents of the log file");
 			_control.HorizontalScrollBar.Maximum.Should().BeGreaterThan(0, "Because the log file claims that its greatest line contains more characters than can currently be represented by the control, hence a scrollbar is necessary");
@@ -160,7 +162,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestLogFileAdd1()
 		{
 			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 			DispatcherExtensions.ExecuteAllEvents();
 
 			var entries = new List<IReadOnlyLogEntry>();
@@ -168,11 +170,11 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{Columns.RawContent, "Foobar" },
-					{Columns.LogLevel, LevelFlags.Info }
+					{LogColumns.RawContent, "Foobar" },
+					{LogColumns.LogLevel, LevelFlags.Info }
 				}));
 			}
-			_logFile.AddRange(entries);
+			_logSource.AddRange(entries);
 
 			_control.VisibleTextLines.Count.Should().Be(0, "Because the view may not have synchronized itself with the log file");
 			_control.PendingModificationsCount.Should().BeGreaterOrEqualTo(1, "Because this log file modification should have been tracked by the control");
@@ -208,7 +210,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestFollowTail1()
 		{
 			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 			DispatcherExtensions.ExecuteAllEvents();
 			
 			var entries = new List<IReadOnlyLogEntry>();
@@ -216,11 +218,11 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{Columns.RawContent, "Foobar" },
-					{Columns.LogLevel, LevelFlags.Info }
+					{LogColumns.RawContent, "Foobar" },
+					{LogColumns.LogLevel, LevelFlags.Info }
 				}));
 			}
-			_logFile.AddRange(entries);
+			_logSource.AddRange(entries);
 
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
@@ -238,7 +240,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestFollowTail2()
 		{
 			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 			DispatcherExtensions.ExecuteAllEvents();
 			
 			var entries = new List<IReadOnlyLogEntry>();
@@ -246,23 +248,23 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{Columns.RawContent, "Foobar" },
-					{Columns.LogLevel, LevelFlags.Info }
+					{LogColumns.RawContent, "Foobar" },
+					{LogColumns.LogLevel, LevelFlags.Info }
 				}));
 			}
-			_logFile.AddRange(entries);
+			_logSource.AddRange(entries);
 
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
 
 			_control.FollowTail = true;
-			_logFile.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
+			_logSource.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.RawContent, "Foobar" },
-				{Columns.LogLevel, LevelFlags.Info }
+				{LogColumns.RawContent, "Foobar" },
+				{LogColumns.LogLevel, LevelFlags.Info }
 			}));
-			_control.OnLogFileModified(_logFile, new LogFileSection(0, _logFile.Count));
+			_control.OnLogFileModified(_logSource, new LogFileSection(0, _logSource.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -299,9 +301,9 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies a mouse left down selects the item under it")]
 		public void TestSelect1()
 		{
-			_logFile.AddEntry("Foobar", LevelFlags.Info);
-			_logFile.AddEntry("Foobar", LevelFlags.Info);
-			_control.LogFile = _logFile;
+			_logSource.AddEntry("Foobar", LevelFlags.Info);
+			_logSource.AddEntry("Foobar", LevelFlags.Info);
+			_control.LogSource = _logSource;
 			_control.SelectedIndices.Should().BeEmpty();
 
 			_control.SelectedIndices.Should().Equal(new[]
@@ -314,9 +316,9 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that only selected lines are copied to the clipboard")]
 		public void TestCopyToClipboard1()
 		{
-			_logFile.AddEntry("Foobar", LevelFlags.Info);
-			_logFile.AddEntry("Clondyke bar", LevelFlags.Info);
-			_control.LogFile = _logFile;
+			_logSource.AddEntry("Foobar", LevelFlags.Info);
+			_logSource.AddEntry("Clondyke bar", LevelFlags.Info);
+			_control.LogSource = _logSource;
 			_control.Select(1);
 			_control.CopySelectedLinesToClipboard();
 
@@ -327,9 +329,9 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that multiple lines can be copied to the clipboard")]
 		public void TestCopyToClipboard2()
 		{
-			_logFile.AddEntry("Foobar", LevelFlags.Info);
-			_logFile.AddEntry("Clondyke bar", LevelFlags.Info);
-			_control.LogFile = _logFile;
+			_logSource.AddEntry("Foobar", LevelFlags.Info);
+			_logSource.AddEntry("Clondyke bar", LevelFlags.Info);
+			_control.LogSource = _logSource;
 			_control.Select(1, 0);
 			_control.CopySelectedLinesToClipboard();
 
@@ -342,9 +344,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 51; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_control.VerticalScrollBar.Value.Should().BeLessThan(_control.VerticalScrollBar.Maximum);
 			_control.FollowTail.Should().BeFalse();
@@ -360,9 +362,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 100; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(0, "because the control should display from the first line onwards");
 			_control.Settings = null;
@@ -377,9 +379,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 100; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(0, "because the control should display from the first line onwards");
 			_control.Settings = new LogViewerSettings
@@ -397,9 +399,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 51; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_mouse.RotateMouseWheelDown(_control.PartTextCanvas);
 			_control.VerticalScrollBar.Value.Should().Be(_control.VerticalScrollBar.Maximum);
@@ -416,9 +418,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 100; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 
@@ -436,9 +438,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 100; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 
@@ -459,9 +461,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 200; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_control.SelectedIndices.Should().BeEmpty();
 			_control.FollowTail.Should().BeFalse();
@@ -479,9 +481,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			for (int i = 0; i < 200; ++i)
 			{
-				_logFile.AddEntry("Foobar", LevelFlags.Info);
+				_logSource.AddEntry("Foobar", LevelFlags.Info);
 			}
-			_control.LogFile = _logFile;
+			_control.LogSource = _logSource;
 
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);

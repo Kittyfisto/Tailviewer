@@ -8,8 +8,9 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
@@ -27,13 +28,13 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			_taskScheduler = new DefaultTaskScheduler();
 		}
 
-		private TextLogFile Create(string fileName)
+		private TextLogSource Create(string fileName)
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
-			return new TextLogFile(serviceContainer, fileName);
+			return new TextLogSource(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -47,7 +48,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			{
 				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);
 
-				logFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logFile.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				model.Property(x =>
 				{

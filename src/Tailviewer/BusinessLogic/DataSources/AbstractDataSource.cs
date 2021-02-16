@@ -10,7 +10,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -24,16 +25,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
-		private readonly LogFileProxy _logFile;
+		private readonly LogSourceProxy _logSource;
 		private readonly LogFileSearchProxy _search;
 
-		private readonly LogFileProxy _findAllLogFile;
+		private readonly LogSourceProxy _findAllLogSource;
 		private readonly LogFileSearchProxy _findAllSearch;
 
-		private ILogFile _filteredLogFile;
+		private ILogSource _filteredLogSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
-		private ILogFile _previousUnfilteredLogFile;
+		private ILogSource _previousUnfilteredLogSource;
 		private string _findAllFilter;
 		private int? _hideLogLineCount;
 
@@ -49,11 +50,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
 
-			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
+			_logSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
+			_search = new LogFileSearchProxy(taskScheduler, _logSource, maximumWaitTime);
 
-			_findAllLogFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_findAllSearch = new LogFileSearchProxy(taskScheduler, _findAllLogFile, maximumWaitTime);
+			_findAllLogSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
+			_findAllSearch = new LogFileSearchProxy(taskScheduler, _findAllLogSource, maximumWaitTime);
 
 			UpdateSearch();
 			UpdateFindAllSearch();
@@ -63,9 +64,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		protected TimeSpan MaximumWaitTime => _maximumWaitTime;
 
-		public ILogFile FilteredLogFile => _logFile;
+		public ILogSource FilteredLogSource => _logSource;
 
-		public ILogFile FindAllLogFile => _findAllLogFile;
+		public ILogSource FindAllLogSource => _findAllLogSource;
 
 		public ILogFileSearch FindAllSearch => _findAllSearch;
 
@@ -126,7 +127,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime? LastModified => UnfilteredLogFile.GetProperty(Properties.LastModified);
+		public DateTime? LastModified => UnfilteredLogSource.GetProperty(GeneralProperties.LastModified);
 
 		public DateTime LastViewed
 		{
@@ -141,7 +142,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void ClearScreen()
 		{
-			_hideLogLineCount = UnfilteredLogFile?.GetProperty(Properties.LogEntryCount) ?? 0;
+			_hideLogLineCount = UnfilteredLogSource?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
 			CreateFilteredLogFile();
 		}
 
@@ -171,9 +172,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}
 
-		public abstract ILogFile OriginalLogFile { get; }
+		public abstract ILogSource OriginalLogSource { get; }
 
-		public abstract ILogFile UnfilteredLogFile { get; }
+		public abstract ILogSource UnfilteredLogSource { get; }
 
 		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
 
@@ -246,7 +247,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public int TotalCount => _counter.Total.LogLineCount;
 
-		public Size? FileSize => UnfilteredLogFile.GetProperty(Properties.Size);
+		public Size? FileSize => UnfilteredLogSource.GetProperty(GeneralProperties.Size);
 
 		public bool ColorByLevel
 		{
@@ -282,14 +283,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		
 		public void Dispose()
 		{
-			_logFile.Dispose();
+			_logSource.Dispose();
 			_search.Dispose();
 			_counter.Dispose();
 
-			_findAllLogFile.Dispose();
+			_findAllLogSource.Dispose();
 			_findAllSearch.Dispose();
 
-			_logFile?.Dispose();
+			_logSource?.Dispose();
 
 			try
 			{
@@ -317,14 +318,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		/// <summary>
-		/// Must be called by suclasses when the <see cref="UnfilteredLogFile"/> property changes
+		/// Must be called by suclasses when the <see cref="UnfilteredLogSource"/> property changes
 		/// (i.e. returns a different object).
 		/// </summary>
 		protected void OnUnfilteredLogFileChanged()
 		{
-			_previousUnfilteredLogFile?.RemoveListener(_counter);
-			UnfilteredLogFile.AddListener(_counter, TimeSpan.Zero, 1000);
-			_previousUnfilteredLogFile = UnfilteredLogFile;
+			_previousUnfilteredLogSource?.RemoveListener(_counter);
+			UnfilteredLogSource.AddListener(_counter, TimeSpan.Zero, 1000);
+			_previousUnfilteredLogSource = UnfilteredLogSource;
 
 			CreateFilteredLogFile();
 		}
@@ -333,20 +334,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void CreateFilteredLogFile()
 		{
-			_filteredLogFile?.Dispose();
+			_filteredLogSource?.Dispose();
 
 			LevelFlags levelFilter = LevelFilter;
 			ILogLineFilter logLineFilter = CreateLogLineFilter();
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (Filter.IsFilter(logEntryFilter) || Filter.IsFilter(logLineFilter))
 			{
-				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
-				_logFile.InnerLogFile = _filteredLogFile;
+				_filteredLogSource = UnfilteredLogSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
+				_logSource.InnerLogSource = _filteredLogSource;
 			}
 			else
 			{
-				_filteredLogFile = null;
-				_logFile.InnerLogFile = UnfilteredLogFile;
+				_filteredLogSource = null;
+				_logSource.InnerLogSource = UnfilteredLogSource;
 			}
 		}
 
@@ -372,20 +373,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateFindAllLogFile()
 		{
-			var previous = _findAllLogFile.InnerLogFile;
+			var previous = _findAllLogSource.InnerLogSource;
 			previous?.Dispose();
 
 			if (!string.IsNullOrEmpty(_findAllFilter))
 			{
-				_findAllLogFile.InnerLogFile = new FilteredLogFile(_taskScheduler,
+				_findAllLogSource.InnerLogSource = new FilteredLogSource(_taskScheduler,
 				                                                   MaximumWaitTime,
-				                                                   this.UnfilteredLogFile,
+				                                                   this.UnfilteredLogSource,
 				                                                   null,
 				                                                   new SubstringFilter(_findAllFilter, ignoreCase: true));
 			}
 			else
 			{
-				_findAllLogFile.InnerLogFile = null;
+				_findAllLogSource.InnerLogSource = null;
 			}
 		}
 	}

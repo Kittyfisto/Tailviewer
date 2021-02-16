@@ -10,7 +10,8 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Ui.Outline;
+using Tailviewer.Core.Properties;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -113,7 +114,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		[Pure]
 		private IInternalLogFileOutlineViewModel TryCreateViewModelFor(IDataSource dataSource)
 		{
-			var logFile = dataSource.UnfilteredLogFile;
+			var logFile = dataSource.UnfilteredLogSource;
 
 			var plugin = FindMatchingPlugin(dataSource);
 			if (plugin == null)
@@ -128,11 +129,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			if (dataSource is IMultiDataSource multi)
 			{
 				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
-				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogFile?.GetProperty(Core.LogFiles.Properties.Format))).ToList();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogSource?.GetProperty(GeneralProperties.Format))).ToList();
 			}
 			else
 			{
-				plugins = FindMatchingPlugins(dataSource.UnfilteredLogFile?.GetProperty(Core.LogFiles.Properties.Format));
+				plugins = FindMatchingPlugins(dataSource.UnfilteredLogSource?.GetProperty(GeneralProperties.Format));
 			}
 
 			if (plugins.Count == 0)

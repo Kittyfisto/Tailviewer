@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 {

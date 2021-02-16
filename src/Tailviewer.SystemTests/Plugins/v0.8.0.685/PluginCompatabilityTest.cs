@@ -2,6 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.SystemTests.Plugins.v0._8._0._685
 {

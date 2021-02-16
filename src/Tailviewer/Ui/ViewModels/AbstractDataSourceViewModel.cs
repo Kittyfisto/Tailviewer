@@ -10,7 +10,9 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -314,7 +316,7 @@ namespace Tailviewer.Ui.ViewModels
 				var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
 				if (index.IsValid)
 				{
-					var entry = _dataSource.FindAllLogFile.GetEntries(new[] {index}, new[]{Columns.OriginalIndex});
+					var entry = _dataSource.FindAllLogSource.GetEntries(new[] {index}, new[]{LogColumns.OriginalIndex});
 					var originalIndex = entry[0].OriginalIndex;
 					if (originalIndex.IsValid)
 					{
@@ -663,12 +665,12 @@ namespace Tailviewer.Ui.ViewModels
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			Exists = _dataSource.UnfilteredLogFile?.GetProperty(Core.LogFiles.Properties.EmptyReason)
+			Exists = _dataSource.UnfilteredLogSource?.GetProperty(GeneralProperties.EmptyReason)
 			         == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
-			Progress = _dataSource.FilteredLogFile?.GetProperty(Core.LogFiles.Properties.PercentageProcessed).RelativeValue ?? 1;
+			Progress = _dataSource.FilteredLogSource?.GetProperty(GeneralProperties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)
 			{

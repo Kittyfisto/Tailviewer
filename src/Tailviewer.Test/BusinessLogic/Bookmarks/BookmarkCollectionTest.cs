@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.Test.BusinessLogic.Bookmarks
@@ -16,16 +16,16 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 	[TestFixture]
 	public sealed class BookmarkCollectionTest
 	{
-		private InMemoryLogFile _logFile;
+		private InMemoryLogSource _logSource;
 		private Mock<IDataSource> _dataSource;
 		private Mock<IBookmarks> _bookmarks;
 
 		[SetUp]
 		public void Setup()
 		{
-			_logFile = new InMemoryLogFile();
+			_logSource = new InMemoryLogSource();
 			_dataSource = new Mock<IDataSource>();
-			_dataSource.Setup(x => x.UnfilteredLogFile).Returns(_logFile);
+			_dataSource.Setup(x => x.UnfilteredLogSource).Returns(_logSource);
 			_bookmarks = new Mock<IBookmarks>();
 		}
 
@@ -67,8 +67,8 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
 			collection.AddDataSource(_dataSource.Object);
 
-			_logFile.AddEntry("", LevelFlags.Error);
-			_logFile.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
 
 			_bookmarks.Verify(x => x.SaveAsync(), Times.Never);
 
@@ -87,8 +87,8 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
 			collection.AddDataSource(_dataSource.Object);
 
-			_logFile.AddEntry("", LevelFlags.Error);
-			_logFile.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
 
 			var bookmark1 = collection.TryAddBookmark(_dataSource.Object, 1);
 			var bookmark2 = collection.TryAddBookmark(_dataSource.Object, 0);
@@ -111,7 +111,7 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			});
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new InMemoryLogFile());
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(new InMemoryLogSource());
 			dataSource.Setup(x => x.Id).Returns(dataSourceId);
 			new Action(() => collection.AddDataSource(dataSource.Object)).Should().NotThrow();
 			collection.Bookmarks.Should().Equal(new object[]
@@ -126,8 +126,8 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
 			collection.AddDataSource(_dataSource.Object);
 
-			_logFile.AddEntry("", LevelFlags.Error);
-			_logFile.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
 
 			var bookmark = collection.TryAddBookmark(_dataSource.Object, 1);
 			collection.TryAddBookmark(_dataSource.Object, 1).Should().BeNull();
@@ -141,8 +141,8 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
 			collection.AddDataSource(_dataSource.Object);
 
-			_logFile.AddEntry("", LevelFlags.Error);
-			_logFile.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
 
 			var bookmark = collection.TryAddBookmark(_dataSource.Object, 1);
 			_bookmarks.Verify(x => x.SaveAsync(), Times.Once);
@@ -156,13 +156,13 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/281")]
 		public void TestDeadlockWhenRemovingAnActiveDataSource()
 		{
-			var logFile = new Mock<ILogFile>();
+			var logFile = new Mock<ILogSource>();
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
-			logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
-			       .Callback((ILogFileListener unused) =>
+			logFile.Setup(x => x.RemoveListener(It.IsAny<ILogSourceListener>()))
+			       .Callback((ILogSourceListener unused) =>
 			       {
 					   // In order to produce the deadlock, we have to simulate what's happening in reality.
 					   // Any ILogFile implementation will hold a lock both while invoking listeners and while

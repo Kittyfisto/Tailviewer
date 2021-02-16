@@ -253,7 +253,7 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogEntryValueFormatter.cs" />
-    <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
+    <Compile Include="Ui\Controls\LogView\PresentationLogSource.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
@@ -10,16 +11,16 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 		: AbstractLogColumnPresenter<TimeSpan?>
 	{
 		public ElapsedTimeColumnPresenter(TextSettings textSettings)
-			: base(Columns.ElapsedTime, textSettings)
+			: base(LogColumns.ElapsedTime, textSettings)
 		{
 		}
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{
-			if (logFile != null)
+			if (logSource != null)
 			{
 				var culture = CultureInfo.CurrentCulture;
-				var maximum = ElapsedTimeFormatter.ToString(logFile.GetProperty(Core.LogFiles.Properties.EndTimestamp) - logFile.GetProperty(Core.LogFiles.Properties.StartTimestamp), culture);
+				var maximum = ElapsedTimeFormatter.ToString(logSource.GetProperty(GeneralProperties.EndTimestamp) - logSource.GetProperty(GeneralProperties.StartTimestamp), culture);
 				var maximumWidth = textSettings.EstimateWidthUpperLimit(maximum);
 				Width = maximumWidth;
 			}

@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel
@@ -68,9 +68,9 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel
 		public void TestAddRemove()
 		{
 			_dataSource.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {13});
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEmptyEntries(13);
-			_dataSource.Setup(x => x.FilteredLogFile).Returns(logFile);
+			_dataSource.Setup(x => x.FilteredLogSource).Returns(logFile);
 
 			_viewModel.CurrentDataSource = _dataSource.Object;
 			_viewModel.AddBookmarkCommand.Execute(null);

@@ -2,6 +2,7 @@
 using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {

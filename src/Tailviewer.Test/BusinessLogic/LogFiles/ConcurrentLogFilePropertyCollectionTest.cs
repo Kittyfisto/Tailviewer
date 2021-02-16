@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -12,9 +12,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	{
 		#region Overrides of AbstractLogFilePropertiesTest
 
-		protected override ILogFileProperties Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties)
+		protected override IPropertiesBuffer Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties)
 		{
-			var collection = new ConcurrentLogFilePropertyCollection(properties.Select(x => x.Key));
+			var collection = new ConcurrentPropertiesList(properties.Select(x => x.Key));
 			foreach (var pair in properties)
 			{
 				collection.SetValue(pair.Key, pair.Value);

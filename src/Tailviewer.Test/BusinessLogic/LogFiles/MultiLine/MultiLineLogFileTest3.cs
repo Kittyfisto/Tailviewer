@@ -2,7 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 {
@@ -12,9 +12,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 	{
 		#region Overrides of AbstractAggregatedLogFileTest
 
-		protected override ILogFile Create(ITaskScheduler taskScheduler, ILogFile source)
+		protected override ILogSource Create(ITaskScheduler taskScheduler, ILogSource source)
 		{
-			return new MultiLineLogFile(taskScheduler, source, TimeSpan.Zero);
+			return new MultiLineLogSource(taskScheduler, source, TimeSpan.Zero);
 		}
 
 		#endregion

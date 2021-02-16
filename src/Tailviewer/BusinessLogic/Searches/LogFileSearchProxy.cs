@@ -12,7 +12,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		, ILogFileSearchListener
 	{
 		private readonly List<ILogFileSearchListener> _listeners;
-		private readonly ILogFile _logFile;
+		private readonly ILogSource _logSource;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>> _pendingMatches;
 		private readonly object _syncRoot;
@@ -24,15 +24,15 @@ namespace Tailviewer.BusinessLogic.Searches
 		private List<LogMatch> _matches;
 		private string _searchTerm;
 
-		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFile logFile, TimeSpan maximumWaitTime)
+		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogSource logSource, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (logFile == null)
-				throw new ArgumentNullException(nameof(logFile));
+			if (logSource == null)
+				throw new ArgumentNullException(nameof(logSource));
 
 			_pendingMatches = new ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>>();
-			_logFile = logFile;
+			_logSource = logSource;
 			_listeners = new List<ILogFileSearchListener>();
 			_taskScheduler = taskScheduler;
 			_syncRoot = new object();
@@ -57,7 +57,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 				_searchTerm = value;
 				InnerSearch = !string.IsNullOrEmpty(value)
-					              ? CreateNewSearch(_taskScheduler, _logFile, value, _maximumWaitTime)
+					              ? CreateNewSearch(_taskScheduler, _logSource, value, _maximumWaitTime)
 					              : null;
 			}
 		}
@@ -137,7 +137,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(sender, matches.ToList()));
 		}
 
-		private static LogFileSearch CreateNewSearch(ITaskScheduler scheduler, ILogFile logfile, string searchterm,
+		private static LogFileSearch CreateNewSearch(ITaskScheduler scheduler, ILogSource logfile, string searchterm,
 		                                              TimeSpan maximumwaittime)
 		{
 			return new LogFileSearch(scheduler, logfile, searchterm, maximumwaittime);

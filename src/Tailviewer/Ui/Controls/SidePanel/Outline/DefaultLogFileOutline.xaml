@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:outline="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline"
-             xmlns:properties="clr-namespace:Tailviewer.Ui.Properties;assembly=Tailviewer.Api"
+             xmlns:properties="clr-namespace:Tailviewer.Ui;assembly=Tailviewer.Api"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 

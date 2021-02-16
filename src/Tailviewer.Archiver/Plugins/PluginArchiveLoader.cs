@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
 {

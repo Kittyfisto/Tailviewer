@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
@@ -9,7 +12,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	///     Responsible for providing the amount of occurences of certain classes of log lines and -entries.
 	/// </summary>
 	internal sealed class LogFileCounter
-		: ILogFileListener
+		: ILogSourceListener
 		, IDisposable
 	{
 		#region Counts
@@ -26,7 +29,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		#endregion
 
-		private LogEntryList _entries;
+		private LogBufferList _buffers;
 		private readonly ReadOnlyLogEntry _emptyLine;
 
 		public LogFileCounter()
@@ -41,16 +44,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 			NoTimestamp = new Counter();
 			Total = new Counter();
 
-			_entries = new LogEntryList(Columns.LogEntryIndex, Columns.Timestamp, Columns.LogLevel);
+			_buffers = new LogBufferList(LogColumns.LogEntryIndex, LogColumns.Timestamp, LogColumns.LogLevel);
 			_emptyLine = new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.LogEntryIndex, new LogEntryIndex(-1) },
-				{Columns.Timestamp, null },
-				{Columns.LogLevel, LevelFlags.None}
+				{LogColumns.LogEntryIndex, new LogEntryIndex(-1) },
+				{LogColumns.Timestamp, null },
+				{LogColumns.LogLevel, LevelFlags.None}
 			});
 		}
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
 		{
 			if (section.IsReset)
 			{
@@ -62,41 +65,41 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 			else
 			{
-				AddRange(logFile, section);
+				AddRange(logSource, section);
 			}
 		}
 
-		private void AddRange(ILogFile logFile, LogFileSection section)
+		private void AddRange(ILogSource logSource, LogFileSection section)
 		{
-			var previousEntry = _entries.Count > 0
-				? (IReadOnlyLogEntry)_entries[_entries.Count - 1]
+			var previousEntry = _buffers.Count > 0
+				? (IReadOnlyLogEntry)_buffers[_buffers.Count - 1]
 				: _emptyLine;
 
-			var entries = logFile.GetEntries(section, _entries.Columns);
+			var entries = logSource.GetEntries(section, _buffers.Columns);
 			for (int i = 0; i < section.Count; ++i)
 			{
 				var entry = entries[i];
 				IncrementCount(entry, previousEntry);
 				previousEntry = entry;
 			}
-			_entries.AddRange(entries);
+			_buffers.AddRange(entries);
 		}
 
 		private void RemoveRange(LogFileSection section)
 		{
-			var previousEntry = _entries.Count > 0
-				? (IReadOnlyLogEntry)_entries[_entries.Count - 1]
+			var previousEntry = _buffers.Count > 0
+				? (IReadOnlyLogEntry)_buffers[_buffers.Count - 1]
 				: _emptyLine;
 
 			for (int i = 0; i < section.Count; ++i)
 			{
 				LogLineIndex index = section.Index + i;
-				IReadOnlyLogEntry entry = _entries[(int) index];
+				IReadOnlyLogEntry entry = _buffers[(int) index];
 				DecrementCount(entry, previousEntry);
 				previousEntry = entry;
 			}
 
-			_entries.RemoveRange((int) section.Index, section.Count);
+			_buffers.RemoveRange((int) section.Index, section.Count);
 		}
 
 		private void IncrementCount(IReadOnlyLogEntry currentLogLine, IReadOnlyLogEntry previousLogLine)
@@ -241,7 +244,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void Clear()
 		{
-			_entries.Clear();
+			_buffers.Clear();
 			Fatals.Reset();
 			Errors.Reset();
 			Warnings.Reset();
@@ -258,7 +261,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			Clear();
 
 			// https://github.com/Kittyfisto/Tailviewer/issues/282
-			_entries = null;
+			_buffers = null;
 		}
 
 		internal sealed class Counter

@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
 {
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestCtor1()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			using (var search = new LogFileSearch(_scheduler, logFile, "foobar", TimeSpan.Zero))
 			{
 				search.Matches.Should().BeEmpty("because the source is empty");
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestDispose()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("What's a foobar?");
 			LogFileSearch search;
 			using (search = new LogFileSearch(_scheduler, logFile, "foobar", TimeSpan.Zero))
@@ -68,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestCtor2()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello World!");
 			using (var search = new LogFileSearch(_scheduler, logFile, "l", TimeSpan.Zero))
 			{
@@ -88,7 +88,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestAddListener1()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello World!");
 			using (var search = new LogFileSearch(_scheduler, logFile, "l", TimeSpan.Zero))
 			{

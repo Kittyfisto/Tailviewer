@@ -2,7 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles.Merged;
+using Tailviewer.Core.Sources.Merged;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 {
@@ -19,7 +19,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		[Test]
 		public void TestOptimizeOneSourceAppendReset()
 		{
-			var source = new Mock<ILogFile>();
+			var source = new Mock<ILogSource>();
 			var input = new[]
 			{
 				new MergedLogFilePendingModification(source.Object, new LogFileSection(1, 2)),
@@ -34,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		[Test]
 		public void TestOptimizeOneSourceAppendResetTwice()
 		{
-			var source = new Mock<ILogFile>();
+			var source = new Mock<ILogSource>();
 			var input = new[]
 			{
 				new MergedLogFilePendingModification(source.Object, new LogFileSection(1, 2)),
@@ -51,8 +51,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		[Test]
 		public void TestOptimizeTwoSourcesAppendReset()
 		{
-			var source1 = new Mock<ILogFile>();
-			var source2 = new Mock<ILogFile>();
+			var source1 = new Mock<ILogSource>();
+			var source2 = new Mock<ILogSource>();
 			var input = new[]
 			{
 				new MergedLogFilePendingModification(source1.Object, new LogFileSection(1, 2)),
@@ -68,8 +68,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		[Test]
 		public void TestOptimizeTwoSourcesAppendReset2()
 		{
-			var source1 = new Mock<ILogFile>();
-			var source2 = new Mock<ILogFile>();
+			var source1 = new Mock<ILogSource>();
+			var source2 = new Mock<ILogSource>();
 			var input = new[]
 			{
 				new MergedLogFilePendingModification(source1.Object, new LogFileSection(1, 2)),

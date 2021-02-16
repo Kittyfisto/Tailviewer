@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {
@@ -31,7 +30,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return Columns.Message; }
+			get { return LogColumns.Message; }
 		}
 
 		public void MatchInto(Match match, SerilogEntry logEntry)

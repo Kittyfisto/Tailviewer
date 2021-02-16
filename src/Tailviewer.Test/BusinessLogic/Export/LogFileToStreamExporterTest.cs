@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.Export
 {
@@ -19,7 +19,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		{
 			new Action(() => new LogFileToStreamExporter(null, new MemoryStream()))
 				.Should().Throw<ArgumentNullException>();
-			new Action(() => new LogFileToStreamExporter(new Mock<ILogFile>().Object, null))
+			new Action(() => new LogFileToStreamExporter(new Mock<ILogSource>().Object, null))
 				.Should().Throw<ArgumentNullException>();
 		}
 
@@ -27,7 +27,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestExportEmpty()
 		{
 			var stream = new MemoryStream();
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			var exporter = new LogFileToStreamExporter(logFile, stream);
 			new Action(() => exporter.Export()).Should().NotThrow();
 			GetString(stream).Should().Be(string.Empty, "because an empty log file should result in an empty export");
@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestExportOneLine()
 		{
 			var stream = new MemoryStream();
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello, World!", LevelFlags.Other);
 			var exporter = new LogFileToStreamExporter(logFile, stream);
 			new Action(() => exporter.Export()).Should().NotThrow();
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestTwoLines()
 		{
 			var stream = new MemoryStream();
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello,", LevelFlags.Other);
 			logFile.AddEntry("World!", LevelFlags.Other);
 			var exporter = new LogFileToStreamExporter(logFile, stream);

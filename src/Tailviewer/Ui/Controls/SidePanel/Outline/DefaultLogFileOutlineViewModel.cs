@@ -6,8 +6,7 @@ using System.Reflection;
 using System.Windows;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Ui.Properties;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -16,16 +15,16 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ILogFile _logFile;
-		private readonly LogFilePropertyList _propertyValues;
+		private readonly ILogSource _logSource;
+		private readonly PropertiesBufferList _propertyValues;
 		private readonly Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter> _presentersByProperty;
 		private readonly ObservableCollection<IPropertyPresenter> _presenters;
 		private readonly IPropertyPresenterPlugin _registry;
 
-		public DefaultLogFileOutlineViewModel(IServiceContainer serviceContainer, ILogFile logFile)
+		public DefaultLogFileOutlineViewModel(IServiceContainer serviceContainer, ILogSource logSource)
 		{
-			_logFile = logFile;
-			_propertyValues = new LogFilePropertyList();
+			_logSource = logSource;
+			_propertyValues = new PropertiesBufferList();
 			_presentersByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter>();
 			_presenters = new ObservableCollection<IPropertyPresenter>();
 			_registry = serviceContainer.TryRetrieve<IPropertyPresenterPlugin>();
@@ -42,7 +41,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public void Update()
 		{
-			_logFile.GetAllProperties(_propertyValues);
+			_logSource.GetAllProperties(_propertyValues);
 			foreach (var property in _propertyValues.Properties)
 			{
 				if (!_presentersByProperty.TryGetValue(property, out var presenter

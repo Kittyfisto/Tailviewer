@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
@@ -37,11 +37,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			}
 		}
 
-		public ILogFileIssueAnalyser CreateAnalyser(IServiceContainer services, ILogFile logFile)
+		public ILogFileIssueAnalyser CreateAnalyser(IServiceContainer services, ILogSource logSource)
 		{
 			try
 			{
-				var analyser = _inner.CreateAnalyser(services, logFile);
+				var analyser = _inner.CreateAnalyser(services, logSource);
 				return new NoThrowLogFileIssueAnalyser(analyser);
 			}
 			catch (Exception e)

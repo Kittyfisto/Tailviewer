@@ -3,7 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -18,18 +18,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCreateDefault()
 		{
 			var entry = CreateDefault();
-			entry.Columns.Should().Equal(Columns.Minimum);
-			entry.DeltaTime.Should().Be(Columns.DeltaTime.DefaultValue);
-			entry.ElapsedTime.Should().Be(Columns.ElapsedTime.DefaultValue);
-			entry.Index.Should().Be(Columns.Index.DefaultValue);
-			entry.LineNumber.Should().Be(Columns.LineNumber.DefaultValue);
-			entry.LogEntryIndex.Should().Be(Columns.LogEntryIndex.DefaultValue);
-			entry.LogLevel.Should().Be(Columns.LogLevel.DefaultValue);
-			entry.OriginalIndex.Should().Be(Columns.OriginalIndex.DefaultValue);
-			entry.OriginalLineNumber.Should().Be(Columns.OriginalLineNumber.DefaultValue);
-			entry.OriginalDataSourceName.Should().Be(Columns.OriginalDataSourceName.DefaultValue);
-			entry.RawContent.Should().Be(Columns.RawContent.DefaultValue);
-			entry.Timestamp.Should().Be(Columns.Timestamp.DefaultValue);
+			entry.Columns.Should().Equal(LogColumns.Minimum);
+			entry.DeltaTime.Should().Be(LogColumns.DeltaTime.DefaultValue);
+			entry.ElapsedTime.Should().Be(LogColumns.ElapsedTime.DefaultValue);
+			entry.Index.Should().Be(LogColumns.Index.DefaultValue);
+			entry.LineNumber.Should().Be(LogColumns.LineNumber.DefaultValue);
+			entry.LogEntryIndex.Should().Be(LogColumns.LogEntryIndex.DefaultValue);
+			entry.LogLevel.Should().Be(LogColumns.LogLevel.DefaultValue);
+			entry.OriginalIndex.Should().Be(LogColumns.OriginalIndex.DefaultValue);
+			entry.OriginalLineNumber.Should().Be(LogColumns.OriginalLineNumber.DefaultValue);
+			entry.OriginalDataSourceName.Should().Be(LogColumns.OriginalDataSourceName.DefaultValue);
+			entry.RawContent.Should().Be(LogColumns.RawContent.DefaultValue);
+			entry.Timestamp.Should().Be(LogColumns.Timestamp.DefaultValue);
 			new Action(() =>
 			{
 				var unused = entry.SourceId;

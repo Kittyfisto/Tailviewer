@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 {
@@ -14,9 +14,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 	{
 		#region Overrides of AbstractAggregatedLogFileTest
 
-		protected override ILogFile Create(ITaskScheduler taskScheduler, ILogFile source)
+		protected override ILogSource Create(ITaskScheduler taskScheduler, ILogSource source)
 		{
-			return new FilteredLogFile(taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug));
+			return new FilteredLogSource(taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug));
 		}
 
 		#endregion

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Formats.Serilog.Matchers;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {

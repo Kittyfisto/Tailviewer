@@ -6,13 +6,13 @@ using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.Bookmarks
 {
 	public sealed class BookmarkCollection
-		: ILogFileListener
+		: ILogSourceListener
 		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly Dictionary<Bookmark, BookmarkSettings> _bookmarks;
 		private IReadOnlyList<Bookmark> _roBookmarks;
-		private readonly Dictionary<ILogFile, IDataSource> _dataSourcesByLogFile;
+		private readonly Dictionary<ILogSource, IDataSource> _dataSourcesByLogFile;
 		private readonly object _syncRoot;
 		private readonly IBookmarks _settings;
 
@@ -30,7 +30,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 			_settings = bookmarks ?? throw new ArgumentNullException(nameof(bookmarks));
 			_maximumWaitTime = maximumWaitTime;
 			_syncRoot = new object();
-			_dataSourcesByLogFile = new Dictionary<ILogFile, IDataSource>();
+			_dataSourcesByLogFile = new Dictionary<ILogSource, IDataSource>();
 			_bookmarks = new Dictionary<Bookmark, BookmarkSettings>();
 			Update();
 		}
@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		{
 			lock (_syncRoot)
 			{
-				var logFile = dataSource.UnfilteredLogFile;
+				var logFile = dataSource.UnfilteredLogSource;
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 				{
 					_dataSourcesByLogFile.Add(logFile, dataSource);
@@ -65,7 +65,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 
 		public void RemoveDataSource(IDataSource dataSource)
 		{
-			var logFile = dataSource.UnfilteredLogFile;
+			var logFile = dataSource.UnfilteredLogSource;
 			logFile.RemoveListener(this);
 
 			lock (_syncRoot)
@@ -77,17 +77,17 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 			}
 		}
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
 		{
 			lock (_syncRoot)
 			{
-				if (!_dataSourcesByLogFile.ContainsKey(logFile))
+				if (!_dataSourcesByLogFile.ContainsKey(logSource))
 					return;
 
 				if (!section.IsReset)
 					return;
 
-				var toRemove = _bookmarks.Keys.Where(x => x.DataSource.UnfilteredLogFile == logFile).ToList();
+				var toRemove = _bookmarks.Keys.Where(x => x.DataSource.UnfilteredLogSource == logSource).ToList();
 				Remove(toRemove);
 				Update();
 			}
@@ -110,14 +110,14 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		{
 			lock (_syncRoot)
 			{
-				var logFile = dataSource?.UnfilteredLogFile;
+				var logFile = dataSource?.UnfilteredLogSource;
 				if (logFile == null)
 					return null;
 
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 					return null;
 
-				if (logLineIndex >= logFile.GetProperty(Properties.LogEntryCount))
+				if (logLineIndex >= logFile.GetProperty(GeneralProperties.LogEntryCount))
 					return null;
 
 				Bookmark bookmark = new Bookmark(dataSource, logLineIndex);

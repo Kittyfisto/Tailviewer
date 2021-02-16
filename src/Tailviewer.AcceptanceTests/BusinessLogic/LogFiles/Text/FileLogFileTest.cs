@@ -7,8 +7,9 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
@@ -19,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		private ManualTaskScheduler _taskScheduler;
 		private Mock<ITextLogFileParserPlugin2> _parser;
 		private Mock<ILogFileFormatMatcher> _formatMatcher;
-		private Mock<ILogFile> _textLogSource;
+		private Mock<ILogSource> _textLogSource;
 
 		[SetUp]
 		public void Setup()
@@ -27,8 +28,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_services = new ServiceContainer();
 			_taskScheduler = new ManualTaskScheduler();
 			_parser = new Mock<ITextLogFileParserPlugin2>();
-			_textLogSource = new Mock<ILogFile>();
-			_parser.Setup(x => x.CreateParser(It.IsAny<IServiceContainer>(), It.IsAny<ILogFile>()))
+			_textLogSource = new Mock<ILogSource>();
+			_parser.Setup(x => x.CreateParser(It.IsAny<IServiceContainer>(), It.IsAny<ILogSource>()))
 			       .Returns(_textLogSource.Object);
 			_formatMatcher = new Mock<ILogFileFormatMatcher>();
 
@@ -37,9 +38,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher.Object);
 		}
 
-		private FileLogFile Create(string fileName)
+		private SourceLogSource Create(string fileName)
 		{
-			return new FileLogFile(_services, fileName, TimeSpan.Zero);
+			return new SourceLogSource(_services, fileName, TimeSpan.Zero);
 		}
 
 		[Test]
@@ -47,10 +48,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		{
 			using (var logFile = Create(@"TestData\Encodings\utf8_w_bom.txt"))
 			{
-				logFile.GetProperty(Properties.Encoding).Should().BeNull();
+				logFile.GetProperty(GeneralProperties.Encoding).Should().BeNull();
 
 				_taskScheduler.RunOnce();
-				logFile.GetProperty(Properties.Encoding).Should().Be(Encoding.UTF8);
+				logFile.GetProperty(GeneralProperties.Encoding).Should().Be(Encoding.UTF8);
 			}
 		}
 	}

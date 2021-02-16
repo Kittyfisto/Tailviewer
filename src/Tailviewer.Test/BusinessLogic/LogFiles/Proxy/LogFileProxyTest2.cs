@@ -2,7 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 {
@@ -12,9 +12,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogFile CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
 		{
-			return new LogFileProxy(taskScheduler, TimeSpan.Zero);
+			return new LogSourceProxy(taskScheduler, TimeSpan.Zero);
 		}
 
 		#endregion

@@ -2,7 +2,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -36,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.RawContent, "Starbuck"}
+				{LogColumns.RawContent, "Starbuck"}
 			};
 			var entry = new LogEntry(values);
 			var equalEntry = new LogEntry(values);
@@ -51,11 +52,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.RawContent, "Starbuck"}
+				{LogColumns.RawContent, "Starbuck"}
 			};
 			var otherValues = new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.RawContent, "Apollo"}
+				{LogColumns.RawContent, "Apollo"}
 			};
 			var entry = new LogEntry(values);
 			var otherEntry = new LogEntry(otherValues);
@@ -68,11 +69,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualBothEmpty_DifferentColumns()
 		{
-			var entry = new LogEntry(Columns.RawContent);
-			var otherEntry = new LogEntry(Columns.RawContent, Columns.Timestamp);
+			var entry = new LogEntry(LogColumns.RawContent);
+			var otherEntry = new LogEntry(LogColumns.RawContent, LogColumns.Timestamp);
 			Equals(entry, otherEntry).Should().BeFalse();
 
-			var equalReadOnlyEntry = new ReadOnlyLogEntry(Columns.RawContent, Columns.Timestamp);
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(LogColumns.RawContent, LogColumns.Timestamp);
 			Equals(entry, equalReadOnlyEntry).Should().BeFalse();
 		}
 	}

@@ -4,8 +4,7 @@ using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Ui.Properties;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -24,22 +23,22 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 			_wellKnownDisplayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
-				{ Core.LogFiles.Properties.LogEntryCount, "Count" },
-				{ Core.LogFiles.Properties.Name, "Name" },
-				{ Core.LogFiles.Properties.StartTimestamp, "First Timestamp" },
-				{ Core.LogFiles.Properties.EndTimestamp, "Last Timestamp" },
-				{ Core.LogFiles.Properties.Duration, "Duration" },
-				{ Core.LogFiles.Properties.LastModified, "Last Modified" },
-				{ Core.LogFiles.Properties.Created, "Created" },
-				{ Core.LogFiles.Properties.Size, "Size" },
+				{ GeneralProperties.LogEntryCount, "Count" },
+				{ GeneralProperties.Name, "Name" },
+				{ GeneralProperties.StartTimestamp, "First Timestamp" },
+				{ GeneralProperties.EndTimestamp, "Last Timestamp" },
+				{ GeneralProperties.Duration, "Duration" },
+				{ GeneralProperties.LastModified, "Last Modified" },
+				{ GeneralProperties.Created, "Created" },
+				{ GeneralProperties.Size, "Size" },
 
-				{ Core.LogFiles.Properties.PercentageProcessed, "Processed" },
-				{ Core.LogFiles.Properties.Format, "Format" },
-				{ Core.LogFiles.Properties.Encoding, "Encoding" }
+				{ GeneralProperties.PercentageProcessed, "Processed" },
+				{ GeneralProperties.Format, "Format" },
+				{ GeneralProperties.Encoding, "Encoding" }
 			};
 			_wellKnownPresenters = new Dictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>>
 			{
-				{Core.LogFiles.Properties.Encoding, displayName => new EncodingPropertyPresenter(displayName)}
+				{GeneralProperties.Encoding, displayName => new EncodingPropertyPresenter(displayName)}
 			};
 		}
 

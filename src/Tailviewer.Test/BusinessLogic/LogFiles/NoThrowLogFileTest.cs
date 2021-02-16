@@ -5,7 +5,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -13,16 +15,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	public sealed class NoThrowLogFileTest
 		: AbstractLogFileTest
 	{
-		private Mock<ILogFile> _logFile;
+		private Mock<ILogSource> _logFile;
 		private string _pluginName;
-		private NoThrowLogFile _proxy;
+		private NoThrowLogSource _proxy;
 
 		[SetUp]
 		public void Setup()
 		{
-			_logFile = new Mock<ILogFile>();
+			_logFile = new Mock<ILogSource>();
 			_pluginName = "Buggy plugin";
-			_proxy = new NoThrowLogFile(_logFile.Object, _pluginName);
+			_proxy = new NoThrowLogSource(_logFile.Object, _pluginName);
 		}
 
 		[Test]
@@ -36,53 +38,53 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestStartTimestamp()
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.StartTimestamp)).Throws<SystemException>();
-			_proxy.GetProperty(Properties.StartTimestamp).Should().BeNull();
-			_logFile.Verify(x => x.GetProperty(Properties.StartTimestamp), Times.Once);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.StartTimestamp)).Throws<SystemException>();
+			_proxy.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
+			_logFile.Verify(x => x.GetProperty(GeneralProperties.StartTimestamp), Times.Once);
 		}
 
 		[Test]
 		public void TestLastModified()
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.LastModified)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.LastModified)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(Properties.LastModified);
+				var unused = _proxy.GetProperty(GeneralProperties.LastModified);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(Properties.LastModified), Times.Once);
+			_logFile.Verify(x => x.GetProperty(GeneralProperties.LastModified), Times.Once);
 		}
 
 		[Test]
 		public void TestExists()
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(Properties.EmptyReason);
+				var unused = _proxy.GetProperty(GeneralProperties.EmptyReason);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(Properties.EmptyReason), Times.Once);
+			_logFile.Verify(x => x.GetProperty(GeneralProperties.EmptyReason), Times.Once);
 		}
 
 		[Test]
 		public void TestCount()
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(Properties.LogEntryCount);
+				var unused = _proxy.GetProperty(GeneralProperties.LogEntryCount);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(Properties.LogEntryCount), Times.Once);
+			_logFile.Verify(x => x.GetProperty(GeneralProperties.LogEntryCount), Times.Once);
 		}
 
 		[Test]
 		public void TestAddListener()
 		{
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>())).Throws<SystemException>();
-			var listener = new Mock<ILogFileListener>().Object;
+			_logFile.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>())).Throws<SystemException>();
+			var listener = new Mock<ILogSourceListener>().Object;
 			var maximumWaitTime = TimeSpan.FromSeconds(42);
 			var maximumLineCount = 9001;
 			new Action(() => _proxy.AddListener(listener, maximumWaitTime, maximumLineCount)).Should().NotThrow();
-			_logFile.Verify(x => x.AddListener(It.Is<ILogFileListener>(y => y == listener),
+			_logFile.Verify(x => x.AddListener(It.Is<ILogSourceListener>(y => y == listener),
 				It.Is<TimeSpan>(y => y == maximumWaitTime),
 				It.Is<int>(y => y == maximumLineCount)), Times.Once);
 		}
@@ -90,10 +92,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestRemoveListener()
 		{
-			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>())).Throws<SystemException>();
-			var listener = new Mock<ILogFileListener>().Object;
+			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogSourceListener>())).Throws<SystemException>();
+			var listener = new Mock<ILogSourceListener>().Object;
 			new Action(() => _proxy.RemoveListener(listener)).Should().NotThrow();
-			_logFile.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => y == listener)), Times.Once);
+			_logFile.Verify(x => x.RemoveListener(It.Is<ILogSourceListener>(y => y == listener)), Times.Once);
 		}
 
 		[Test]
@@ -114,10 +116,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = new string[9101];
 			var destinationIndex = 9001;
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
-			new Action(() => _proxy.GetColumn(section, Columns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
+			new Action(() => _proxy.GetColumn(section, LogColumns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 Columns.RawContent,
+			                                 LogColumns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
 			                                 queryOptions),
@@ -132,10 +134,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
-			new Action(() => _proxy.GetColumn(indices, Columns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
+			new Action(() => _proxy.GetColumn(indices, LogColumns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<IColumnDescriptor<string>>(y => Equals(y, Columns.RawContent)),
+			                                 It.Is<IColumnDescriptor<string>>(y => Equals(y, LogColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 101),
 			                                 queryOptions),
@@ -145,16 +147,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetEntries1()
 		{
-			_logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogEntries>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
-			var buffer = new Mock<ILogEntries>().Object;
+			var buffer = new Mock<ILogBuffer>().Object;
 			var destinationIndex = 9001;
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 			new Action(() => _proxy.GetEntries(section, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),
+			                                 It.Is<ILogBuffer>(y => ReferenceEquals(y, buffer)),
 			                                 destinationIndex,
 			                                 queryOptions),
 			                Times.Once);
@@ -163,16 +165,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetEntries2()
 		{
-			_logFile.Setup(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogEntries>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] { 1, 2, 3 };
-			var buffer = new Mock<ILogEntries>().Object;
+			var buffer = new Mock<ILogBuffer>().Object;
 			var destinationIndex = 101;
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 			new Action(() => _proxy.GetEntries(indices, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),
+			                                 It.Is<ILogBuffer>(y => ReferenceEquals(y, buffer)),
 			                                 destinationIndex,
 			                                 queryOptions),
 			                Times.Once);
@@ -181,8 +183,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumns1()
 		{
-			_logFile.Setup(x => x.Columns).Returns(new[] {Columns.DeltaTime, Columns.ElapsedTime});
-			_proxy.Columns.Should().Equal(Columns.DeltaTime, Columns.ElapsedTime);
+			_logFile.Setup(x => x.Columns).Returns(new[] {LogColumns.DeltaTime, LogColumns.ElapsedTime});
+			_proxy.Columns.Should().Equal(LogColumns.DeltaTime, LogColumns.ElapsedTime);
 			_logFile.Verify(x => x.Columns, Times.Once);
 		}
 
@@ -194,16 +196,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Verify(x => x.Columns, Times.Once);
 		}
 
-		protected override ILogFile CreateEmpty()
+		protected override ILogSource CreateEmpty()
 		{
-			var source = new InMemoryLogFile();
-			return new NoThrowLogFile(source, "");
+			var source = new InMemoryLogSource();
+			return new NoThrowLogSource(source, "");
 		}
 
-		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
-			var source = new InMemoryLogFile(content);
-			return new NoThrowLogFile(source, "");
+			var source = new InMemoryLogSource(content);
+			return new NoThrowLogSource(source, "");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins.Description
 {
@@ -67,7 +68,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		string Error { get; }
 
 		/// <summary>
-		///     A map of all <see cref="BusinessLogic.Plugins.IPlugin"/> implementations offered by the plugin.
+		///     A map of all <see cref="IPlugin"/> implementations offered by the plugin.
 		/// </summary>
 		IReadOnlyList<IPluginImplementationDescription> PluginImplementations { get; }
 

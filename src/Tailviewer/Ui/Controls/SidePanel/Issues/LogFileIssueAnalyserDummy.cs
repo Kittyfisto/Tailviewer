@@ -1,4 +1,4 @@
-﻿using Tailviewer.BusinessLogic.Plugins.Issues;
+﻿using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {

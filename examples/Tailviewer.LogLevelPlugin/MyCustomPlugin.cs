@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.LogLevelPlugin
 {
@@ -33,7 +32,7 @@ namespace Tailviewer.LogLevelPlugin
 			}
 		}
 
-		public ILogFile Open(IServiceContainer services, string fileName)
+		public ILogSource Open(IServiceContainer services, string fileName)
 		{
 			// Registering an instance which implements ILogLineTranslator causes
 			// the call to CreateTextLogFile to use this translator to translate every

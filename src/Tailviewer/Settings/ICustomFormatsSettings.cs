@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings

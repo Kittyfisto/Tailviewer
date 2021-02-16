@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Formats.Serilog
 {

@@ -3,8 +3,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 
@@ -16,13 +16,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogFile CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance(taskScheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
-			return new TextLogFile(serviceContainer, "");
+			return new TextLogSource(serviceContainer, "");
 		}
 
 		#endregion

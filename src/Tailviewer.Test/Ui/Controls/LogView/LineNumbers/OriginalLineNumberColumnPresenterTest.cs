@@ -6,7 +6,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
@@ -17,14 +19,14 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 	public sealed class OriginalLineNumberColumnPresenterTest
 	{
 		private OriginalLineNumberColumnPresenter _column;
-		private InMemoryLogFile _logFile;
+		private InMemoryLogSource _logSource;
 
 		[SetUp]
 		public void Setup()
 		{
 			_column = new OriginalLineNumberColumnPresenter(TextSettings.Default);
 
-			_logFile = new InMemoryLogFile();
+			_logSource = new InMemoryLogSource();
 		}
 
 		[Test]
@@ -33,7 +35,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			const int count = 10;
 			AddLines(count);
 
-			_column.FetchValues(_logFile, new LogFileSection(0, count), 0);
+			_column.FetchValues(_logSource, new LogFileSection(0, count), 0);
 			var numbers = _column.LineNumbers;
 			numbers.Should().NotBeNull();
 			numbers.Should().HaveCount(count);
@@ -44,11 +46,11 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		[Description("Verifies that the canvas displays the original line numbers when displaying the section of a filtered log file")]
 		public void TestUpdateLineNumbers2()
 		{
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(4);
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(4);
 			logFile.Setup(x => x.GetProperty(TextProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-			                               It.Is<IColumnDescriptor<int>>(y => y == Columns.OriginalLineNumber),
+			                               It.Is<IColumnDescriptor<int>>(y => y == LogColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
 			                               It.IsAny<LogFileQueryOptions>()))
@@ -71,7 +73,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		{
 			for (int i = 0; i < count; ++i)
 			{
-				_logFile.AddEntry("", LevelFlags.Fatal);
+				_logSource.AddEntry("", LevelFlags.Fatal);
 			}
 		}
 	}

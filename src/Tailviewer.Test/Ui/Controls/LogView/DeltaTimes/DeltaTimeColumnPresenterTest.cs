@@ -14,13 +14,13 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 	public sealed class DeltaTimeColumnPresenterTest
 	{
 		private DeltaTimeColumnPresenter _column;
-		private Mock<ILogFile> _logFile;
+		private Mock<ILogSource> _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
 			_column = new DeltaTimeColumnPresenter(TextSettings.Default);
-			_logFile = new Mock<ILogFile>();
+			_logFile = new Mock<ILogSource>();
 		}
 
 		[Test]

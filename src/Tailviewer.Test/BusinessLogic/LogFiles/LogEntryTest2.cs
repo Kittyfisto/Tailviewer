@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {

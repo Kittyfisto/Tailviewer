@@ -9,7 +9,9 @@ using System.Windows.Media;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.DataSource
@@ -114,11 +116,11 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 				}
 
 				_dataSourcesPerLogLine.Clear();
-				var entries = new LogEntryArray(visibleSection.Count, new[] {Columns.SourceId});
-				multi.FilteredLogFile.GetEntries(visibleSection, entries);
+				var entries = new LogBufferArray(visibleSection.Count, new[] {LogColumns.SourceId});
+				multi.FilteredLogSource.GetEntries(visibleSection, entries);
 				foreach (var logEntry in entries)
 				{
-					var dataSourceId = (int) logEntry.GetValue(Columns.SourceId);
+					var dataSourceId = (int) logEntry.GetValue(LogColumns.SourceId);
 					if (dataSourceId >= 0 && dataSourceId < texts.Length)
 					{
 						var text = texts[dataSourceId];

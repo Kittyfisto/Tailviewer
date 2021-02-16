@@ -9,7 +9,8 @@ using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -40,7 +41,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{}
 
 		/// <inheritdoc />
-		public ILogFile Open(string filePath, out IPluginDescription pluginDescription)
+		public ILogSource Open(string filePath, out IPluginDescription pluginDescription)
 		{
 			var plugin = FindSupportingPlugin(filePath, out pluginDescription);
 			if (plugin != null)
@@ -49,7 +50,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (logFile != null)
 				{
 					var pluginName = plugin.GetType().Assembly.FullName;
-					return new NoThrowLogFile(logFile, pluginName);
+					return new NoThrowLogSource(logFile, pluginName);
 				}
 			}
 
@@ -125,7 +126,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		private ILogFile OpenWith(string fileName, IFileFormatPlugin plugin)
+		private ILogSource OpenWith(string fileName, IFileFormatPlugin plugin)
 		{
 			try
 			{

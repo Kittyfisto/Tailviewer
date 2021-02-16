@@ -9,7 +9,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 
@@ -25,10 +26,10 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			return new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.Index, (LogLineIndex)lineIndex },
-				{Columns.LogEntryIndex, (LogEntryIndex)logEntryIndex },
-				{Columns.RawContent, message },
-				{Columns.LogLevel, flags }
+				{LogColumns.Index, (LogLineIndex)lineIndex },
+				{LogColumns.LogEntryIndex, (LogEntryIndex)logEntryIndex },
+				{LogColumns.RawContent, message },
+				{LogColumns.LogLevel, flags }
 			});
 		}
 

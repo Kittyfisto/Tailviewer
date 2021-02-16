@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -11,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		protected override IReadOnlyLogEntry CreateDefault()
 		{
 			// TODO: Swap
-			var buffer = new LogEntryList(Columns.Minimum);
+			var buffer = new LogBufferList(LogColumns.Minimum);
 			buffer.AddEmpty();
 			return buffer[0];
 		}
@@ -19,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		protected override IReadOnlyLogEntry CreateEmpty()
 		{
 			// TODO: Swap
-			var buffer = new LogEntryList();
+			var buffer = new LogBufferList();
 			buffer.AddEmpty();
 			return buffer[0];
 		}

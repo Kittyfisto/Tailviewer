@@ -7,8 +7,10 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
@@ -21,7 +23,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		private string _fname;
 		private FileStream _stream;
 		private StreamWriter _writer;
-		private TextLogFile _logFile;
+		private TextLogSource _logSource;
 		private DataSource _settings;
 
 		[SetUp]
@@ -34,7 +36,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
-			_logFile = Create(_fname);
+			_logSource = Create(_fname);
 
 			_settings = new DataSource(_fname)
 			{
@@ -42,13 +44,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			};
 		}
 
-		private TextLogFile Create(string fileName)
+		private TextLogSource Create(string fileName)
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
-			return new TextLogFile(serviceContainer, fileName);
+			return new TextLogSource(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -56,14 +58,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite1([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("ssss");
 				_writer.Flush();
 
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
-				var line = dataSource.FilteredLogFile.GetEntry(0);
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				var line = dataSource.FilteredLogSource.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
 				line.RawContent.Should().Be("ssss");
@@ -76,14 +78,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite2([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
 
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
-				var line = dataSource.FilteredLogFile.GetEntry(0);
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				var line = dataSource.FilteredLogSource.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
 				line.RawContent.Should().Be("Hello World");
@@ -96,19 +98,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite3([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
 
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 
 				_stream.SetLength(0);
 				_stream.Flush();
 
 				_scheduler.Run(3);
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the file on disk has been reset to a length of 0");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the file on disk has been reset to a length of 0");
 			}
 		}
 
@@ -117,7 +119,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadOneLine3([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("A");
 				_writer.Flush();
@@ -131,8 +133,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.Flush();
 				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(1, "because only a single line has been written to disk");
-				var line = dataSource.FilteredLogFile.GetEntry(0);
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because only a single line has been written to disk");
+				var line = dataSource.FilteredLogSource.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
 				line.RawContent.Should().Be("ABC");
@@ -146,24 +148,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadMultiline()
 		{
 			_settings.IsSingleLine = false;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");
 				_writer.Flush();
 				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
-				var line1 = dataSource.FilteredLogFile.GetEntry(0);
+				var line1 = dataSource.FilteredLogSource.GetEntry(0);
 				line1.Index.Should().Be(0);
 				line1.LogEntryIndex.Should().Be(0);
 				line1.RawContent.Should().Be("2015-10-07 19:50:58,981 INFO Starting");
 				line1.LogLevel.Should().Be(LevelFlags.Info);
 				line1.Timestamp.Should().Be(t);
 
-				var line2 = dataSource.FilteredLogFile.GetEntry(1);
+				var line2 = dataSource.FilteredLogSource.GetEntry(1);
 				line2.Index.Should().Be(1);
 				line2.LogEntryIndex.Should().Be(0);
 				line2.RawContent.Should().Be("the application...");
@@ -177,24 +179,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadSingleLine()
 		{
 			_settings.IsSingleLine = true;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");
 				_writer.Flush();
 				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
-				var line1 = dataSource.FilteredLogFile.GetEntry(0);
+				var line1 = dataSource.FilteredLogSource.GetEntry(0);
 				line1.Index.Should().Be(0);
 				line1.LogEntryIndex.Should().Be(0);
 				line1.RawContent.Should().Be("2015-10-07 19:50:58,981 INFO Starting");
 				line1.LogLevel.Should().Be(LevelFlags.Info);
 				line1.Timestamp.Should().Be(t);
 
-				var line2 = dataSource.FilteredLogFile.GetEntry(1);
+				var line2 = dataSource.FilteredLogSource.GetEntry(1);
 				line2.Index.Should().Be(1);
 				line2.LogEntryIndex.Should().Be(1);
 				line2.RawContent.Should().Be("the application...");

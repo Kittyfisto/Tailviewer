@@ -10,8 +10,10 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -35,13 +37,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
-		private TextLogFile Create(string fileName)
+		private TextLogSource Create(string fileName)
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
-			return new TextLogFile(serviceContainer, fileName);
+			return new TextLogSource(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -49,12 +51,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
+				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
 
-				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
+				using (FilteredLogSource filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
 				{
-					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
-					filtered.GetProperty(Properties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
+					filtered.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 					var entries = filtered.GetEntries(new LogFileSection(0, 5));
 					entries[0].Index.Should().Be(0);
@@ -86,16 +88,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
+				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
 
-				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
+				using (FilteredLogSource filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
 				{
-					var listener = new Mock<ILogFileListener>();
+					var listener = new Mock<ILogSourceListener>();
 					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-							.Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+							.Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
 
-					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
+					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 
 					filtered.AddListener(listener.Object, TimeSpan.Zero, 1);
 
@@ -125,20 +127,20 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var file = Create(fname))
 			{
-				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
-				file.Property(x=> x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				file.Property(x=> x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
-				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
+				using (FilteredLogSource filtered = file.AsFiltered(_scheduler, null, Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
 				{
-					var listener = new Mock<ILogFileListener>();
+					var listener = new Mock<ILogSourceListener>();
 					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-							.Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+							.Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
-					filtered.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-					var entries = filtered.GetEntries(new LogFileSection(0, filtered.GetProperty(Properties.LogEntryCount)));
+					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+					var entries = filtered.GetEntries(new LogFileSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
 					entries[0].RawContent.Should().Be("INFO - Test");
@@ -149,8 +151,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 						stream.SetLength(0);
 					}
 
-					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
-					filtered.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
 					sections.Should().EndWith(LogFileSection.Reset);
 				}
 			}

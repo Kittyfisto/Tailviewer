@@ -54,7 +54,7 @@ namespace Tailviewer.Test.Ui
 			using (
 				var source = new SingleDataSource(_scheduler,
 					new DataSource {Id = DataSourceId.CreateNew(), File = @"C:\temp\foo.txt", SearchTerm = "foobar"},
-					new Mock<ILogFile>().Object, TimeSpan.Zero))
+					new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
 				source.SearchTerm.Should().Be("foobar");
 
@@ -71,7 +71,7 @@ namespace Tailviewer.Test.Ui
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowDeltaTimes = showDeltaTimes
-			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
@@ -86,7 +86,7 @@ namespace Tailviewer.Test.Ui
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowElapsedTime = showElapsedTime
-			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowElapsedTime.Should().Be(showElapsedTime);
@@ -101,7 +101,7 @@ namespace Tailviewer.Test.Ui
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowElapsedTime = showElapsedTime
-			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.Ui
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowDeltaTimes = showDeltaTimes
-			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 

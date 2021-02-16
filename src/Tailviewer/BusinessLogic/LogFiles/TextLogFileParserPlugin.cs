@@ -6,6 +6,7 @@ using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Parsers;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {

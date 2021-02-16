@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -21,8 +22,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		///    rather than a HashSet so that we don't have rely on undocumented behavior.
 		/// </remarks>
 		private readonly List<IDataSource> _dataSources;
-		private readonly LogFileProxy _unfilteredLogFile;
-		private MergedLogFile _logFile;
+		private readonly LogSourceProxy _unfilteredLogSource;
+		private MergedLogSource _logSource;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
@@ -33,7 +34,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_dataSources = new List<IDataSource>();
-			_unfilteredLogFile = new LogFileProxy(taskScheduler, TimeSpan.Zero);
+			_unfilteredLogSource = new LogSourceProxy(taskScheduler, TimeSpan.Zero);
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
 			OnUnfilteredLogFileChanged();
@@ -64,12 +65,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public override IPluginDescription TranslationPlugin => null;
 
-		public override ILogFile OriginalLogFile
+		public override ILogSource OriginalLogSource
 		{
 			get { throw new NotImplementedException(); }
 		}
 
-		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
+		public override ILogSource UnfilteredLogSource => _unfilteredLogSource;
 
 		public bool IsExpanded
 		{
@@ -147,8 +148,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		protected override void DisposeAdditional()
 		{
-			_unfilteredLogFile.Dispose();
-			_logFile?.Dispose();
+			_unfilteredLogSource.Dispose();
+			_logSource?.Dispose();
 		}
 
 		protected override void OnSingleLineChanged()
@@ -158,7 +159,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateUnfilteredLogFile()
 		{
-			_logFile?.Dispose();
+			_logSource?.Dispose();
 
 			OriginalSources = _dataSources.ToList();
 
@@ -167,19 +168,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 				                              // Unfortunately, due to a hack, the attribution to the original data source
 				                              // will be lost if we were to not forward anything to the merged data source.
 				                              if (Settings.ExcludedDataSources.Contains(dataSource.Id))
-					                              return new EmptyLogFile();
+					                              return new EmptyLogSource();
 
 				                              if (IsSingleLine)
-					                              return dataSource.OriginalLogFile;
+					                              return dataSource.OriginalLogSource;
 
-				                              return dataSource.UnfilteredLogFile;
+				                              return dataSource.UnfilteredLogSource;
 			                              })
 			                              .ToList();
 
-			_logFile = new MergedLogFile(TaskScheduler,
+			_logSource = new MergedLogSource(TaskScheduler,
 			                             MaximumWaitTime,
 			                             logFiles);
-			_unfilteredLogFile.InnerLogFile = _logFile;
+			_unfilteredLogSource.InnerLogSource = _logSource;
 		}
 	}
 }

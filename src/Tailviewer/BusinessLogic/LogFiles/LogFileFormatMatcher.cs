@@ -2,6 +2,7 @@
 using System.Linq;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {

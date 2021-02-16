@@ -8,8 +8,8 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins.Issues;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
@@ -116,7 +116,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			if (plugin == null)
 				return null;
 
-			return new IssuesViewModel(plugin.CreateAnalyser(_services, dataSource.UnfilteredLogFile),
+			return new IssuesViewModel(plugin.CreateAnalyser(_services, dataSource.UnfilteredLogSource),
 			                           _services.Retrieve<INavigationService>());
 		}
 
@@ -126,11 +126,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			if (dataSource is IMultiDataSource multi)
 			{
 				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
-				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogFile.GetProperty(Core.LogFiles.Properties.Format))).ToList();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogSource.GetProperty(GeneralProperties.Format))).ToList();
 			}
 			else
 			{
-				plugins = FindMatchingPlugins(dataSource.UnfilteredLogFile.GetProperty(Core.LogFiles.Properties.Format));
+				plugins = FindMatchingPlugins(dataSource.UnfilteredLogSource.GetProperty(GeneralProperties.Format));
 			}
 
 			if (plugins.Count == 0)

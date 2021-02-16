@@ -8,6 +8,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.MainPanel.Settings;

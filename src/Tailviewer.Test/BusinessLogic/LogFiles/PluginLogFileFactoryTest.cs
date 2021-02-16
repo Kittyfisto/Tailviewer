@@ -5,7 +5,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Sources;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -35,16 +37,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var fname = @"D:\some awesome log file.db";
 			var plugin = new Mock<IFileFormatPlugin>();
-			var logFile = new Mock<ILogFile>();
+			var logFile = new Mock<ILogSource>();
 			plugin.Setup(x => x.SupportedExtensions).Returns(new[] {".db"});
 			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.Is<string>(y => y == fname)))
 				.Returns(() => logFile.Object);
 
 			var factory = new SimplePluginLogFileFactory(_scheduler, plugin.Object);
 			var actualLogFile = factory.Open(fname, out _);
-			actualLogFile.Should().BeOfType<NoThrowLogFile>("because PluginLogFileFactory should protect us from buggy plugin implementations");
+			actualLogFile.Should().BeOfType<NoThrowLogSource>("because PluginLogFileFactory should protect us from buggy plugin implementations");
 
-			var buffer = new LogEntryArray(2);
+			var buffer = new LogBufferArray(2);
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 0, queryOptions);
 			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 0, queryOptions), Times.Once,
@@ -57,7 +59,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOpenMatchRegex()
 		{
 			var plugin = new Mock<IFileFormatPlugin2>();
-			var logFile = new Mock<ILogFile>();
+			var logFile = new Mock<ILogSource>();
 			plugin.Setup(x => x.SupportedFileNames).Returns(new[]
 			{
 				new Regex("txt"),
@@ -72,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var actualLogFile = factory.Open(filename, out _);
 
 			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Once);
-			var buffer = new LogEntryArray(3);
+			var buffer = new LogBufferArray(3);
 			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 1, queryOptions);
 			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 1, queryOptions), Times.Once,
@@ -85,7 +87,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOpenDontMatchRegex()
 		{
 			var plugin = new Mock<IFileFormatPlugin2>();
-			var logFile = new Mock<ILogFile>();
+			var logFile = new Mock<ILogSource>();
 			plugin.Setup(x => x.SupportedFileNames).Returns(new[]
 			{
 				new Regex("txt"),

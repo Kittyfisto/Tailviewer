@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {

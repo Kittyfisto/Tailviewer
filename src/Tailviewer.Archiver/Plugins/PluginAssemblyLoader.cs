@@ -8,12 +8,9 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.BusinessLogic.Plugins.Issues;
 using Tailviewer.Core;
-using Tailviewer.Ui.Outline;
-using Tailviewer.Ui.Properties;
+using Tailviewer.Plugins;
+using Tailviewer.Ui;
 using Constants = Tailviewer.Core.Constants;
 
 namespace Tailviewer.Archiver.Plugins
@@ -222,7 +219,7 @@ namespace Tailviewer.Archiver.Plugins
 				{"log4net,", typeof(ILog).Assembly},
 				{"Metrolib,", typeof(AbstractBootstrapper).Assembly},
 				{"System.Threading.Extensions,", typeof(ITaskScheduler).Assembly},
-				{"Tailviewer.Api,", typeof(ILogFile).Assembly},
+				{"Tailviewer.Api,", typeof(ILogSource).Assembly},
 				{"Tailviewer.Core,", typeof(ServiceContainer).Assembly}
 			};
 

@@ -103,7 +103,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			Log.DebugFormat("Going to line {0}", logLineIndex);
 			var dataSourceViewModel = _currentDataSourceLogView.DataSource;
 			var dataSource = dataSourceViewModel.DataSource;
-			var logFile = dataSource.FilteredLogFile;
+			var logFile = dataSource.FilteredLogSource;
 			var originalIndex = logFile.GetLogLineIndexOfOriginalLineIndex(logLineIndex);
 
 			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { originalIndex };
@@ -183,7 +183,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 				CurrentDataSource = dataSourceViewModel;
 
 				var index = bookmark.Index;
-				var logFile = dataSourceViewModel.DataSource.FilteredLogFile;
+				var logFile = dataSourceViewModel.DataSource.FilteredLogSource;
 				if (logFile != null)
 				{
 					var actualIndex = logFile.GetLogLineIndexOfOriginalLineIndex(index);
@@ -217,7 +217,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			if (dataSourceViewModel == null)
 				return false;
 
-			var logFile = dataSourceViewModel.DataSource.FilteredLogFile;
+			var logFile = dataSourceViewModel.DataSource.FilteredLogSource;
 			if (logFile != null)
 			{
 				var actualIndex = logFile.GetLogLineIndexOfOriginalLineIndex(index);

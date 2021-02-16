@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Formats;
 using Tailviewer.Ui.Controls.SidePanel.Outline;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
