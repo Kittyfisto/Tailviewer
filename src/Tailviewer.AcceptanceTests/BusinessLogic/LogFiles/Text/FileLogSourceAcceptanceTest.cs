@@ -33,7 +33,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_parser.Setup(x => x.CreateParser(It.IsAny<IServiceContainer>(), It.IsAny<ILogSource>()))
 			       .Returns((IServiceContainer services, ILogSource source) =>
 			       {
-				       return new GenericTextLogSource(services, source, new GenericTextLogEntryParser());
+				       return new GenericTextLogSource(source, new GenericTextLogEntryParser());
 			       });
 
 			_formatMatcher = new SimpleLogFileFormatMatcher(null);

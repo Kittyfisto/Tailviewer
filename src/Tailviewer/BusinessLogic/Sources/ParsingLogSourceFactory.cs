@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic.Sources
 				var parser = plugin.CreateParser(_services, format);
 				if (parser != null)
 				{
-					return new GenericTextLogSource(_services, source, parser);
+					return new GenericTextLogSource(source, parser);
 				}
 			}
 

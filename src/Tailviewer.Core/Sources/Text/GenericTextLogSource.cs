@@ -1,143 +1,117 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
 {
 	/// <summary>
-	///   It's total BS that we create a fully proxied ILogSource for 99% of plugins which translate one entry at a time.
-	///   Yes we need the implementation to translate stuff and request it from the source, but we don't need to listen
-	///   to the source, nor do we need to re-fire those events from a dedicated thread...
-	///   TODO: Convert this class to an accessor which doesn't implement any interface and simply contains the GetEntries
-	///         and GetColumn call....
+	///     A simple accessor which provides access to log entries produced by a <see cref="ILogEntryParser" />.
+	///     Parsing happens on demand when corresponding properties are requested.
 	/// </summary>
 	internal sealed class GenericTextLogSource
-		: AbstractLogSource
-		, ILogSourceListener
+		: ILogSource
 	{
-		private readonly ILogSource _source;
-		private readonly IReadOnlyList<IColumnDescriptor> _columns;
+		private readonly Dictionary<ILogSourceListener, ListenerProxy> _listeners;
 		private readonly ILogEntryParser _parser;
+		private readonly ILogSource _source;
 
-		/// <summary>
-		///    This object exists to hold all properties we want to eventually forward to the user.
-		///    It is to be copied to <see cref="_properties"/> in *one* operation when we want the user to
-		///    see its values.
-		/// </summary>
-		/// <remarks>
-		///    This object should only be modified from the Task which executes RunOnce() and not from any other
-		///    thread or there be demons.
-		/// </remarks>
-		private readonly PropertiesBufferList _localProperties;
-
-		/// <summary>
-		///    These are the properties the user gets to see. They are only updated when we deem it necessary.
-		/// </summary>
-		private readonly ConcurrentPropertiesList _properties;
-
-		/// <summary>
-		///    
-		/// </summary>
-		private readonly ConcurrentQueue<LogFileSection> _pendingChanges;
-
-		private int _currentCount;
-
-		public GenericTextLogSource(IServiceContainer services,
-		                            ILogSource source,
+		public GenericTextLogSource(ILogSource source,
 		                            ILogEntryParser parser)
-			: this(services.Retrieve<ITaskScheduler>(), source, parser, TimeSpan.FromMilliseconds(100))
-		{ }
-
-		public GenericTextLogSource(ITaskScheduler scheduler,
-		                            ILogSource source,
-		                            ILogEntryParser parser,
-		                            TimeSpan maximumWaitTime)
-			: base(scheduler)
 		{
 			_source = source ?? throw new ArgumentNullException(nameof(source));
-			_columns = source.Columns.Concat(parser.Columns).Distinct().ToList();
 			_parser = parser;
-			_localProperties = new PropertiesBufferList();
-			_properties = new ConcurrentPropertiesList();
-
-			_pendingChanges = new ConcurrentQueue<LogFileSection>();
-			_source.AddListener(this, maximumWaitTime, 10000);
-
-			StartTask();
+			_listeners = new Dictionary<ILogSourceListener, ListenerProxy>();
 		}
 
-		#region Overrides of AbstractLogSource
-
-		public override IReadOnlyList<IColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
-			get
+			get { return _source.Columns.Concat(_parser.Columns).Distinct().ToList(); }
+		}
+
+		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
+		{
+			// We need to make sure that whoever registers with us is getting OUR reference through
+			// their listener, not the source we're wrapping (or they might discard events since they're
+			// coming not from the source they subscribed to).
+			var proxy = new ListenerProxy(this, listener);
+			lock (_listeners)
 			{
-				return _columns;
+				_listeners.Add(listener, proxy);
 			}
+
+			_source.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
-		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
+		public void RemoveListener(ILogSourceListener listener)
 		{
-			get
+			ListenerProxy proxy;
+			lock (_listeners)
 			{
-				return _properties.Properties;
+				if (!_listeners.TryGetValue(listener, out proxy))
+					return;
 			}
+
+			_source.RemoveListener(proxy);
 		}
 
-		public override object GetProperty(IReadOnlyPropertyDescriptor property)
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
-			return _properties.GetValue(property);
+			get { return _source.Properties; }
 		}
 
-		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			return _properties.GetValue(property);
+			return _source.GetProperty(property);
 		}
 
-		public override void SetProperty(IPropertyDescriptor property, object value)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.SetValue(property, value);
+			return _source.GetProperty(property);
 		}
 
-		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		public void SetProperty(IPropertyDescriptor property, object value)
 		{
-			_properties.SetValue(property, value);
+			_source.SetProperty(property, value);
 		}
 
-		public override void GetAllProperties(IPropertiesBuffer destination)
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
 		{
-			_properties.CopyAllValuesTo(destination);
+			_source.SetProperty(property, value);
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
-		                                  IColumnDescriptor<T> column,
-		                                  T[] destination,
-		                                  int destinationIndex,
-		                                  LogFileQueryOptions queryOptions)
+		public void GetAllProperties(IPropertiesBuffer destination)
 		{
-			GetEntries(sourceIndices, new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count), 0, queryOptions);
+			_source.GetAllProperties(destination);
 		}
 
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
-		                                ILogBuffer destination,
-		                                int destinationIndex,
-		                                LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
+		                         IColumnDescriptor<T> column,
+		                         T[] destination,
+		                         int destinationIndex,
+		                         LogFileQueryOptions queryOptions)
+		{
+			GetEntries(sourceIndices,
+			           new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count),
+			           destinationIndex: 0, queryOptions);
+		}
+
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
+		                       ILogBuffer destination,
+		                       int destinationIndex,
+		                       LogFileQueryOptions queryOptions)
 		{
 			if (destinationIndex != 0)
 				throw new NotImplementedException();
 
 			var rawBuffer = destination.Columns.Contains(LogColumns.RawContent)
-				? (ILogBuffer)new LogBufferView(destination, LogColumns.RawContent)
-				: (ILogBuffer)new LogBufferArray(sourceIndices.Count);
-			_source.GetEntries(sourceIndices, rawBuffer, 0, queryOptions);
+				? new LogBufferView(destination, LogColumns.RawContent)
+				: (ILogBuffer) new LogBufferArray(sourceIndices.Count);
+			_source.GetEntries(sourceIndices, rawBuffer, destinationIndex: 0, queryOptions);
 
-			for (int i = 0; i < rawBuffer.Count; ++i)
+			for (var i = 0; i < rawBuffer.Count; ++i)
 			{
 				var logEntry = rawBuffer[i];
 				var parsedLogEntry = _parser.Parse(logEntry);
@@ -145,48 +119,40 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
-		protected override TimeSpan RunOnce(CancellationToken token)
+		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
-			while (_pendingChanges.TryDequeue(out var nextChange))
+			return _source.GetLogLineIndexOfOriginalLineIndex(originalLineIndex);
+		}
+
+		#region Implementation of IDisposable
+
+		public void Dispose()
+		{
+		}
+
+		#endregion
+
+		private sealed class ListenerProxy
+			: ILogSourceListener
+		{
+			private readonly ILogSourceListener _listener;
+			private readonly ILogSource _source;
+
+			public ListenerProxy(ILogSource source, ILogSourceListener listener)
 			{
-				if (nextChange.IsReset)
-				{
-					_currentCount = 0;
-					Listeners.Reset();
-				}
-				else if (nextChange.IsInvalidate)
-				{
-					_currentCount = (int) nextChange.Index;
-					Listeners.Invalidate((int) nextChange.Index, nextChange.Count);
-				}
-				else
-				{
-					_currentCount = (int) (nextChange.Index + nextChange.Count);
-					Listeners.OnRead(_currentCount);
-				}
+				_source = source;
+				_listener = listener;
 			}
 
-			// As is the nature of our listener collection, we have to
-			// make sure to periodically call OnRead so the collection
-			// can check if a particular wants to be notified now that
-			// enough time has elapsed.
-			Listeners.OnRead(_currentCount);
 
-			_source.GetAllProperties(_localProperties);
-			_properties.CopyFrom(_localProperties);
+			#region Implementation of ILogSourceListener
 
-			return TimeSpan.Zero;
+			public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+			{
+				_listener.OnLogFileModified(_source, section);
+			}
+
+			#endregion
 		}
-
-		#endregion
-
-		#region Implementation of ILogSourceListener
-
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
-		{
-			_pendingChanges.Enqueue(section);
-		}
-
-		#endregion
 	}
 }
