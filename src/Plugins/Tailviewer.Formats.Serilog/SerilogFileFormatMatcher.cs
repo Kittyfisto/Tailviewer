@@ -42,7 +42,7 @@ namespace Tailviewer.Formats.Serilog
 		}
 
 		private static bool TryParseFormat(StreamReader reader,
-		                                   SerilogFileParser parser)
+		                                   SerilogEntryParser parser)
 		{
 			// we're happy if we can match the first line
 			var line = reader.ReadLine();

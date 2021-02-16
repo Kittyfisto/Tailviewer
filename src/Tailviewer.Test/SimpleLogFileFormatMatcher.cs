@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+﻿using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Test

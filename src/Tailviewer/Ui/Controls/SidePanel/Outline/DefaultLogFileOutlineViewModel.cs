@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline

@@ -14,7 +14,6 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;

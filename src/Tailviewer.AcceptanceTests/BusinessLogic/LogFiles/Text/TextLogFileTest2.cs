@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Sources.Text;
@@ -21,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance(taskScheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 			return new TextLogSource(serviceContainer, "");
 		}
 

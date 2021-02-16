@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
-	internal sealed class TextLogFileParser
-		: ITextLogFileParser
+	internal sealed class GenericTextLogEntryParser
+		: ILogEntryParser
 	{
 		private static readonly string[] RemovableCharacters;
 		private readonly ITimestampParser _timestampParser;
 		private int _numTimestampSuccess;
 		private int _numSuccessiveTimestampFailures;
+		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 
-		static TextLogFileParser()
+		static GenericTextLogEntryParser()
 		{
 			// We will remove every character from ASCII [0-31] besides the tab character from the line because we can't display them anways.
 			// Whenever you modify this collection, pay attention to to also modify the detection loop below. Checking for insertion was a huge
@@ -25,9 +26,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			                                .Concat(new []{"\u007f"}).ToArray();
 		}
 
-		public TextLogFileParser(ITimestampParser timestampParser)
+		public GenericTextLogEntryParser()
+			: this(new TimestampParser())
+		{ }
+
+		public GenericTextLogEntryParser(ITimestampParser timestampParser)
 		{
 			_timestampParser = timestampParser ?? throw new ArgumentNullException(nameof(timestampParser));
+			_columns = new IColumnDescriptor[] {LogColumns.Timestamp, LogColumns.LogLevel};
 		}
 
 		#region Implementation of IDisposable
@@ -45,6 +51,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			var level = LogLine.DetermineLevelFromLine(line);
 			var timestamp = ParseTimestamp(line);
 			return new ParsedLogEntry(logEntry, line, level, timestamp);
+		}
+
+		public IEnumerable<IColumnDescriptor> Columns
+		{
+			get
+			{
+				return _columns;
+			}
 		}
 
 		#endregion

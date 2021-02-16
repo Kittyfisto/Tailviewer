@@ -6,7 +6,6 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {

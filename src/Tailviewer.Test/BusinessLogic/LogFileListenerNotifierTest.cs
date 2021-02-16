@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic

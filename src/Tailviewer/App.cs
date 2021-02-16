@@ -20,8 +20,8 @@ using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFileFormats;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Plugins;
@@ -178,8 +178,8 @@ namespace Tailviewer
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
-					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
-					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
+					var textLogFileParserPlugin = new LogEntryParserPlugin(services);
+					services.RegisterInstance<ILogEntryParserPlugin>(textLogFileParserPlugin);
 
 					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
 					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);

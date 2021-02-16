@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 using Tailviewer.Core;
 using Tailviewer.Core.Buffers;

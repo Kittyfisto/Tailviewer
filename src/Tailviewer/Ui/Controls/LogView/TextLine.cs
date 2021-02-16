@@ -4,8 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 

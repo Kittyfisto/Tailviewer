@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Entries
@@ -125,6 +126,16 @@ namespace Tailviewer.Core.Entries
 		public override bool Equals(object obj)
 		{
 			return ReadOnlyLogEntryExtensions.Equals(this, obj as IReadOnlyLogEntry);
+		}
+
+		/// <inheritdoc />
+		public virtual void CopyFrom(IReadOnlyLogEntry logEntry)
+		{
+			var overlappingColumns = logEntry.Columns.Intersect(Columns);
+			foreach (var column in overlappingColumns)
+			{
+				SetValue(column, logEntry.GetValue(column));
+			}
 		}
 
 		/// <inheritdoc />

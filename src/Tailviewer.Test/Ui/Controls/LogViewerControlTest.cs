@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;

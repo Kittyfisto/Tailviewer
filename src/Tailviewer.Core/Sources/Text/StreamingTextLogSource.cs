@@ -20,8 +20,13 @@ using Exception = System.Exception;
 namespace Tailviewer.Core.Sources.Text
 {
 	/// <summary>
-	///     A n<see cref="ILogSource" /> implementation which allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
+	///     Represents a text file as a collection of log entries where every line is a single log entry.
+	///     The contents of the line are stored in the <see cref="LogColumns.RawContent"/> column.
 	/// </summary>
+	/// <remarks>
+	///     A allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
+	///     The only thing kept in main memory is an index of line offsets.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class StreamingTextLogSource
 		: ILogSource
@@ -415,6 +420,13 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void SynchronizeProperties()
 		{
+			int count;
+			lock (_index)
+			{
+				count = _index.Count;
+			}
+
+			_listeners.OnRead(count);
 			_properties.CopyFrom(_propertiesBuffer);
 		}
 
@@ -705,7 +717,8 @@ namespace Tailviewer.Core.Sources.Text
 					}
 
 					_destination.CopyFrom(LogColumns.RawContent, _destinationIndex, lines, 0, linesRead);
-					_destination.CopyFrom(LogColumns.Index, _destinationIndex, sourceIndices, 0, linesRead);
+					if (_destination.Contains(LogColumns.Index))
+						_destination.CopyFrom(LogColumns.Index, _destinationIndex, sourceIndices, 0, linesRead);
 				}
 			}
 

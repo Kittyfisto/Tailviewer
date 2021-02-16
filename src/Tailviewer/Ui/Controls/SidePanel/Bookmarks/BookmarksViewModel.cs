@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Columns;

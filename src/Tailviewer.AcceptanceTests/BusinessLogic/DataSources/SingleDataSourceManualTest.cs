@@ -49,7 +49,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 			return new TextLogSource(serviceContainer, fileName);
 		}
 

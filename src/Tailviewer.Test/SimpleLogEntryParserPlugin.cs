@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
 {
-	public class SimpleTextLogFileParserPlugin
-		: ITextLogFileParserPlugin
+	public class SimpleLogEntryParserPlugin
+		: ILogEntryParserPlugin
 	{
 		#region Implementation of ITextLogFileParserPlugin
 
@@ -17,10 +17,10 @@ namespace Tailviewer.Test
 			get { throw new NotImplementedException(); }
 		}
 
-		public ITextLogFileParser CreateParser(IServiceContainer services, ILogFileFormat format)
+		public ILogEntryParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{
 			ITimestampParser timestampParser = services.TryRetrieve<ITimestampParser>() ?? new TimestampParser();
-			return new TextLogFileParser(timestampParser);
+			return new GenericTextLogEntryParser(timestampParser);
 		}
 
 		#endregion

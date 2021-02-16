@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Metrolib;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles

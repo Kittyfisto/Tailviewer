@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles

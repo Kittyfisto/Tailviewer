@@ -2,7 +2,6 @@
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues

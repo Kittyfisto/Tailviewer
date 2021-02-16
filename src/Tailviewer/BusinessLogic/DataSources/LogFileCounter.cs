@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;

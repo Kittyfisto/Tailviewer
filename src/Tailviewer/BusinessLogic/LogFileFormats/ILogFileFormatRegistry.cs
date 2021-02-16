@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Settings.CustomFormats;
+﻿using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.BusinessLogic.LogFileFormats
 {

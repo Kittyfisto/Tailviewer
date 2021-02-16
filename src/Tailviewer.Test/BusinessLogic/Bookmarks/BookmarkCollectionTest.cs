@@ -7,7 +7,6 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings.Bookmarks;
 

@@ -10,28 +10,28 @@ namespace Tailviewer.Core.Properties
 	{
 		/// <summary>
 		///     Creates a new view onto the given <paramref name="that" /> which contains only those properties
-		///     in the given <paramref name="computedProperties" /> list.
+		///     in the given <paramref name="hiddenProperties" /> list.
 		/// </summary>
 		/// <param name="that"></param>
-		/// <param name="computedProperties"></param>
+		/// <param name="hiddenProperties"></param>
 		/// <returns></returns>
 		public static IPropertiesBuffer Except(this IPropertiesBuffer that,
-		                                        params IReadOnlyPropertyDescriptor[] computedProperties)
+		                                       params IReadOnlyPropertyDescriptor[] hiddenProperties)
 		{
-			return that.Except((IReadOnlyList<IReadOnlyPropertyDescriptor>)computedProperties);
+			return that.Except((IReadOnlyList<IReadOnlyPropertyDescriptor>)hiddenProperties);
 		}
 
 		/// <summary>
 		///     Creates a new view onto the given <paramref name="that" /> which contains only those properties
-		///     in the given <paramref name="computedProperties" /> list.
+		///     in the given <paramref name="hiddenProperties" /> list.
 		/// </summary>
 		/// <param name="that"></param>
-		/// <param name="computedProperties"></param>
+		/// <param name="hiddenProperties"></param>
 		/// <returns></returns>
 		public static IPropertiesBuffer Except(this IPropertiesBuffer that,
-		                                        IReadOnlyList<IReadOnlyPropertyDescriptor> computedProperties)
+		                                       IReadOnlyList<IReadOnlyPropertyDescriptor> hiddenProperties)
 		{
-			return new PropertiesBufferView(that, that.Properties.Except(computedProperties).ToList());
+			return new PropertiesBufferHidingView(that, hiddenProperties);
 		}
 	}
 }

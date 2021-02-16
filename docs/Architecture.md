@@ -28,6 +28,11 @@ Describes a column of a log source (which is another way of saying a "property" 
 Buffers are the actual "backing fields" for what descriptors describe: Buffers store the data associated with a property, column or log entry.
 Buffers are always backed by memory and provide fast read and write (where applicable) access to their data.
 
+There sometimes exist multiple buffer implementations for the same entity, mostly in the following ways:
+- Array: Fixed in size which must be given during construction, intialized to the property's / column's default value
+- List: Dynamic in size and may grow / shrink on demand
+- Concurrent: Thread-safe view onto another buffer
+
 #### Property Buffers
 
 A Property Buffer stores values of their associated properties. The same property cannot occur more than once.
@@ -41,10 +46,18 @@ to another (identified by their index within the buffer) as well as only a subse
 Log Buffers store entries in the order they were added / copied into and allow log entries to be accessed again by their insertion index (the first log entry
 is at index 0, the next at index 1, etc...).
 
+###  Views
+
+Views are small objects which provide a limited view onto a source. They are similar almost identical to C#'s Span{T} or c++'s string_view.
+Views are constructed when one wants to provide read and/or write access to a source buffer without the need for extra copies.
+
 ### Log Entries
 
-A log entry is essentially a map from column descriptors to their values. It doesn't necessarily serve as a backing field for the data though,
-it is first and foremost an accessor to the data. Most of the time, a log entry is nothing more than a view onto a particular "row" into a log entry buffer.
+A log entry is essentially a map from column descriptors to their values. Log entries don't force a partcular storage scheme on their implementation:
+This library offers many implementations:
+- Log entry one which directly stores values in a dictionary by their column
+- An accessor which provides access to the values of a log buffer
+- A view which provides access to a subset of properties of an original log entry
 
 ### Log Sources
 

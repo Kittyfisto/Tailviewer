@@ -131,5 +131,11 @@ namespace Tailviewer
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		void SetValue<T>(IColumnDescriptor<T> column, T value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="logEntry"></param>
+		void CopyFrom(IReadOnlyLogEntry logEntry);
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources

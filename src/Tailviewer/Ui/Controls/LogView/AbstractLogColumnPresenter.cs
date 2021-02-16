@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 

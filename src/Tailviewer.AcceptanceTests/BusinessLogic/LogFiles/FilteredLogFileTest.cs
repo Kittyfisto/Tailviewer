@@ -6,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
@@ -42,7 +41,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 			return new TextLogSource(serviceContainer, fileName);
 		}
 

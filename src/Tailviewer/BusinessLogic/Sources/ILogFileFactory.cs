@@ -1,6 +1,6 @@
 using Tailviewer.Archiver.Plugins.Description;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	/// 

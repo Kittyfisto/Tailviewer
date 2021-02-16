@@ -20,6 +20,9 @@ namespace Tailviewer.Core.Sources.Text
 	///     Responsible for scanning and reading the content of a file on disk, forwarding
 	///     them to its <see cref="ILogSourceListener"/>s.
 	/// </summary>
+	/// <remarks>
+	///     TODO: Delete once the new one is finished.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class TextLogSource
 		: AbstractLogSource
@@ -41,8 +44,8 @@ namespace Tailviewer.Core.Sources.Text
 		#region Parsing
 		
 		private readonly ILogFileFormatMatcher _formatMatcher;
-		private readonly ITextLogFileParserPlugin _parserPlugin;
-		private ITextLogFileParser _parser;
+		private readonly ILogEntryParserPlugin _parserPlugin;
+		private ILogEntryParser _parser;
 		private ILogFileFormat _parserFormat;
 
 		#endregion
@@ -109,7 +112,7 @@ namespace Tailviewer.Core.Sources.Text
 				_translator = new NoThrowLogLineTranslator(translator);
 
 			_formatMatcher = serviceContainer.Retrieve<ILogFileFormatMatcher>();
-			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
+			_parserPlugin = serviceContainer.Retrieve<ILogEntryParserPlugin>();
 			_entries = new List<LogLine>();
 
 			_localProperties = new PropertiesBufferList(GeneralProperties.Minimum);

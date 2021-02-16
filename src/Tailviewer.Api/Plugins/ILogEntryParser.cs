@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.Plugins
 {
 	/// <summary>
-	///     Responsible for parsing a particular text log file so that tailviewer can interpret
+	///     Responsible for parsing a particular log file so that tailviewer can interpret
 	///     the contents properly.
 	/// </summary>
-	public interface ITextLogFileParser
+	public interface ILogEntryParser
 		: IDisposable
 	{
 		/// <summary>
@@ -15,5 +16,10 @@ namespace Tailviewer.Plugins
 		/// <param name="logEntry"></param>
 		/// <returns></returns>
 		IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry);
+
+		/// <summary>
+		///     The set of columns this parser can detect.
+		/// </summary>
+		IEnumerable<IColumnDescriptor> Columns { get; }
 	}
 }

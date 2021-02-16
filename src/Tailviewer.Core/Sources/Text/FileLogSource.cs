@@ -23,7 +23,7 @@ namespace Tailviewer.Core.Sources.Text
 	///      - When the format detector changes its mind and is now even more sure that the format is actually is
 	///    - Share functionality between different formats (streaming text files into memory shouldn't be done by the same class which is trying to make sense of the data)
 	/// </remarks>
-	internal sealed class SourceLogSource
+	internal sealed class FileLogSource
 		: AbstractLogSource
 		, ILogSourceListener
 	{
@@ -33,7 +33,7 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly string _fileName;
 		private readonly string _fullFilename;
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly ITextLogFileParserPlugin2 _textLogFileParserPlugin;
+		private readonly ILogSourceParserPlugin _logSourceParserPlugin;
 		private readonly FileFormatDetector _detector;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
@@ -43,7 +43,7 @@ namespace Tailviewer.Core.Sources.Text
 		#region Log Files
 
 		private StreamingTextLogSource _streamingTextLogSource;
-		private ILogSource _textLogSource;
+		private ILogSource _parsingLogSource;
 		private MultiLineLogSource _multiLineLogSource;
 
 		#endregion
@@ -51,7 +51,7 @@ namespace Tailviewer.Core.Sources.Text
 		#region Processing
 
 		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
-		private ILogSource _logEntrySource;
+		private ILogSource _finalLogSource;
 
 		#endregion
 
@@ -61,7 +61,7 @@ namespace Tailviewer.Core.Sources.Text
 		/// <param name="services"></param>
 		/// <param name="fileName"></param>
 		/// <param name="maximumWaitTime"></param>
-		public SourceLogSource(IServiceContainer services, string fileName, TimeSpan maximumWaitTime)
+		public FileLogSource(IServiceContainer services, string fileName, TimeSpan maximumWaitTime)
 			: base(services.Retrieve<ITaskScheduler>())
 		{
 			_services = services;
@@ -72,7 +72,7 @@ namespace Tailviewer.Core.Sources.Text
 			_maximumWaitTime = maximumWaitTime;
 
 			_taskScheduler = services.Retrieve<ITaskScheduler>();
-			_textLogFileParserPlugin = services.Retrieve<ITextLogFileParserPlugin2>();
+			_logSourceParserPlugin = services.Retrieve<ILogSourceParserPlugin>();
 			var formatMatcher = services.Retrieve<ILogFileFormatMatcher>();
 			// TODO: Fetch default encoding from settings
 			_detector = new FileFormatDetector(formatMatcher, _fullFilename, Encoding.Default);
@@ -91,7 +91,10 @@ namespace Tailviewer.Core.Sources.Text
 
 		public override IReadOnlyList<IColumnDescriptor> Columns
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				return _finalLogSource?.Columns ?? new IColumnDescriptor[0];
+			}
 		}
 
 		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
@@ -127,7 +130,7 @@ namespace Tailviewer.Core.Sources.Text
 		                                  int destinationIndex,
 		                                  LogFileQueryOptions queryOptions)
 		{
-			var source = _logEntrySource;
+			var source = _finalLogSource;
 			if (source != null)
 			{
 				source.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
@@ -143,7 +146,7 @@ namespace Tailviewer.Core.Sources.Text
 		                                int destinationIndex,
 		                                LogFileQueryOptions queryOptions)
 		{
-			var source = _logEntrySource;
+			var source = _finalLogSource;
 			if (source != null)
 			{
 				source.GetEntries(sourceIndices, destination, destinationIndex, queryOptions);
@@ -189,6 +192,15 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void UpdateProperties()
 		{
+			if (_finalLogSource != null)
+			{
+				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(GeneralProperties.Encoding, GeneralProperties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
+			}
+			else
+			{
+				_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+			}
+
 			_properties.CopyFrom(_propertiesBuffer);
 		}
 
@@ -199,7 +211,7 @@ namespace Tailviewer.Core.Sources.Text
 			{
 				// We may still have pending sections from a log file we've just removed as listener.
 				// If that's the case, then throw away that section and go look for the next...
-				if (!Equals(pair.Key, _logEntrySource))
+				if (!Equals(pair.Key, _finalLogSource))
 					continue;
 
 				var section = pair.Value;
@@ -237,7 +249,7 @@ namespace Tailviewer.Core.Sources.Text
 			if (format.IsText)
 			{
 				_streamingTextLogSource = new StreamingTextLogSource(_services, _fullFilename, encoding);
-				CreateTextLogFile();
+				CreateLogSourceParser();
 			}
 			else
 			{
@@ -245,29 +257,36 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
-		private void CreateTextLogFile()
+		private void CreateLogSourceParser()
 		{
-			_textLogSource?.TryDispose();
-			_textLogSource = _textLogFileParserPlugin.CreateParser(_services, _streamingTextLogSource);
+			_parsingLogSource?.TryDispose();
+			_parsingLogSource = _logSourceParserPlugin.CreateParser(_services, _streamingTextLogSource);
 
-			if (_textLogSource.GetProperty(TextProperties.IsMultiline))
+			if (_parsingLogSource == null)
+			{
+				StartListenTo(_streamingTextLogSource);
+			}
+			else if (_parsingLogSource.GetProperty(TextProperties.IsMultiline))
 			{
 				CreateMultiLineLogFile();
-
-				_logEntrySource = _multiLineLogSource;
-				_multiLineLogSource.AddListener(this, _maximumWaitTime, MaximumLineCount);
+				StartListenTo(_multiLineLogSource);
 			}
 			else
 			{
-				_logEntrySource = _textLogSource;
-				_textLogSource.AddListener(this, _maximumWaitTime, MaximumLineCount);
+				StartListenTo(_parsingLogSource);
 			}
+		}
+
+		private void StartListenTo(ILogSource logSource)
+		{
+			_finalLogSource = logSource;
+			logSource.AddListener(this, _maximumWaitTime, MaximumLineCount);
 		}
 
 		private void CreateMultiLineLogFile()
 		{
 			_multiLineLogSource?.TryDispose();
-			_multiLineLogSource = new MultiLineLogSource(_taskScheduler, _textLogSource, _maximumWaitTime);
+			_multiLineLogSource = new MultiLineLogSource(_taskScheduler, _parsingLogSource, _maximumWaitTime);
 		}
 	}
 }

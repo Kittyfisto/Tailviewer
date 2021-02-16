@@ -289,6 +289,12 @@ namespace Tailviewer.Core.Entries
 		}
 
 		/// <inheritdoc />
+		public void CopyFrom(IReadOnlyLogEntry logEntry)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
 			if (!_columns.Contains(column))

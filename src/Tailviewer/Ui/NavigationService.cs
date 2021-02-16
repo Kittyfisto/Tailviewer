@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic;
-using Tailviewer.Ui.Controls.MainPanel;
+﻿using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui

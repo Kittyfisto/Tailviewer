@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;

@@ -7,7 +7,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
@@ -68,7 +67,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		                           Encoding encoding = null,
 		                           ILogLineTranslator translator = null,
 		                           ILogFileFormatMatcher matcher = null,
-		                           ITextLogFileParserPlugin parser = null)
+		                           ILogEntryParserPlugin parser = null)
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
@@ -80,8 +79,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				matcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(matcher);
 			if (parser == null)
-				parser = new SimpleTextLogFileParserPlugin();
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(parser);
+				parser = new SimpleLogEntryParserPlugin();
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(parser);
 			return new TextLogSource(serviceContainer, fileName);
 		}
 
@@ -490,9 +489,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				Success = true
 			};
 
-			var parser = new Mock<ITextLogFileParserPlugin>();
+			var parser = new Mock<ILogEntryParserPlugin>();
 			parser.Setup(x => x.CreateParser(It.IsAny<IServiceContainer>(),
-			                                 It.IsAny<ILogFileFormat>())).Returns(() => new Mock<ITextLogFileParser>().Object);
+			                                 It.IsAny<ILogFileFormat>())).Returns(() => new Mock<ILogEntryParser>().Object);
 			_source = Create(_fname, matcher: matcher, parser: parser.Object);
 
 			_streamWriter.WriteLine("Hello, World!");

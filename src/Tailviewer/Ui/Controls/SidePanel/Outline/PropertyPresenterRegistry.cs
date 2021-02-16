@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline

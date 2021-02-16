@@ -4,34 +4,33 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
-	///     Responsible for loading all available <see cref="ITextLogFileParserPlugin" /> implementations
+	///     Responsible for loading all available <see cref="ILogEntryParserPlugin" /> implementations
 	///     and delegating to them, in case they implement a particular format.
 	/// </summary>
-	public sealed class TextLogFileParserPlugin
-		: ITextLogFileParserPlugin
+	public sealed class LogEntryParserPlugin
+		: ILogEntryParserPlugin
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IReadOnlyList<ITextLogFileParserPlugin> _plugins;
+		private readonly IReadOnlyList<ILogEntryParserPlugin> _plugins;
 
-		public TextLogFileParserPlugin(IServiceContainer services)
+		public LogEntryParserPlugin(IServiceContainer services)
 		{
 			var pluginLoader = services.Retrieve<IPluginLoader>();
-			_plugins = pluginLoader.LoadAllOfType<ITextLogFileParserPlugin>()
+			_plugins = pluginLoader.LoadAllOfType<ILogEntryParserPlugin>()
 			                          .ToList();
 		}
 
-		private ITextLogFileParser CreateDefaultParser(IServiceContainer services)
+		private ILogEntryParser CreateDefaultParser(IServiceContainer services)
 		{
 			var timestampParser = services.TryRetrieve<ITimestampParser>() ?? new TimestampParser();
-			return new TextLogFileParser(timestampParser);
+			return new GenericTextLogEntryParser(timestampParser);
 		}
 
 		#region Implementation of ITextLogFileParserPlugin
@@ -44,7 +43,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public ITextLogFileParser CreateParser(IServiceContainer services, ILogFileFormat format)
+		public ILogEntryParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{
 			foreach (var plugin in _plugins)
 			{
@@ -57,15 +56,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return CreateDefaultParser(services);
 		}
 
-		private bool TryCreateParser(ITextLogFileParserPlugin plugin, IServiceContainer services, ILogFileFormat format,
-		                             out ITextLogFileParser parser)
+		private bool TryCreateParser(ILogEntryParserPlugin plugin, IServiceContainer services, ILogFileFormat format,
+		                             out ILogEntryParser parser)
 		{
 			try
 			{
 				// We cannot trust plugins to adhere to the contract set up by the interface.
 				// Therefore we wrap the "raw" plugin implementation by a layer which ensures that the plugin cannot screw up too bad
 				var rawParser = plugin.CreateParser(services, format);
-				parser = new NoThrowTextLogFileParser(rawParser);
+				parser = new NoThrowLogEntryParser(rawParser);
 				return true;
 			}
 			catch (Exception e)

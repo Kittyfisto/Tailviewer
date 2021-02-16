@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 

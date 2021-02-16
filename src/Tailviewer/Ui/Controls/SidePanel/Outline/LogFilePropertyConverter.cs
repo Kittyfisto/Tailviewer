@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Text;
 using System.Windows.Data;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline

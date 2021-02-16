@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Properties;

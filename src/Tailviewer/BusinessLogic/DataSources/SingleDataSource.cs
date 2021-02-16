@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 

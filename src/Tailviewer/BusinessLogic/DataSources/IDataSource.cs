@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;

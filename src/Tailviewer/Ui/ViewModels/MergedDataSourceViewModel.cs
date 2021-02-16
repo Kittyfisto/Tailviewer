@@ -9,7 +9,6 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;

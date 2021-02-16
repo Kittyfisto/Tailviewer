@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;

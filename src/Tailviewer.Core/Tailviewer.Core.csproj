@@ -79,10 +79,11 @@
     <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />
+    <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
     <Compile Include="Sources\Text\FileFormatDetector.cs" />
-    <Compile Include="Sources\Text\SourceLogSource.cs" />
+    <Compile Include="Sources\Text\FileLogSource.cs" />
     <Compile Include="Properties\IWellKnownReadOnlyPropertyDescriptor.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="Properties\ConcurrentPropertiesList.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Sources\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="Sources\Merged\Stuff.cs" />
     <Compile Include="Properties\TextProperties.cs" />
+    <Compile Include="Sources\Text\GenericTextLogSource.cs" />
     <Compile Include="Sources\Text\LineOffsetDetector.cs" />
     <Compile Include="Sources\Text\RawTextLogEntry.cs" />
     <Compile Include="Entries\ReadOnlyLogEntryExtensions.cs" />
@@ -160,7 +162,7 @@
     <Compile Include="Entries\LogEntry.cs" />
     <Compile Include="Buffers\LogBufferArray.cs" />
     <Compile Include="Buffers\LogBufferList.cs" />
-    <Compile Include="Sources\Int32View.cs" />
+    <Compile Include="Int32View.cs" />
     <Compile Include="Columns\ColumnDescriptorExtensions.cs" />
     <Compile Include="Properties\GeneralProperties.cs" />
     <Compile Include="Properties\PropertiesBufferDebuggerVisualization.cs" />

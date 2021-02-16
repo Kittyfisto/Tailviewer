@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;
 

@@ -3,7 +3,6 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
@@ -41,7 +40,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			if (timestampParser != null)
 				serviceContainer.RegisterInstance<ITimestampParser>(timestampParser);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 			return new TextLogSource(serviceContainer, fileName);
 		}
 

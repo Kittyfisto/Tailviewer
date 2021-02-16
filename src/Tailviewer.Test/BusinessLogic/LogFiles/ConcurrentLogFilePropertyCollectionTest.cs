@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles

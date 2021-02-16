@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Settings;
+﻿using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.Any
 {

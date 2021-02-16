@@ -62,7 +62,7 @@ namespace Tailviewer.Test
 			var container = new ServiceContainer();
 			container.RegisterInstance<ITaskScheduler>(new ManualTaskScheduler());
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			container.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 
 			var settings = new LogFileSettings();
 			settings.DefaultEncoding = Encoding.UTF32;

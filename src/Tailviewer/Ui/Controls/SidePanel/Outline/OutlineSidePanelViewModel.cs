@@ -9,7 +9,6 @@ using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 using Tailviewer.Plugins;
 

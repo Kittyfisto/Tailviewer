@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using log4net;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	///     Responsible for handling all exceptions which might be thrown by a <see cref="ILogFileFormatMatcher" />

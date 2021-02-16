@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Parsers;
 
@@ -15,7 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 		public void TestRemoveGarbageCharacters()
 		{
 			var rawContent = "\0\0\02021-02-08 07:58:48,060 [0x000025d0] DEBUG foo Well I'll be buggered, where did those NULs come from?";
-			var parser = new TextLogFileParser(new TimestampParser());
+			var parser = new GenericTextLogEntryParser(new TimestampParser());
 			var parsedLogEntry = parser.Parse(new LogEntry {RawContent = rawContent});
 			parsedLogEntry.RawContent.Should()
 			              .Be("2021-02-08 07:58:48,060 [0x000025d0] DEBUG foo Well I'll be buggered, where did those NULs come from?");
@@ -34,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 			foreach (var character in unprintableCharacters)
 			{
 				var rawContent = $"Foo{character}bar";
-				var parser = new TextLogFileParser(new TimestampParser());
+				var parser = new GenericTextLogEntryParser(new TimestampParser());
 				var parsedLogEntry = parser.Parse(new LogEntry {RawContent = rawContent});
 				parsedLogEntry.RawContent.Should()
 				              .Be("Foobar");
@@ -45,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 		public void TestDontRemoveTab()
 		{
 			var rawContent = "Foo\tbar";
-			var parser = new TextLogFileParser(new TimestampParser());
+			var parser = new GenericTextLogEntryParser(new TimestampParser());
 			var parsedLogEntry = parser.Parse(new LogEntry {RawContent = rawContent});
 			parsedLogEntry.RawContent.Should()
 			              .Be("Foo\tbar");
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 		public void TestDontRemoveSpace()
 		{
 			var rawContent = "Foo bar";
-			var parser = new TextLogFileParser(new TimestampParser());
+			var parser = new GenericTextLogEntryParser(new TimestampParser());
 			var parsedLogEntry = parser.Parse(new LogEntry {RawContent = rawContent});
 			parsedLogEntry.RawContent.Should()
 			              .Be("Foo bar");

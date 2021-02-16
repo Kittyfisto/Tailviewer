@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Tailviewer.Core.Sources
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Treats a <see cref="IReadOnlyList{LogLineIndex}" /> as an <see cref="IReadOnlyList{Int32}" />.

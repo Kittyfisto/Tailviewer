@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Tailviewer.Formats.Serilog.Matchers;
@@ -11,15 +12,17 @@ namespace Tailviewer.Formats.Serilog
 	///     Responsible for parsing a singular log line into a <see cref="ILogEntry" /> by using
 	///     a Serilog format specification such as "{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}] {Message}".
 	/// </summary>
-	public sealed class SerilogFileParser
-		: ITextLogFileParser
+	public sealed class SerilogEntryParser
+		: ILogEntryParser
 	{
 		private readonly IReadOnlyList<ISerilogMatcher> _matchers;
 		private readonly Regex _regex;
+		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 
-		public SerilogFileParser(string serilogFormat)
+		public SerilogEntryParser(string serilogFormat)
 		{
 			_regex = new Regex(ToRegex(serilogFormat ?? string.Empty, out _matchers));
+			_columns = _matchers.Select(x => x.Column).ToList();
 		}
 
 		public static string ToRegex(string serilogFormat, out IReadOnlyList<ISerilogMatcher> matchers)
@@ -95,6 +98,11 @@ namespace Tailviewer.Formats.Serilog
 				return logEntry;
 
 			return parsedLogEntry;
+		}
+
+		public IEnumerable<IColumnDescriptor> Columns
+		{
+			get { return _columns; }
 		}
 
 		#endregion

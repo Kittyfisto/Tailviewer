@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 

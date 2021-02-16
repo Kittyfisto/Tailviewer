@@ -101,7 +101,7 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.CustomTimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\FileLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\FileLogSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />

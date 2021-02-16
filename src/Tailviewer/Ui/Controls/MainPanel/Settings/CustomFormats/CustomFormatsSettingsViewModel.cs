@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 using Tailviewer.Settings;
 

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	///     Responsible for matching a log file to a particular format, if possible.

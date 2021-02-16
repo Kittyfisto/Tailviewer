@@ -71,9 +71,9 @@
     <Compile Include="Plugins\ILogFileFormatMatcherPlugin.cs" />
     <Compile Include="Plugins\ILogFileIssue.cs" />
     <Compile Include="Plugins\Severity.cs" />
-    <Compile Include="Plugins\ITextLogFileParser.cs" />
-    <Compile Include="Plugins\ITextLogFileParserPlugin.cs" />
-    <Compile Include="Plugins\ITextLogFileParserPlugin2.cs" />
+    <Compile Include="Plugins\ILogEntryParser.cs" />
+    <Compile Include="Plugins\ILogEntryParserPlugin.cs" />
+    <Compile Include="Plugins\ILogSourceParserPlugin.cs" />
     <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="ILogEntry.cs" />

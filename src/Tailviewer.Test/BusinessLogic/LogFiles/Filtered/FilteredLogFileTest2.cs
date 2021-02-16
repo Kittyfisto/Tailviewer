@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Sources;
 

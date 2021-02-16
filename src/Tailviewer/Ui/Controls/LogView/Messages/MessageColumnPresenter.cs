@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.Columns;
+﻿using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.Messages

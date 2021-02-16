@@ -580,6 +580,21 @@ namespace Tailviewer.Core.Buffers
 				((ColumnData<T>) data)[_index] = value;
 			}
 
+			#region Overrides of AbstractLogEntry
+
+			public override void CopyFrom(IReadOnlyLogEntry logEntry)
+			{
+				foreach (var column in logEntry.Columns)
+				{
+					if (_list._dataByColumn.TryGetValue(column, out var columnData))
+					{
+						columnData.CopyFrom(_index, logEntry);
+					}
+				}
+			}
+
+			#endregion
+
 			public override IReadOnlyList<IColumnDescriptor> Columns => _list._columns;
 		}
 
@@ -605,6 +620,7 @@ namespace Tailviewer.Core.Buffers
 			void CopyFrom(int destinationIndex, IReadOnlyLogBuffer source, IReadOnlyList<int> sourceIndices);
 			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogFileQueryOptions queryOptions);
 			void AddRange(int count);
+			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
 		}
 
 		private sealed class ColumnData<T>
@@ -701,6 +717,11 @@ namespace Tailviewer.Core.Buffers
 				{
 					_data.Add(_column.DefaultValue);
 				}
+			}
+
+			public void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry)
+			{
+				_data[destinationIndex] = logEntry.GetValue(_column);
 			}
 
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)

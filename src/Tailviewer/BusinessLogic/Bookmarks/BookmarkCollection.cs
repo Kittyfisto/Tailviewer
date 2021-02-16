@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings.Bookmarks;
 

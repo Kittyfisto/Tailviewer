@@ -3,7 +3,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {

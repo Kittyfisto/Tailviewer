@@ -28,7 +28,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		private ServiceContainer _serviceContainer;
 		private ManualTaskScheduler _taskScheduler;
 		private SimpleLogFileFormatMatcher _formatMatcher;
-		private SimpleTextLogFileParserPlugin _textLogFileParserPlugin;
+		private SimpleLogEntryParserPlugin _logEntryParserPlugin;
 
 		public static IReadOnlyList<Encoding> Encodings => LineOffsetDetectorTest.Encodings;
 
@@ -44,11 +44,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_serviceContainer = new ServiceContainer();
 			_taskScheduler = new ManualTaskScheduler();
 			_formatMatcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
-			_textLogFileParserPlugin = new SimpleTextLogFileParserPlugin();
+			_logEntryParserPlugin = new SimpleLogEntryParserPlugin();
 
 			_serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_serviceContainer.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);
-			_serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(_textLogFileParserPlugin);
+			_serviceContainer.RegisterInstance<ILogEntryParserPlugin>(_logEntryParserPlugin);
 
 		}
 

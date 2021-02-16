@@ -8,11 +8,10 @@ using System.Text.RegularExpressions;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Sources;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	/// 

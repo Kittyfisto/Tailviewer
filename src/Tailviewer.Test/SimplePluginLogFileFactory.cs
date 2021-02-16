@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Plugins;
 
@@ -20,7 +20,7 @@ namespace Tailviewer.Test
 			var container = new ServiceContainer();
 			container.RegisterInstance<ITaskScheduler>(scheduler);
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			container.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 			return container;
 		}
 	}

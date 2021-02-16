@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using log4net;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic.Sources
 {
-	public sealed class NoThrowTextLogFileParser
-		: ITextLogFileParser
+	public sealed class NoThrowLogEntryParser
+		: ILogEntryParser
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ITextLogFileParser _inner;
+		private readonly ILogEntryParser _inner;
 
-		public NoThrowTextLogFileParser(ITextLogFileParser inner)
+		public NoThrowLogEntryParser(ILogEntryParser inner)
 		{
 			_inner = inner;
 		}
@@ -46,6 +47,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				return logEntry;
+			}
+		}
+
+		public IEnumerable<IColumnDescriptor> Columns
+		{
+			get
+			{
+				try
+				{
+					return _inner.Columns;
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception: {0}", e);
+					return Enumerable.Empty<IColumnDescriptor>();
+				}
 			}
 		}
 
