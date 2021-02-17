@@ -76,12 +76,12 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(42);
 			_control.LogSource = logFile.Object;
 
-			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>()))
+			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
 				.Throws<IndexOutOfRangeException>();
 
 			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 
-			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>()))
+			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
 			       .Throws<ArgumentOutOfRangeException>();
 			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 		}

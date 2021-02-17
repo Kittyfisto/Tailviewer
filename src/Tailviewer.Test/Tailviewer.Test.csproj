@@ -144,6 +144,7 @@
     <Compile Include="BusinessLogic\Buffers\LogEntryListAccessorTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogBufferListTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryParserFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatsTest.cs" />

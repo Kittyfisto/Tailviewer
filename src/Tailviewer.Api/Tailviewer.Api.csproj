@@ -63,8 +63,9 @@
     <Compile Include="ILogFileFormatRepository.cs" />
     <Compile Include="IPropertyDescriptor.cs" />
     <Compile Include="LogEntriesExtensions.cs" />
-    <Compile Include="LogFileQueryMode.cs" />
-    <Compile Include="LogFileQueryOptions.cs" />
+    <Compile Include="LogSourceQueryMode.cs" />
+    <Compile Include="LogSourceQueryOptions.cs" />
+    <Compile Include="NoSuchServiceException.cs" />
     <Compile Include="Plugins\ICustomLogFileFormat.cs" />
     <Compile Include="Plugins\ICustomLogFileFormatCreatorPlugin.cs" />
     <Compile Include="Plugins\ILogFileFormatMatcher.cs" />

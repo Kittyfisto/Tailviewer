@@ -67,7 +67,7 @@ namespace Tailviewer.Core.Buffers
 		#region Implementation of IReadOnlyList<out IReadOnlyLogEntry>
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, int sourceIndex, int length)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -76,7 +76,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogSourceQueryOptions queryOptions)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);

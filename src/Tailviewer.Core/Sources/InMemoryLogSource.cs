@@ -175,7 +175,7 @@ namespace Tailviewer.Core.Sources
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -188,7 +188,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -203,7 +203,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
@@ -213,7 +213,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{

@@ -43,7 +43,7 @@ namespace Tailviewer.Core.Sources.Text
 				_listeners.Add(listener, proxy);
 			}
 
-			_source?.AddListener(listener, maximumWaitTime, maximumLineCount);
+			_source?.AddListener(proxy, maximumWaitTime, maximumLineCount);
 		}
 
 		public void RemoveListener(ILogSourceListener listener)
@@ -100,7 +100,7 @@ namespace Tailviewer.Core.Sources.Text
 		                         IColumnDescriptor<T> column,
 		                         T[] destination,
 		                         int destinationIndex,
-		                         LogFileQueryOptions queryOptions)
+		                         LogSourceQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -121,7 +121,7 @@ namespace Tailviewer.Core.Sources.Text
 		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
 		                       ILogBuffer destination,
 		                       int destinationIndex,
-		                       LogFileQueryOptions queryOptions)
+		                       LogSourceQueryOptions queryOptions)
 		{
 			if (destinationIndex != 0)
 				throw new NotImplementedException();

@@ -3,7 +3,7 @@ namespace Tailviewer
 	/// <summary>
 	/// 
 	/// </summary>
-	public enum LogFileQueryMode
+	public enum LogSourceQueryMode
 	{
 		/// <summary>
 		///    If the data is known to exist (e.g. the requested entry is truly part of the log file),

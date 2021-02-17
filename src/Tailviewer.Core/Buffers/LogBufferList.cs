@@ -381,7 +381,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, int sourceIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -416,7 +416,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -616,7 +616,7 @@ namespace Tailviewer.Core.Buffers
 			void FillDefault(int destinationIndex, int length);
 
 			void CopyFrom(int destinationIndex, IReadOnlyLogBuffer source, IReadOnlyList<int> sourceIndices);
-			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogFileQueryOptions queryOptions);
+			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions);
 			void AddRange(int count);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
 		}
@@ -694,7 +694,7 @@ namespace Tailviewer.Core.Buffers
 				source.CopyTo(_column, sourceIndices, _data, destinationIndex);
 			}
 
-			public void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogFileQueryOptions queryOptions)
+			public void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions)
 			{
 				// TODO: Write custom List implementation which allows access to its internal buffer so we can void the allocation and additional copy here
 				var maxCount = destinationIndex + indices.Count;
@@ -782,7 +782,7 @@ namespace Tailviewer.Core.Buffers
 				}
 			}
 
-			public void CopyFrom(int destinationIndex, T[] source, int sourceIndex, int length)
+			public void CopyFrom(int destinationIndex, IReadOnlyList<T> source, int sourceIndex, int length)
 			{
 				for (int i = 0; i < length; ++i)
 				{

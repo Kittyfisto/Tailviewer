@@ -108,10 +108,10 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		/// <inheritdoc />
-		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		#region Index Translation
 

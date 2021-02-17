@@ -142,7 +142,7 @@
     <Compile Include="BusinessLogic\Sources\NoThrowLogEntryParser.cs" />
     <Compile Include="BusinessLogic\Sources\PluginLogFileFactory.cs" />
     <Compile Include="BusinessLogic\Sources\GenericTextLogEntryParser.cs" />
-    <Compile Include="BusinessLogic\Sources\LogEntryParserPlugin.cs" />
+    <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="Int32RangeRule.cs" />

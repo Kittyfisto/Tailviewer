@@ -43,7 +43,7 @@ namespace Tailviewer.BusinessLogic.Sources
 				}
 			}
 
-			return null;
+			return new GenericTextLogSource(source, new GenericTextLogEntryParser());
 		}
 
 		#endregion

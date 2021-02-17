@@ -43,7 +43,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		/// <exception cref="ArgumentException">
+		/// <exception cref="NoSuchServiceException">
 		///     In case no service which implements the interface <typeparamref name="T" /> has
 		///     been registered with this container.
 		/// </exception>

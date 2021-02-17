@@ -8,7 +8,7 @@ namespace Tailviewer
 {
 	/// <summary>
 	///     Basically a handle to a specific portion of the logfile.
-	///     Call <see cref="ILogSource.GetEntries(IReadOnlyList{LogLineIndex},ILogBuffer,int,LogFileQueryOptions)" /> to actually obtain the data for that portion.
+	///     Call <see cref="ILogSource.GetEntries(IReadOnlyList{LogLineIndex},ILogBuffer,int,LogSourceQueryOptions)" /> to actually obtain the data for that portion.
 	/// </summary>
 	/// <remarks>
 	/// TODO: Rename to LogEntryRange as it will soon describe a range of log entries, see #140

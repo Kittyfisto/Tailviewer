@@ -45,15 +45,14 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
 		private IReadOnlyList<ILogSource> _logSources;
 		private ILogSource _finalLogSource;
+		private int _count;
 
 		#endregion
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="fileName"></param>
-		/// <param name="maximumWaitTime"></param>
+		public FileLogSource(IServiceContainer services, string fileName)
+			: this(services, fileName, TimeSpan.FromMilliseconds(100))
+		{ }
+
 		public FileLogSource(IServiceContainer services, string fileName, TimeSpan maximumWaitTime)
 			: base(services.Retrieve<ITaskScheduler>())
 		{
@@ -119,7 +118,7 @@ namespace Tailviewer.Core.Sources.Text
 		                                  IColumnDescriptor<T> column,
 		                                  T[] destination,
 		                                  int destinationIndex,
-		                                  LogFileQueryOptions queryOptions)
+		                                  LogSourceQueryOptions queryOptions)
 		{
 			var source = _finalLogSource;
 			if (source != null)
@@ -135,7 +134,7 @@ namespace Tailviewer.Core.Sources.Text
 		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
 		                                ILogBuffer destination,
 		                                int destinationIndex,
-		                                LogFileQueryOptions queryOptions)
+		                                LogSourceQueryOptions queryOptions)
 		{
 			var source = _finalLogSource;
 			if (source != null)
@@ -179,11 +178,6 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void UpdateFormat()
 		{
-			// The most important thing about the following method is that we try to get away with holding a lock for the smallest amount of time.
-			// It's especially important that we don't hold a lock while we're calling plugins and such because that is likely to cause
-			// problems when we're being disposed of. Therefore we first obtain a copy of the relevant values here, create the log source list
-			// as needed and *then* check to see if it actually is needed or if we have been disposed of at the last possible moment.
-
 			var format = _detector.TryDetermineFormat(out var encoding);
 			var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
 			var encodingChanged = _propertiesBuffer.SetValue(GeneralProperties.Encoding, encoding);
@@ -198,7 +192,10 @@ namespace Tailviewer.Core.Sources.Text
 				// that we expose here could be anything. It could be the raw log source which reads everything line by line,
 				// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
 				var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
-				StartListenTo(newLogSources);
+				if (!StartListenTo(newLogSources))
+				{
+					Dispose(newLogSources);
+				}
 			}
 		}
 
@@ -230,18 +227,24 @@ namespace Tailviewer.Core.Sources.Text
 				if (section.IsReset)
 				{
 					Listeners.Reset();
+					_count = 0;
 				}
 				else if (section.IsInvalidate)
 				{
 					Listeners.Invalidate((int) section.Index, section.Count);
+					_count = (int) section.Index;
 				}
 				else
 				{
 					Listeners.OnRead(section.LastIndex);
+					_count = section.LastIndex;
 				}
 
 				workDone = true;
 			}
+
+			if (!workDone)
+				Listeners.OnRead(_count);
 		}
 
 		#endregion
@@ -260,13 +263,18 @@ namespace Tailviewer.Core.Sources.Text
 		private IReadOnlyList<ILogSource> CreateAllLogSources(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding, TimeSpan maximumWaitTime)
 		{
 			var newLogSources = new List<ILogSource>();
-			var streamingLogSource = TryCreateStreamingTextLogFile(serviceContainer, fullFilename, format, encoding);
-			if (streamingLogSource != null)
-				newLogSources.Add(streamingLogSource);
+			var streamingLogSource = CreateTextLog(serviceContainer, fullFilename, format, encoding);
+			if (streamingLogSource == null)
+				return newLogSources;
 
-			var parsingLogSource = CreateLogSourceParser(serviceContainer, streamingLogSource);
+			newLogSources.Add(streamingLogSource);
+
+			var parsingLogSource = TryCreateParser(serviceContainer, streamingLogSource);
 			if (parsingLogSource != null)
 				newLogSources.Add(parsingLogSource);
+
+			var adorner = CreateAdorner(newLogSources.Last());
+			newLogSources.Add(adorner);
 
 			var multiLineLogSource = TryCreateMultiLineLogFile(serviceContainer, newLogSources.Last(), maximumWaitTime);
 			if (multiLineLogSource != null)
@@ -275,18 +283,23 @@ namespace Tailviewer.Core.Sources.Text
 			return newLogSources;
 		}
 
-		private static ILogSource TryCreateStreamingTextLogFile(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding)
+		private static ILogSource CreateTextLog(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding)
 		{
 			var fileLogSourceFactory = serviceContainer.Retrieve<IFileLogSourceFactory>();
 			var textLogSource = fileLogSourceFactory.OpenRead(fullFilename, format, encoding);
 			return textLogSource;
 		}
 
-		private static ILogSource CreateLogSourceParser(IServiceContainer serviceContainer, ILogSource source)
+		private static ILogSource TryCreateParser(IServiceContainer serviceContainer, ILogSource source)
 		{
 			var logSourceParserPlugin = serviceContainer.Retrieve<ILogSourceParserPlugin>();
 			var parsingLogSource = logSourceParserPlugin.CreateParser(serviceContainer, source);
 			return parsingLogSource;
+		}
+
+		private static ILogSource CreateAdorner(ILogSource source)
+		{
+			return new LogSourceAdorner(source);
 		}
 
 		private static ILogSource TryCreateMultiLineLogFile(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
@@ -311,13 +324,15 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
-		private void StartListenTo(IReadOnlyList<ILogSource> logSource)
+		private bool StartListenTo(IReadOnlyList<ILogSource> logSource)
 		{
 			ILogSource finalLogSource;
 			lock (_syncRoot)
 			{
 				if (_isDisposed)
-					return;
+				{
+					return false;
+				}
 
 				if (logSource != null && logSource.Count > 0)
 				{
@@ -334,6 +349,7 @@ namespace Tailviewer.Core.Sources.Text
 			}
 
 			finalLogSource?.AddListener(this, _maximumWaitTime, MaximumLineCount);
+			return true;
 		}
 	}
 }

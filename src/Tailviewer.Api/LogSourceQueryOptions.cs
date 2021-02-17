@@ -6,16 +6,16 @@ namespace Tailviewer
 	/// <summary>
 	///     Describes how data is to be retrieved from an <see cref="ILogSource" />.
 	/// </summary>
-	public sealed class LogFileQueryOptions
+	public sealed class LogSourceQueryOptions
 	{
 		/// <summary>
-		///     The default query options, <see cref="LogFileQueryMode.FromSource" />.
+		///     The default query options, <see cref="LogSourceQueryMode.FromSource" />.
 		/// </summary>
-		public static readonly LogFileQueryOptions Default;
+		public static readonly LogSourceQueryOptions Default;
 
 		/// <summary>
 		///     The maximum time the log file shall block in case <see cref="QueryMode" /> is set to
-		///     <see cref="LogFileQueryMode.FromSource" />.
+		///     <see cref="LogSourceQueryMode.FromSource" />.
 		///     Ignored otherwise.
 		/// </summary>
 		public TimeSpan MaximumWaitTime;
@@ -23,11 +23,11 @@ namespace Tailviewer
 		/// <summary>
 		///     How the log file shall block, if at all.
 		/// </summary>
-		public LogFileQueryMode QueryMode;
+		public LogSourceQueryMode QueryMode;
 
-		static LogFileQueryOptions()
+		static LogSourceQueryOptions()
 		{
-			Default = new LogFileQueryOptions(LogFileQueryMode.FromSource)
+			Default = new LogSourceQueryOptions(LogSourceQueryMode.FromSource)
 			{
 				MaximumWaitTime = TimeSpan.MaxValue
 			};
@@ -36,7 +36,7 @@ namespace Tailviewer
 		/// <summary>
 		/// </summary>
 		/// <param name="queryMode"></param>
-		public LogFileQueryOptions(LogFileQueryMode queryMode)
+		public LogSourceQueryOptions(LogSourceQueryMode queryMode)
 		{
 			QueryMode = queryMode;
 		}
@@ -48,7 +48,7 @@ namespace Tailviewer
 		{
 			var builder = new StringBuilder();
 			builder.Append(QueryMode);
-			if (QueryMode == LogFileQueryMode.FromSource)
+			if (QueryMode == LogSourceQueryMode.FromSource)
 			{
 				builder.AppendFormat("Wait: {0}", MaximumWaitTime);
 			}
@@ -59,7 +59,7 @@ namespace Tailviewer
 
 		#region Equality members
 
-		private bool Equals(LogFileQueryOptions other)
+		private bool Equals(LogSourceQueryOptions other)
 		{
 			return QueryMode == other.QueryMode &&
 			       MaximumWaitTime.Equals(other.MaximumWaitTime);
@@ -68,7 +68,7 @@ namespace Tailviewer
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
-			return ReferenceEquals(this, obj) || obj is LogFileQueryOptions other && Equals(other);
+			return ReferenceEquals(this, obj) || obj is LogSourceQueryOptions other && Equals(other);
 		}
 
 		/// <inheritdoc />
@@ -85,7 +85,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(LogFileQueryOptions left, LogFileQueryOptions right)
+		public static bool operator ==(LogSourceQueryOptions left, LogSourceQueryOptions right)
 		{
 			return Equals(left, right);
 		}
@@ -95,7 +95,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(LogFileQueryOptions left, LogFileQueryOptions right)
+		public static bool operator !=(LogSourceQueryOptions left, LogSourceQueryOptions right)
 		{
 			return !Equals(left, right);
 		}

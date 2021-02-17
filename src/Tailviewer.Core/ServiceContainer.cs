@@ -55,7 +55,7 @@ namespace Tailviewer.Core
 		{
 			var interfaceType = typeof(T);
 			if (!TryRetrieve(out T service))
-				throw new ArgumentException($"No service has been registered with this container which implements {interfaceType.FullName}");
+				throw new NoSuchServiceException(interfaceType);
 
 			return service;
 		}
@@ -133,9 +133,8 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogSource CreateTextLogFile(string fileName)
 		{
-			//return new StreamingTextLogFile(this, fileName);
-			return new TextLogSource(this,
-			                       fileName);
+			//return new FileLogSource(this, fileName);
+			return new TextLogSource(this, fileName);
 		}
 
 		/// <inheritdoc />

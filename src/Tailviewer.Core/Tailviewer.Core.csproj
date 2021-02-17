@@ -82,7 +82,7 @@
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
-    <Compile Include="Sources\AugmentedLogSource.cs" />
+    <Compile Include="Sources\LogSourceAdorner.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
     <Compile Include="Sources\Text\FileFormatDetector.cs" />

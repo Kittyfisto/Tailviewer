@@ -22,9 +22,9 @@ namespace Tailviewer
 		                            IColumnDescriptor column,
 		                            ILogSource source,
 		                            IReadOnlyList<LogLineIndex> sourceIndices,
-		                            LogFileQueryOptions queryOptions)
+		                            LogSourceQueryOptions queryOptions)
 		{
-			that.CopyFrom(column, 0, source, sourceIndices, LogFileQueryOptions.Default);
+			that.CopyFrom(column, 0, source, sourceIndices, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Tailviewer
 		                            ILogSource source,
 		                            IReadOnlyList<LogLineIndex> sourceIndices)
 		{
-			that.CopyFrom(column, destinationIndex, source, sourceIndices, LogFileQueryOptions.Default);
+			that.CopyFrom(column, destinationIndex, source, sourceIndices, LogSourceQueryOptions.Default);
 		}
 	}
 }

@@ -310,7 +310,7 @@ namespace Tailviewer.Core.Entries
 		/// <inheritdoc />
 		public void CopyFrom(IReadOnlyLogEntry logEntry)
 		{
-			throw new NotImplementedException();
+			_logEntry.CopyFrom(logEntry);
 		}
 
 		/// <inheritdoc />

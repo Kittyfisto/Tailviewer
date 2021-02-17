@@ -24,7 +24,7 @@ namespace Tailviewer
 		/// <param name="source">The source from which to copy data from</param>
 		/// <param name="sourceIndex">The first index of <paramref name="source" /> from which to copy data from</param>
 		/// <param name="length">The number of elements of <paramref name="source" /> to copy from</param>
-		void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length);
+		void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, int sourceIndex, int length);
 
 		/// <summary>
 		///     Copies the given *non-contiguous* segment of data from the given log file into this buffer in a contiguous block.
@@ -38,7 +38,7 @@ namespace Tailviewer
 		/// <param name="sourceIndices">The non-contiguous section of the log file from which to copy from (e.g. from index 5, 10 entries)</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		[WillBeRemoved("TODO: Remove this abomination", "")]
-		void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions);
+		void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogSourceQueryOptions queryOptions);
 
 		/// <summary>
 		/// 

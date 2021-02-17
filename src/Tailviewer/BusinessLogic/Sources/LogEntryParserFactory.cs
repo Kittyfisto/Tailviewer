@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins;
@@ -13,18 +12,15 @@ namespace Tailviewer.BusinessLogic.Sources
 	///     Responsible for loading all available <see cref="ILogEntryParserPlugin" /> implementations
 	///     and delegating to them, in case they implement a particular format.
 	/// </summary>
-	public sealed class LogEntryParserPlugin
+	public sealed class LogEntryParserFactory
 		: ILogEntryParserPlugin
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private readonly IPluginLoader _pluginLoader;
 
-		private readonly IReadOnlyList<ILogEntryParserPlugin> _plugins;
-
-		public LogEntryParserPlugin(IServiceContainer services)
+		public LogEntryParserFactory(IServiceContainer services)
 		{
-			var pluginLoader = services.Retrieve<IPluginLoader>();
-			_plugins = pluginLoader.LoadAllOfType<ILogEntryParserPlugin>()
-			                          .ToList();
+			_pluginLoader = services.Retrieve<IPluginLoader>();
 		}
 
 		private ILogEntryParser CreateDefaultParser(IServiceContainer services)
@@ -45,7 +41,7 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		public ILogEntryParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{
-			foreach (var plugin in _plugins)
+			foreach (var plugin in _pluginLoader.LoadAllOfType<ILogEntryParserPlugin>())
 			{
 				if (TryCreateParser(plugin, services, format, out var parser))
 				{
@@ -61,9 +57,15 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			try
 			{
+				var rawParser = plugin.CreateParser(services, format);
+				if (rawParser == null)
+				{
+					parser = null;
+					return false;
+				}
+				
 				// We cannot trust plugins to adhere to the contract set up by the interface.
 				// Therefore we wrap the "raw" plugin implementation by a layer which ensures that the plugin cannot screw up too bad
-				var rawParser = plugin.CreateParser(services, format);
 				parser = new NoThrowLogEntryParser(rawParser);
 				return true;
 			}

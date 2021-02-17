@@ -52,8 +52,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			                               It.Is<IColumnDescriptor<int>>(y => y == LogColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
-			                               It.IsAny<LogFileQueryOptions>()))
-				.Callback((IReadOnlyList<LogLineIndex> section, IColumnDescriptor<int> unused, int[] indices, int unused2,LogFileQueryOptions unused3) =>
+			                               It.IsAny<LogSourceQueryOptions>()))
+				.Callback((IReadOnlyList<LogLineIndex> section, IColumnDescriptor<int> unused, int[] indices, int unused2,LogSourceQueryOptions unused3) =>
 				{
 					indices[0] = 42;
 					indices[1] = 101;

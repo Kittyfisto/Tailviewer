@@ -30,6 +30,8 @@ namespace Tailviewer.Core.Sources
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		public const int DefaultMaxEntryCount = 10000;
+
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly LogSourceListenerCollection _listeners;
 		private readonly ConcurrentPropertiesList _properties;
@@ -39,13 +41,15 @@ namespace Tailviewer.Core.Sources
 		private ILogSource _source;
 		private bool _isDisposed;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly int _maxEntryCount;
 
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="taskScheduler"></param>
 		/// <param name="maximumWaitTime"></param>
-		public LogSourceProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime)
+		/// <param name="maxEntryCount"></param>
+		public LogSourceProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, int maxEntryCount = DefaultMaxEntryCount)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
@@ -60,6 +64,7 @@ namespace Tailviewer.Core.Sources
 
 			_task = _taskScheduler.StartPeriodic(RunOnce, "Log File Proxy");
 			_maximumWaitTime = maximumWaitTime;
+			_maxEntryCount = maxEntryCount;
 		}
 
 		/// <summary>
@@ -72,8 +77,9 @@ namespace Tailviewer.Core.Sources
 		/// <param name="taskScheduler"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="innerLogSource"></param>
-		internal LogSourceProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogSource innerLogSource)
-			: this(taskScheduler, maximumWaitTime)
+		/// <param name="maxEntryCount"></param>
+		internal LogSourceProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogSource innerLogSource, int maxEntryCount = DefaultMaxEntryCount)
+			: this(taskScheduler, maximumWaitTime, maxEntryCount)
 		{
 			InnerLogSource = innerLogSource;
 		}
@@ -82,36 +88,40 @@ namespace Tailviewer.Core.Sources
 		{
 			bool performedWork = false;
 
-			while (_pendingSections.TryDequeue(out var pair))
+			//while (_pendingSections.TryDequeue(out var pair))
+			if (_pendingSections.TryDequeueUpTo(_maxEntryCount, out var pendingModifications))
 			{
-				var sender = pair.Key;
-				var innerLogFile = _source;
-				var section = pair.Value;
-				if (sender != innerLogFile)
+				foreach(var pair in pendingModifications)
 				{
-					// If, for some reason, we receive an event from a previous log file,
-					// then we ignore it so our listeners are not confused.
-					Log.DebugFormat(
-						"Skipping pending modification '{0}' from '{1}' because it is no longer our current log file '{2}'",
-						section, sender, innerLogFile);
-				}
-				else
-				{
-					if (section.IsReset)
+					var sender = pair.Key;
+					var innerLogFile = _source;
+					var section = pair.Value;
+					if (sender != innerLogFile)
 					{
-						_listeners.Reset();
-					}
-					else if (section.IsInvalidate)
-					{
-						_listeners.Invalidate((int)section.Index, section.Count);
+						// If, for some reason, we receive an event from a previous log file,
+						// then we ignore it so our listeners are not confused.
+						Log.DebugFormat(
+						                "Skipping pending modification '{0}' from '{1}' because it is no longer our current log file '{2}'",
+						                section, sender, innerLogFile);
 					}
 					else
 					{
-						_listeners.OnRead((int)(section.Index + section.Count));
+						if (section.IsReset)
+						{
+							_listeners.Reset();
+						}
+						else if (section.IsInvalidate)
+						{
+							_listeners.Invalidate((int)section.Index, section.Count);
+						}
+						else
+						{
+							_listeners.OnRead((int)(section.Index + section.Count));
+						}
 					}
-				}
 
-				performedWork = true;
+					performedWork = true;
+				}
 			}
 
 			UpdateProperties();
@@ -270,7 +280,7 @@ namespace Tailviewer.Core.Sources
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -296,7 +306,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			ILogSource logSource = _source;
 			if (logSource != null)

@@ -101,7 +101,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		public void CopyFrom<T>(IColumnDescriptor<T> column, int destinationIndex, IReadOnlyList<T> source, int sourceIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -135,7 +135,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, LogFileSection section, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, LogFileSection section, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -148,7 +148,7 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
+		public void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -358,8 +358,8 @@ namespace Tailviewer.Core.Buffers
 		interface IColumnData
 		{
 			object this[int index] { get; set; }
-			void CopyFrom(int destinationIndex, ILogSource source, LogFileSection section, LogFileQueryOptions queryOptions);
-			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogFileQueryOptions queryOptions);
+			void CopyFrom(int destinationIndex, ILogSource source, LogFileSection section, LogSourceQueryOptions queryOptions);
+			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions);
 			void CopyFrom(int destinationIndex, IReadOnlyLogBuffer source, IReadOnlyList<int> sourceIndices);
 			void FillDefault(int destinationIndex, int length);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
@@ -394,9 +394,19 @@ namespace Tailviewer.Core.Buffers
 				set { _data[index] = (T) value; }
 			}
 
-			public void CopyFrom(int destIndex, T[] source, int sourceIndex, int length)
+			public void CopyFrom(int destIndex, IReadOnlyList<T> source, int sourceIndex, int length)
 			{
-				Array.Copy(source, sourceIndex, _data, destIndex, length);
+				if (source is T[] sourceArray)
+				{
+					Array.Copy(sourceArray, sourceIndex, _data, destIndex, length);
+				}
+				else
+				{
+					for (int i = 0; i < length; ++i)
+					{
+						_data[destIndex + i] = source[sourceIndex + i];
+					}
+				}
 			}
 
 			public void CopyFrom(int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices)
@@ -407,12 +417,12 @@ namespace Tailviewer.Core.Buffers
 				}
 			}
 
-			public void CopyFrom(int destinationIndex, ILogSource source, LogFileSection section, LogFileQueryOptions queryOptions)
+			public void CopyFrom(int destinationIndex, ILogSource source, LogFileSection section, LogSourceQueryOptions queryOptions)
 			{
 				source.GetColumn(section, _column, _data, destinationIndex, queryOptions);
 			}
 
-			public void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogFileQueryOptions queryOptions)
+			public void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions)
 			{
 				source.GetColumn(indices, _column, _data, destinationIndex, queryOptions);
 			}

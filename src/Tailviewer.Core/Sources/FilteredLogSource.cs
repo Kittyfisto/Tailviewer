@@ -141,7 +141,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -200,7 +200,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
 			foreach (var column in destination.Columns)
@@ -209,7 +209,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -228,7 +228,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -249,7 +249,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -269,7 +269,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 		
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			// The easiest way to serve random access to this column is to simply retrieve
 			// the timestamp for every requested index as well as for the preceding index.

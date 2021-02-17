@@ -19,8 +19,8 @@ namespace Tailviewer
 	/// </remarks>
 	/// <remarks>
 	///     Last but not least, an ILogFile holds log entries and allows Tailviewer to access them via one of these following methods (or their overloaded versions):
-	///     - <see cref="GetEntries(IReadOnlyList{LogLineIndex},ILogBuffer,int,LogFileQueryOptions)"/>
-	///     - <see cref="GetColumn{T}(IReadOnlyList{LogLineIndex},IColumnDescriptor{T},T[],int,LogFileQueryOptions)"/>
+	///     - <see cref="GetEntries(IReadOnlyList{LogLineIndex},ILogBuffer,int,LogSourceQueryOptions)"/>
+	///     - <see cref="GetColumn{T}(IReadOnlyList{LogLineIndex},IColumnDescriptor{T},T[],int,LogSourceQueryOptions)"/>
 	///     Tailviewer will call these methods to access portions of the log file. Depending on the size of the log file, Tailviewer might access only a portion of the log file,
 	///     for example 1000 log entries beginning with the 5000th one. And even then, it may only be interested in the Index and RawContent column (ignoring any others).
 	///     Any implementation of this log file must make sure to properly implement this interface if there shall be any success in getting tailviewer to understand a source.
@@ -141,7 +141,7 @@ namespace Tailviewer
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
-		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		/// <summary>
 		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
@@ -151,7 +151,7 @@ namespace Tailviewer
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
-		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		#endregion
 

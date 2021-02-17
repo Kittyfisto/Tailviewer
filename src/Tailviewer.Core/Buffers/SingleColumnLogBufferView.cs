@@ -70,12 +70,23 @@ namespace Tailviewer.Core.Buffers
 		#region Implementation of IReadOnlyList<out IReadOnlyLogEntry>
 
 		/// <inheritdoc />
-		public void CopyFrom<TColumn>(IColumnDescriptor<TColumn> column, int destinationIndex, TColumn[] source, int sourceIndex, int length)
+		public void CopyFrom<TColumn>(IColumnDescriptor<TColumn> column, int destinationIndex, IReadOnlyList<TColumn> source, int sourceIndex, int length)
 		{
 			if (!Equals(column, _column))
 				throw new NoSuchColumnException(column);
 
-			Array.Copy(source, sourceIndex, _buffer, _offset + destinationIndex, length);
+			if (source is T[] sourceArray)
+			{
+				Array.Copy(sourceArray, sourceIndex, _buffer, _offset + destinationIndex, length);
+			}
+			else
+			{
+				for (int i = 0; i < length; ++i)
+				{
+					// TODO: Can we get rid of this boxing/unboxing of value types here? This sucks
+					_buffer[_offset + destinationIndex + i] = (T)(object)source[sourceIndex + i];
+				}
+			}
 		}
 
 		/// <inheritdoc />
@@ -83,7 +94,7 @@ namespace Tailviewer.Core.Buffers
 		                     int destinationIndex,
 		                     ILogSource source,
 		                     IReadOnlyList<LogLineIndex> sourceIndices,
-		                     LogFileQueryOptions queryOptions)
+		                     LogSourceQueryOptions queryOptions)
 		{
 			throw new System.NotImplementedException();
 		}

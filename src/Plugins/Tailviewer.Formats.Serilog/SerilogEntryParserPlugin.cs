@@ -21,7 +21,7 @@ namespace Tailviewer.Formats.Serilog
 		{
 			var serilogFormat = format as SerilogFileFormat;
 			if (serilogFormat == null)
-				throw new ArgumentException($"Unsupported format: {format}");
+				return null;
 
 			return serilogFormat.Parser;
 		}

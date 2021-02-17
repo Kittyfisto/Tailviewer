@@ -36,7 +36,7 @@ namespace Tailviewer.Core.Sources
 										IColumnDescriptor<T> column,
 										T[] destination)
 		{
-			logSource.GetColumn(sourceIndices, column, destination, 0, LogFileQueryOptions.Default);
+			logSource.GetColumn(sourceIndices, column, destination, 0, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace Tailviewer.Core.Sources
 		                                IReadOnlyList<LogLineIndex> sourceIndices,
 		                                IColumnDescriptor<T> column,
 		                                T[] destination,
-		                                LogFileQueryOptions queryOptions)
+		                                LogSourceQueryOptions queryOptions)
 		{
 			logSource.GetColumn(sourceIndices, column, destination, 0, queryOptions);
 		}
@@ -72,7 +72,7 @@ namespace Tailviewer.Core.Sources
 		                                T[] destination,
 		                                int destinationIndex)
 		{
-			logSource.GetColumn(sourceIndices, column, destination, destinationIndex, LogFileQueryOptions.Default);
+			logSource.GetColumn(sourceIndices, column, destination, destinationIndex, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace Tailviewer.Core.Sources
 		[Pure]
 		public static T[] GetColumn<T>(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column)
 		{
-			return logSource.GetColumn<T>(sourceIndices, column, LogFileQueryOptions.Default);
+			return logSource.GetColumn<T>(sourceIndices, column, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace Tailviewer.Core.Sources
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		/// <returns></returns>
 		[Pure]
-		public static T[] GetColumn<T>(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, LogFileQueryOptions queryOptions)
+		public static T[] GetColumn<T>(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, LogSourceQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -162,7 +162,7 @@ namespace Tailviewer.Core.Sources
 		/// <param name="destination"></param>
 		public static void GetEntries(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination)
 		{
-			logSource.GetEntries(sourceIndices, destination, 0, LogFileQueryOptions.Default);
+			logSource.GetEntries(sourceIndices, destination, 0, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -173,7 +173,7 @@ namespace Tailviewer.Core.Sources
 		/// <param name="sourceIndices"></param>
 		/// <param name="destination"></param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
-		public static void GetEntries(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, LogFileQueryOptions queryOptions)
+		public static void GetEntries(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, LogSourceQueryOptions queryOptions)
 		{
 			logSource.GetEntries(sourceIndices, destination, 0, queryOptions);
 		}
@@ -188,7 +188,7 @@ namespace Tailviewer.Core.Sources
 		/// <param name="destinationIndex"></param>
 		public static void GetEntries(this ILogSource logSource, IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex)
 		{
-			logSource.GetEntries(sourceIndices, destination, destinationIndex, LogFileQueryOptions.Default);
+			logSource.GetEntries(sourceIndices, destination, destinationIndex, LogSourceQueryOptions.Default);
 		}
 
 		/// <summary>

@@ -154,7 +154,7 @@ namespace Tailviewer.Core.Sources.Merged
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -203,7 +203,7 @@ namespace Tailviewer.Core.Sources.Merged
 
 		#region Retrieving Column Values from source files
 
-		private void GetSourceColumnValues<T>(IColumnDescriptor<T> column, Dictionary<int, Stuff<T>> originalBuffers, LogFileQueryOptions queryOptions)
+		private void GetSourceColumnValues<T>(IColumnDescriptor<T> column, Dictionary<int, Stuff<T>> originalBuffers, LogSourceQueryOptions queryOptions)
 		{
 			foreach (var pair in originalBuffers)
 			{
@@ -254,7 +254,7 @@ namespace Tailviewer.Core.Sources.Merged
 		/// <param name="buffer">The buffer into which the values of the time delta column have to be written</param>
 		/// <param name="destinationIndex">The index of the first value into <paramref name="buffer"/> where values have to be written</param>
 		/// <param name="queryOptions"></param>
-		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			var start = GetProperty(GeneralProperties.StartTimestamp);
 			var timestamps = new DateTime?[indices.Count];
@@ -277,7 +277,7 @@ namespace Tailviewer.Core.Sources.Merged
 		/// <param name="buffer">The buffer into which the values of the time delta column have to be written</param>
 		/// <param name="destinationIndex">The index of the first value into <paramref name="buffer"/> where values have to be written</param>
 		/// <param name="queryOptions"></param>
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			// The easiest way to compute the time delta for (very possibly non-consecutive rows)
 			// is to retrieve the timestamp for every desired row and its previous one, hence
@@ -301,7 +301,7 @@ namespace Tailviewer.Core.Sources.Merged
 		#endregion
 
 		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
 			foreach (var column in destination.Columns)

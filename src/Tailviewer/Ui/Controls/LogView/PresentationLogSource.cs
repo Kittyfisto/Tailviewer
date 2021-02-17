@@ -260,7 +260,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -272,7 +272,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}

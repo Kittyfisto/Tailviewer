@@ -24,6 +24,7 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
@@ -178,11 +179,17 @@ namespace Tailviewer
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
-					var textLogFileParserPlugin = new LogEntryParserPlugin(services);
+					var textLogFileParserPlugin = new LogEntryParserFactory(services);
 					services.RegisterInstance<ILogEntryParserPlugin>(textLogFileParserPlugin);
 
 					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
 					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);
+
+					var fileLogSourceFactory = new FileLogSourceFactory(taskScheduler);
+					services.RegisterInstance<IFileLogSourceFactory>(fileLogSourceFactory);
+
+					var parsingLogSourceFactory = new ParsingLogSourceFactory(services);
+					services.RegisterInstance<ILogSourceParserPlugin>(parsingLogSourceFactory);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);

@@ -19,9 +19,6 @@ using Tailviewer.Test.BusinessLogic.LogFiles.Text;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
-	/// <summary>
-	/// Tests <see cref="StreamingTextLogSource"/> together with an actual <see cref="IoScheduler"/>, reading log files from disk.
-	/// </summary>
 	[TestFixture]
 	public sealed class StreamingTextLogFileTest
 	{

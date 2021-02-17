@@ -45,7 +45,6 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ConcurrentQueue<IReadRequest> _pendingReadRequests;
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
-
 		private FileFingerprint _lastFingerprint;
 		private long _lastStreamPosition;
 
@@ -151,7 +150,7 @@ namespace Tailviewer.Core.Sources.Text
 		                         IColumnDescriptor<T> column,
 		                         T[] destination,
 		                         int destinationIndex,
-		                         LogFileQueryOptions queryOptions)
+		                         LogSourceQueryOptions queryOptions)
 		{
 			if (ReferenceEquals(column, LogColumns.RawContent))
 			{
@@ -178,7 +177,7 @@ namespace Tailviewer.Core.Sources.Text
 		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
 		                       ILogBuffer destination,
 		                       int destinationIndex,
-		                       LogFileQueryOptions queryOptions)
+		                       LogSourceQueryOptions queryOptions)
 		{
 			foreach(var column in destination.Columns)
 			{
@@ -270,7 +269,7 @@ namespace Tailviewer.Core.Sources.Text
 			using (var stream = new FileStream(_fileName,
 			                                   FileMode.Open,
 			                                   FileAccess.Read,
-			                                   FileShare.ReadWrite))
+			                                   FileShare.ReadWrite | FileShare.Delete))
 			{
 				AddFirstLineIfNecessary(stream);
 
@@ -279,6 +278,9 @@ namespace Tailviewer.Core.Sources.Text
 				long lineOffset;
 				while ((lineOffset = detector.FindNextLineOffset()) >= 0)
 				{
+					if (cancellationToken.IsCancellationRequested)
+						return false;
+
 					AddLine(lineOffset);
 				}
 			}
@@ -444,7 +446,7 @@ namespace Tailviewer.Core.Sources.Text
 		private void ReadRawData(IReadOnlyList<LogLineIndex> sourceIndices,
 		                         ILogBuffer destination,
 		                         int destinationIndex,
-		                         LogFileQueryOptions queryOptions)
+		                         LogSourceQueryOptions queryOptions)
 		{
 			using (var request = EnqueueReadRequest(sourceIndices, destination, destinationIndex))
 			{
@@ -452,9 +454,6 @@ namespace Tailviewer.Core.Sources.Text
 				if (!request.Wait(queryOptions.MaximumWaitTime, _cancellationTokenSource.Token))
 				{
 					request.Cancel();
-					if (Log.IsDebugEnabled)
-						Log.DebugFormat("{0}: Request to read #{1} lines timed out after {2}", _fileName, sourceIndices.Count,
-						                queryOptions.MaximumWaitTime);
 					linesRead = 0;
 				}
 				else
@@ -485,10 +484,11 @@ namespace Tailviewer.Core.Sources.Text
 			}
 			else
 			{
-				request = new NonContiguousReadRequest(sourceIndices, destination, destinationIndex);
+				request = new FragmentedReadRequest(sourceIndices, destination, destinationIndex);
 			}
 
 			_pendingReadRequests.Enqueue(request);
+			// TODO: If we could wake up the file read task on-demand, that would be awesome
 			return request;
 		}
 
@@ -512,7 +512,7 @@ namespace Tailviewer.Core.Sources.Text
 				Log.Debug(e);
 			}
 
-			return TimeSpan.FromMilliseconds(100);
+			return TimeSpan.FromMilliseconds(1);
 		}
 
 		private StreamReader TryOpenRead()
@@ -525,7 +525,7 @@ namespace Tailviewer.Core.Sources.Text
 				var stream = new FileStream(_fileName,
 				                            FileMode.Open,
 				                            FileAccess.Read,
-				                            FileShare.ReadWrite);
+				                            FileShare.ReadWrite | FileShare.Delete);
 				var reader = new StreamReader(stream, _encoding, _encoding.GetPreamble().Length > 0);
 				return reader;
 			}
@@ -625,20 +625,23 @@ namespace Tailviewer.Core.Sources.Text
 			void Complete(int linesRead);
 		}
 
-		abstract class AbstractReadRequest
+		internal abstract class AbstractReadRequest
 			: IReadRequest
 		{
 			private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-			private ILogBuffer _destination;
 			private readonly int _destinationIndex;
 			private readonly TaskCompletionSource<int> _taskSource;
+			private readonly DateTime _creationTime;
+			private DateTime? _startTime;
+			private ILogBuffer _destination;
 
 			protected AbstractReadRequest(ILogBuffer destination, int destinationIndex)
 			{
 				_destination = destination;
 				_destinationIndex = destinationIndex;
 				_taskSource = new TaskCompletionSource<int>();
+				_creationTime = DateTime.Now;
 			}
 
 			#region Implementation of IReadRequest
@@ -657,6 +660,7 @@ namespace Tailviewer.Core.Sources.Text
 			{
 				try
 				{
+					_startTime = DateTime.Now;
 					var linesRead = ReadLines(index, reader);
 					Complete(linesRead);
 				}
@@ -669,7 +673,8 @@ namespace Tailviewer.Core.Sources.Text
 
 			public void Cancel()
 			{
-				Log.Debug("Cancelling read request...");
+				var elapsed = DateTime.Now - _creationTime;
+				Log.DebugFormat("Cancelling '{0}' after {1:F1}ms...", this, elapsed.TotalMilliseconds);
 
 				// This lock is important because we must make sure that 
 				lock (this)
@@ -681,18 +686,21 @@ namespace Tailviewer.Core.Sources.Text
 					Log.Warn("Unable to cancel pending task (why though?!)");
 			}
 
+			public void Complete(int linesRead)
+			{
+				var elapsed = DateTime.Now - _creationTime;
+				Log.DebugFormat("Completing '{0}' after {1:F1}ms: {2} lines read", this, elapsed.TotalMilliseconds, linesRead);
+
+				if (!_taskSource.TrySetResult(linesRead))
+					Log.WarnFormat("Unable to set result for pending task (why though?!)");
+			}
+
 			public int NumLinesRead
 			{
 				get
 				{
 					return _taskSource.Task.Result;
 				}
-			}
-
-			public void Complete(int linesRead)
-			{
-				if (!_taskSource.TrySetResult(linesRead))
-					Log.WarnFormat("Unable to set result for pending task (why though?!)");
 			}
 
 			#endregion
@@ -751,6 +759,15 @@ namespace Tailviewer.Core.Sources.Text
 				_sourceSection = sourceSection;
 			}
 
+			#region Overrides of Object
+
+			public override string ToString()
+			{
+				return $"Read {_sourceSection.Count} contiguous lines";
+			}
+
+			#endregion
+
 			protected override int ReadLines(LogBufferList index, StreamReader reader)
 			{
 				var lines = new string[_sourceSection.Count];
@@ -799,18 +816,27 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
-		sealed class NonContiguousReadRequest
+		sealed class FragmentedReadRequest
 			: AbstractReadRequest
 		{
 			private readonly LogLineIndex[] _sourceIndices;
 
-			public NonContiguousReadRequest(IReadOnlyList<LogLineIndex> section,
+			public FragmentedReadRequest(IReadOnlyList<LogLineIndex> sourceIndices,
 			                                ILogBuffer destination,
 			                                int destinationIndex)
 				: base(destination, destinationIndex)
 			{
-				_sourceIndices = section as LogLineIndex[] ?? section.ToArray();
+				_sourceIndices = sourceIndices as LogLineIndex[] ?? sourceIndices.ToArray();
 			}
+
+			#region Overrides of Object
+
+			public override string ToString()
+			{
+				return $"Read #{_sourceIndices.Length} fragmented lines";
+			}
+
+			#endregion
 
 			protected override int ReadLines(LogBufferList index, StreamReader reader)
 			{
@@ -842,11 +868,20 @@ namespace Tailviewer.Core.Sources.Text
 				int i;
 				for (i = 0; i < destination.Length; ++i)
 				{
-					reader.BaseStream.Position = lineOffsets[i];
-					var line = reader.ReadLine();
-					if (line == null)
+					string line;
+					var lineOffset = lineOffsets[i];
+					if (lineOffset >= 0)
 					{
-						break;
+						reader.BaseStream.Position = lineOffset;
+						line = reader.ReadLine();
+						if (line == null)
+						{
+							break;
+						}
+					}
+					else
+					{
+						line = LogColumns.RawContent.DefaultValue;
 					}
 
 					destination[i] = line;

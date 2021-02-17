@@ -90,22 +90,22 @@ namespace Tailviewer.Core.Sources
 			_properties.CopyAllValuesTo(destination);
 		}
 
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}

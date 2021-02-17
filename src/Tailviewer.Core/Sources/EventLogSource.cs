@@ -123,7 +123,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetColumn(sourceSection, column, destination, destinationIndex, queryOptions);
 		}
@@ -133,19 +133,19 @@ namespace Tailviewer.Core.Sources
 		                         IColumnDescriptor<T> column,
 		                         T[] destination,
 		                         int destinationIndex,
-		                         LogFileQueryOptions queryOptions)
+		                         LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetEntries(sourceSection, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetEntries(sourceIndices, destination, destinationIndex, queryOptions);
 		}
