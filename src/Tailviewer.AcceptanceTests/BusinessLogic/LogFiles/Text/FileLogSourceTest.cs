@@ -6,6 +6,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
@@ -14,8 +16,7 @@ using Tailviewer.Test.BusinessLogic.Sources;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
 	[TestFixture]
-	[Ignore("Not yet working")]
-	public sealed class SourceLogSourceTest
+	public sealed class FileLogSourceTest
 		: AbstractLogSourceTest
 	{
 		private ServiceContainer _services;
@@ -79,7 +80,17 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
-			_logSource.AddRange(content);
+			foreach (var entry in content)
+			{
+				var copied = new LogEntry(entry.Columns);
+				copied.CopyFrom(entry);
+				if (entry.Contains(GeneralColumns.Timestamp) && !entry.Contains(GeneralColumns.RawContent))
+				{
+					copied.RawContent = string.Format("{0:yyyy-MM-dd HH:mm:ss.fffffff}", entry.Timestamp);
+				}
+
+				_logSource.Add(copied);
+			}
 			var fileLogSource = new FileLogSource(_services, "", TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			return fileLogSource;

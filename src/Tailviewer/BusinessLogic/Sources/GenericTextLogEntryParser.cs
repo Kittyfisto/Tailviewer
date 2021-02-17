@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
@@ -49,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			var rawContent = logEntry.RawContent;
 			if (string.IsNullOrEmpty(rawContent))
-				return logEntry;
+				return null;
 
 			var line = RemoveGarbage(rawContent);
 			var level = LogLine.DetermineLevelFromLine(line);
@@ -220,6 +221,11 @@ namespace Tailviewer.BusinessLogic.Sources
 			public IReadOnlyList<IColumnDescriptor> Columns
 			{
 				get { return _inner.Columns.Concat(new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp}).ToList(); }
+			}
+
+			public bool Contains(IColumnDescriptor column)
+			{
+				return _inner.Columns.Contains(column);
 			}
 
 			#endregion

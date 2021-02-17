@@ -81,6 +81,7 @@
     <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />
+    <Compile Include="Int32Range.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\LogSourceAdorner.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />

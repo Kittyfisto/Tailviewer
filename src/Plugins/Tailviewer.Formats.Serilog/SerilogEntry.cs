@@ -122,6 +122,11 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
+		public bool Contains(IColumnDescriptor column)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 }

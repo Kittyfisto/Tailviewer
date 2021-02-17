@@ -179,6 +179,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 
 			using (var logFile = CreateFromContent(content))
 			{
+				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+
 				const int offset = 2;
 				const int count = 3;
 				const int surplus = 4;
@@ -1038,7 +1040,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
 		public void TestGetTimestampPartiallyInvalidBySection()
 		{
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent, GeneralColumns.Timestamp)
+			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},

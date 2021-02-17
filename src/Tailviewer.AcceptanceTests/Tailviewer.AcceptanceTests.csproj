@@ -93,7 +93,7 @@
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.CustomTimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\FileLogSourceAcceptanceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\SourceLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\FileLogSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogSourceProxyTest.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Sources.Text
@@ -152,6 +153,11 @@ namespace Tailviewer.Core.Sources.Text
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return AllColumns; }
+		}
+
+		public bool Contains(IColumnDescriptor column)
+		{
+			return Columns.Contains(column);
 		}
 
 		#endregion

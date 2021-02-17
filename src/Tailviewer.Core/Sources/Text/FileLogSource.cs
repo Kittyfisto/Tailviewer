@@ -155,7 +155,7 @@ namespace Tailviewer.Core.Sources.Text
 				_isDisposed = true;
 				logSources = _logSources;
 				_logSources = null;
-				_properties.SetValue(GeneralProperties.LogEntryCount, 0);
+				_properties.Clear();
 				// We do not want to dispose those sources from within the lock!
 				// We don't know what they're doing and for how long they're doing it...
 			}

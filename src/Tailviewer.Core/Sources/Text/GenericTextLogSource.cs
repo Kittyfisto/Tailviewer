@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -17,7 +18,9 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly object _syncRoot;
 		private readonly Dictionary<ILogSourceListener, ListenerProxy> _listeners;
 		private readonly ILogEntryParser _parser;
-		private readonly IReadOnlyList<IColumnDescriptor> _columns;
+		private readonly IReadOnlyList<IColumnDescriptor> _parsedColumns;
+		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
+		private readonly IReadOnlyLogEntry _nothingParsed;
 		private ILogSource _source;
 
 		public GenericTextLogSource(ILogSource source,
@@ -26,11 +29,13 @@ namespace Tailviewer.Core.Sources.Text
 			_syncRoot = new object();
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 			_parser = parser;
-			_columns = _source.Columns.Concat(_parser.Columns).Distinct().ToList();
+			_parsedColumns = _parser.Columns.ToList();
+			_allColumns = _source.Columns.Concat(_parsedColumns).Distinct().ToList();
 			_listeners = new Dictionary<ILogSourceListener, ListenerProxy>();
+			_nothingParsed = new ReadOnlyLogEntry(_parsedColumns);
 		}
 
-		public IReadOnlyList<IColumnDescriptor> Columns => _columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _allColumns;
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -115,7 +120,7 @@ namespace Tailviewer.Core.Sources.Text
 
 			GetEntries(sourceIndices,
 			           new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count),
-			           destinationIndex: 0, queryOptions);
+			           0, queryOptions);
 		}
 
 		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
@@ -123,23 +128,24 @@ namespace Tailviewer.Core.Sources.Text
 		                       int destinationIndex,
 		                       LogSourceQueryOptions queryOptions)
 		{
-			if (destinationIndex != 0)
-				throw new NotImplementedException();
-
-			//var actualDestination = destination.CreateViewWithAdditionalColumn(LogColumns.RawContent);
-			var actualDestination = destination.CreateViewOnlyWithColumn(GeneralColumns.RawContent);
-
 			var source = _source;
 			if (source != null)
 			{
-				source.GetEntries(sourceIndices, actualDestination, destinationIndex: 0, queryOptions);
+				var tmp = new LogBufferArray(sourceIndices.Count, GeneralColumns.RawContent);
+				source.GetEntries(sourceIndices, tmp, 0, queryOptions);
 
-				for (var i = 0; i < actualDestination.Count; ++i)
+				if (destination.Contains(GeneralColumns.RawContent))
 				{
-					var logEntry = actualDestination[i];
-					// TODO: we should tell the parser about the columns we're interested in so the parser can skip work, if it's lazy
-					var parsedLogEntry = _parser.Parse(logEntry);
-					destination[i].CopyFrom(parsedLogEntry);
+					destination.CopyFrom(GeneralColumns.RawContent, destinationIndex, tmp, new Int32Range(0, sourceIndices.Count));
+				}
+
+				for (var i = 0; i < sourceIndices.Count; ++i)
+				{
+					var parsedLogEntry = _parser.Parse(tmp[i]);
+					if (parsedLogEntry != null)
+						destination[destinationIndex + i].CopyFrom(parsedLogEntry);
+					else
+						destination[destinationIndex + i].CopyFrom(_nothingParsed);
 				}
 			}
 			else

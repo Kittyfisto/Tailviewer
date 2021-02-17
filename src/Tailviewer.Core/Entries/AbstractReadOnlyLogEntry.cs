@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Entries
@@ -63,6 +64,12 @@ namespace Tailviewer.Core.Entries
 
 		/// <inheritdoc />
 		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
+
+		/// <inheritdoc />
+		public bool Contains(IColumnDescriptor column)
+		{
+			return Columns.Contains(column);
+		}
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)

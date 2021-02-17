@@ -361,6 +361,12 @@ namespace Tailviewer.Core.Entries
 			get { return _columns; }
 		}
 
+		/// <inheritdoc />
+		public bool Contains(IColumnDescriptor column)
+		{
+			return _columns.Contains(column);
+		}
+
 		#endregion
 	}
 }

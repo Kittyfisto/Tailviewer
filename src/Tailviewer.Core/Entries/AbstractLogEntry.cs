@@ -130,6 +130,12 @@ namespace Tailviewer.Core.Entries
 		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
+		public bool Contains(IColumnDescriptor column)
+		{
+			return Columns.Contains(column);
+		}
+
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			return ReadOnlyLogEntryExtensions.Equals(this, obj as IReadOnlyLogEntry);
