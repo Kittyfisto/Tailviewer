@@ -64,6 +64,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.LogLevelPlugin", "examples\Tailviewer.LogLevelPlugin\Tailviewer.LogLevelPlugin.csproj", "{A628892A-4BE2-4726-983E-CCE47C716CC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog", "src\Plugins\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj", "{9997F434-58B2-4C26-B622-5CA411A82BF7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.Test", "src\Plugins\Tailviewer.Formats.Serilog.Test\Tailviewer.Formats.Serilog.Test.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
 EndProject
