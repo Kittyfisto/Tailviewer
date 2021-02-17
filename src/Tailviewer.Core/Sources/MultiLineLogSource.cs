@@ -66,7 +66,7 @@ namespace Tailviewer.Core.Sources
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_syncRoot = new object();
-			_specialColumns = new HashSet<IColumnDescriptor>{LogColumns.LogEntryIndex, LogColumns.Timestamp, LogColumns.LogLevel};
+			_specialColumns = new HashSet<IColumnDescriptor>{GeneralColumns.LogEntryIndex, GeneralColumns.Timestamp, GeneralColumns.LogLevel};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
@@ -284,7 +284,7 @@ namespace Tailviewer.Core.Sources
 
 		private void Append(LogFileSection section)
 		{
-			var buffer = new LogBufferArray(section.Count, LogColumns.Index, LogColumns.Timestamp, LogColumns.LogLevel);
+			var buffer = new LogBufferArray(section.Count, GeneralColumns.Index, GeneralColumns.Timestamp, GeneralColumns.LogLevel);
 			_source.GetEntries(section, buffer);
 
 			lock (_syncRoot)
@@ -373,15 +373,15 @@ namespace Tailviewer.Core.Sources
 
 		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, IColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
-			if (Equals(column, LogColumns.Timestamp) ||
-			    Equals(column, LogColumns.LogLevel))
+			if (Equals(column, GeneralColumns.Timestamp) ||
+			    Equals(column, GeneralColumns.LogLevel))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);
 				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex, queryOptions);
 				return true;
 			}
 
-			if (Equals(column, LogColumns.LogEntryIndex))
+			if (Equals(column, GeneralColumns.LogEntryIndex))
 			{
 				GetLogEntryIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 				return true;

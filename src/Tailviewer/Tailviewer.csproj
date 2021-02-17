@@ -124,7 +124,7 @@
     <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMultiDataSource.cs" />
-    <Compile Include="BusinessLogic\DataSources\LogFileCounter.cs" />
+    <Compile Include="BusinessLogic\DataSources\LogSourceCounter.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
@@ -190,13 +190,13 @@
     <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilters.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
-    <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogSourceSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
     <Compile Include="BusinessLogic\Searches\ISearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ISearchResultsByLogLineIndex.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearch.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatchIndex.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatchSection.cs" />
@@ -303,8 +303,8 @@
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssueViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserDummy.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssueAnalyser.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\LogSourceIssueAnalyserDummy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogSourceIssueAnalyser.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssuePlugin.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToBrushConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToIconConverter.cs" />

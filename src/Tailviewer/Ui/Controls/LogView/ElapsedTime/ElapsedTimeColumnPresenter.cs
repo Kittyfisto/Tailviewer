@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 		: AbstractLogColumnPresenter<TimeSpan?>
 	{
 		public ElapsedTimeColumnPresenter(TextSettings textSettings)
-			: base(LogColumns.ElapsedTime, textSettings)
+			: base(GeneralColumns.ElapsedTime, textSettings)
 		{
 		}
 

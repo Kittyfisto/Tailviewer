@@ -36,17 +36,17 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			}
 		}
 
-		public ILogFileIssueAnalyser CreateAnalyser(IServiceContainer services, ILogSource logSource)
+		public ILogSourceIssueAnalyser CreateAnalyser(IServiceContainer services, ILogSource logSource)
 		{
 			try
 			{
 				var analyser = _inner.CreateAnalyser(services, logSource);
-				return new NoThrowLogFileIssueAnalyser(analyser);
+				return new NoThrowLogSourceIssueAnalyser(analyser);
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-				return new LogFileIssueAnalyserDummy();
+				return new LogSourceIssueAnalyserDummy();
 			}
 		}
 

@@ -92,7 +92,7 @@
     <Compile Include="Properties\ConcurrentPropertiesList.cs" />
     <Compile Include="Sources\EmptyLogSource.cs" />
     <Compile Include="Sources\EventLogSource.cs" />
-    <Compile Include="Sources\Issues\LogFileIssue.cs" />
+    <Compile Include="Sources\Issues\LogSourceIssue.cs" />
     <Compile Include="Buffers\LogBufferEnumerator.cs" />
     <Compile Include="Buffers\LogBufferView.cs" />
     <Compile Include="Entries\LogEntryView.cs" />
@@ -100,10 +100,10 @@
     <Compile Include="LogFileFormats.cs" />
     <Compile Include="Properties\LogFilePropertiesExtensions.cs" />
     <Compile Include="Properties\PropertiesBufferView.cs" />
-    <Compile Include="Sources\Merged\MergedLogFileChanges.cs" />
-    <Compile Include="Sources\Merged\MergedLogFilePendingModification.cs" />
-    <Compile Include="Sources\Merged\MergedLogFileIndex.cs" />
-    <Compile Include="Sources\Merged\MergedLogFileSection.cs" />
+    <Compile Include="Sources\Merged\MergedLogSourceChanges.cs" />
+    <Compile Include="Sources\Merged\MergedLogSourcePendingModification.cs" />
+    <Compile Include="Sources\Merged\MergedLogSourceIndex.cs" />
+    <Compile Include="Sources\Merged\MergedLogSourceSection.cs" />
     <Compile Include="Sources\Merged\MergedLogLineIndex.cs" />
     <Compile Include="Sources\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="Sources\Merged\Stuff.cs" />
@@ -177,7 +177,7 @@
     <Compile Include="Buffers\ReadOnlyLogBufferEnumerator.cs" />
     <Compile Include="Entries\ReadOnlyLogEntry.cs" />
     <Compile Include="Columns\WellKnownColumnDescriptor.cs" />
-    <Compile Include="Columns\LogColumns.cs" />
+    <Compile Include="Columns\GeneralColumns.cs" />
     <Compile Include="Sources\LogSourceExtensions.cs" />
     <Compile Include="Sources\LogSourceListenerCollection.cs" />
     <Compile Include="Sources\LogSourceListenerNotifier.cs" />

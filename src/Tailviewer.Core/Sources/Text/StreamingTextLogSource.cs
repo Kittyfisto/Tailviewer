@@ -21,7 +21,7 @@ namespace Tailviewer.Core.Sources.Text
 {
 	/// <summary>
 	///     Represents a text file as a collection of log entries where every line is a single log entry.
-	///     The contents of the line are stored in the <see cref="LogColumns.RawContent"/> column.
+	///     The contents of the line are stored in the <see cref="GeneralColumns.RawContent"/> column.
 	/// </summary>
 	/// <remarks>
 	///     A allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
@@ -68,7 +68,7 @@ namespace Tailviewer.Core.Sources.Text
 			_listeners = new LogSourceListenerCollection(this);
 
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-			_index = new LogBufferList(LogColumns.LineOffsetInBytes);
+			_index = new LogBufferList(GeneralColumns.LineOffsetInBytes);
 			_propertiesBuffer = new PropertiesBufferList();
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
 
@@ -76,7 +76,7 @@ namespace Tailviewer.Core.Sources.Text
 			SynchronizeProperties();
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			_columns = new IColumnDescriptor[] {LogColumns.Index, LogColumns.LineOffsetInBytes, LogColumns.RawContent};
+			_columns = new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.LineOffsetInBytes, GeneralColumns.RawContent};
 
 			_pendingReadRequests = new ConcurrentQueue<IReadRequest>();
 
@@ -152,16 +152,16 @@ namespace Tailviewer.Core.Sources.Text
 		                         int destinationIndex,
 		                         LogSourceQueryOptions queryOptions)
 		{
-			if (ReferenceEquals(column, LogColumns.RawContent))
+			if (ReferenceEquals(column, GeneralColumns.RawContent))
 			{
 				var view = new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count);
 				ReadRawData(sourceIndices, view, 0, queryOptions);
 			}
-			else if (ReferenceEquals(column, LogColumns.Index))
+			else if (ReferenceEquals(column, GeneralColumns.Index))
 			{
 				GetIndices(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 			}
-			else if (ReferenceEquals(column, LogColumns.LineOffsetInBytes))
+			else if (ReferenceEquals(column, GeneralColumns.LineOffsetInBytes))
 			{
 				lock (_index)
 				{
@@ -335,8 +335,8 @@ namespace Tailviewer.Core.Sources.Text
 		[Pure]
 		private static LogEntry CreateLogEntry(long lastLineOffset)
 		{
-			var logEntry = new LogEntry(LogColumns.LineOffsetInBytes);
-			logEntry.SetValue(LogColumns.LineOffsetInBytes, lastLineOffset);
+			var logEntry = new LogEntry(GeneralColumns.LineOffsetInBytes);
+			logEntry.SetValue(GeneralColumns.LineOffsetInBytes, lastLineOffset);
 			return logEntry;
 		}
 
@@ -365,7 +365,7 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					if (_index.Count > 0)
 					{
-						var lastLineOffset = _index[_index.Count - 1].GetValue(LogColumns.LineOffsetInBytes);
+						var lastLineOffset = _index[_index.Count - 1].GetValue(GeneralColumns.LineOffsetInBytes);
 						stream.Position = lastLineOffset;
 						return lastLineOffset;
 					}
@@ -724,9 +724,9 @@ namespace Tailviewer.Core.Sources.Text
 						return;
 					}
 
-					_destination.CopyFrom(LogColumns.RawContent, _destinationIndex, lines, 0, linesRead);
-					if (_destination.Contains(LogColumns.Index))
-						_destination.CopyFrom(LogColumns.Index, _destinationIndex, sourceIndices, 0, linesRead);
+					_destination.CopyFrom(GeneralColumns.RawContent, _destinationIndex, lines, 0, linesRead);
+					if (_destination.Contains(GeneralColumns.Index))
+						_destination.CopyFrom(GeneralColumns.Index, _destinationIndex, sourceIndices, 0, linesRead);
 				}
 			}
 
@@ -791,7 +791,7 @@ namespace Tailviewer.Core.Sources.Text
 				var indices = new long[1];
 				lock (index)
 				{
-					index.CopyTo(LogColumns.LineOffsetInBytes, new LogFileSection(_sourceSection.Index, 1), indices, 0);
+					index.CopyTo(GeneralColumns.LineOffsetInBytes, new LogFileSection(_sourceSection.Index, 1), indices, 0);
 				}
 
 				return indices[0];
@@ -857,7 +857,7 @@ namespace Tailviewer.Core.Sources.Text
 				var indices = new long[_sourceIndices.Length];
 				lock (index)
 				{
-					index.CopyTo(LogColumns.LineOffsetInBytes, _sourceIndices, indices, 0);
+					index.CopyTo(GeneralColumns.LineOffsetInBytes, _sourceIndices, indices, 0);
 				}
 
 				return indices;
@@ -881,7 +881,7 @@ namespace Tailviewer.Core.Sources.Text
 					}
 					else
 					{
-						line = LogColumns.RawContent.DefaultValue;
+						line = GeneralColumns.RawContent.DefaultValue;
 					}
 
 					destination[i] = line;

@@ -127,7 +127,7 @@ namespace Tailviewer.Core.Sources.Text
 				throw new NotImplementedException();
 
 			//var actualDestination = destination.CreateViewWithAdditionalColumn(LogColumns.RawContent);
-			var actualDestination = destination.CreateViewOnlyWithColumn(LogColumns.RawContent);
+			var actualDestination = destination.CreateViewOnlyWithColumn(GeneralColumns.RawContent);
 
 			var source = _source;
 			if (source != null)

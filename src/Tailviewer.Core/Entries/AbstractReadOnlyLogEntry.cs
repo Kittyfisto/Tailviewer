@@ -11,43 +11,43 @@ namespace Tailviewer.Core.Entries
 		: IReadOnlyLogEntry
 	{
 		/// <inheritdoc />
-		public string RawContent => GetValue(LogColumns.RawContent);
+		public string RawContent => GetValue(GeneralColumns.RawContent);
 
 		/// <inheritdoc />
-		public LogLineIndex Index => GetValue(LogColumns.Index);
+		public LogLineIndex Index => GetValue(GeneralColumns.Index);
 
 		/// <inheritdoc />
-		public LogLineIndex OriginalIndex => GetValue(LogColumns.OriginalIndex);
+		public LogLineIndex OriginalIndex => GetValue(GeneralColumns.OriginalIndex);
 
 		/// <inheritdoc />
-		public LogEntryIndex LogEntryIndex => GetValue(LogColumns.LogEntryIndex);
+		public LogEntryIndex LogEntryIndex => GetValue(GeneralColumns.LogEntryIndex);
 
 		/// <inheritdoc />
-		public int LineNumber => GetValue(LogColumns.LineNumber);
+		public int LineNumber => GetValue(GeneralColumns.LineNumber);
 
 		/// <inheritdoc />
-		public int OriginalLineNumber => GetValue(LogColumns.OriginalLineNumber);
+		public int OriginalLineNumber => GetValue(GeneralColumns.OriginalLineNumber);
 
 		/// <inheritdoc />
-		public string OriginalDataSourceName => GetValue(LogColumns.OriginalDataSourceName);
+		public string OriginalDataSourceName => GetValue(GeneralColumns.OriginalDataSourceName);
 
 		/// <inheritdoc />
-		public LogLineSourceId SourceId => GetValue(LogColumns.SourceId);
+		public LogLineSourceId SourceId => GetValue(GeneralColumns.SourceId);
 
 		/// <inheritdoc />
-		public LevelFlags LogLevel => GetValue(LogColumns.LogLevel);
+		public LevelFlags LogLevel => GetValue(GeneralColumns.LogLevel);
 
 		/// <inheritdoc />
-		public DateTime? Timestamp => GetValue(LogColumns.Timestamp);
+		public DateTime? Timestamp => GetValue(GeneralColumns.Timestamp);
 
 		/// <inheritdoc />
-		public TimeSpan? ElapsedTime => GetValue(LogColumns.ElapsedTime);
+		public TimeSpan? ElapsedTime => GetValue(GeneralColumns.ElapsedTime);
 
 		/// <inheritdoc />
-		public TimeSpan? DeltaTime => GetValue(LogColumns.DeltaTime);
+		public TimeSpan? DeltaTime => GetValue(GeneralColumns.DeltaTime);
 
 		/// <inheritdoc />
-		public string Message => GetValue(LogColumns.Message);
+		public string Message => GetValue(GeneralColumns.Message);
 
 		/// <inheritdoc />
 		public abstract T GetValue<T>(IColumnDescriptor<T> column);

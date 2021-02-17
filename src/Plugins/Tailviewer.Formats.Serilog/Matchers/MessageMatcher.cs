@@ -30,7 +30,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return LogColumns.Message; }
+			get { return GeneralColumns.Message; }
 		}
 
 		public void MatchInto(Match match, SerilogEntry logEntry)

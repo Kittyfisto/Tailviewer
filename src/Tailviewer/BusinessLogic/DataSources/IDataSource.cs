@@ -48,9 +48,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		ILogSource FindAllLogSource { get; }
 
-		ILogFileSearch FindAllSearch { get; }
+		ILogSourceSearch FindAllSearch { get; }
 
-		ILogFileSearch Search { get; }
+		ILogSourceSearch Search { get; }
 
 		DateTime? LastModified { get; }
 		DateTime LastViewed { get; set; }

@@ -22,7 +22,7 @@ namespace Tailviewer.Plugins
 	/// </remarks>
 	/// <remarks>
 	///     Version 3
-	///     Added <see cref="ILogFileIssue"/> interface so plugins can use their own implementations (and store more information internally, for example).
+	///     Added <see cref="ILogSourceIssue"/> interface so plugins can use their own implementations (and store more information internally, for example).
 	/// </remarks>
 	[PluginInterfaceVersion(version: 3)]
 	public interface ILogFileIssuesPlugin
@@ -45,7 +45,7 @@ namespace Tailviewer.Plugins
 		/// <param name="services"></param>
 		/// <param name="logSource"></param>
 		/// <returns></returns>
-		ILogFileIssueAnalyser CreateAnalyser(IServiceContainer services,
+		ILogSourceIssueAnalyser CreateAnalyser(IServiceContainer services,
 		                                     ILogSource logSource);
 	}
 }

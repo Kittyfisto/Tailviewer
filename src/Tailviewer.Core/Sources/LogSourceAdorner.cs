@@ -15,7 +15,7 @@ namespace Tailviewer.Core.Sources
 	/// <remarks>
 	///     Before this class existed, lots of <see cref="ILogSource"/> implementations contained the same piece of code
 	///     implemented over and over. However this isn't necessary for lots of columns, namely:
-	///      - <see cref="LogColumns.DeltaTime"/>
+	///      - <see cref="GeneralColumns.DeltaTime"/>
 	/// </remarks>
 	internal sealed class LogSourceAdorner
 		: ILogSource
@@ -31,12 +31,12 @@ namespace Tailviewer.Core.Sources
 		{
 			MaxAdornedColumns = new IColumnDescriptor[]
 			{
-				LogColumns.Index,
-				LogColumns.OriginalIndex,
-				LogColumns.LogEntryIndex,
-				LogColumns.LineNumber,
-				LogColumns.OriginalLineNumber,
-				LogColumns.DeltaTime,
+				GeneralColumns.Index,
+				GeneralColumns.OriginalIndex,
+				GeneralColumns.LogEntryIndex,
+				GeneralColumns.LineNumber,
+				GeneralColumns.OriginalLineNumber,
+				GeneralColumns.DeltaTime,
 			};
 		}
 
@@ -135,23 +135,23 @@ namespace Tailviewer.Core.Sources
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogColumns.Index) || Equals(column, LogColumns.OriginalIndex))
+			if (Equals(column, GeneralColumns.Index) || Equals(column, GeneralColumns.OriginalIndex))
 			{
 				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.LogEntryIndex))
+			else if (Equals(column, GeneralColumns.LogEntryIndex))
 			{
 				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.LineNumber))
+			else if (Equals(column, GeneralColumns.LineNumber))
 			{
 				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.OriginalLineNumber))
+			else if (Equals(column, GeneralColumns.OriginalLineNumber))
 			{
 				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 			}
-			else if (IsAdorned(column, LogColumns.DeltaTime))
+			else if (IsAdorned(column, GeneralColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
@@ -182,7 +182,7 @@ namespace Tailviewer.Core.Sources
 				}
 				else
 				{
-					destination[destinationIndex + i] = LogColumns.Index.DefaultValue;
+					destination[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
 				}
 			}
 		}
@@ -199,7 +199,7 @@ namespace Tailviewer.Core.Sources
 				}
 				else
 				{
-					destination[destinationIndex + i] = LogColumns.LogEntryIndex.DefaultValue;
+					destination[destinationIndex + i] = GeneralColumns.LogEntryIndex.DefaultValue;
 				}
 			}
 		}
@@ -217,7 +217,7 @@ namespace Tailviewer.Core.Sources
 				}
 				else
 				{
-					destination[destinationIndex + i] = LogColumns.LineNumber.DefaultValue;
+					destination[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
 				}
 			}
 		}
@@ -237,7 +237,7 @@ namespace Tailviewer.Core.Sources
 				actualIndices[i * 2 + 1] = index;
 			}
 
-			var timestamps = _source.GetColumn(actualIndices, LogColumns.Timestamp, queryOptions);
+			var timestamps = _source.GetColumn(actualIndices, GeneralColumns.Timestamp, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];

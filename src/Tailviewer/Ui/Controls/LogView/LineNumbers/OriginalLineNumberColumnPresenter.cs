@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		private double _lineNumberWidth;
 
 		public OriginalLineNumberColumnPresenter(TextSettings textSettings)
-			: base(LogColumns.OriginalLineNumber, textSettings)
+			: base(GeneralColumns.OriginalLineNumber, textSettings)
 		{}
 
 		public IEnumerable<LineNumberFormatter> LineNumbers => Values.Cast<LineNumberFormatter>();

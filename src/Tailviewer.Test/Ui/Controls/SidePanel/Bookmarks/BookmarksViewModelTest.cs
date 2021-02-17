@@ -4,13 +4,12 @@ using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Sources;
 using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 
-namespace Tailviewer.Test.Ui.Controls.SidePanel
+namespace Tailviewer.Test.Ui.Controls.SidePanel.Bookmarks
 {
 	[TestFixture]
 	public sealed class BookmarksViewModelTest

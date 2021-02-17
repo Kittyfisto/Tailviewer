@@ -27,7 +27,7 @@ namespace Tailviewer.Test.Ui
 			_dataSource.Setup(x => x.UnfilteredLogSource).Returns(_logFile.Object);
 			_dataSource.Setup(x => x.Settings).Returns(_settings);
 			_dataSource.SetupProperty(x => x.LastViewed);
-			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 			_dataSource.SetupProperty(x => x.VisibleLogLine);
 
 			_viewModel = new DataSourceViewModel(_dataSource.Object);

@@ -49,7 +49,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private double _xOffset;
 		private double _yOffset;
 		private bool _colorByLevel;
-		private ILogFileSearch _search;
+		private ILogSourceSearch _search;
 		private int _selectedSearchResultIndex;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
@@ -64,7 +64,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleBufferBuffer = new LogBufferList(LogColumns.Index, LogColumns.LogEntryIndex, LogColumns.LogLevel, LogColumns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, GeneralColumns.LogLevel, GeneralColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -189,7 +189,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _search; }
 			set
@@ -664,7 +664,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					sortedIndices.Sort();
 					// TODO: What do we do if some mad man has 1 million lines selected?
 					// TODO: Request in batches
-					var buffer = new LogBufferArray(_selectedIndices.Count, LogColumns.RawContent);
+					var buffer = new LogBufferArray(_selectedIndices.Count, GeneralColumns.RawContent);
 					logSource.GetEntries(sortedIndices, buffer);
 
 					for (int i = 0; i < sortedIndices.Count; ++i)

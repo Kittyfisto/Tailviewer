@@ -34,7 +34,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
+		public void OnSearchModified(ILogSourceSearch sender, IEnumerable<LogMatch> matches)
 		{
 			lock (_syncRoot)
 			{

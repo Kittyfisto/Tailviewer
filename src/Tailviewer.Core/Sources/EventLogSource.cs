@@ -190,10 +190,10 @@ namespace Tailviewer.Core.Sources
 					{
 						var values = new Dictionary<IColumnDescriptor, object>
 						{
-							{LogColumns.RawContent, FormatLine(line, first)},
-							{LogColumns.LogLevel, logLevel},
-							{LogColumns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
-							{LogColumns.Timestamp, eventRecord.TimeCreated}
+							{GeneralColumns.RawContent, FormatLine(line, first)},
+							{GeneralColumns.LogLevel, logLevel},
+							{GeneralColumns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
+							{GeneralColumns.Timestamp, eventRecord.TimeCreated}
 						};
 						_buffer.Add(new ReadOnlyLogEntry(values));
 						first = false;

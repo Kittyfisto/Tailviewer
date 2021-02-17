@@ -32,14 +32,14 @@ namespace Tailviewer.Core.Sources
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogSource()
-			: this(LogColumns.Minimum)
+			: this(GeneralColumns.Minimum)
 		{ }
 
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogSource(IReadOnlyDictionary<IReadOnlyPropertyDescriptor, object> properties)
-			: this(LogColumns.Minimum, properties)
+			: this(GeneralColumns.Minimum, properties)
 		{ }
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace Tailviewer.Core.Sources
 				throw new ArgumentNullException(nameof(columns));
 
 			_syncRoot = new object();
-			_logBuffer = new LogBufferList(LogColumns.CombineWithMinimum(columns));
+			_logBuffer = new LogBufferList(GeneralColumns.CombineWithMinimum(columns));
 			_listeners = new LogSourceListenerCollection(this);
 
 			_properties = new PropertiesBufferList(GeneralProperties.Minimum);
@@ -429,7 +429,7 @@ namespace Tailviewer.Core.Sources
 		{
 			lock (_syncRoot)
 			{
-				entry.TryGetValue(LogColumns.Timestamp, out var timestamp);
+				entry.TryGetValue(GeneralColumns.Timestamp, out var timestamp);
 				UpdateTimestampProperties(timestamp);
 				var logEntryIndex = GetLogEntryIndex(timestamp, out var elapsed, out var deltaTime);
 

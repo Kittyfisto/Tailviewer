@@ -12,7 +12,7 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 		: AbstractLogColumnPresenter<TimeSpan?>
 	{
 		public DeltaTimeColumnPresenter(TextSettings textSettings)
-			: base(LogColumns.DeltaTime, textSettings)
+			: base(GeneralColumns.DeltaTime, textSettings)
 		{
 			Width = 50;
 		}

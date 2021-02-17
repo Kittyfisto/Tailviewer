@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 
 		private static IReadOnlyLogEntry CreateLine(LogLineIndex lineIndex)
 		{
-			return new LogEntry(LogColumns.Minimum) {Index = lineIndex};
+			return new LogEntry(GeneralColumns.Minimum) {Index = lineIndex};
 		}
 	}
 }

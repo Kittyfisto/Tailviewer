@@ -131,12 +131,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _mergedDataSource.FindAllLogSource; }
 		}
 
-		public ILogFileSearch FindAllSearch
+		public ILogSourceSearch FindAllSearch
 		{
 			get { return _mergedDataSource.FindAllSearch; }
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _mergedDataSource.Search; }
 		}

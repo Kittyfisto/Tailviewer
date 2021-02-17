@@ -90,7 +90,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return LogColumns.Timestamp; }
+			get { return GeneralColumns.Timestamp; }
 		}
 
 		public void MatchInto(Match match, SerilogEntry logEntry)

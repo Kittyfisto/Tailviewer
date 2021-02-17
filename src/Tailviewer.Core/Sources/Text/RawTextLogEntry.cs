@@ -12,13 +12,13 @@ namespace Tailviewer.Core.Sources.Text
 	{
 		private static readonly IReadOnlyList<IColumnDescriptor> AllColumns = new IColumnDescriptor[]
 		{
-			LogColumns.RawContent,
-			LogColumns.Index,
-			LogColumns.OriginalIndex,
-			LogColumns.LineNumber,
-			LogColumns.OriginalLineNumber,
-			LogColumns.OriginalDataSourceName,
-			LogColumns.LogEntryIndex
+			GeneralColumns.RawContent,
+			GeneralColumns.Index,
+			GeneralColumns.OriginalIndex,
+			GeneralColumns.LineNumber,
+			GeneralColumns.OriginalLineNumber,
+			GeneralColumns.OriginalDataSourceName,
+			GeneralColumns.LogEntryIndex
 		};
 
 		private readonly LogLineIndex _index;
@@ -119,27 +119,27 @@ namespace Tailviewer.Core.Sources.Text
 
 		public bool TryGetValue(IColumnDescriptor column, out object value)
 		{
-			if (Equals(column, LogColumns.RawContent))
+			if (Equals(column, GeneralColumns.RawContent))
 			{
 				value = RawContent;
 				return true;
 			}
-			if (Equals(column, LogColumns.Index) || Equals(column, LogColumns.OriginalIndex))
+			if (Equals(column, GeneralColumns.Index) || Equals(column, GeneralColumns.OriginalIndex))
 			{
 				value = Index;
 				return true;
 			}
-			if (Equals(column, LogColumns.LineNumber) || Equals(column, LogColumns.OriginalLineNumber))
+			if (Equals(column, GeneralColumns.LineNumber) || Equals(column, GeneralColumns.OriginalLineNumber))
 			{
 				value = LineNumber;
 				return true;
 			}
-			if (Equals(column, LogColumns.LogEntryIndex))
+			if (Equals(column, GeneralColumns.LogEntryIndex))
 			{
 				value = LogEntryIndex;
 				return true;
 			}
-			if (Equals(column, LogColumns.OriginalDataSourceName))
+			if (Equals(column, GeneralColumns.OriginalDataSourceName))
 			{
 				value = OriginalDataSourceName;
 				return true;

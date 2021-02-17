@@ -39,7 +39,7 @@ namespace Tailviewer.Core.Sources
 
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
-			get { return LogColumns.Minimum; }
+			get { return GeneralColumns.Minimum; }
 		}
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

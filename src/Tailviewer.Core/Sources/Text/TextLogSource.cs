@@ -144,7 +144,7 @@ namespace Tailviewer.Core.Sources.Text
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<IColumnDescriptor> Columns => LogColumns.Minimum;
+		public override IReadOnlyList<IColumnDescriptor> Columns => GeneralColumns.Minimum;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
@@ -198,41 +198,41 @@ namespace Tailviewer.Core.Sources.Text
 
 			lock (_syncRoot)
 			{
-				if (Equals(column, LogColumns.Index) ||
-				    Equals(column, LogColumns.OriginalIndex))
+				if (Equals(column, GeneralColumns.Index) ||
+				    Equals(column, GeneralColumns.OriginalIndex))
 				{
 					GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.LogEntryIndex))
+				else if (Equals(column, GeneralColumns.LogEntryIndex))
 				{
 					GetIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.LineNumber) ||
-				         Equals(column, LogColumns.OriginalLineNumber))
+				else if (Equals(column, GeneralColumns.LineNumber) ||
+				         Equals(column, GeneralColumns.OriginalLineNumber))
 				{
 					GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.LogLevel))
+				else if (Equals(column, GeneralColumns.LogLevel))
 				{
 					GetLogLevel(sourceIndices, (LevelFlags[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.Timestamp))
+				else if (Equals(column, GeneralColumns.Timestamp))
 				{
 					GetTimestamp(sourceIndices, (DateTime?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.DeltaTime))
+				else if (Equals(column, GeneralColumns.DeltaTime))
 				{
 					GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.ElapsedTime))
+				else if (Equals(column, GeneralColumns.ElapsedTime))
 				{
 					GetElapsedTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.OriginalDataSourceName))
+				else if (Equals(column, GeneralColumns.OriginalDataSourceName))
 				{
 					GetDataSourceName(sourceIndices, (string[]) (object) destination, destinationIndex);
 				}
-				else if (Equals(column, LogColumns.RawContent))
+				else if (Equals(column, GeneralColumns.RawContent))
 				{
 					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
 				}
@@ -519,7 +519,7 @@ namespace Tailviewer.Core.Sources.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogColumns.Index.DefaultValue;
+						buffer[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
 					}
 				}
 			}
@@ -538,7 +538,7 @@ namespace Tailviewer.Core.Sources.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogColumns.LogEntryIndex.DefaultValue;
+						buffer[destinationIndex + i] = GeneralColumns.LogEntryIndex.DefaultValue;
 					}
 				}
 			}
@@ -554,7 +554,7 @@ namespace Tailviewer.Core.Sources.Text
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Message
-						: LogColumns.RawContent.DefaultValue;
+						: GeneralColumns.RawContent.DefaultValue;
 				}
 			}
 		}
@@ -572,14 +572,14 @@ namespace Tailviewer.Core.Sources.Text
 						var line = GetLogLine(index);
 						buffer[destinationIndex + i] = line != null
 							? line.Value.Timestamp - startTimestamp
-							: LogColumns.ElapsedTime.DefaultValue;
+							: GeneralColumns.ElapsedTime.DefaultValue;
 					}
 				}
 				else
 				{
 					for (int i = 0; i < indices.Count; ++i)
 					{
-						buffer[destinationIndex + i] = LogColumns.ElapsedTime.DefaultValue;
+						buffer[destinationIndex + i] = GeneralColumns.ElapsedTime.DefaultValue;
 					}
 				}
 
@@ -605,7 +605,7 @@ namespace Tailviewer.Core.Sources.Text
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Level
-						: LogColumns.LogLevel.DefaultValue;
+						: GeneralColumns.LogLevel.DefaultValue;
 				}
 			}
 		}
@@ -624,7 +624,7 @@ namespace Tailviewer.Core.Sources.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogColumns.LineNumber.DefaultValue;
+						buffer[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
 					}
 				}
 			}

@@ -176,7 +176,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return LogColumns.LogLevel; }
+			get { return GeneralColumns.LogLevel; }
 		}
 
 		public void MatchInto(Match match, SerilogEntry logEntry)

@@ -20,14 +20,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly LogFileCounter _counter;
+		private readonly LogSourceCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
 		private readonly LogSourceProxy _logSource;
-		private readonly LogFileSearchProxy _search;
+		private readonly LogSourceSearchProxy _search;
 
 		private readonly LogSourceProxy _findAllLogSource;
-		private readonly LogFileSearchProxy _findAllSearch;
+		private readonly LogSourceSearchProxy _findAllSearch;
 
 		private ILogSource _filteredLogSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
@@ -46,13 +46,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_taskScheduler = taskScheduler;
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
-			_counter = new LogFileCounter();
+			_counter = new LogSourceCounter();
 
 			_logSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
-			_search = new LogFileSearchProxy(taskScheduler, _logSource, maximumWaitTime);
+			_search = new LogSourceSearchProxy(taskScheduler, _logSource, maximumWaitTime);
 
 			_findAllLogSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
-			_findAllSearch = new LogFileSearchProxy(taskScheduler, _findAllLogSource, maximumWaitTime);
+			_findAllSearch = new LogSourceSearchProxy(taskScheduler, _findAllLogSource, maximumWaitTime);
 
 			UpdateSearch();
 			UpdateFindAllSearch();
@@ -66,9 +66,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public ILogSource FindAllLogSource => _findAllLogSource;
 
-		public ILogFileSearch FindAllSearch => _findAllSearch;
+		public ILogSourceSearch FindAllSearch => _findAllSearch;
 
-		public ILogFileSearch Search => _search;
+		public ILogSourceSearch Search => _search;
 
 		public abstract IPluginDescription TranslationPlugin { get; }
 

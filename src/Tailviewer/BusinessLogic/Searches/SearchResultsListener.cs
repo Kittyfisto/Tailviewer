@@ -23,7 +23,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			get { return _results.Matches; }
 		}
 
-		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
+		public void OnSearchModified(ILogSourceSearch sender, IEnumerable<LogMatch> matches)
 		{
 			foreach (var match in matches)
 			{

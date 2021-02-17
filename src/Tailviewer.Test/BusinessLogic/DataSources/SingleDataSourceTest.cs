@@ -119,10 +119,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose1()
 		{
 			LogSourceProxy permanentLogSource;
-			LogFileSearchProxy permanentSearch;
+			LogSourceSearchProxy permanentSearch;
 
 			LogSourceProxy permanentFindAllLogSource;
-			LogFileSearchProxy permanentFindAllSearch;
+			LogSourceSearchProxy permanentFindAllSearch;
 
 			SingleDataSource source;
 			using (source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()}))
@@ -130,13 +130,13 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				permanentLogSource = (LogSourceProxy) source.FilteredLogSource;
 				permanentLogSource.IsDisposed.Should().BeFalse();
 
-				permanentSearch = (LogFileSearchProxy) source.Search;
+				permanentSearch = (LogSourceSearchProxy) source.Search;
 				permanentSearch.IsDisposed.Should().BeFalse();
 
 				permanentFindAllLogSource = (LogSourceProxy) source.FindAllLogSource;
 				permanentFindAllLogSource.IsDisposed.Should().BeFalse();
 
-				permanentFindAllSearch = (LogFileSearchProxy) source.FindAllSearch;
+				permanentFindAllSearch = (LogSourceSearchProxy) source.FindAllSearch;
 				permanentFindAllSearch.IsDisposed.Should().BeFalse();
 			}
 			source.IsDisposed.Should().BeTrue();

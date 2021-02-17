@@ -70,7 +70,7 @@
     <Compile Include="Plugins\ICustomLogFileFormatCreatorPlugin.cs" />
     <Compile Include="Plugins\ILogFileFormatMatcher.cs" />
     <Compile Include="Plugins\ILogFileFormatMatcherPlugin.cs" />
-    <Compile Include="Plugins\ILogFileIssue.cs" />
+    <Compile Include="Plugins\ILogSourceIssue.cs" />
     <Compile Include="Plugins\Severity.cs" />
     <Compile Include="Plugins\ILogEntryParser.cs" />
     <Compile Include="Plugins\ILogEntryParserPlugin.cs" />
@@ -90,7 +90,7 @@
     <Compile Include="LogEntrySectionExtensions.cs" />
     <Compile Include="LogLineSourceId.cs" />
     <Compile Include="Plugins\IFileFormatPlugin2.cs" />
-    <Compile Include="Plugins\ILogFileIssueAnalyser.cs" />
+    <Compile Include="Plugins\ILogSourceIssueAnalyser.cs" />
     <Compile Include="Plugins\ILogFileIssueListener.cs" />
     <Compile Include="Plugins\ILogFileIssuesPlugin.cs" />
     <Compile Include="Ui\IPropertyPresenter.cs" />

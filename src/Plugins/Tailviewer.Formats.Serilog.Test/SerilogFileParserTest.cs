@@ -14,7 +14,7 @@ namespace Tailviewer.Serilog.Test
 		[Pure]
 		private static IReadOnlyLogEntry Parse(SerilogEntryParser parser, string rawContent)
 		{
-			var logEntry = new LogEntry(LogColumns.RawContent)
+			var logEntry = new LogEntry(GeneralColumns.RawContent)
 			{
 				RawContent = rawContent
 			};
@@ -216,7 +216,7 @@ namespace Tailviewer.Serilog.Test
 		public void TestParse_Message()
 		{
 			var parser = new SerilogEntryParser("{Message}");
-			Parse(parser, "This is an error").GetValue(LogColumns.Message).Should().Be("This is an error");
+			Parse(parser, "This is an error").GetValue(GeneralColumns.Message).Should().Be("This is an error");
 		}
 
 		[Test]
@@ -236,7 +236,7 @@ namespace Tailviewer.Serilog.Test
 			var logEntry = Parse(parser, "16/09/2020 01:21:59 +02:00 [Fatal] This is a fatal message!");
 			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 16, 01, 21, 59));
 			logEntry.LogLevel.Should().Be(LevelFlags.Fatal);
-			logEntry.GetValue(LogColumns.Message).Should().Be("This is a fatal message!");
+			logEntry.GetValue(GeneralColumns.Message).Should().Be("This is a fatal message!");
 		}
 
 		[Test]
