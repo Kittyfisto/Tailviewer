@@ -14,9 +14,9 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -80,15 +80,15 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			var model = new LogViewMainPanelViewModel(_services, _actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			var dataSource = new Mock<IDataSource>();
-			var logFile = new InMemoryLogFile();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile);
-			var filteredLogFile = new InMemoryLogFile();
-			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile);
+			var logFile = new InMemoryLogSource();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile);
+			var filteredLogFile = new InMemoryLogSource();
+			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile);
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			model.CurrentDataSource = dataSourceViewModel.Object;
 
 			logFile.AddEntry("", LevelFlags.All);
-			logFile.SetValue(Properties.Size, Size.OneByte);
+			logFile.SetValue(GeneralProperties.Size, Size.OneByte);
 			model.Update();
 			model.CurrentDataSourceLogView.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
 		}
@@ -98,11 +98,11 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		public void TestUpdate3()
 		{
 			var dataSource1 = new Mock<ISingleDataSource>();
-			dataSource1.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			dataSource1.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource1.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			dataSource1.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			var dataSource2 = new Mock<ISingleDataSource>();
-			dataSource2.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource2.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			dataSource2.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {dataSource1.Object, dataSource2.Object});
 			var model = new LogViewMainPanelViewModel(_services, _actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
@@ -128,10 +128,10 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			var dataSource = CreateDataSource();
 
-			var logFile = new InMemoryLogFile();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile);
-			var filteredLogFile = new InMemoryLogFile();
-			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile);
+			var logFile = new InMemoryLogSource();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile);
+			var filteredLogFile = new InMemoryLogSource();
+			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile);
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			model.CurrentDataSource = dataSourceViewModel.Object;
 
@@ -163,8 +163,8 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.DisplayName).Returns("Merged Data Source");
 			dataSourceViewModel.Setup(x => x.DataSourceOrigin).Returns("Merged Data Source");
@@ -206,14 +206,14 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		{
 			var mergedDataSource = new Mock<IMergedDataSource>();
 			mergedDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
-			mergedDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			mergedDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			mergedDataSource.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			mergedDataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			mergedDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			mergedDataSource.Setup(x => x.DisplayName).Returns("My custom merged data source");
 
 			var dataSource1 = new Mock<ISingleDataSource>();
-			dataSource1.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			dataSource1.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource1.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			dataSource1.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource1.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
 			dataSource1.Setup(x => x.ParentId).Returns(mergedDataSource.Object.Id);
 			dataSource1.Setup(x => x.Settings).Returns(new DataSource());
@@ -221,8 +221,8 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource1.SetupProperty(x => x.CharacterCode);
 
 			var dataSource2 = new Mock<ISingleDataSource>();
-			dataSource2.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource2.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			dataSource2.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource2.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
 			dataSource2.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource2.Setup(x => x.FullFileName).Returns("log2.csv");
@@ -255,8 +255,8 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			var path = Path.GetTempPath();
 			var source = new Mock<IFolderDataSource>();
 			source.Setup(x => x.OriginalSources).Returns(new IDataSource[0]);
-			source.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			source.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			source.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			source.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			_dataSources.Setup(x => x.AddFolder(It.IsAny<string>())).Returns(source.Object);
 
 			var model = new LogViewMainPanelViewModel(_services, _actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
@@ -284,9 +284,9 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource.Setup(x => x.IsQuickFilterActive(It.IsAny<QuickFilterId>()))
 				.Returns((QuickFilterId id) => activeFilters.Contains(id));
 
-			var logFile = new InMemoryLogFile();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile);
+			var logFile = new InMemoryLogSource();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile);
 			return dataSource;
 		}
 	}

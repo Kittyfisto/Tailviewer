@@ -4,8 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
@@ -140,7 +138,7 @@ namespace Tailviewer.Ui.Controls.LogView
 						// The search results are based on the unformatted message (e.g. before we replace tabs by the appropriate
 						// amount of spaces). Therefore we'll have to subdivide the message into chunks based on the search results
 						// and then reformat the individual chunks.
-						var unformattedMessage = _logEntry.RawContent;
+						var unformattedMessage = _logEntry.RawContent ?? string.Empty;
 						string substring;
 						int lastIndex = 0;
 						foreach (LogLineMatch match in searchResults.MatchesByLine[_logEntry.Index])

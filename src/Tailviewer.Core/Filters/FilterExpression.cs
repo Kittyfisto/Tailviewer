@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters.ExpressionEngine;
 
 namespace Tailviewer.Core.Filters

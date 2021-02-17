@@ -3,7 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 {
@@ -27,7 +27,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		[Test]
 		public void TestCtor1()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			using (var proxy = new LogFileSearchProxy(_scheduler, source, TimeSpan.Zero))
 			{
 				proxy.SearchTerm.Should().BeNull();
@@ -39,7 +39,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		[Description("Verifies that the search delivers correct results when the file is completely available before the search is started")]
 		public void TestSearch1()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("Hello World!");
 			source.AddEntry("Foobar");
 
@@ -60,7 +60,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		[Description("Verifies that the search delivers correct results when the file is modified while the search is performed")]
 		public void TestSearch2()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			using (var proxy = new LogFileSearchProxy(_scheduler, source, TimeSpan.Zero))
 			{
 				proxy.SearchTerm = "Foobar";

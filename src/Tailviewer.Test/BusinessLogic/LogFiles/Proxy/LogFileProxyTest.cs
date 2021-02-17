@@ -6,8 +6,9 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 {
@@ -15,9 +16,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 	public sealed class LogFileProxyTest
 		: AbstractLogFileTest
 	{
-		private Mock<ILogFile> _logFile;
-		private LogFileListenerCollection _listeners;
-		private Mock<ILogFileListener> _listener;
+		private Mock<ILogSource> _logFile;
+		private LogSourceListenerCollection _listeners;
+		private Mock<ILogSourceListener> _listener;
 		private List<LogFileSection> _modifications;
 		private ManualTaskScheduler _taskScheduler;
 
@@ -26,32 +27,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			_taskScheduler = new ManualTaskScheduler();
 
-			_logFile = new Mock<ILogFile>();
-			_listeners = new LogFileListenerCollection(_logFile.Object);
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-			        .Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
-			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
-			        .Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
+			_logFile = new Mock<ILogSource>();
+			_listeners = new LogSourceListenerCollection(_logFile.Object);
+			_logFile.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+			        .Callback((ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
+			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogSourceListener>()))
+			        .Callback((ILogSourceListener listener) => _listeners.RemoveListener(listener));
 
-			_listener = new Mock<ILogFileListener>();
+			_listener = new Mock<ILogSourceListener>();
 			_modifications = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogFile logFile, LogFileSection section) => _modifications.Add(section));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+			         .Callback((ILogSource logFile, LogFileSection section) => _modifications.Add(section));
 		}
 
 		[Test]
 		public void TestEmptyConstruction()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero))
 			{
-				proxy.InnerLogFile.Should().BeNull();
+				proxy.InnerLogSource.Should().BeNull();
 				proxy.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
-				proxy.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
-				proxy.GetProperty(Properties.Size).Should().BeNull();
-				proxy.GetProperty(Properties.StartTimestamp).Should().NotHaveValue();
-				proxy.GetProperty(Properties.EndTimestamp).Should().NotHaveValue();
-				proxy.GetProperty(Properties.LogEntryCount).Should().Be(0);
-				proxy.Columns.Should().Equal(Columns.Minimum);
+				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+				proxy.GetProperty(GeneralProperties.Size).Should().BeNull();
+				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(GeneralProperties.EndTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+				proxy.Columns.Should().Equal(LogColumns.Minimum);
 
 				proxy.GetEntry(0).Index.Should().Be(LogLineIndex.Invalid);
 			}
@@ -60,10 +61,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestConstruction()
 		{
-			_logFile.Setup(x => x.Columns).Returns(new[] { Columns.RawContent });
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			_logFile.Setup(x => x.Columns).Returns(new[] { LogColumns.RawContent });
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				proxy.Columns.Should().Equal(Columns.RawContent);
+				proxy.Columns.Should().Equal(LogColumns.RawContent);
 			}
 		}
 
@@ -71,9 +72,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Description("Verifies that the proxy registers a listener on the inner log file")]
 		public void TestCtor2()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Verify(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
+				_logFile.Verify(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
 			}
 		}
 
@@ -81,19 +82,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Description("Verifies that changing the inner log file causes the proxy to unregister the previously registered listener from the old file")]
 		public void TestInnerLogFile1()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				proxy.InnerLogFile = null;
-				_logFile.Verify(x => x.RemoveListener(It.IsAny<ILogFileListener>()), Times.Once);
+				proxy.InnerLogSource = null;
+				_logFile.Verify(x => x.RemoveListener(It.IsAny<ILogSourceListener>()), Times.Once);
 			}
 		}
 
 		[Test]
 		public void TestGetEntry()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("I'm an english man in new york");
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, source))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, source))
 			{
 				var entry = proxy.GetEntry(0);
 				entry.RawContent.Should().Be("I'm an english man in new york");
@@ -103,7 +104,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestGetLine_NoSource()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, null))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, null))
 			{
 				var entry = proxy.GetEntry(0);
 				entry.Index.Should().Be(LogLineIndex.Invalid);
@@ -113,11 +114,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestGetSection()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("Sting");
 			source.AddEntry("I'm an english man in new york");
 			source.AddEntry("1987");
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, source))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, source))
 			{
 				var entries = proxy.GetEntries(new LogFileSection(1, 2));
 				entries[0].Index.Should().Be(1);
@@ -130,106 +131,106 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestExists()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.EmptyReason, ErrorFlags.None);
+					        destination.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None);
+				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
 
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					        destination.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 			}
 		}
 
 		[Test]
 		public void TestFileSize()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.Size, Size.FromBytes(12));
+					        destination.SetValue(GeneralProperties.Size, Size.FromBytes(12));
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.Size).Should().Be(Size.FromBytes(12));
+				proxy.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(12));
 
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.Size, Size.OneMegabyte);
+					        destination.SetValue(GeneralProperties.Size, Size.OneMegabyte);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.Size).Should().Be(Size.OneMegabyte);
+				proxy.GetProperty(GeneralProperties.Size).Should().Be(Size.OneMegabyte);
 			}
 		}
 
 		[Test]
 		public void TestCount()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
-					                  destination.SetValue(Properties.LogEntryCount, 42));
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
+					                  destination.SetValue(GeneralProperties.LogEntryCount, 42));
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.LogEntryCount).Should().Be(42);
+				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(42);
 
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
-					                  destination.SetValue(Properties.LogEntryCount, 9001));
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
+					                  destination.SetValue(GeneralProperties.LogEntryCount, 9001));
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.LogEntryCount).Should().Be(9001);
+				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(9001);
 			}
 		}
 
 		[Test]
 		public void TestStartTimestamp()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.StartTimestamp, new DateTime(2016, 10, 7, 14, 46, 00));
+					        destination.SetValue(GeneralProperties.StartTimestamp, new DateTime(2016, 10, 7, 14, 46, 00));
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.StartTimestamp).Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
+				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
 				
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Properties.StartTimestamp, null);
+					        destination.SetValue(GeneralProperties.StartTimestamp, null);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Properties.StartTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue();
 			}
 		}
 
 		[Test]
 		public void TestMaxCharactersPerLine()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
 					        destination.SetValue(TextProperties.MaxCharactersInLine, 101);
 				        });
 				_taskScheduler.RunOnce();
 				proxy.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(101);
 				
-				_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-				        .Callback((ILogFileProperties destination) =>
+				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+				        .Callback((IPropertiesBuffer destination) =>
 				        {
 					        destination.SetValue(TextProperties.MaxCharactersInLine, 0);
 				        });
@@ -241,7 +242,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestDispose1()
 		{
-			var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
+			var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
 			_taskScheduler.PeriodicTaskCount.Should().Be(1);
 
 			proxy.IsDisposed.Should().BeFalse();
@@ -253,7 +254,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestDispose2()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.Dispose();
 				_logFile.Verify(l => l.Dispose(), Times.Once);
@@ -263,7 +264,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestListen1()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object, 1000))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -284,7 +285,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestListen2()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -307,7 +308,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestListen3()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -331,11 +332,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Description("Verifies that OnLogFileModified calls from log files that aren't the current inner one are ignored")]
 		public void TestListen4()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
-				new Action(() => proxy.OnLogFileModified(new Mock<ILogFile>().Object, new LogFileSection(0, 1))).Should().NotThrow();
+				new Action(() => proxy.OnLogFileModified(new Mock<ILogSource>().Object, new LogFileSection(0, 1))).Should().NotThrow();
 				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 
 				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).Should().NotThrow();
@@ -346,7 +347,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex1()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.GetLogLineIndexOfOriginalLineIndex(It.Is<LogLineIndex>(y => y == 9001)))
 					.Returns(42);
@@ -360,7 +361,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex2()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero))
 			{
 				proxy.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(9001))
 					.Should()
@@ -373,12 +374,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[142];
-			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
+			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
 			var destinationIndex = 42;
-			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
-			logFile.GetColumn(section, Columns.RawContent, buffer, destinationIndex, queryOptions);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			logFile.GetColumn(section, LogColumns.RawContent, buffer, destinationIndex, queryOptions);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 Columns.RawContent,
+			                                 LogColumns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
 			                                 queryOptions),
@@ -390,8 +391,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[100];
-			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetColumn(section, Columns.RawContent, buffer);
+			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
+			logFile.GetColumn(section, LogColumns.RawContent, buffer);
 			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
 		}
 
@@ -400,35 +401,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			var indices = new LogLineIndex[] {1, 2};
 			var buffer = new string[2];
-			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetColumn(indices, Columns.RawContent, buffer);
+			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
+			logFile.GetColumn(indices, LogColumns.RawContent, buffer);
 			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
 		}
 
 		[Test]
 		public void TestProgress1()
 		{
-			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
+			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
+			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero);
 		}
 
 		[Test]
 		public void TestProgress2()
 		{
-			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
+			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
 
-			_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			        .Callback((ILogFileProperties destination) =>
+			_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			        .Callback((IPropertiesBuffer destination) =>
 			        {
-				        destination.SetValue(Properties.PercentageProcessed, Percentage.FiftyPercent);
+				        destination.SetValue(GeneralProperties.PercentageProcessed, Percentage.FiftyPercent);
 			        });
 
-			logFile.InnerLogFile = _logFile.Object;
-			logFile.GetProperty(Properties.PercentageProcessed).Should()
+			logFile.InnerLogSource = _logFile.Object;
+			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should()
 			       .Be(Percentage.Zero, "because the proxy didn't process anything just yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.PercentageProcessed).Should()
+			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should()
 			       .Be(Percentage.FiftyPercent, "because while the proxy is done, its source is only half finished");
 		}
 
@@ -437,20 +438,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		[Test]
 		public void TestGetOriginalIndexFrom2()
 		{
-			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				var buffer = new LogLineIndex[100];
 				var destinationIndex = 47;
-				var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
 
 				proxy.GetColumn(new LogFileSection(1, 42),
-				                Columns.OriginalIndex,
+				                LogColumns.OriginalIndex,
 				                buffer,
 				                destinationIndex,
 				                queryOptions);
 
 				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
-				                                 Columns.OriginalIndex,
+				                                 LogColumns.OriginalIndex,
 				                                 buffer,
 				                                 destinationIndex,
 				                                 queryOptions),
@@ -460,15 +461,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 
 		#endregion
 
-		protected override ILogFile CreateEmpty()
+		protected override ILogSource CreateEmpty()
 		{
-			return new LogFileProxy(_taskScheduler, TimeSpan.Zero);
+			return new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
 		}
 
-		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
-			var source = new InMemoryLogFile(content);
-			var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, source);
+			var source = new InMemoryLogSource(content);
+			var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, source);
 			_taskScheduler.RunOnce();
 			return proxy;
 		}

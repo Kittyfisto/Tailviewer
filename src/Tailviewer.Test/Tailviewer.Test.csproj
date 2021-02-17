@@ -94,12 +94,16 @@
   <ItemGroup>
     <Compile Include="AbstractIdTest.cs" />
     <Compile Include="Appender.cs" />
+    <Compile Include="ArrayExtensionsTest.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderActionTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\AbstractLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\CombinedLogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\SingleColumnLogBufferViewTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
@@ -122,7 +126,7 @@
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractAggregatedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\AbstractReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractTaskSchedulerLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ConcurrentLogFilePropertyCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
@@ -132,14 +136,15 @@
     <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest3.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntriesViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryTest2.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryListTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryTest2.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogEntryBufferAccessorTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferBufferTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogEntryListAccessorTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferListTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryParserFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatsTest.cs" />
@@ -157,11 +162,14 @@
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest2.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileParserTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\AbstractReadOnlyLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\EncodingDetectorTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\FileFingerprintTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\GenericTextLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\LineOffsetDetectorTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\GenericTextLogEntryParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
@@ -169,7 +177,7 @@
     <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileIssuesPluginTest.cs" />
@@ -216,7 +224,7 @@
     <Compile Include="Settings\TimeFilterTest.cs" />
     <Compile Include="SimpleLogFileFormatMatcher.cs" />
     <Compile Include="SimplePluginLogFileFactory.cs" />
-    <Compile Include="SimpleTextLogFileParserPlugin.cs" />
+    <Compile Include="SimpleLogEntryParserPlugin.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
@@ -274,6 +282,12 @@
     <Content Include="Settings\settings_no_file_guid.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\1Line.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\1Line_WithNewline.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\1Mb.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -293,6 +307,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\DifferentLevels.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Empty.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\utf8_w_bom.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\LevelCounts.txt">

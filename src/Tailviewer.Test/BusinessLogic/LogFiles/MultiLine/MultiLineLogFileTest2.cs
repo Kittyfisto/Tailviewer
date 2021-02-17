@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 {
@@ -12,9 +11,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogFile CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
 		{
-			return new MultiLineLogFile(taskScheduler, new EmptyLogFile(), TimeSpan.Zero);
+			return new MultiLineLogSource(taskScheduler, new EmptyLogSource(), TimeSpan.Zero);
 		}
 
 		#endregion

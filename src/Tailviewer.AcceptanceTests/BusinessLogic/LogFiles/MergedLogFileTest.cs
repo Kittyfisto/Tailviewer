@@ -3,11 +3,14 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Merged;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -29,7 +32,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
-		private TextLogFile Create(string fileName,
+		private TextLogSource Create(string fileName,
 		                           ITimestampParser timestampParser = null)
 		{
 			var serviceContainer = new ServiceContainer();
@@ -37,8 +40,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			if (timestampParser != null)
 				serviceContainer.RegisterInstance<ITimestampParser>(timestampParser);
 			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
-			return new TextLogFile(serviceContainer, fileName);
+			serviceContainer.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
+			return new TextLogSource(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -46,19 +49,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public void Test20Mb()
 		{
 			using (var source = Create(TextLogFileAcceptanceTest.File20Mb))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source))
+			using (var merged = new MergedLogSource(_scheduler, TimeSpan.FromMilliseconds(1), source))
 			{
-				source.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
-				merged.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+				source.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+				merged.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
-				merged.GetProperty(Properties.LogEntryCount).Should().Be(source.GetProperty(Properties.LogEntryCount));
-				merged.GetProperty(Properties.LogEntryCount).Should().Be(165342);
-				merged.GetProperty(Properties.Size).Should().Be(source.GetProperty(Properties.Size));
-				merged.GetProperty(Properties.StartTimestamp).Should().Be(source.GetProperty(Properties.StartTimestamp));
+				merged.GetProperty(GeneralProperties.LogEntryCount).Should().Be(source.GetProperty(GeneralProperties.LogEntryCount));
+				merged.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
+				merged.GetProperty(GeneralProperties.Size).Should().Be(source.GetProperty(GeneralProperties.Size));
+				merged.GetProperty(GeneralProperties.StartTimestamp).Should().Be(source.GetProperty(GeneralProperties.StartTimestamp));
 
-				var sourceEntries = source.GetEntries(new LogFileSection(0, source.GetProperty(Properties.LogEntryCount)));
-				var mergedEntries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(Properties.LogEntryCount)));
-				for (int i = 0; i < source.GetProperty(Properties.LogEntryCount); ++i)
+				var sourceEntries = source.GetEntries(new LogFileSection(0, source.GetProperty(GeneralProperties.LogEntryCount)));
+				var mergedEntries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
+				for (int i = 0; i < source.GetProperty(GeneralProperties.LogEntryCount); ++i)
 				{
 					var mergedEntry = mergedEntries[i];
 					var sourceEntry = sourceEntries[i];
@@ -79,62 +82,62 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source0 = Create(TextLogFileAcceptanceTest.File2Entries))
 			using (var source1 = Create(TextLogFileAcceptanceTest.File2Lines))
-			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
-			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
+			using (var multi0 = new MultiLineLogSource(_scheduler, source0, TimeSpan.Zero))
+			using (var multi1 = new MultiLineLogSource(_scheduler, source1, TimeSpan.Zero))
+			using (var merged = new MergedLogSource(_scheduler, TimeSpan.Zero, multi0, multi1))
 			{
-				source0.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-				source1.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				source0.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				source1.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
-				multi0.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-				multi1.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				multi0.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				multi1.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
-				merged.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(8, "Because the merged file should've been finished");
-				merged.Property(x => x.GetProperty(Properties.Size)).ShouldEventually().Be(source0.GetProperty(Properties.Size) + source1.GetProperty(Properties.Size));
-				merged.Property(x => x.GetProperty(Properties.StartTimestamp)).ShouldEventually().Be(source1.GetProperty(Properties.StartTimestamp));
+				merged.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(8, "Because the merged file should've been finished");
+				merged.Property(x => x.GetProperty(GeneralProperties.Size)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.Size) + source1.GetProperty(GeneralProperties.Size));
+				merged.Property(x => x.GetProperty(GeneralProperties.StartTimestamp)).ShouldEventually().Be(source1.GetProperty(GeneralProperties.StartTimestamp));
 
-				var source0Lines = multi0.GetEntries(new LogFileSection(0, source0.GetProperty(Properties.LogEntryCount)));
-				var source1Lines = multi1.GetEntries(new LogFileSection(0, source1.GetProperty(Properties.LogEntryCount)));
-				var mergedLines = merged.GetEntries(new LogFileSection(0, merged.GetProperty(Properties.LogEntryCount)));
+				var source0Lines = multi0.GetEntries(new LogFileSection(0, source0.GetProperty(GeneralProperties.LogEntryCount)));
+				var source1Lines = multi1.GetEntries(new LogFileSection(0, source1.GetProperty(GeneralProperties.LogEntryCount)));
+				var mergedLines = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
 
 				mergedLines[0].Index.Should().Be(0);
 				mergedLines[0].LogEntryIndex.Should().Be(0);
-				mergedLines[0].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(1));
+				mergedLines[0].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(1));
 				mergedLines[0].RawContent.Should().Be(source1Lines[0].RawContent);
 				
 				mergedLines[1].Index.Should().Be(1);
 				mergedLines[1].LogEntryIndex.Should().Be(1);
-				mergedLines[1].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[1].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[1].RawContent.Should().Be(source0Lines[0].RawContent);
 				
 				mergedLines[2].Index.Should().Be(2);
 				mergedLines[2].LogEntryIndex.Should().Be(1);
-				mergedLines[2].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[2].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[2].RawContent.Should().Be(source0Lines[1].RawContent);
 				
 				mergedLines[3].Index.Should().Be(3);
 				mergedLines[3].LogEntryIndex.Should().Be(1);
-				mergedLines[3].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[3].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[3].RawContent.Should().Be(source0Lines[2].RawContent);
 				
 				mergedLines[4].Index.Should().Be(4);
 				mergedLines[4].LogEntryIndex.Should().Be(2);
-				mergedLines[4].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(1));
+				mergedLines[4].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(1));
 				mergedLines[4].RawContent.Should().Be(source1Lines[1].RawContent);
 				
 				mergedLines[5].Index.Should().Be(5);
 				mergedLines[5].LogEntryIndex.Should().Be(3);
-				mergedLines[5].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[5].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[5].RawContent.Should().Be(source0Lines[3].RawContent);
 				
 				mergedLines[6].Index.Should().Be(6);
 				mergedLines[6].LogEntryIndex.Should().Be(3);
-				mergedLines[6].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[6].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[6].RawContent.Should().Be(source0Lines[4].RawContent);
 				
 				mergedLines[7].Index.Should().Be(7);
 				mergedLines[7].LogEntryIndex.Should().Be(3);
-				mergedLines[7].GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[7].GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(0));
 				mergedLines[7].RawContent.Should().Be(source0Lines[5].RawContent);
 			}
 		}
@@ -144,13 +147,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source0 = Create(TextLogFileAcceptanceTest.FileTestLive1))
 			using (var source1 = Create(TextLogFileAcceptanceTest.FileTestLive2))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source0, source1))
+			using (var merged = new MergedLogSource(_scheduler, TimeSpan.Zero, source0, source1))
 			{
-				merged.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(19, "Because the merged file should've been finished");
-				merged.Property(x => x.GetProperty(Properties.Size)).ShouldEventually().Be(source0.GetProperty(Properties.Size) + source1.GetProperty(Properties.Size));
-				merged.Property(x => x.GetProperty(Properties.StartTimestamp)).ShouldEventually().Be(source0.GetProperty(Properties.StartTimestamp));
+				merged.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(19, "Because the merged file should've been finished");
+				merged.Property(x => x.GetProperty(GeneralProperties.Size)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.Size) + source1.GetProperty(GeneralProperties.Size));
+				merged.Property(x => x.GetProperty(GeneralProperties.StartTimestamp)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.StartTimestamp));
 
-				var entries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(Properties.LogEntryCount)));
+				var entries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
 
 				entries[0].Index.Should().Be(0);
 				entries[0].LineNumber.Should().Be(1);
@@ -411,90 +414,90 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source0 = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var source1 = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel2, new CustomTimestampParser()))
-			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
-			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
+			using (var multi0 = new MultiLineLogSource(_scheduler, source0, TimeSpan.Zero))
+			using (var multi1 = new MultiLineLogSource(_scheduler, source1, TimeSpan.Zero))
+			using (var merged = new MergedLogSource(_scheduler, TimeSpan.Zero, multi0, multi1))
 			{
 				// TODO: Fix - the percentage gets reset because a log file implementation has a slightly botched Percetage calculation
-				merged.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(Percentage.HundredPercent);
+				merged.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(Percentage.HundredPercent);
 
 				var entries = merged.GetEntries(new LogFileSection(0, 11),
 				                                new IColumnDescriptor[]
 				                                {
-					                                Columns.Timestamp,
-					                                Columns.LogEntryIndex,
-					                                Columns.LineNumber,
-					                                Columns.RawContent,
-					                                Columns.OriginalDataSourceName
+					                                LogColumns.Timestamp,
+					                                LogColumns.LogEntryIndex,
+					                                LogColumns.LineNumber,
+					                                LogColumns.RawContent,
+					                                LogColumns.OriginalDataSourceName
 				                                });
 
 				var line = entries[0];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 176));
 				line.RawContent.Should().Be("18/03/2019 14:09:54:176    1 Information BTPVM3372 05:30:00 6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(0));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
 				line = entries[1];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
 				line.RawContent.Should()
 				    .Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(1));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 
 				line = entries[2];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
 				line.RawContent.Should().Be("Started BTPVM3372 05:30:00 6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(1));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 
 				line = entries[3];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 178));
 				line.RawContent.Should().Be("18/03/2019 14:09:54:178    1 Information   Loading preferences Started");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(2));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
 				line = entries[4];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 178));
 				line.RawContent.Should().Be("BTPVM3372 05:30:00 6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(2));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
 				line = entries[5];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
 				line.RawContent.Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(3));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 
 				line = entries[6];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
 				line.RawContent.Should().Be("preferences Started BTPVM3372 05:30:00 6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(3));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 
 				line = entries[7];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 550));
 				line.RawContent.Should()
 				    .Be("18/03/2019 14:09:54:550    1 Information    RMClientURL: BTPVM3372 05:30:00");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(4));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
 				line = entries[8];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 550));
 				line.RawContent.Should().Be("6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(4));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
 				line = entries[9];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
 				line.RawContent.Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(5));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 
 				line = entries[10];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
 				line.RawContent.Should().Be("BTPVM3372 05:30:00 6060");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(5));
-				line.GetValue(Columns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
+				line.GetValue(LogColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log1.txt");
 			}
 		}
 	}

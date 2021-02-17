@@ -4,27 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 using Tailviewer.Core;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
 	/// <summary>
-	///     Responsible for searching for a given term in an <see cref="ILogFile" />.
+	///     Responsible for searching for a given term in an <see cref="ILogSource" />.
 	/// </summary>
 	public sealed class LogFileSearch
 		: ILogFileSearch
-		, ILogFileListener
+		, ILogSourceListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly LogFileSearchListenerCollection _listeners;
 		private readonly SubstringFilter _filter;
-		private readonly ILogFile _logFile;
-		private LogEntryArray _logLinesArray;
+		private readonly ILogSource _logSource;
+		private LogBufferArray _logLinesArray;
 		private readonly List<LogMatch> _matches;
 		private readonly List<LogLineMatch> _matchesBuffer;
 		private readonly TimeSpan _maximumWaitTime;
@@ -34,21 +35,21 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly object _syncRoot;
 		private bool _isDisposed;
 
-		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm)
-			: this(taskScheduler, logFile, searchTerm, TimeSpan.FromMilliseconds(10))
+		public LogFileSearch(ITaskScheduler taskScheduler, ILogSource logSource, string searchTerm)
+			: this(taskScheduler, logSource, searchTerm, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
-		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
+		public LogFileSearch(ITaskScheduler taskScheduler, ILogSource logSource, string searchTerm, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (logFile == null)
-				throw new ArgumentNullException(nameof(logFile));
+			if (logSource == null)
+				throw new ArgumentNullException(nameof(logSource));
 			if (string.IsNullOrEmpty(searchTerm))
 				throw new ArgumentException("searchTerm may not be empty");
 
-			_logFile = logFile;
+			_logSource = logSource;
 			_filter = new SubstringFilter(searchTerm, true);
 			_matches = new List<LogMatch>();
 			_syncRoot = new object();
@@ -58,18 +59,18 @@ namespace Tailviewer.BusinessLogic.Searches
 
 			const int maximumLineCount = 1000;
 			_maximumWaitTime = maximumWaitTime;
-			_logLinesArray = new LogEntryArray(maximumLineCount, Columns.Index, Columns.RawContent);
+			_logLinesArray = new LogBufferArray(maximumLineCount, LogColumns.Index, LogColumns.RawContent);
 			_matchesBuffer = new List<LogLineMatch>();
-			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);
+			_logSource.AddListener(this, _maximumWaitTime, maximumLineCount);
 
 			_task = _scheduler.StartPeriodic(FilterAllPending,
 			                                 TimeSpan.FromMilliseconds(100),
-			                                 string.Format("Search {0}", logFile));
+			                                 string.Format("Search {0}", logSource));
 		}
 
 		public void Dispose()
 		{
-			_logFile.RemoveListener(this);
+			_logSource.RemoveListener(this);
 			_scheduler.StopPeriodic(_task);
 
 			lock (_syncRoot)
@@ -88,7 +89,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			_isDisposed = true;
 		}
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
 		}
@@ -155,15 +156,23 @@ namespace Tailviewer.BusinessLogic.Searches
 		{
 			try
 			{
+				LogBufferArray lines;
+				lock (_syncRoot)
+				{
+					lines = _logLinesArray;
+					if (lines == null)
+						return;
+				}
+
 				// We've instructed the logfile to give us exactly up to
 				// _logLinesBuffer.Length amount of entries in the ctor, hence the following
 				// is correct:
-				_logFile.GetEntries(section, _logLinesArray);
+				_logSource.GetEntries(section, lines);
 
 				bool added = false;
 				for (int i = 0; i < section.Count; ++i)
 				{
-					var line = _logLinesArray[i];
+					var line = lines[i];
 
 					_filter.Match(line, _matchesBuffer);
 					if (_matchesBuffer.Count > 0)

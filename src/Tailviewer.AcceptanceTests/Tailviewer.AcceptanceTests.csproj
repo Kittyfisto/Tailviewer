@@ -101,14 +101,13 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.CustomTimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\FileLogSourceAcceptanceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\FileLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\AbstractStreamingTextLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryIoScheduler.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryStreamingTextLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryTextFileReader.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest2.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />

@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Windows;
 using Metrolib.Controls;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -16,12 +14,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("LogView", typeof(LogViewerViewModel), typeof(LogViewerControl),
 				new PropertyMetadata(default(LogViewerViewModel), OnLogViewChanged));
 
-		public static readonly DependencyProperty LogFileProperty =
-			DependencyProperty.Register("LogFile", typeof(ILogFile), typeof(LogViewerControl),
-				new PropertyMetadata(default(ILogFile)));
+		public static readonly DependencyProperty LogSourceProperty =
+			DependencyProperty.Register("LogSource", typeof(ILogSource), typeof(LogViewerControl),
+				new PropertyMetadata(default(ILogSource)));
 
 		public static readonly DependencyProperty FindAllLogFileProperty = DependencyProperty.Register(
-		                                                "FindAllLogFile", typeof(ILogFile), typeof(LogViewerControl), new PropertyMetadata(default(ILogFile)));
+		                                                "FindAllLogFile", typeof(ILogSource), typeof(LogViewerControl), new PropertyMetadata(default(ILogSource)));
 
 		public static readonly DependencyProperty FindAllSearchProperty = DependencyProperty.Register(
 		                                                "FindAllSearch", typeof(ILogFileSearch), typeof(LogViewerControl), new PropertyMetadata(default(ILogFileSearch)));
@@ -150,15 +148,15 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(ShowLineNumbersProperty, value); }
 		}
 
-		public ILogFile LogFile
+		public ILogSource LogSource
 		{
-			get { return (ILogFile) GetValue(LogFileProperty); }
-			set { SetValue(LogFileProperty, value); }
+			get { return (ILogSource) GetValue(LogSourceProperty); }
+			set { SetValue(LogSourceProperty, value); }
 		}
 
-		public ILogFile FindAllLogFile
+		public ILogSource FindAllLogSource
 		{
-			get { return (ILogFile) GetValue(FindAllLogFileProperty); }
+			get { return (ILogSource) GetValue(FindAllLogFileProperty); }
 			set { SetValue(FindAllLogFileProperty, value); }
 		}
 
@@ -314,8 +312,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					newView.PropertyChanged += LogViewOnPropertyChanged;
 					DataSource = newView.DataSource;
-					LogFile = newView.LogFile;
-					FindAllLogFile = newView.DataSource.DataSource.FindAllLogFile;
+					LogSource = newView.LogSource;
+					FindAllLogSource = newView.DataSource.DataSource.FindAllLogSource;
 					FindAllSearch = newView.DataSource.DataSource.FindAllSearch;
 					ShowFindAll = newView.DataSource.ShowFindAll;
 					Search = newView.Search;
@@ -326,8 +324,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				else
 				{
 					DataSource = null;
-					LogFile = null;
-					FindAllLogFile = null;
+					LogSource = null;
+					FindAllLogSource = null;
 					ShowFindAll = false;
 				}
 			}
@@ -369,8 +367,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			switch (args.PropertyName)
 			{
-				case nameof(LogViewerViewModel.LogFile):
-					LogFile = LogView.LogFile;
+				case nameof(LogViewerViewModel.LogSource):
+					LogSource = LogView.LogSource;
 					break;
 			}
 		}

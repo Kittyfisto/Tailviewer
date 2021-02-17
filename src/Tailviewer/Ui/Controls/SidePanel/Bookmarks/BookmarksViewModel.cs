@@ -7,10 +7,10 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 {
@@ -188,7 +188,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 			if (dataSource == null || lines == null)
 				return;
 
-			var originalIndices = dataSource.FilteredLogFile.GetColumn(lines.ToList(), Columns.OriginalIndex);
+			var originalIndices = dataSource.FilteredLogSource.GetColumn(lines.ToList(), LogColumns.OriginalIndex);
 
 			foreach (var line in originalIndices)
 			{

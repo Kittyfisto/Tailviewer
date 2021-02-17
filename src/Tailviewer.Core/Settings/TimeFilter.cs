@@ -2,7 +2,6 @@
 using System.Diagnostics.Contracts;
 using System.Xml;
 using Metrolib;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Filters.ExpressionEngine;
 

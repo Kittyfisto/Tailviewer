@@ -2,8 +2,9 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -14,7 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction()
 		{
-			var logFile = new EmptyLogFile();
+			var logFile = new EmptyLogSource();
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
 			logFile.GetProperty((IReadOnlyPropertyDescriptor)TextProperties.MaxCharactersInLine).Should().Be(0);
@@ -22,14 +23,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(0);
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
 			logFile.GetProperty((IReadOnlyPropertyDescriptor)TextProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.Columns.Should().BeEquivalentTo(Columns.Minimum);
+			logFile.Columns.Should().BeEquivalentTo(LogColumns.Minimum);
 		}
 
 		[Test]
 		public void TestAddListener()
 		{
-			var logFile = new EmptyLogFile();
-			var listener = new Mock<ILogFileListener>();
+			var logFile = new EmptyLogSource();
+			var listener = new Mock<ILogSourceListener>();
 			logFile.AddListener(listener.Object, TimeSpan.Zero, 0);
 			listener.Verify(x => x.OnLogFileModified(logFile, LogFileSection.Reset), Times.Once);
 		}

@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles.Merged;
+using Tailviewer.Core.Sources.Merged;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {

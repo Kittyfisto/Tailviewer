@@ -10,7 +10,6 @@ using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;

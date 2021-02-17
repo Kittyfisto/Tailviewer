@@ -6,8 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {

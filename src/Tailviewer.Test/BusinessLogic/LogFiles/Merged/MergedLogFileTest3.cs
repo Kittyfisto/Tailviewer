@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources.Merged;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 {
@@ -12,9 +11,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 	{
 		#region Overrides of AbstractAggregatedLogFileTest
 
-		protected override ILogFile Create(ITaskScheduler taskScheduler, ILogFile source)
+		protected override ILogSource Create(ITaskScheduler taskScheduler, ILogSource source)
 		{
-			return new MergedLogFile(taskScheduler, TimeSpan.Zero, source);
+			return new MergedLogSource(taskScheduler, TimeSpan.Zero, source);
 		}
 
 		#endregion

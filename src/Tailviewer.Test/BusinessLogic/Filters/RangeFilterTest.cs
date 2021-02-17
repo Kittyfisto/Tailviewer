@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
 {
@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 
 		private static IReadOnlyLogEntry CreateLine(LogLineIndex lineIndex)
 		{
-			return new LogEntry(Columns.Minimum) {Index = lineIndex};
+			return new LogEntry(LogColumns.Minimum) {Index = lineIndex};
 		}
 	}
 }

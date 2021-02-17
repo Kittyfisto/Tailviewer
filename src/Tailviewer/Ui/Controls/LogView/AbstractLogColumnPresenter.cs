@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -16,7 +15,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public abstract IColumnDescriptor Column { get; }
 		public abstract TextSettings TextSettings { get; set; }
-		public abstract void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset);
+		public abstract void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset);
 
 		#endregion
 	}
@@ -64,10 +63,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     Fetches the newest values for this presenter's column from the given log file.
 		/// </summary>
-		/// <param name="logFile"></param>
+		/// <param name="logSource"></param>
 		/// <param name="visibleSection"></param>
 		/// <param name="yOffset"></param>
-		public override void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset)
+		public override void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset)
 		{
 			if (Visibility != Visibility.Visible) //< We shouldn't waste CPU cycles when we're hidden from view...
 				return;
@@ -75,19 +74,19 @@ namespace Tailviewer.Ui.Controls.LogView
 			_yOffset = yOffset;
 
 			_values.Clear();
-			if (logFile != null)
+			if (logSource != null)
 			{
 				var values = new T[visibleSection.Count];
-				logFile.GetColumn(visibleSection, _column, values);
+				logSource.GetColumn(visibleSection, _column, values);
 				foreach (var value in values)
 					_values.Add(CreateFormatter(value));
 			}
 
-			UpdateWidth(logFile, _textSettings);
+			UpdateWidth(logSource, _textSettings);
 			InvalidateVisual();
 		}
 
-		protected abstract void UpdateWidth(ILogFile logFile, TextSettings textSettings);
+		protected abstract void UpdateWidth(ILogSource logSource, TextSettings textSettings);
 
 		/// <summary>
 		/// </summary>

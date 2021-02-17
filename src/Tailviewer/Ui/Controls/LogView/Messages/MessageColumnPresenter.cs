@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+﻿using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.Messages
@@ -8,12 +7,12 @@ namespace Tailviewer.Ui.Controls.LogView.Messages
 		: AbstractLogColumnPresenter<string>
 	{
 		public MessageColumnPresenter(TextSettings textSettings)
-			: base(Columns.Message, textSettings)
+			: base(LogColumns.Message, textSettings)
 		{}
 
 		#region Overrides of AbstractLogColumnPresenter<string>
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{
 			// TODO: What do we do here? This column shall simply take all the space necessary...
 		}

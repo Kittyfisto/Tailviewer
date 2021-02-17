@@ -7,7 +7,7 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Settings.CustomFormats;
 

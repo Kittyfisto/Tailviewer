@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -12,7 +10,6 @@ namespace Tailviewer.Formats.Serilog
 		private readonly string _rawContent;
 		public LevelFlags LogLevel;
 		public DateTime Timestamp;
-		public string Message;
 
 		public SerilogEntry(string rawContent)
 		{
@@ -84,14 +81,20 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
+		public string Message
+		{
+			get;
+			set;
+		}
+
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			if (Equals(column, Core.LogFiles.Columns.RawContent))
+			if (Equals(column, LogColumns.RawContent))
 			{
 				return (T) (object) _rawContent;
 			}
 
-			if (Equals(column, Core.LogFiles.Columns.Message))
+			if (Equals(column, LogColumns.Message))
 			{
 				return (T)(object)Message;
 			}

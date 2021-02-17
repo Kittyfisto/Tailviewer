@@ -11,7 +11,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;

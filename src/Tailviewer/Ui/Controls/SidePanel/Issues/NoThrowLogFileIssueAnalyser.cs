@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using log4net;
-using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {

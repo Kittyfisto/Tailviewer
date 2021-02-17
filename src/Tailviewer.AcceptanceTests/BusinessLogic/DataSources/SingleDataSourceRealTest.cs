@@ -5,9 +5,9 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
@@ -43,40 +43,40 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
-			_dataSource.UnfilteredLogFile.Should().NotBeNull();
-			_dataSource.FilteredLogFile.Should().NotBeNull();
+			_dataSource.UnfilteredLogSource.Should().NotBeNull();
+			_dataSource.FilteredLogSource.Should().NotBeNull();
 
-			_dataSource.Property(x => x.UnfilteredLogFile.GetProperty(Properties.LogEntryCount)).ShouldEventually().Be(165342);
-			_dataSource.Property(x => x.FilteredLogFile.GetProperty(Properties.LogEntryCount)).ShouldEventually().Be(165342);
+			_dataSource.Property(x => x.UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
+			_dataSource.Property(x => x.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
 		}
 
 		[Test]
 		public void TestLevelFilter1()
 		{
 			_dataSource.LevelFilter = LevelFlags.Info;
-			_dataSource.FilteredLogFile.Should().NotBeNull();
-			_dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Should().NotBeNull();
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			// TODO: Find the bug in the EndOfSourceReached implementation!!!!
 			Thread.Sleep(1000);
 
-			_dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(5);
+			_dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
 		}
 
 		[Test]
 		public void TestStringFilter1()
 		{
-			_dataSource.UnfilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed))
+			_dataSource.UnfilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed))
 					   .ShouldEventually().Be(Percentage.HundredPercent);
 
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
-			_dataSource.FilteredLogFile.Should().NotBeNull();
+			_dataSource.FilteredLogSource.Should().NotBeNull();
 
-			_dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
-			_dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(5);
+			_dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			_dataSource.Property(x => x.TotalCount).ShouldEventually().Be(165342);
 			_dataSource.DebugCount.Should().Be(165337);

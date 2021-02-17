@@ -6,8 +6,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.DataSource;
 
@@ -55,18 +55,18 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			dataSource1.Setup(x => x.FullFileName).Returns(@"B:\a really long file name.log");
 
 			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
-			var mergedLogFile = new InMemoryLogFile(Columns.SourceId);
+			var mergedLogFile = new InMemoryLogSource(LogColumns.SourceId);
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.SourceId, new LogLineSourceId(1) },
-				{Columns.RawContent, "foo" }
+				{LogColumns.SourceId, new LogLineSourceId(1) },
+				{LogColumns.RawContent, "foo" }
 			});
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.SourceId, new LogLineSourceId(0) },
-				{Columns.RawContent, "bar" }
+				{LogColumns.SourceId, new LogLineSourceId(0) },
+				{LogColumns.RawContent, "bar" }
 			});
-			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile);
+			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);
 
 			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
@@ -93,18 +93,18 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			dataSource1.Setup(x => x.CharacterCode).Returns(@"TH");
 
 			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
-			var mergedLogFile = new InMemoryLogFile(Columns.SourceId);
+			var mergedLogFile = new InMemoryLogSource(LogColumns.SourceId);
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.SourceId, new LogLineSourceId(1) },
-				{Columns.RawContent, "foo" }
+				{LogColumns.SourceId, new LogLineSourceId(1) },
+				{LogColumns.RawContent, "foo" }
 			});
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{Columns.SourceId, new LogLineSourceId(0) },
-				{Columns.RawContent, "bar" }
+				{LogColumns.SourceId, new LogLineSourceId(0) },
+				{LogColumns.RawContent, "bar" }
 			});
-			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile);
+			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);
 
 			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
@@ -122,7 +122,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 				DisplayMode = displayMode
 			};
 			var folderDataSource = new Mock<IFolderDataSource>();
-			folderDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			folderDataSource.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			var dataSource = new Mock<IDataSource>();
 			folderDataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>{dataSource.Object});
 

@@ -6,8 +6,11 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 {
@@ -21,32 +24,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			_taskScheduler = new ManualTaskScheduler();
 
 			_lines = new List<LogLine>();
-			_source = new Mock<ILogFile>();
-			_source.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(() => _lines.Count);
-			_source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-				.Callback((ILogFileListener listener, TimeSpan unused1, int unused2) =>
+			_source = new Mock<ILogSource>();
+			_source.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => _lines.Count);
+			_source.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+				.Callback((ILogSourceListener listener, TimeSpan unused1, int unused2) =>
 				{
 					listener.OnLogFileModified(_source.Object,
 						LogFileSection.Reset);
 				});
 
 			_changes = new List<LogFileSection>();
-			_listener = new Mock<ILogFileListener>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					 .Callback((ILogFile l, LogFileSection s) => _changes.Add(s));
+			_listener = new Mock<ILogSourceListener>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+					 .Callback((ILogSource l, LogFileSection s) => _changes.Add(s));
 
 		}
 
-		private Mock<ILogFile> _source;
+		private Mock<ILogSource> _source;
 		private List<LogLine> _lines;
 		private ManualTaskScheduler _taskScheduler;
 		private List<LogFileSection> _changes;
-		private Mock<ILogFileListener> _listener;
+		private Mock<ILogSourceListener> _listener;
 
 		[Test]
 		public void TestCtor1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.PeriodicTaskCount.Should().Be(1);
 
 			logFile.Dispose();
@@ -56,14 +59,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestCtor2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_source.Verify(
-				x => x.AddListener(It.Is<ILogFileListener>(y => Equals(y, logFile)), It.IsAny<TimeSpan>(), It.IsAny<int>()),
+				x => x.AddListener(It.Is<ILogSourceListener>(y => Equals(y, logFile)), It.IsAny<TimeSpan>(), It.IsAny<int>()),
 				Times.Once,
 				"because the single line log file should register itself as a source at the listener");
 
 			new Action(() => logFile.Dispose()).Should().NotThrow("because Dispose() must always succeed");
-			_source.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => Equals(y, logFile))), Times.Once,
+			_source.Verify(x => x.RemoveListener(It.Is<ILogSourceListener>(y => Equals(y, logFile))), Times.Once,
 				"because the single line log file should remove itself as a listener from its source upon being disposed of");
 		}
 
@@ -71,8 +74,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that MaxCharactersPerLine is changed once a modification is applied")]
 		public void TestOneModification2()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
 
@@ -87,113 +90,113 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the Exists flag is changed once a modification is applied")]
 		public void TestOneModification3()
 		{
-			_source.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
-			_source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			       .Callback((ILogFileProperties destination) =>
-				                 destination.SetValue(Properties.EmptyReason, ErrorFlags.SourceDoesNotExist));
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			_source.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
+			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			       .Callback((IPropertiesBuffer destination) =>
+				                 destination.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceDoesNotExist));
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
+			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
 
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.None);
-			_source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			       .Callback((ILogFileProperties properties) =>
+			_source.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			       .Callback((IPropertiesBuffer properties) =>
 			       {
-				       properties.SetValue(Properties.EmptyReason, ErrorFlags.None);
+				       properties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
 			       });
 
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None, "because the change should have been applied by now");
+			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the change should have been applied by now");
 		}
 
 		[Test]
 		[Description("Verifies that the StartTimestamp is changed once a modification is applied")]
 		public void TestOneModification4()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.StartTimestamp).Should().NotHaveValue("because the source doesn't exist (yet)");
+			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the source doesn't exist (yet)");
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			       .Callback((ILogFileProperties properties) =>
+			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			       .Callback((IPropertiesBuffer properties) =>
 			       {
-				       properties.SetValue(Properties.StartTimestamp, timestamp);
+				       properties.SetValue(GeneralProperties.StartTimestamp, timestamp);
 			       });
-			logFile.GetProperty(Properties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.GetProperty(Properties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.StartTimestamp).Should().Be(timestamp, "because the change should have been applied by now");
+			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().Be(timestamp, "because the change should have been applied by now");
 		}
 
 		[Test]
 		[Description("Verifies that the LastModified is changed once a modification is applied")]
 		public void TestOneModification5()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LastModified).Should().NotHaveValue("because the source doesn't exist (yet)");
+			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the source doesn't exist (yet)");
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetProperty(Properties.LastModified)).Returns(timestamp);
-			_source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			       .Callback((ILogFileProperties properties) =>
+			_source.Setup(x => x.GetProperty(GeneralProperties.LastModified)).Returns(timestamp);
+			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			       .Callback((IPropertiesBuffer properties) =>
 			       {
-				       properties.SetValue(Properties.LastModified, timestamp);
+				       properties.SetValue(GeneralProperties.LastModified, timestamp);
 			       });
 
-			logFile.GetProperty(Properties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.GetProperty(Properties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LastModified).Should().Be(timestamp, "because the change should have been applied by now");
+			logFile.GetProperty(GeneralProperties.LastModified).Should().Be(timestamp, "because the change should have been applied by now");
 		}
 
 		[Test]
 		[Description("Verifies that the Size is changed once a modification is applied")]
 		public void TestOneModification6()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.Size).Should().BeNull("because the source doesn't exist (yet)");
+			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the source doesn't exist (yet)");
 
 			var size = Size.FromGigabytes(42);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetProperty(Properties.Size)).Returns(size);
-			_source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			       .Callback((ILogFileProperties properties) =>
+			_source.Setup(x => x.GetProperty(GeneralProperties.Size)).Returns(size);
+			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			       .Callback((IPropertiesBuffer properties) =>
 			       {
-					   properties.SetValue(Properties.Size, size);
+					   properties.SetValue(GeneralProperties.Size, size);
 			       });
 
-			logFile.GetProperty(Properties.Size).Should().BeNull("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.GetProperty(Properties.Size).Should().BeNull("because the change shouldn't have been applied yet");
+			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.Size).Should().Be(size, "because the change should have been applied by now");
+			logFile.GetProperty(GeneralProperties.Size).Should().Be(size, "because the change should have been applied by now");
 		}
 
 		[Test]
 		[Description("Verifies that receiving a Reset() actually causes the entire content to be reset")]
 		public void TestReset1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
@@ -201,23 +204,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the source is completely empty");
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the source is completely empty");
 		}
 
 		[Test]
 		[Description("Verifies that the log file can represent completely new content after reset")]
 		public void TestReset2()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			source.AddEntry("A", LevelFlags.Info);
 			source.AddEntry("B", LevelFlags.Warning);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
 			source.Clear();
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 
 			source.AddEntry("A", LevelFlags.Info);
 			source.AddEntry("A continued", LevelFlags.Other);
@@ -238,8 +241,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that receiving a Reset() actually causes the Reset() to be forwarded to all listeners")]
 		public void TestReset3()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
 			source.AddEntry("INFO: hello", LevelFlags.Info);
@@ -259,12 +262,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestOneLine1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			source.AddEntry("INFO: Hello ", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			var entry = logFile.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -273,11 +276,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 
 			source.RemoveFrom(0);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 
 			source.AddEntry("INFO: Hello World!", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			entry = logFile.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -288,22 +291,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestOneLine2()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
 			source.AddEntry("INFO: Hello ", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
 
 			source.RemoveFrom(0);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 
 			source.AddEntry("Hello World!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			_changes.Should().Equal(new object[]
 			{
 				LogFileSection.Reset,
@@ -322,12 +325,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestOneLine3()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			source.AddEntry("Hello World!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			var entry = logFile.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -338,8 +341,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestOneEntry1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
 			source.AddRange(new[]
@@ -350,7 +353,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 			var entries = logFile.GetEntries(new LogFileSection(0, 2));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -366,17 +369,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly assembles a log event that arrives as two separate lines")]
 		public void TestOneEntry2()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
 			source.AddEntry("hello", LevelFlags.Info, timestamp);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 
 			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 			var entries = logFile.GetEntries(new LogFileSection(0, 2));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -392,8 +395,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly fires invalidation events to its listeners when a log entry arrives in multiple parts")]
 		public void TestOneEntry3()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
 			source.AddEntry("INFO: hello", LevelFlags.Info);
@@ -413,8 +416,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly fires invalidation events to its listeners when a log entry arrives in multiple parts")]
 		public void TestTwoEntries1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			source.AddEntry("DEBUG: Starting...", LevelFlags.Debug);
 			_taskScheduler.RunOnce();
@@ -442,8 +445,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			source.AddRange(new[]
 			{
 				new LogEntry {RawContent = "A", LogLevel = LevelFlags.Debug},
@@ -454,7 +457,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			});
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(5);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
 			var entry1 = logFile.GetEntry(0);
 			entry1.Index.Should().Be(0);
 			entry1.LogEntryIndex.Should().Be(0);
@@ -490,8 +493,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries2()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			source.AddEntry("A", LevelFlags.Debug);
 			_taskScheduler.RunOnce();
@@ -508,7 +511,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			source.AddEntry("E", LevelFlags.Fatal);
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(5);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
 			var entries = logFile.GetEntries(new LogFileSection(0, 5));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -536,16 +539,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries3()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			for (int i = 0; i < 10001; ++i)
 			{
 				source.AddEntry("", LevelFlags.Info);
 			}
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(10000, "because the log file should process a fixed amount of lines per tick");
-			logFile.GetProperty(Properties.PercentageProcessed).Should().BeLessThan(Percentage.HundredPercent, "because the log file hasn't processed the entire source yet");
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(10000, "because the log file should process a fixed amount of lines per tick");
+			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().BeLessThan(Percentage.HundredPercent, "because the log file hasn't processed the entire source yet");
 
 			var actualEntries = logFile.GetEntries(new LogFileSection(0, 10000));
 			for (int i = 0; i < actualEntries.Count; ++i)
@@ -554,9 +557,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			}
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should()
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should()
 				.Be(10001, "because the log file should now have enough ticks elapsed to have processed the entire source");
-			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should've processed the entire source by now");
+			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should've processed the entire source by now");
 			actualEntries = logFile.GetEntries(new LogFileSection(0, source.Count));
 			for (int i = 0; i < actualEntries.Count; ++i)
 			{
@@ -567,8 +570,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestManyEntries4()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			source.AddRange(new []
 			{
@@ -589,7 +592,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 
 			source.RemoveFrom(1);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 
 			source.AddRange(new []
 			{
@@ -597,7 +600,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 				new LogEntry{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info}
 			});
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
 
 			entries = logFile.GetEntries(new LogFileSection(0, 3));
 			entries[0].Index.Should().Be(0);
@@ -618,8 +621,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that the log file correctly processes multiple events in one run")]
 		public void TestManyEntries5()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			source.AddRange(new []
 			{
 				new LogEntry{RawContent = "Foo", LogLevel = LevelFlags.Other},
@@ -633,7 +636,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 				new LogEntry{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
 			});
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
 
 			var entries = logFile.GetEntries(new LogFileSection(0, 3));
 			entries[0].Index.Should().Be(0);
@@ -654,8 +657,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries6()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
 
 			source.AddEntry("A", LevelFlags.Other);
@@ -677,8 +680,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries7()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
 			
 			source.AddEntry("A", LevelFlags.Other);
@@ -697,8 +700,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that GetEntries can return many entries")]
 		public void TestGetEntries()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			source.AddEntry("A", LevelFlags.Debug);
 			source.AddEntry("B", LevelFlags.Info);
 			source.AddEntry("C", LevelFlags.Warning);
@@ -733,9 +736,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that accessing non-existing rows is tolerated")]
 		public void TestGetTimestamp1()
 		{
-			var source = new InMemoryLogFile();
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), Columns.Timestamp);
+			var source = new InMemoryLogSource();
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] {null}, "because accessing non-existant rows should simply return default values");
 		}
@@ -743,15 +746,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetTimestamp2()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 
 			var timestamp = DateTime.UtcNow;
 			source.AddEntry("", LevelFlags.Other, timestamp);
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), Columns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp });
 		}
@@ -759,7 +762,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetTimestamp3()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 
 			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
 			source.AddEntry("", LevelFlags.Debug, timestamp1);
@@ -767,10 +770,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), Columns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp1, timestamp2 });
 		}
@@ -780,7 +783,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that every line of a log entry provides access to the timestamp")]
 		public void TestGetTimestamp4()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 
 			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
 			source.AddEntry("", LevelFlags.Debug, timestamp1);
@@ -789,9 +792,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 			source.AddEntry("", LevelFlags.Other);
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
-			var timestamps = logFile.GetColumn(new LogFileSection(1, 2), Columns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(1, 2), LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp2, timestamp2 });
 		}
@@ -800,7 +803,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that every line of a log entry provides access to the timestamp")]
 		public void TestGetTimestampBySection()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 
 			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
 			source.AddEntry("", LevelFlags.Debug, timestamp1);
@@ -809,10 +812,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 			source.AddEntry("", LevelFlags.Other);
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 3), Columns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 3), LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
 		}
@@ -821,7 +824,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Description("Verifies that every line of a log entry provides access to the timestamp")]
 		public void TestGetTimestampByIndices()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 
 			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
 			source.AddEntry("", LevelFlags.Debug, timestamp1);
@@ -830,10 +833,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 			source.AddEntry("", LevelFlags.Other);
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogLineIndex[] {0, 1, 2}, Columns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogLineIndex[] {0, 1, 2}, LogColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
 		}
@@ -841,11 +844,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetEntriesBySection()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var section = new LogFileSection(42, 5);
-			var buffer = new LogEntryArray(3, Columns.DeltaTime, Columns.RawContent);
+			var buffer = new LogBufferArray(3, LogColumns.DeltaTime, LogColumns.RawContent);
 			var destinationIndex = 2;
-			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
 
 			logFile.GetEntries(section, buffer, destinationIndex, queryOptions);
 
@@ -859,15 +862,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetEntriesBySection_Partial()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("INFO: This is a good start", LevelFlags.Info, new DateTime(2021, 02, 11, 21, 02, 09));
 			source.AddEntry("DEBUG: Hello", LevelFlags.Debug, new DateTime(2021, 02, 11, 21, 04, 09));
 			source.AddEntry("\tWorld!");
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
 			var section = new LogFileSection(1, 2);
-			var buffer = new LogEntryArray(4, Columns.Timestamp, Columns.RawContent);
+			var buffer = new LogBufferArray(4, LogColumns.Timestamp, LogColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(section, buffer, destinationIndex);
@@ -880,11 +883,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetEntriesByIndices()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var indices = new LogLineIndex[] { 0, 2, 5 };
-			var buffer = new LogEntryArray(5, Columns.RawContent);
+			var buffer = new LogBufferArray(5, LogColumns.RawContent);
 			var destinationIndex = 2;
-			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
 
 			logFile.GetEntries(indices, buffer, destinationIndex, queryOptions);
 
@@ -898,15 +901,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestGetEntriesByIndices_Partial()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("INFO: This is a good start", LevelFlags.Info, new DateTime(2021, 02, 11, 21, 02, 09));
 			source.AddEntry("DEBUG: Hello", LevelFlags.Debug, new DateTime(2021, 02, 11, 21, 04, 09));
 			source.AddEntry("\tWorld!");
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 
 			var sourceIndices = new[] {new LogLineIndex(2), new LogLineIndex(1)};
-			var buffer = new LogEntryArray(4, Columns.Timestamp, Columns.RawContent);
+			var buffer = new LogBufferArray(4, LogColumns.Timestamp, LogColumns.RawContent);
 			var destinationIndex = 1;
 
 			logFile.GetEntries(sourceIndices, buffer, destinationIndex);
@@ -919,30 +922,30 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestMultipleLinesOneEntry()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("2017-12-03 11:59:30 Hello, ", LevelFlags.Other, new DateTime(2017, 12, 3, 11, 59, 30));
 			source.AddEntry("World!", LevelFlags.Other);
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
 			var entries = logFile.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
 				new IColumnDescriptor[]
 				{
-					Columns.LineNumber, Columns.LogEntryIndex, Columns.Timestamp,
-					Columns.RawContent
+					LogColumns.LineNumber, LogColumns.LogEntryIndex, LogColumns.Timestamp,
+					LogColumns.RawContent
 				});
 			var line = entries[0];
-			line.GetValue(Columns.LineNumber).Should().Be(1);
-			line.GetValue(Columns.LogEntryIndex).Should().Be(0);
+			line.GetValue(LogColumns.LineNumber).Should().Be(1);
+			line.GetValue(LogColumns.LogEntryIndex).Should().Be(0);
 			line.RawContent.Should().Be("2017-12-03 11:59:30 Hello, ");
 			line.Timestamp.Should().Be(new DateTime(2017, 12, 3, 11, 59, 30));
 
 			line = entries[1];
-			line.GetValue(Columns.LineNumber).Should().Be(2);
-			line.GetValue(Columns.LogEntryIndex).Should().Be(0);
+			line.GetValue(LogColumns.LineNumber).Should().Be(2);
+			line.GetValue(LogColumns.LogEntryIndex).Should().Be(0);
 			line.RawContent.Should().Be("World!");
 			line.Timestamp.Should().Be(new DateTime(2017, 12, 3, 11, 59, 30));
 		}
@@ -950,15 +953,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Test]
 		public void TestMultipleSingleEntries()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeClass::FooBar()] [Session 1337] [FW]", LevelFlags.Other, new DateTime(2019, 7, 8, 16, 19, 13, 546));
 			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeClass::FooBar()] [Session 1337] [FW] [IND_ERROR] [The test case had to be terminated.] [The stack has indicated an UNKNOWN error.SAP Name = 'EM', AppName = 'lte-l1c-phy.elf', StatusInfo = '<missing>']", LevelFlags.Other, new DateTime(2019, 7, 8, 16, 19, 13, 546));
 			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeOtherClass::Ooopsie()][Whoops] [to] [eTC_STOP_EVENT_SUSPEND_IND]", LevelFlags.Other, new DateTime(2019, 7, 8, 16, 19, 13, 546));
 
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
-			var entries = logFile.GetEntries(new LogFileSection(0, 3), new[]{Columns.LogEntryIndex});
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+			var entries = logFile.GetEntries(new LogFileSection(0, 3), new[]{LogColumns.LogEntryIndex});
 			entries[0].LogEntryIndex.Should().Be(new LogEntryIndex(0));
 			entries[1].LogEntryIndex.Should().Be(new LogEntryIndex(1));
 			entries[2].LogEntryIndex.Should().Be(new LogEntryIndex(2));
@@ -969,9 +972,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/221")]
 		public void TestTimestampsAndMixedInfos()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 
-			using (var multiLine = new MultiLineLogFile(_taskScheduler, logFile, TimeSpan.Zero))
+			using (var multiLine = new MultiLineLogSource(_taskScheduler, logFile, TimeSpan.Zero))
 			{
 				logFile.AddRange(new[]
 				{
@@ -981,7 +984,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 				});
 
 				_taskScheduler.RunOnce();
-				multiLine.GetProperty(Properties.LogEntryCount).Should().Be(3);
+				multiLine.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
 
 				var line0 = multiLine.GetEntry(0);
 				line0.OriginalIndex.Should().Be(0);
@@ -1010,7 +1013,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
-				multiLine.GetProperty(Properties.LogEntryCount).Should().Be(5);
+				multiLine.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
 
 				line0 = multiLine.GetEntry(0);
 				line0.OriginalIndex.Should().Be(0);
@@ -1044,16 +1047,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			}
 		}
 
-		protected override ILogFile CreateEmpty()
+		protected override ILogSource CreateEmpty()
 		{
-			var source = new InMemoryLogFile();
-			return new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource();
+			return new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 		}
 
-		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
-			var source = new InMemoryLogFile(content);
-			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var source = new InMemoryLogSource(content);
+			var logFile = new MultiLineLogSource(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			return logFile;
 		}

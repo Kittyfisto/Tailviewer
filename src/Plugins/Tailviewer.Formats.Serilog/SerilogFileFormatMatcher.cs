@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -43,7 +42,7 @@ namespace Tailviewer.Formats.Serilog
 		}
 
 		private static bool TryParseFormat(StreamReader reader,
-		                                   SerilogFileParser parser)
+		                                   SerilogEntryParser parser)
 		{
 			// we're happy if we can match the first line
 			var line = reader.ReadLine();

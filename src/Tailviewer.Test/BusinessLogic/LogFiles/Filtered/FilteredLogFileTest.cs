@@ -7,9 +7,11 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 {
@@ -22,64 +24,64 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		{
 			_taskScheduler = new ManualTaskScheduler();
 			_entries = new List<LogLine>();
-			_logFile = new Mock<ILogFile>();
-			_logFile.SetupGet(x => x.Columns).Returns(Columns.Minimum);
-			_logFile.SetupGet(x => x.Properties).Returns(new IReadOnlyPropertyDescriptor[]{Properties.LogEntryCount, Properties.PercentageProcessed});
-			_logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.GetProperty(Properties.PercentageProcessed)).Returns(Percentage.HundredPercent);
-			_logFile.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			        .Callback((ILogFileProperties destination) =>
+			_logFile = new Mock<ILogSource>();
+			_logFile.SetupGet(x => x.Columns).Returns(LogColumns.Minimum);
+			_logFile.SetupGet(x => x.Properties).Returns(new IReadOnlyPropertyDescriptor[]{GeneralProperties.LogEntryCount, GeneralProperties.PercentageProcessed});
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.PercentageProcessed)).Returns(Percentage.HundredPercent);
+			_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			        .Callback((IPropertiesBuffer destination) =>
 			        {
-				        destination.SetValue(Properties.LogEntryCount,
-				                             _logFile.Object.GetProperty(Properties.LogEntryCount));
-				        destination.SetValue(Properties.PercentageProcessed,
-				                             _logFile.Object.GetProperty(Properties.PercentageProcessed));
+				        destination.SetValue(GeneralProperties.LogEntryCount,
+				                             _logFile.Object.GetProperty(GeneralProperties.LogEntryCount));
+				        destination.SetValue(GeneralProperties.PercentageProcessed,
+				                             _logFile.Object.GetProperty(GeneralProperties.PercentageProcessed));
 			        });
 
 			_sections = new List<LogFileSection>();
-			_listener = new Mock<ILogFileListener>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogFile l, LogFileSection s) => _sections.Add(s));
+			_listener = new Mock<ILogSourceListener>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+			         .Callback((ILogSource l, LogFileSection s) => _sections.Add(s));
 		}
 
-		private Mock<ILogFile> _logFile;
+		private Mock<ILogSource> _logFile;
 		private List<LogLine> _entries;
 		private List<LogFileSection> _sections;
-		private Mock<ILogFileListener> _listener;
+		private Mock<ILogSourceListener> _listener;
 		private ManualTaskScheduler _taskScheduler;
 
 		[Test]
 		public void TestChangeColumns()
 		{
 			_logFile.SetupGet(x => x.Columns).Returns(new IColumnDescriptor[]
-				                                          {Columns.RawContent, Columns.LogLevel});
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+				                                          {LogColumns.RawContent, LogColumns.LogLevel});
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				file.Columns.Should().Contain(new IColumnDescriptor[]
-					                            {Columns.RawContent, Columns.LogLevel});
+					                            {LogColumns.RawContent, LogColumns.LogLevel});
 
 				var customColumn = new Mock<IColumnDescriptor>().Object;
 				_logFile.SetupGet(x => x.Columns).Returns(new IColumnDescriptor[]
-					                                          {Columns.RawContent, Columns.LogLevel, customColumn});
+					                                          {LogColumns.RawContent, LogColumns.LogLevel, customColumn});
 				file.Columns.Should().Contain(new IColumnDescriptor[]
-					                            {Columns.RawContent, Columns.LogLevel, customColumn});
+					                            {LogColumns.RawContent, LogColumns.LogLevel, customColumn});
 			}
 		}
 
 		[Test]
 		public void TestConstruction()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null,
 				Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the filtered log file has consumed the entire source");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the filtered log file has consumed the entire source");
 			}
 		}
 
@@ -87,33 +89,33 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the filtered log file correctly listens to a reset event")]
 		public void TestClear()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "DEBUG: Yikes");
 
 				_taskScheduler.RunOnce();
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.Clear();
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.LogEntryCount).Should().Be(0);
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			}
 		}
 
 		[Test]
 		public void TestEmptyLogFile1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
 			{
 				_taskScheduler.RunOnce();
 				
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				file.GetProperty(Properties.LogEntryCount).Should().Be(0);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
@@ -121,16 +123,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Test]
 		public void TestEntryLevelNone()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("ello", true, LevelFlags.All)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("ello", true, LevelFlags.All)))
 			{
 				source.AddEntry("Hello world!", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
 				
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				file.GetProperty(Properties.LogEntryCount).Should().Be(1);
-				var entries = file.GetEntries(new LogFileSection(0, 1), Columns.Minimum);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				var entries = file.GetEntries(new LogFileSection(0, 1), LogColumns.Minimum);
 				entries.Should().HaveCount(1);
 				entries[0].Index.Should().Be(0);
 				entries[0].OriginalIndex.Should().Be(0);
@@ -144,14 +146,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestCreated()
 		{
 			var created = new DateTime(2017, 12, 21, 20, 51, 0);
-			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[Properties.Created] = created};
-			var source = new InMemoryLogFile(props);
+			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[GeneralProperties.Created] = created};
+			var source = new InMemoryLogSource(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.Created).Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
+				file.GetProperty(GeneralProperties.Created).Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
 			}
 		}
 
@@ -159,14 +161,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestLastModified()
 		{
 			var lastModified = new DateTime(2017, 12, 21, 20, 52, 0);
-			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[Properties.LastModified] = lastModified};
-			var source = new InMemoryLogFile(props);
+			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[GeneralProperties.LastModified] = lastModified};
+			var source = new InMemoryLogSource(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.LastModified).Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
+				file.GetProperty(GeneralProperties.LastModified).Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
 			}
 		}
 
@@ -174,25 +176,25 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestSize()
 		{
 			var size = Size.FromGigabytes(5);
-			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[Properties.Size] = size};
-			var source = new InMemoryLogFile(props);
+			var props = new Dictionary<IReadOnlyPropertyDescriptor, object> {[GeneralProperties.Size] = size};
+			var source = new InMemoryLogSource(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.Size).Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
+				file.GetProperty(GeneralProperties.Size).Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
 			}
 		}
 
 		[Test]
 		public void TestInvalidate1()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddRange(new[]
 				{
@@ -205,39 +207,39 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 
 				_taskScheduler.RunOnce();
 				
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2, "because we've invalidated the last 2 out of 4 lines");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2, "because we've invalidated the last 2 out of 4 lines");
 			}
 		}
 
 		[Test]
 		public void TestInvalidate2()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddRange(new []
 				{
-					new LogEntry(Columns.Minimum){RawContent = "A", LogLevel = LevelFlags.Info},
-					new LogEntry(Columns.Minimum){RawContent = "B", LogLevel = LevelFlags.Info},
-					new LogEntry(Columns.Minimum){RawContent = "C", LogLevel = LevelFlags.Info},
-					new LogEntry(Columns.Minimum){RawContent = "D", LogLevel = LevelFlags.Info},
+					new LogEntry(LogColumns.Minimum){RawContent = "A", LogLevel = LevelFlags.Info},
+					new LogEntry(LogColumns.Minimum){RawContent = "B", LogLevel = LevelFlags.Info},
+					new LogEntry(LogColumns.Minimum){RawContent = "C", LogLevel = LevelFlags.Info},
+					new LogEntry(LogColumns.Minimum){RawContent = "D", LogLevel = LevelFlags.Info},
 				});
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				file.GetProperty(Properties.LogEntryCount).Should().Be(4);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(4);
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
 					{
@@ -257,24 +259,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			)]
 		public void TestInvalidate3()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddMultilineEntry(LevelFlags.Info, null, "A", "B", "C", "D");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "Because the filtered log file should be finished");
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "Because the filtered log file should be finished");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
 					{
@@ -292,10 +294,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/221")]
 		public void TestInvalidate4()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 
-			using (var multiLine = new MultiLineLogFile(_taskScheduler, logFile, TimeSpan.Zero))
-			using (var filtered = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, multiLine, null,
+			using (var multiLine = new MultiLineLogSource(_taskScheduler, logFile, TimeSpan.Zero))
+			using (var filtered = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, multiLine, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				logFile.AddRange(new[]
@@ -306,7 +308,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				filtered.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				filtered.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
 				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
 
@@ -319,7 +321,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
-				filtered.GetProperty(Properties.LogEntryCount).Should().Be(4);
+				filtered.GetProperty(GeneralProperties.LogEntryCount).Should().Be(4);
 				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
 				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
 				filtered.GetEntry(2).OriginalIndex.Should().Be(3);
@@ -333,15 +335,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			)]
 		public void TestListener()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				var sections = new List<LogFileSection>();
-				var listener = new Mock<ILogFileListener>();
+				var listener = new Mock<ILogSourceListener>();
 
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogFile l, LogFileSection s) => sections.Add(s));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+				        .Callback((ILogSource l, LogFileSection s) => sections.Add(s));
 				// We deliberately set the batchSize to be greater than the amount of entries that will be matched.
 				// If the FilteredLogFile is implemented correctly, then it will continously notifiy the listener until
 				// the maximum wait time is elapsed.
@@ -350,9 +352,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(source, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 				sections.Should().Equal(new[]
 					{
 						LogFileSection.Reset,
@@ -365,17 +367,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that all lines belonging to an entry pass the filter, even though only one line passes it")]
 		public void TestMultiLineLogEntry1()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create("Test", true, LevelFlags.All)))
 			{
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
-				var entries = file.GetEntries(new LogFileSection(0, 2), new IColumnDescriptor[]{Columns.Index, Columns.LogEntryIndex, Columns.RawContent, Columns.LogLevel});
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+				var entries = file.GetEntries(new LogFileSection(0, 2), new IColumnDescriptor[]{LogColumns.Index, LogColumns.LogEntryIndex, LogColumns.RawContent, LogColumns.LogLevel});
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
 				entries[0].RawContent.Should().Be("DEBUG: This is a test");
@@ -392,15 +394,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			"Verifies that all lines belonging to an entry pass the filter, even though only the second line passes it")]
 		public void TestMultiLineLogEntry2()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				source.AddMultilineEntry( LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 				var entries = file.GetEntries(new LogFileSection(0, 2));
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
@@ -417,19 +419,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the filtered log file repeatedly calls the listener when the source has been fully read")]
 		public void TestWait()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				var sections = new List<LogFileSection>();
-				var listener = new Mock<ILogFileListener>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
+				var listener = new Mock<ILogSourceListener>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+				        .Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
 
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				sections.Should().Equal(new object[]
 					{
 						LogFileSection.Reset,
@@ -442,15 +444,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
 		public void TestGetEntries1()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("Yikes", LevelFlags.Info);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				var entries = file.GetEntries(new LogFileSection(0, 1), file.Columns);
 				entries.Should().NotBeNull();
@@ -466,14 +468,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
 		public void TestGetEntry1()
 		{
-			var source = new InMemoryLogFile();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogSource();
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("Yikes", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				var entry = file.GetEntry(0);
 				entry.Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
@@ -486,33 +488,33 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that filtered log file actually returns the correct source id")]
 		public void TestGetEntry2()
 		{
-			var source = new InMemoryLogFile(Columns.SourceId);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(LevelFlags.Error)))
+			var source = new InMemoryLogSource(LogColumns.SourceId);
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(LevelFlags.Error)))
 			{
 				source.Add(new Dictionary<IColumnDescriptor, object>
 				{
-					{Columns.SourceId, new LogLineSourceId(0) },
-					{Columns.RawContent, "DEBUG: This is a test"},
-					{Columns.LogLevel, LevelFlags.Debug }
+					{LogColumns.SourceId, new LogLineSourceId(0) },
+					{LogColumns.RawContent, "DEBUG: This is a test"},
+					{LogColumns.LogLevel, LevelFlags.Debug }
 				});
 
 				source.Add(new Dictionary<IColumnDescriptor, object>
 				{
-					{Columns.SourceId, new LogLineSourceId(42) },
-					{Columns.RawContent, "ERROR: I feel a disturbance in the source"},
-					{Columns.LogLevel, LevelFlags.Error }
+					{LogColumns.SourceId, new LogLineSourceId(42) },
+					{LogColumns.RawContent, "ERROR: I feel a disturbance in the source"},
+					{LogColumns.LogLevel, LevelFlags.Error }
 				});
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(1, "because only one line matches the filter");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because only one line matches the filter");
 				var entry = file.GetEntry(0);
 				entry.Index.Should().Be(0);
 				entry.LogEntryIndex.Should().Be(0);
 				entry.OriginalIndex.Should().Be(1);
 				entry.RawContent.Should().Be("ERROR: I feel a disturbance in the source");
-				entry.GetValue(Columns.SourceId).Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
+				entry.GetValue(LogColumns.SourceId).Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
 			}
 		}
 
@@ -520,10 +522,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the log file queries the LogLineFilter for each added entry")]
 		public void TestSingleLineFilter1()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new Mock<ILogLineFilter>();
 			filter.Setup(x => x.PassesFilter(It.IsAny<IReadOnlyLogEntry>())).Returns(true);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
 			{
 				var logEntry = source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
@@ -531,7 +533,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				filter.Verify(x => x.PassesFilter(It.Is<IReadOnlyLogEntry>(y => Equals(y, logEntry))), Times.AtLeastOnce,
 					"because the log file should've used our filter at least once to determine if the given log line should've been added");
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(1, "because the filter should've passed the only log line");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because the filter should've passed the only log line");
 			}
 		}
 
@@ -539,19 +541,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the log file honors the result of the log line filter")]
 		public void TestSingleLineFilter2()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new Mock<ILogLineFilter>();
 			filter.Setup(x => x.PassesFilter(It.IsAny<IReadOnlyLogEntry>())).Returns(false);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
 
 				source.AddEntry("INFO: Something mundane", LevelFlags.Info);
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
 			}
 		}
 
@@ -559,9 +561,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the log line filter is used per log line")]
 		public void TestSingleLineFilter3()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("More stuff", LevelFlags.Debug);
@@ -569,7 +571,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 			}
 		}
 
@@ -577,9 +579,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter4()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("More stuff", LevelFlags.Debug);
@@ -587,7 +589,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
@@ -600,9 +602,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter5()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("More stuff", LevelFlags.Debug);
@@ -617,7 +619,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 				_taskScheduler.RunOnce();
 
-				file.GetProperty(Properties.LogEntryCount).Should().Be(1, "because only one line remains in the source");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because only one line remains in the source");
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, "because log entry indices should always start at 0");
 			}
 		}
@@ -626,9 +628,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter6()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("More stuff", LevelFlags.Debug);
@@ -644,7 +646,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(source, new LogFileSection(3, 2));
 				_taskScheduler.RunOnce();
 				
-				file.GetProperty(Properties.LogEntryCount).Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
@@ -659,23 +661,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestDispose1()
 		{
 			var filter = new EmptyLogLineFilter();
-			FilteredLogFile file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null);
-			_logFile.Verify(x => x.AddListener(It.Is<ILogFileListener>(y => Equals(y, file)),
+			FilteredLogSource source = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null);
+			_logFile.Verify(x => x.AddListener(It.Is<ILogSourceListener>(y => Equals(y, source)),
 				It.IsAny<TimeSpan>(),
 				It.IsAny<int>()), Times.Once, "because the filtered log file should register itself as a listener with its source");
 
-			new Action(() => file.Dispose()).Should().NotThrow("because Dispose() must always succeed");
+			new Action(() => source.Dispose()).Should().NotThrow("because Dispose() must always succeed");
 
-			_logFile.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => Equals(y, file))), Times.Once,
+			_logFile.Verify(x => x.RemoveListener(It.Is<ILogSourceListener>(y => Equals(y, source))), Times.Once,
 				"because the filtered log file should unregister itself as a listener from its source when being disposed of");
 		}
 
 		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex1()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("This is a test", LevelFlags.Debug);
 				source.AddEntry("This is a test", LevelFlags.Info);
@@ -698,9 +700,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Test]
 		public void TestGetOriginalIndicesFrom3()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("This is a test", LevelFlags.Debug);
 				source.AddEntry("This is a test", LevelFlags.Info);
@@ -709,7 +711,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
-				var originalIndices = file.GetColumn(new LogFileSection(0, 2), Columns.OriginalIndex);
+				var originalIndices = file.GetColumn(new LogFileSection(0, 2), LogColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
 			}
 		}
@@ -717,9 +719,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Test]
 		public void TestGetOriginalIndicesFrom4()
 		{
-			var source = new InMemoryLogFile();
+			var source = new InMemoryLogSource();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("This is a test", LevelFlags.Debug);
 				source.AddEntry("This is a test", LevelFlags.Info);
@@ -730,7 +732,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
 				_taskScheduler.RunOnce();
 
-				var originalIndices = file.GetColumn(new LogLineIndex[] {0, 2}, Columns.OriginalIndex);
+				var originalIndices = file.GetColumn(new LogLineIndex[] {0, 2}, LogColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(5));
 			}
 		}
@@ -743,16 +745,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetLineNumbersBySection()
 		{
 			var filter = new SubstringFilter("B", true);
-			var source = new InMemoryLogFile();
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var source = new InMemoryLogSource();
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), Columns.LineNumber);
+			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogColumns.LineNumber);
 			lineNumbers[0].Should().Be(1);
 			lineNumbers[1].Should().Be(2);
 		}
@@ -761,20 +763,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetLineNumbersByIndices1()
 		{
 			var filter = new SubstringFilter("B", true);
-			var source = new InMemoryLogFile();
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var source = new InMemoryLogSource();
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, Columns.LineNumber);
+			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogColumns.LineNumber);
 			lineNumbers[0].Should().Be(2);
 			lineNumbers[1].Should().Be(1);
 
-			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, Columns.LineNumber);
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogColumns.LineNumber);
 			lineNumbers[0].Should().Be(2);
 		}
 
@@ -786,16 +788,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetOriginalLineNumbersBySection()
 		{
 			var filter = new SubstringFilter("B", true);
-			var source = new InMemoryLogFile();
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var source = new InMemoryLogSource();
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), Columns.OriginalLineNumber);
+			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(2);
 			lineNumbers[1].Should().Be(4);
 		}
@@ -804,20 +806,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetOriginalLineNumbersByIndices()
 		{
 			var filter = new SubstringFilter("B", true);
-			var source = new InMemoryLogFile();
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry(Columns.Minimum) { RawContent = "B" });
-			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var source = new InMemoryLogSource();
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, Columns.OriginalLineNumber);
+			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(4);
 			lineNumbers[1].Should().Be(2);
 
-			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, Columns.OriginalLineNumber);
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(4);
 		}
 
@@ -830,12 +832,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetDeltaTime1()
 		{
 			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("", LevelFlags.Other, DateTime.MinValue);
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 1), Columns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(1);
 				deltas[0].Should().BeNull();
@@ -847,14 +849,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetDeltaTime2()
 		{
 			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 11, 19, 34, 0));
 				source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 11, 19, 35, 0));
 				_taskScheduler.RunOnce();
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 2), Columns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogFileSection(0, 2), LogColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(2);
 				deltas[0].Should().BeNull();
@@ -866,15 +868,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetDeltaTime3()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 34, 0));
 				source.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 11, 19, 35, 0));
 				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 36, 0));
 				_taskScheduler.RunOnce();
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 2), Columns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogFileSection(0, 2), LogColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(2);
 				deltas[0].Should().BeNull();
@@ -887,15 +889,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetDeltaTime4()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 34, 0));
 				source.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 11, 19, 35, 0));
 				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 36, 0));
 				_taskScheduler.RunOnce();
 
-				var deltas = logFile.GetColumn(new LogLineIndex[] {1}, Columns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogLineIndex[] {1}, LogColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().Equal(new object[]
 				{
@@ -912,14 +914,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetTimestamp1()
 		{
 			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				var timestamp = new DateTime(2017, 12, 11, 20, 46, 0);
 				source.AddEntry("", LevelFlags.Other, timestamp);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), Columns.Timestamp);
+				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] {timestamp});
 			}
@@ -929,8 +931,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		public void TestGetTimestamp2()
 		{
 			var filter = new LevelFilter(LevelFlags.Error);
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			var source = new InMemoryLogSource();
+			using (var logFile = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				var timestamp1 = new DateTime(2017, 12, 11, 20, 46, 0);
 				source.AddEntry("", LevelFlags.Warning, timestamp1);
@@ -939,7 +941,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("", LevelFlags.Error, timestamp2);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), Columns.Timestamp);
+				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] { timestamp2 }, "because the first entry doesn't match the filter and thus the timestamp of the 2nd one should've been returned");
 			}
@@ -954,47 +956,47 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Test]
 		public void TestPercentageProcessed()
 		{
-			var source = new Mock<ILogFile>();
-			var sourceProperties = new LogFilePropertyList();
-			sourceProperties.SetValue(Properties.PercentageProcessed, Percentage.Zero);
-			source.Setup(x => x.GetAllProperties(It.IsAny<ILogFileProperties>()))
-			      .Callback((ILogFileProperties destination) => sourceProperties.CopyAllValuesTo(destination));
+			var source = new Mock<ILogSource>();
+			var sourceProperties = new PropertiesBufferList();
+			sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
+			source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
+			      .Callback((IPropertiesBuffer destination) => sourceProperties.CopyAllValuesTo(destination));
 			source.Setup(x => x.Properties).Returns(() => sourceProperties.Properties);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source.Object, null,
+			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
 
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero, "because even though the filter doesn't have anything to do just yet - it's because its own source hasn't even started");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because even though the filter doesn't have anything to do just yet - it's because its own source hasn't even started");
 
-				sourceProperties.SetValue(Properties.PercentageProcessed, Percentage.FromPercent(42));
+				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.FromPercent(42));
 				file.OnLogFileModified(source.Object, new LogFileSection(0, 84));
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.FromPercent(42), "because now the filtered log file has processed 100% of the data the source sent it, but the original data source is still only at 42%");
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.FromPercent(42), "because now the filtered log file has processed 100% of the data the source sent it, but the original data source is still only at 42%");
 
-				sourceProperties.SetValue(Properties.PercentageProcessed, Percentage.HundredPercent);
+				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
 				file.OnLogFileModified(source.Object, new LogFileSection(84, 200));
 				_taskScheduler.RunOnce();
-				file.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			}
 		}
 
 		#endregion
 
-		protected override ILogFile CreateEmpty()
+		protected override ILogSource CreateEmpty()
 		{
 			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			return new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var source = new InMemoryLogSource();
+			return new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 		}
 
-		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
-			var source = new InMemoryLogFile(content);
+			var source = new InMemoryLogSource(content);
 			var filter = new NoFilter();
-			var filtered = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			var filtered = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 			return filtered;
 		}

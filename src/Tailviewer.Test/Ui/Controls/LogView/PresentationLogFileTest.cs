@@ -2,7 +2,8 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Entries;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 
@@ -22,7 +23,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestEmptyFile()
 		{
-			var index = new PresentationLogFile(_scheduler, new InMemoryLogFile(), TextSettings.Default);
+			var index = new PresentationLogSource(_scheduler, new InMemoryLogSource(), TextSettings.Default);
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().Be(0);
 			index.LineCount.Should().Be(0);
@@ -31,8 +32,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestOneLine()
 		{
-			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
+			var logFile = new InMemoryLogSource();
+			var index = new PresentationLogSource(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 			logFile.Add(new LogEntry {RawContent = "Hello, World!"});
 
 			_scheduler.RunOnce();
@@ -43,8 +44,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestTwoLines()
 		{
-			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
+			var logFile = new InMemoryLogSource();
+			var index = new PresentationLogSource(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 			logFile.Add(new LogEntry {RawContent = "Hello,\r\nWorld!"});
 
 			_scheduler.RunOnce();
@@ -55,8 +56,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestAddSeveralEntries()
 		{
-			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
+			var logFile = new InMemoryLogSource();
+			var index = new PresentationLogSource(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
 			logFile.Add(new LogEntry {RawContent = "Foo"});
 			_scheduler.RunOnce();
@@ -77,8 +78,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestPartialInvalidate()
 		{
-			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
+			var logFile = new InMemoryLogSource();
+			var index = new PresentationLogSource(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
 			logFile.Add(new LogEntry {RawContent = "Foo"});
 			_scheduler.RunOnce();

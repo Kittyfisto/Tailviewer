@@ -6,12 +6,26 @@ using log4net.Appender;
 using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
+using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer
 {
 	public class Bootstrapper
 		: AbstractBootstrapper
 	{
+		private static bool AllowMultipleInstance()
+		{
+			try
+			{
+				return string.Equals(Environment.GetEnvironmentVariable("TAILVIEWER_ALLOW_MULTIPLE_INSTANCES"), "true", StringComparison.InvariantCultureIgnoreCase);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("WARN: Caught unexpected exception: {0}", e);
+				return false;
+			}
+		}
+
 		[STAThread]
 		public static int Main(string[] args)
 		{
@@ -32,37 +46,44 @@ namespace Tailviewer
 				{
 					Console.WriteLine("WARN: Unable to acquire mutex, another Tailviewer is already running!");
 
-					var processes = SingleApplicationHelper.FindOtherTailviewers();
-					Process primaryProcess;
-					if (SingleApplicationHelper.ShouldTakeOver(processes, out primaryProcess))
+					if (AllowMultipleInstance())
 					{
-						Console.WriteLine(
-							"INFO: Tailviewer with pid {0} has been determined to not be usable anymore",
-							primaryProcess?.Id);
-
-						SingleApplicationHelper.KillAllOtherInstances(processes);
-
-						Console.WriteLine("INFO: Trying to take over mutex...");
-						mutex = SingleApplicationHelper.AcquireMutex();
+						Console.WriteLine("INFO: Multiple instances allowed, starting up...");
 					}
 					else
 					{
-						Console.WriteLine("INFO: Tailviewer with pid {0} has been determined to still be usable",
-							primaryProcess?.Id);
+						var processes = SingleApplicationHelper.FindOtherTailviewers();
+						Process primaryProcess;
+						if (SingleApplicationHelper.ShouldTakeOver(processes, out primaryProcess))
+						{
+							Console.WriteLine(
+							                  "INFO: Tailviewer with pid {0} has been determined to not be usable anymore",
+							                  primaryProcess?.Id);
 
-						// I guess the already running process
-						// is good enough for the user: We should
-						// kill ourselves so we don't interfere with
-						// it.
-						//
-						// But before we do that, we have to send the files
-						// we were supposed to open to the other process.
-						SingleApplicationHelper.OpenFile(args);
-						SingleApplicationHelper.BringToFront();
+							SingleApplicationHelper.KillAllOtherInstances(processes);
 
-						Console.WriteLine("INFO: Signing off...");
+							Console.WriteLine("INFO: Trying to take over mutex...");
+							mutex = SingleApplicationHelper.AcquireMutex();
+						}
+						else
+						{
+							Console.WriteLine("INFO: Tailviewer with pid {0} has been determined to still be usable",
+							                  primaryProcess?.Id);
 
-						return 0;
+							// I guess the already running process
+							// is good enough for the user: We should
+							// kill ourselves so we don't interfere with
+							// it.
+							//
+							// But before we do that, we have to send the files
+							// we were supposed to open to the other process.
+							SingleApplicationHelper.OpenFile(args);
+							SingleApplicationHelper.BringToFront();
+
+							Console.WriteLine("INFO: Signing off...");
+
+							return 0;
+						}
 					}
 				}
 
@@ -101,6 +122,7 @@ namespace Tailviewer
 			//SetLogLevelOf<MergedLogFile>(Level.Debug);
 			//SetLogLevelOf<MergedLogFileIndex>(Level.Debug);
 			//SetLogLevelOf<LogFileProxy>(Level.Debug);
+			SetLogLevelOf<StreamingTextLogSource.AbstractReadRequest>(Level.Debug);
 
 			hierarchy.Root.Level = Level.Info;
 			hierarchy.Configured = true;

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Text;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Merged;
+using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer.Core
 {
@@ -56,7 +55,7 @@ namespace Tailviewer.Core
 		{
 			var interfaceType = typeof(T);
 			if (!TryRetrieve(out T service))
-				throw new ArgumentException($"No service has been registered with this container which implements {interfaceType.FullName}");
+				throw new NoSuchServiceException(interfaceType);
 
 			return service;
 		}
@@ -92,51 +91,50 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public ILogFile CreateEventLogFile(string fileName)
+		public ILogSource CreateEventLogFile(string fileName)
 		{
-			return new EventLogFile(Retrieve<ITaskScheduler>(), fileName);
+			return new EventLogSource(Retrieve<ITaskScheduler>(), fileName);
 		}
 
 		/// <inheritdoc />
-		public ILogFile CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
+		public ILogSource CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogSource source, ILogEntryFilter filter)
 		{
-			return new FilteredLogFile(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
+			return new FilteredLogSource(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
 									   null,
 			                           filter);
 		}
 
 		/// <inheritdoc />
-		public ILogFileProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogFile source)
+		public ILogSourceProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogSource source)
 		{
-			return new LogFileProxy(Retrieve<ITaskScheduler>(), maximumWaitTime, source);
+			return new LogSourceProxy(Retrieve<ITaskScheduler>(), maximumWaitTime, source);
 		}
 
 		/// <inheritdoc />
-		public IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
+		public IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogSource> sources)
 		{
-			return new MergedLogFile(Retrieve<ITaskScheduler>(),
+			return new MergedLogSource(Retrieve<ITaskScheduler>(),
 			                         maximumWaitTime,
 			                         sources);
 		}
 
 		/// <inheritdoc />
-		public ILogFile CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogFile source)
+		public ILogSource CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogSource source)
 		{
-			return new MultiLineLogFile(Retrieve<ITaskScheduler>(), source, maximumWaitTime);
+			return new MultiLineLogSource(Retrieve<ITaskScheduler>(), source, maximumWaitTime);
 		}
 
 		/// <inheritdoc />
-		public ILogFile CreateNoThrowLogFile(string pluginName, ILogFile source)
+		public ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source)
 		{
-			return new NoThrowLogFile(source, pluginName);
+			return new NoThrowLogSource(source, pluginName);
 		}
 
 		/// <inheritdoc />
-		public ILogFile CreateTextLogFile(string fileName)
+		public ILogSource CreateTextLogFile(string fileName)
 		{
-			//return new StreamingTextLogFile(this, fileName);
-			return new TextLogFile(this,
-			                       fileName);
+			//return new FileLogSource(this, fileName);
+			return new TextLogSource(this, fileName);
 		}
 
 		/// <inheritdoc />

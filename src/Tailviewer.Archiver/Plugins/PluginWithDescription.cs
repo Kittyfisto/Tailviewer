@@ -1,5 +1,5 @@
 ﻿using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
 {

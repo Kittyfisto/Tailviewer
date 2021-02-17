@@ -6,9 +6,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -22,10 +21,10 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new DataSource();
 
-			_logFile = new Mock<ILogFile>();
+			_logFile = new Mock<ILogSource>();
 
 			_dataSource = new Mock<IDataSource>();
-			_dataSource.Setup(x => x.UnfilteredLogFile).Returns(_logFile.Object);
+			_dataSource.Setup(x => x.UnfilteredLogSource).Returns(_logFile.Object);
 			_dataSource.Setup(x => x.Settings).Returns(_settings);
 			_dataSource.SetupProperty(x => x.LastViewed);
 			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
@@ -37,7 +36,7 @@ namespace Tailviewer.Test.Ui
 		private Mock<IDataSource> _dataSource;
 		private DataSourceViewModel _viewModel;
 		private DataSource _settings;
-		private Mock<ILogFile> _logFile;
+		private Mock<ILogSource> _logFile;
 
 		private sealed class DataSourceViewModel
 			: AbstractDataSourceViewModel
@@ -177,7 +176,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestExists1()
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.None);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeTrue();
 		}
@@ -185,7 +184,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestExists2([Values(ErrorFlags.SourceCannotBeAccessed, ErrorFlags.SourceDoesNotExist)] ErrorFlags emptyReason)
 		{
-			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(emptyReason);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(emptyReason);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeFalse();
 		}
@@ -198,11 +197,11 @@ namespace Tailviewer.Test.Ui
 			var changes = new List<string>();
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 
-			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeFalse();
 
-			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Returns(ErrorFlags.None);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
 			_viewModel.Update();
 			_viewModel.Exists.Should().BeTrue();
 			changes.Should().Equal("Exists", "Exists");

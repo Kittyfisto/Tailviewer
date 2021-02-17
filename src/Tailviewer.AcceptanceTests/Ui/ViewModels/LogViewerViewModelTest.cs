@@ -7,8 +7,8 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
@@ -55,7 +55,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";
-				dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
@@ -64,7 +64,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				dataSourceModel.SearchTerm = "info";
 
 				// Now we wait for the very last filter operation to complete
-				dataSource.FilteredLogFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// And then dispatch ALL events at ONCE.
 				// We expect the view model to completely ignore the old changes!
 				model.Update();

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.PluginCreator
 {
@@ -75,7 +74,7 @@ namespace Tailviewer.PluginCreator
 				{
 					files.AddRange(new FileFormatPlugin2Creator().CreateSourceFiles(folder));
 				}
-				else if (type == typeof(ILogFile))
+				else if (type == typeof(ILogSource))
 				{
 					files.AddRange(new LogFileCreator().CreateSourceFiles(folder));
 				}

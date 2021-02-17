@@ -11,17 +11,18 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Metrolib;
 using Metrolib.Controls;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
 	/// <summary>
-	///     Responsible for drawing the individual <see cref="LogLine" />s of the <see cref="ILogFile" />.
+	///     Responsible for drawing the individual <see cref="LogLine" />s of the <see cref="ILogSource" />.
 	/// </summary>
 	public sealed class TextCanvas
 		: FrameworkElement
@@ -36,7 +37,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private TextSettings _textSettings;
 		private TextBrushes _textBrushes;
 		private readonly List<TextLine> _visibleTextLines;
-		private readonly LogEntryList _visibleEntryBuffer;
+		private readonly LogBufferList _visibleBufferBuffer;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
 
@@ -44,7 +45,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private LogFileSection _currentlyVisibleSection;
 		private LogLineIndex _firstSelection;
 		private LogLineIndex _lastSelection;
-		private ILogFile _logFile;
+		private ILogSource _logSource;
 		private double _xOffset;
 		private double _yOffset;
 		private bool _colorByLevel;
@@ -63,7 +64,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleEntryBuffer = new LogEntryList(Columns.Index, Columns.LogEntryIndex, Columns.LogLevel, Columns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(LogColumns.Index, LogColumns.LogEntryIndex, LogColumns.LogLevel, LogColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -106,12 +107,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public ILogFile LogFile
+		public ILogSource LogSource
 		{
-			get { return _logFile; }
+			get { return _logSource; }
 			set
 			{
-				_logFile = value;
+				_logSource = value;
 				_visibleTextLines.Clear();
 
 				_currentLine = 0;
@@ -308,19 +309,19 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void UpdateVisibleLines()
 		{
 			_visibleTextLines.Clear();
-			if (_logFile == null)
+			if (_logSource == null)
 				return;
 
 			try
 			{
-				_visibleEntryBuffer.Clear();
-				_visibleEntryBuffer.Resize(_currentlyVisibleSection.Count);
+				_visibleBufferBuffer.Clear();
+				_visibleBufferBuffer.Resize(_currentlyVisibleSection.Count);
 				if (_currentlyVisibleSection.Count > 0)
 				{
-					_logFile.GetEntries(_currentlyVisibleSection, _visibleEntryBuffer, 0);
+					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0);
 					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
-						var line = new TextLine(_visibleEntryBuffer[i], _hoveredIndices, _selectedIndices,
+						var line = new TextLine(_visibleBufferBuffer[i], _hoveredIndices, _selectedIndices,
 						                        _colorByLevel, _textSettings, _textBrushes)
 						{
 							IsFocused = IsFocused,
@@ -416,12 +417,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		[Pure]
 		public LogFileSection CalculateVisibleSection()
 		{
-			if (_logFile == null)
+			if (_logSource == null)
 				return new LogFileSection(0, 0);
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			var logLineCount = LogFile.GetProperty(Core.LogFiles.Properties.LogEntryCount);
+			var logLineCount = LogSource.GetProperty(GeneralProperties.LogEntryCount);
 			// Somebody may have specified that he wants to view line X, but if the source
 			// doesn't offer this line (yet), then we must show something else...
 			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, logLineCount - maxCount) : _currentLine;
@@ -510,7 +511,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				int count = _logFile.GetProperty(Core.LogFiles.Properties.LogEntryCount);
+				int count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
 				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
 				{
 					LogLineIndex newIndex;
@@ -547,7 +548,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSelectUp()
 		{
-			var logFile = _logFile;
+			var logFile = _logSource;
 			var first = _firstSelection;
 			var last = _lastSelection;
 			if (logFile == null)
@@ -574,7 +575,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSelectDown()
 		{
-			var logFile = _logFile;
+			var logFile = _logSource;
 			var first = _firstSelection;
 			var last = _lastSelection;
 			if (logFile == null)
@@ -585,7 +586,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				return;
 
 			var next = last + 1;
-			if (next >= _logFile.GetProperty(Core.LogFiles.Properties.LogEntryCount))
+			if (next >= _logSource.GetProperty(GeneralProperties.LogEntryCount))
 				return;
 
 			var indices = LogLineIndex.Range(first, next);
@@ -603,7 +604,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.GetProperty(Core.LogFiles.Properties.LogEntryCount) - 1)
+				if (_selectedIndices.Count > 0 && _lastSelection < _logSource.GetProperty(GeneralProperties.LogEntryCount) - 1)
 				{
 					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
@@ -632,10 +633,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				ILogFile logFile = _logFile;
-				if (logFile != null)
+				ILogSource logSource = _logSource;
+				if (logSource != null)
 				{
-					var count = logFile.GetProperty(Core.LogFiles.Properties.LogEntryCount);
+					var count = logSource.GetProperty(GeneralProperties.LogEntryCount);
 					if (count > 0)
 					{
 						var newIndex = new LogLineIndex(count - 1);
@@ -656,15 +657,15 @@ namespace Tailviewer.Ui.Controls.LogView
 			try
 			{
 				var builder = new StringBuilder();
-				ILogFile logFile = _logFile;
-				if (logFile != null)
+				ILogSource logSource = _logSource;
+				if (logSource != null)
 				{
 					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
 					sortedIndices.Sort();
 					// TODO: What do we do if some mad man has 1 million lines selected?
 					// TODO: Request in batches
-					var buffer = new LogEntryArray(_selectedIndices.Count, Columns.RawContent);
-					logFile.GetEntries(sortedIndices, buffer);
+					var buffer = new LogBufferArray(_selectedIndices.Count, LogColumns.RawContent);
+					logSource.GetEntries(sortedIndices, buffer);
 
 					for (int i = 0; i < sortedIndices.Count; ++i)
 					{

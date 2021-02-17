@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
@@ -20,7 +19,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			var builder = new StringBuilder();
 			foreach(var line in logEntry)
 			{
-				builder.AppendLine(line.GetValue(Columns.Message));
+				builder.AppendLine(line.GetValue(LogColumns.Message));
 			}
 			return builder.ToString();
 		}

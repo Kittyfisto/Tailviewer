@@ -3,8 +3,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
@@ -34,14 +35,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			};
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{
-				dataSource.FilteredLogFile.Property(x =>
+				dataSource.FilteredLogSource.Property(x =>
 				{
 					_scheduler.RunOnce();
-					return x.GetProperty(Properties.LogEntryCount) >= 6;
+					return x.GetProperty(GeneralProperties.LogEntryCount) >= 6;
 				}).ShouldEventually().BeTrue();
-				dataSource.FilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
+				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
 
-				var entries = dataSource.FilteredLogFile.GetEntries(new LogFileSection(0, 6));
+				var entries = dataSource.FilteredLogSource.GetEntries(new LogFileSection(0, 6));
 				entries[0].RawContent.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				entries[0].LogLevel.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
 

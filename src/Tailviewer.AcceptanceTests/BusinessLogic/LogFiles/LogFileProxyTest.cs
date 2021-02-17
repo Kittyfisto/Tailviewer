@@ -4,8 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
@@ -13,9 +12,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 	public sealed class LogFileProxyTest
 	{
 		private DefaultTaskScheduler _scheduler;
-		private Mock<ILogFile> _logFile;
-		private LogFileListenerCollection _listeners;
-		private Mock<ILogFileListener> _listener;
+		private Mock<ILogSource> _logFile;
+		private LogSourceListenerCollection _listeners;
+		private Mock<ILogSourceListener> _listener;
 		private List<LogFileSection> _modifications;
 
 		[OneTimeSetUp]
@@ -33,24 +32,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[SetUp]
 		public void Setup()
 		{
-			_logFile = new Mock<ILogFile>();
-			_listeners = new LogFileListenerCollection(_logFile.Object);
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-					.Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
-			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
-					.Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
+			_logFile = new Mock<ILogSource>();
+			_listeners = new LogSourceListenerCollection(_logFile.Object);
+			_logFile.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+					.Callback((ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
+			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogSourceListener>()))
+					.Callback((ILogSourceListener listener) => _listeners.RemoveListener(listener));
 
-			_listener = new Mock<ILogFileListener>();
+			_listener = new Mock<ILogSourceListener>();
 			_modifications = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					 .Callback((ILogFile logFile, LogFileSection section) => _modifications.Add(section));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+					 .Callback((ILogSource logFile, LogFileSection section) => _modifications.Add(section));
 		}
 
 		[Test]
 		[Description("Verifies that OnlogFileModified is eventually called when a non-zero maximum wait time is used (and the max limit is not reached)")]
 		public void TestListen1()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
 				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));

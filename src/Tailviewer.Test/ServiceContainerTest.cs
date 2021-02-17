@@ -6,8 +6,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 using Tailviewer.Core.Settings;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test
@@ -61,14 +62,14 @@ namespace Tailviewer.Test
 			var container = new ServiceContainer();
 			container.RegisterInstance<ITaskScheduler>(new ManualTaskScheduler());
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			container.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
 
 			var settings = new LogFileSettings();
 			settings.DefaultEncoding = Encoding.UTF32;
 			container.RegisterInstance<ILogFileSettings>(settings);
 
 			var logFile = container.CreateTextLogFile("foo");
-			logFile.GetProperty(Properties.Encoding).Should().Be(Encoding.UTF32);
+			logFile.GetProperty(GeneralProperties.Encoding).Should().Be(Encoding.UTF32);
 		}
 	}
 }

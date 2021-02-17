@@ -1,13 +1,12 @@
 ﻿using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	/// <summary>
-	///    This class is responsible for testing <see cref="ILogFile"/> implementations which rely on a <see cref="ITaskScheduler"/>.
+	///    This class is responsible for testing <see cref="ILogSource"/> implementations which rely on a <see cref="ITaskScheduler"/>.
 	/// </summary>
 	public abstract class AbstractTaskSchedulerLogFileTest
 	{
@@ -19,12 +18,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler = new ManualTaskScheduler();
 		}
 
-		private ILogFile CreateEmpty()
+		private ILogSource CreateEmpty()
 		{
 			return CreateEmpty(_taskScheduler);
 		}
 
-		protected abstract ILogFile CreateEmpty(ITaskScheduler taskScheduler);
+		protected abstract ILogSource CreateEmpty(ITaskScheduler taskScheduler);
 
 		#region Percentage Processed
 
@@ -33,11 +32,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var logFile = CreateEmpty())
 			{
-				logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero, "because the log file didn't have enough time to check the source");
+				logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the log file didn't have enough time to check the source");
 
 				_taskScheduler.RunOnce();
 
-				logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+				logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 			}
 		}
 

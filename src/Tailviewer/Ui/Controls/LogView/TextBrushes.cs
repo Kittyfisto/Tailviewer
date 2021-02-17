@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView

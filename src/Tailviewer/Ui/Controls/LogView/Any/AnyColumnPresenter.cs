@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Settings;
+﻿using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.Any
 {
@@ -17,7 +16,7 @@ namespace Tailviewer.Ui.Controls.LogView.Any
 
 		#region Overrides of AbstractLogColumnPresenter<T>
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{}
 
 		protected override AbstractLogEntryValueFormatter CreateFormatter(T value)
