@@ -102,6 +102,13 @@ namespace Tailviewer.Core.Entries
 		}
 
 		/// <inheritdoc />
+		public string Message
+		{
+			get { return GetValue(LogColumns.Message); }
+			set { SetValue(LogColumns.Message, value); }
+		}
+
+		/// <inheritdoc />
 		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />

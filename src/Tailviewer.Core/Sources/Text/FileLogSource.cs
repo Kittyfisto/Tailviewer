@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -28,29 +29,21 @@ namespace Tailviewer.Core.Sources.Text
 		, ILogSourceListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+		
+		private readonly object _syncRoot;
 		private readonly IServiceContainer _services;
-		private readonly string _fileName;
 		private readonly string _fullFilename;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly ILogSourceParserPlugin _logSourceParserPlugin;
 		private readonly FileFormatDetector _detector;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly TimeSpan _maximumWaitTime;
 		private const int MaximumLineCount = 100000;
-
-		#region Log Files
-
-		private StreamingTextLogSource _streamingTextLogSource;
-		private ILogSource _parsingLogSource;
-		private MultiLineLogSource _multiLineLogSource;
-
-		#endregion
+		private bool _isDisposed;
 
 		#region Processing
 
 		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
+		private IReadOnlyList<ILogSource> _logSources;
 		private ILogSource _finalLogSource;
 
 		#endregion
@@ -64,15 +57,13 @@ namespace Tailviewer.Core.Sources.Text
 		public FileLogSource(IServiceContainer services, string fileName, TimeSpan maximumWaitTime)
 			: base(services.Retrieve<ITaskScheduler>())
 		{
+			_syncRoot = new object();
 			_services = services;
-			_fileName = fileName;
 			_fullFilename = Path.IsPathRooted(fileName)
 				? fileName
 				: Path.Combine(Directory.GetCurrentDirectory(), fileName);
 			_maximumWaitTime = maximumWaitTime;
 
-			_taskScheduler = services.Retrieve<ITaskScheduler>();
-			_logSourceParserPlugin = services.Retrieve<ILogSourceParserPlugin>();
 			var formatMatcher = services.Retrieve<ILogFileFormatMatcher>();
 			// TODO: Fetch default encoding from settings
 			_detector = new FileFormatDetector(formatMatcher, _fullFilename, Encoding.Default);
@@ -159,7 +150,17 @@ namespace Tailviewer.Core.Sources.Text
 
 		protected override void DisposeAdditional()
 		{
-			_streamingTextLogSource?.TryDispose();
+			IReadOnlyList<ILogSource> logSources;
+			lock (_syncRoot)
+			{
+				_isDisposed = true;
+				logSources = _logSources;
+				_logSources = null;
+				_properties.SetValue(GeneralProperties.LogEntryCount, 0);
+				// We do not want to dispose those sources from within the lock!
+				// We don't know what they're doing and for how long they're doing it...
+			}
+			Dispose(logSources);
 
 			base.DisposeAdditional();
 		}
@@ -178,15 +179,26 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void UpdateFormat()
 		{
+			// The most important thing about the following method is that we try to get away with holding a lock for the smallest amount of time.
+			// It's especially important that we don't hold a lock while we're calling plugins and such because that is likely to cause
+			// problems when we're being disposed of. Therefore we first obtain a copy of the relevant values here, create the log source list
+			// as needed and *then* check to see if it actually is needed or if we have been disposed of at the last possible moment.
+
 			var format = _detector.TryDetermineFormat(out var encoding);
 			var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
 			var encodingChanged = _propertiesBuffer.SetValue(GeneralProperties.Encoding, encoding);
+			var currentLogSources = _logSources;
 
-			if (_streamingTextLogSource == null ||
-			    formatChanged ||
-			    encodingChanged)
+			if (currentLogSources == null || currentLogSources.Count == 0 ||
+			    formatChanged || encodingChanged)
 			{
-				CreateStreamingTextLogFile(format, encoding);
+				Dispose(currentLogSources);
+
+				// Depending on the log file we're actually opening, the plugins we have installed, the final log source
+				// that we expose here could be anything. It could be the raw log source which reads everything line by line,
+				// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
+				var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
+				StartListenTo(newLogSources);
 			}
 		}
 
@@ -243,50 +255,85 @@ namespace Tailviewer.Core.Sources.Text
 
 		#endregion
 
-		private void CreateStreamingTextLogFile(ILogFileFormat format, Encoding encoding)
+		#region Log Source Creation
+
+		private IReadOnlyList<ILogSource> CreateAllLogSources(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding, TimeSpan maximumWaitTime)
 		{
-			_streamingTextLogSource?.TryDispose();
-			if (format.IsText)
+			var newLogSources = new List<ILogSource>();
+			var streamingLogSource = TryCreateStreamingTextLogFile(serviceContainer, fullFilename, format, encoding);
+			if (streamingLogSource != null)
+				newLogSources.Add(streamingLogSource);
+
+			var parsingLogSource = CreateLogSourceParser(serviceContainer, streamingLogSource);
+			if (parsingLogSource != null)
+				newLogSources.Add(parsingLogSource);
+
+			var multiLineLogSource = TryCreateMultiLineLogFile(serviceContainer, newLogSources.Last(), maximumWaitTime);
+			if (multiLineLogSource != null)
+				newLogSources.Add(multiLineLogSource);
+
+			return newLogSources;
+		}
+
+		private static ILogSource TryCreateStreamingTextLogFile(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding)
+		{
+			var fileLogSourceFactory = serviceContainer.Retrieve<IFileLogSourceFactory>();
+			var textLogSource = fileLogSourceFactory.OpenRead(fullFilename, format, encoding);
+			return textLogSource;
+		}
+
+		private static ILogSource CreateLogSourceParser(IServiceContainer serviceContainer, ILogSource source)
+		{
+			var logSourceParserPlugin = serviceContainer.Retrieve<ILogSourceParserPlugin>();
+			var parsingLogSource = logSourceParserPlugin.CreateParser(serviceContainer, source);
+			return parsingLogSource;
+		}
+
+		private static ILogSource TryCreateMultiLineLogFile(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
+		{
+			if (!source.GetProperty(TextProperties.IsMultiline))
+				return null;
+
+			var multiLineLogSource = new MultiLineLogSource(serviceContainer.Retrieve<ITaskScheduler>(), source, maximumWaitTime);
+			return multiLineLogSource;
+		}
+
+		#endregion
+
+		private void Dispose(IReadOnlyList<ILogSource> logSources)
+		{
+			if (logSources == null)
+				return;
+
+			foreach (var logSource in logSources)
 			{
-				_streamingTextLogSource = new StreamingTextLogSource(_services, _fullFilename, encoding);
-				CreateLogSourceParser();
-			}
-			else
-			{
-				Log.WarnFormat("Log file {0} has been determined to be a binary file ({1}) - processing binary files is not implemented", _fullFilename, format);
+				logSource?.TryDispose();
 			}
 		}
 
-		private void CreateLogSourceParser()
+		private void StartListenTo(IReadOnlyList<ILogSource> logSource)
 		{
-			_parsingLogSource?.TryDispose();
-			_parsingLogSource = _logSourceParserPlugin.CreateParser(_services, _streamingTextLogSource);
-
-			if (_parsingLogSource == null)
+			ILogSource finalLogSource;
+			lock (_syncRoot)
 			{
-				StartListenTo(_streamingTextLogSource);
-			}
-			else if (_parsingLogSource.GetProperty(TextProperties.IsMultiline))
-			{
-				CreateMultiLineLogFile();
-				StartListenTo(_multiLineLogSource);
-			}
-			else
-			{
-				StartListenTo(_parsingLogSource);
-			}
-		}
+				if (_isDisposed)
+					return;
 
-		private void StartListenTo(ILogSource logSource)
-		{
-			_finalLogSource = logSource;
-			logSource.AddListener(this, _maximumWaitTime, MaximumLineCount);
-		}
+				if (logSource != null && logSource.Count > 0)
+				{
+					_logSources = logSource;
+					_finalLogSource = finalLogSource = logSource.Last();
+				}
+				else
+				{
+					_logSources = null;
+					_finalLogSource = finalLogSource = null;
+				}
 
-		private void CreateMultiLineLogFile()
-		{
-			_multiLineLogSource?.TryDispose();
-			_multiLineLogSource = new MultiLineLogSource(_taskScheduler, _parsingLogSource, _maximumWaitTime);
+				// We do not want to call AddListener from within the lock!
+			}
+
+			finalLogSource?.AddListener(this, _maximumWaitTime, MaximumLineCount);
 		}
 	}
 }

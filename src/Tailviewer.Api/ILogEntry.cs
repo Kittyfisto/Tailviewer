@@ -114,6 +114,14 @@ namespace Tailviewer
 		new TimeSpan? DeltaTime { get; set; }
 
 		/// <summary>
+		///     The (human readable) message of the log entry (i.e. the actual textual information that does not info into
+		///     any other column).
+		/// </summary>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		new string Message { get; set; }
+
+		/// <summary>
 		///     Sets the value of this log entry for the given column.
 		/// </summary>
 		/// <param name="column"></param>

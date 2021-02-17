@@ -64,6 +64,8 @@
   <ItemGroup>
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
+    <Compile Include="Buffers\CombinedLogBufferView.cs" />
+    <Compile Include="Buffers\LogBufferExtensions.cs" />
     <Compile Include="ColoringConsoleAppender.cs" />
     <Compile Include="ConcurrentQueueExtensions.cs" />
     <Compile Include="Constants.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
+    <Compile Include="Sources\AugmentedLogSource.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
     <Compile Include="Sources\Text\FileFormatDetector.cs" />
@@ -90,7 +93,7 @@
     <Compile Include="Sources\EmptyLogSource.cs" />
     <Compile Include="Sources\EventLogSource.cs" />
     <Compile Include="Sources\Issues\LogFileIssue.cs" />
-    <Compile Include="Buffers\LogEntriesEnumerator.cs" />
+    <Compile Include="Buffers\LogBufferEnumerator.cs" />
     <Compile Include="Buffers\LogBufferView.cs" />
     <Compile Include="Entries\LogEntryView.cs" />
     <Compile Include="Buffers\LogEntryCache.cs" />
@@ -105,7 +108,9 @@
     <Compile Include="Sources\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="Sources\Merged\Stuff.cs" />
     <Compile Include="Properties\TextProperties.cs" />
+    <Compile Include="Sources\Text\FileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\GenericTextLogSource.cs" />
+    <Compile Include="Sources\Text\IFileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\LineOffsetDetector.cs" />
     <Compile Include="Sources\Text\RawTextLogEntry.cs" />
     <Compile Include="Entries\ReadOnlyLogEntryExtensions.cs" />
@@ -169,7 +174,7 @@
     <Compile Include="Properties\ReadOnlyPropertyDescriptorExtensions.cs" />
     <Compile Include="Properties\PropertiesBufferList.cs" />
     <Compile Include="Sources\LogSourceDebuggerVisualization.cs" />
-    <Compile Include="Buffers\ReadOnlyLogEntriesEnumerator.cs" />
+    <Compile Include="Buffers\ReadOnlyLogBufferEnumerator.cs" />
     <Compile Include="Entries\ReadOnlyLogEntry.cs" />
     <Compile Include="Columns\WellKnownColumnDescriptor.cs" />
     <Compile Include="Columns\LogColumns.cs" />

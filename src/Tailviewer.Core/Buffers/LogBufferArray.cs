@@ -177,11 +177,11 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void FillDefault(int destinationIndex, int length)
+		public void FillDefault(int offset, int length)
 		{
 			foreach (var column in _dataByColumn.Values)
 			{
-				column.FillDefault(destinationIndex, length);
+				column.FillDefault(offset, length);
 			}
 		}
 
@@ -201,12 +201,12 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public IEnumerator<ILogEntry> GetEnumerator()
 		{
-			return new LogEntriesEnumerator(this);
+			return new LogBufferEnumerator(this);
 		}
 
 		IEnumerator<IReadOnlyLogEntry> IEnumerable<IReadOnlyLogEntry>.GetEnumerator()
 		{
-			return new ReadOnlyLogEntriesEnumerator(this);
+			return new ReadOnlyLogBufferEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

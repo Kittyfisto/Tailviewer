@@ -39,12 +39,12 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public IEnumerator<ILogEntry> GetEnumerator()
 		{
-			return new LogEntriesEnumerator(this);
+			return new LogBufferEnumerator(this);
 		}
 
 		IEnumerator<IReadOnlyLogEntry> IEnumerable<IReadOnlyLogEntry>.GetEnumerator()
 		{
-			return new ReadOnlyLogEntriesEnumerator(this);
+			return new ReadOnlyLogBufferEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -97,9 +97,9 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
-		public void FillDefault(int destinationIndex, int length)
+		public void FillDefault(int offset, int length)
 		{
-			_inner.FillDefault(destinationIndex, length);
+			_inner.FillDefault(offset, length);
 		}
 
 		/// <inheritdoc />

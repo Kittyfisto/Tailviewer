@@ -37,6 +37,7 @@ namespace Tailviewer
 		/// <param name="source">The log file from which data should be copied from</param>
 		/// <param name="sourceIndices">The non-contiguous section of the log file from which to copy from (e.g. from index 5, 10 entries)</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		[WillBeRemoved("TODO: Remove this abomination", "")]
 		void CopyFrom(IColumnDescriptor column, int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions);
 
 		/// <summary>
@@ -54,9 +55,9 @@ namespace Tailviewer
 		/// <remarks>
 		///     This buffer must be large enough already to accomodate the data.
 		/// </remarks>
-		/// <param name="destinationIndex"></param>
-		/// <param name="length"></param>
-		void FillDefault(int destinationIndex, int length);
+		/// <param name="offset">The offset into this buffer from which onward log entries should be filled with default values</param>
+		/// <param name="length">The number of log entries in this buffer to fill with default values</param>
+		void FillDefault(int offset, int length);
 
 		/// <summary>
 		///    Fills the given region of the given column with default values for that column's data type.

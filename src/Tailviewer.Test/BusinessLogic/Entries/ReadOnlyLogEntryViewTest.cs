@@ -2,11 +2,10 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Entries
 {
 	[TestFixture]
 	public sealed class ReadOnlyLogEntryViewTest

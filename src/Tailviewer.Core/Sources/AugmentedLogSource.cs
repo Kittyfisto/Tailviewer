@@ -3,34 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
-using Tailviewer.Plugins;
 
-namespace Tailviewer.Core.Sources.Text
+namespace Tailviewer.Core.Sources
 {
 	/// <summary>
-	///     A simple accessor which provides access to log entries produced by a <see cref="ILogEntryParser" />.
-	///     Parsing happens on demand when corresponding properties are requested.
+	///     This class is responsible for calculating the values for certain columns based on the data of an underlying
+	///     <see cref="ILogSource" />.
 	/// </summary>
-	internal sealed class GenericTextLogSource
+	/// <remarks>
+	///     Before this class existed, lots of <see cref="ILogSource"/> implementations contained the same piece of code
+	///     implemented over and over. However this isn't necessary for lots of columns, namely:
+	///      - <see cref="LogColumns.DeltaTime"/>
+	///      - <see cref="LogColumns.ElapsedTime"/>
+	/// </remarks>
+	internal sealed class AugmentedLogSource
 		: ILogSource
 	{
 		private readonly object _syncRoot;
 		private readonly Dictionary<ILogSourceListener, ListenerProxy> _listeners;
-		private readonly ILogEntryParser _parser;
-		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 		private ILogSource _source;
 
-		public GenericTextLogSource(ILogSource source,
-		                            ILogEntryParser parser)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		public AugmentedLogSource(ILogSource source)
 		{
 			_syncRoot = new object();
 			_source = source ?? throw new ArgumentNullException(nameof(source));
-			_parser = parser;
-			_columns = _source.Columns.Concat(_parser.Columns).Distinct().ToList();
 			_listeners = new Dictionary<ILogSourceListener, ListenerProxy>();
 		}
 
-		public IReadOnlyList<IColumnDescriptor> Columns => _columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _source.Columns;
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -126,20 +130,19 @@ namespace Tailviewer.Core.Sources.Text
 			if (destinationIndex != 0)
 				throw new NotImplementedException();
 
-			//var actualDestination = destination.CreateViewWithAdditionalColumn(LogColumns.RawContent);
-			var actualDestination = destination.CreateViewOnlyWithColumn(LogColumns.RawContent);
+			// TODO: Should also fetch the index column so check where we accessed invalid regions?
+			var rawBuffer = destination.Columns.Contains(LogColumns.Timestamp)
+				? new LogBufferView(destination, LogColumns.Timestamp)
+				: (ILogBuffer) new LogBufferArray(sourceIndices.Count, LogColumns.Timestamp);
 
 			var source = _source;
 			if (source != null)
 			{
-				source.GetEntries(sourceIndices, actualDestination, destinationIndex: 0, queryOptions);
+				source.GetEntries(sourceIndices, rawBuffer, destinationIndex: 0, queryOptions);
 
-				for (var i = 0; i < actualDestination.Count; ++i)
+				for (var i = 0; i < rawBuffer.Count; ++i)
 				{
-					var logEntry = actualDestination[i];
-					// TODO: we should tell the parser about the columns we're interested in so the parser can skip work, if it's lazy
-					var parsedLogEntry = _parser.Parse(logEntry);
-					destination[i].CopyFrom(parsedLogEntry);
+					
 				}
 			}
 			else

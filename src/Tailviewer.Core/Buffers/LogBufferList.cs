@@ -47,13 +47,13 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public IEnumerator<ILogEntry> GetEnumerator()
 		{
-			return new LogEntriesEnumerator(this);
+			return new LogBufferEnumerator(this);
 		}
 
 		/// <inheritdoc />
 		IEnumerator<IReadOnlyLogEntry> IEnumerable<IReadOnlyLogEntry>.GetEnumerator()
 		{
-			return new ReadOnlyLogEntriesEnumerator(this);
+			return new ReadOnlyLogBufferEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -258,7 +258,7 @@ namespace Tailviewer.Core.Buffers
 		///   
 		/// </summary>
 		/// <param name="buffer"></param>
-		public void AddRange(IReadOnlyLogBuffer buffer)
+		public void AddRange(IEnumerable<IReadOnlyLogEntry> buffer)
 		{
 			foreach (var logEntry in buffer)
 			{
@@ -409,8 +409,7 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData columnData;
-			if (!_dataByColumn.TryGetValue(column, out columnData))
+			if (!_dataByColumn.TryGetValue(column, out var columnData))
 				throw new NoSuchColumnException(column);
 
 			columnData.CopyFrom(destinationIndex, source, sourceIndices);
@@ -422,19 +421,18 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData columnData;
-			if (!_dataByColumn.TryGetValue(column, out columnData))
+			if (!_dataByColumn.TryGetValue(column, out var columnData))
 				throw new NoSuchColumnException(column);
 
 			columnData.CopyFrom(destinationIndex, source, sourceIndices, queryOptions);
 		}
 
 		/// <inheritdoc />
-		public void FillDefault(int destinationIndex, int length)
+		public void FillDefault(int offset, int length)
 		{
 			foreach (var column in _dataByColumn.Values)
 			{
-				column.FillDefault(destinationIndex, length);
+				column.FillDefault(offset, length);
 			}
 		}
 

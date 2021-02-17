@@ -38,6 +38,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 			_formatMatcher = new SimpleLogFileFormatMatcher(null);
 
+			_services.RegisterInstance<IFileLogSourceFactory>(new FileLogSourceFactory(_taskScheduler));
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogSourceParserPlugin>(_parser.Object);
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);

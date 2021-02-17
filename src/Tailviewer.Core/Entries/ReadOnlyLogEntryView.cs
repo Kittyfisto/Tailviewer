@@ -181,6 +181,18 @@ namespace Tailviewer.Core.Entries
 		}
 
 		/// <inheritdoc />
+		public string Message
+		{
+			get
+			{
+				if (!_columns.Contains(LogColumns.Message))
+					throw new NoSuchColumnException(LogColumns.Message);
+
+				return _logEntry.Message;
+			}
+		}
+
+		/// <inheritdoc />
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
 			if (!_columns.Contains(column))

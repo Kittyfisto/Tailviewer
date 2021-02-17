@@ -5,16 +5,16 @@ using System.Collections.Generic;
 namespace Tailviewer.Core.Buffers
 {
 	/// <summary>
-	///     Responsible for enumerating <see cref="ILogBuffer" />.
+	///     Responsible for enumerating <see cref="IReadOnlyLogBuffer" />.
 	///     Used by its implementations.
 	/// </summary>
-	internal sealed class LogEntriesEnumerator
-		: IEnumerator<ILogEntry>
+	internal sealed class ReadOnlyLogBufferEnumerator
+		: IEnumerator<IReadOnlyLogEntry>
 	{
-		private readonly ILogBuffer _logBuffer;
+		private readonly IReadOnlyLogBuffer _logBuffer;
 		private int _index;
 
-		public LogEntriesEnumerator(ILogBuffer logBuffer)
+		public ReadOnlyLogBufferEnumerator(IReadOnlyLogBuffer logBuffer)
 		{
 			_logBuffer = logBuffer;
 			Reset();
@@ -37,7 +37,7 @@ namespace Tailviewer.Core.Buffers
 			_index = -1;
 		}
 
-		public ILogEntry Current
+		public IReadOnlyLogEntry Current
 		{
 			get
 			{

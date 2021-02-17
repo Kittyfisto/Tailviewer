@@ -7,13 +7,13 @@ using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
-using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
+using Tailviewer.Test.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Buffers
 {
 	[TestFixture]
-	public sealed class LogEntryListTest
-		: ReadOnlyLogEntriesTest
+	public sealed class LogBufferListTest
+		: AbstractReadOnlyLogBufferTest
 	{
 		[Test]
 		public void TestConstruction2()
@@ -705,12 +705,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "because the fifth entry's log level should NOT have been overwritten");
 		}
 
-		protected override IReadOnlyLogBuffer CreateEmpty(IEnumerable<IColumnDescriptor> columns)
+		protected override IReadOnlyLogBuffer CreateEmptyReadOnly(IEnumerable<IColumnDescriptor> columns)
 		{
 			return new LogBufferList(columns);
 		}
 
-		protected override IReadOnlyLogBuffer Create(IEnumerable<IReadOnlyLogEntry> entries)
+		protected override IReadOnlyLogBuffer CreateReadOnly(IEnumerable<IReadOnlyLogEntry> entries)
 		{
 			if (entries.Any())
 			{
@@ -722,7 +722,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				return list;
 			}
 
-			return CreateEmpty(new IColumnDescriptor[0]);
+			return CreateEmptyReadOnly(new IColumnDescriptor[0]);
 		}
 	}
 }

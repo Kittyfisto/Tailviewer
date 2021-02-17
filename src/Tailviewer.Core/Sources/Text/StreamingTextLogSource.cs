@@ -56,14 +56,14 @@ namespace Tailviewer.Core.Sources.Text
 		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
 		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateTextLogFile"/>.
 		/// </remarks>
-		/// <param name="serviceContainer"></param>
+		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
 		/// <param name="encoding"></param>
-		internal StreamingTextLogSource(IServiceContainer serviceContainer,
-		                              string fileName,
-		                              Encoding encoding)
+		internal StreamingTextLogSource(ITaskScheduler taskScheduler,
+		                                string fileName,
+		                                Encoding encoding)
 		{
-			_taskScheduler = serviceContainer.Retrieve<ITaskScheduler>();
+			_taskScheduler = taskScheduler;
 			_encoding = encoding;
 
 			_listeners = new LogSourceListenerCollection(this);

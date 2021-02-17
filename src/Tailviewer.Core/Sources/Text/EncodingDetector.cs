@@ -6,6 +6,13 @@ using System.Text;
 
 namespace Tailviewer.Core.Sources.Text
 {
+	/// <summary>
+	///    This class is responsible for detecting the encoding of text file or byte stream.
+	/// </summary>
+	/// <remarks>
+	///    At the moment this class does nothing more than to check if there's a preamble in the file
+	///    and to compare it to to a list of well known encodings with preamble.
+	/// </remarks>
 	internal sealed class EncodingDetector
 	{
 		private readonly List<KeyValuePair<byte[], Encoding>> _encodingsByPreamble;
@@ -25,6 +32,11 @@ namespace Tailviewer.Core.Sources.Text
 			                                .ToList();
 		}
 
+		/// <summary>
+		///    Tries to find the encoding of the given file. If the detector isn't sure of the encoding, then null is returned.
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
 		public Encoding TryFindEncoding(string fileName)
 		{
 			try
@@ -40,6 +52,11 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
+		/// <summary>
+		///    Tries to find the encoding of the given stream. If the detector isn't sure of the encoding, then null is returned.
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <returns></returns>
 		public Encoding TryFindEncoding(Stream stream)
 		{
 			stream.Position = 0;

@@ -47,7 +47,11 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		public IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry)
 		{
-			var line = RemoveGarbage(logEntry.RawContent);
+			var rawContent = logEntry.RawContent;
+			if (string.IsNullOrEmpty(rawContent))
+				return logEntry;
+
+			var line = RemoveGarbage(rawContent);
 			var level = LogLine.DetermineLevelFromLine(line);
 			var timestamp = ParseTimestamp(line);
 			return new ParsedLogEntry(logEntry, line, level, timestamp);
@@ -139,6 +143,14 @@ namespace Tailviewer.BusinessLogic.Sources
 			public TimeSpan? DeltaTime
 			{
 				get { return _inner.DeltaTime; }
+			}
+
+			public string Message
+			{
+				get
+				{
+					return _inner.Message;
+				}
 			}
 
 			public T GetValue<T>(IColumnDescriptor<T> column)

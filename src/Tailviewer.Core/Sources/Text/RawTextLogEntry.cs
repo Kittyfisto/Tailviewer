@@ -87,6 +87,8 @@ namespace Tailviewer.Core.Sources.Text
 
 		public TimeSpan? DeltaTime => null;
 
+		public string Message => null;
+
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
 			if (!TryGetValue(column, out var value))

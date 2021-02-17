@@ -4,15 +4,14 @@ using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Buffers
 {
 	[TestFixture]
-	public sealed class LogEntriesViewTest
+	public sealed class LogBufferViewTest
 	{
 		[Test]
 		public void TestConstruction()

@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Sources
 		: ILogSource
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private readonly LogBufferList _logBuffers;
+		private readonly LogBufferList _logBuffer;
 		private readonly PropertiesBufferList _properties;
 		private readonly LogSourceListenerCollection _listeners;
 
@@ -79,7 +79,7 @@ namespace Tailviewer.Core.Sources
 				throw new ArgumentNullException(nameof(columns));
 
 			_syncRoot = new object();
-			_logBuffers = new LogBufferList(LogColumns.CombineWithMinimum(columns));
+			_logBuffer = new LogBufferList(LogColumns.CombineWithMinimum(columns));
 			_listeners = new LogSourceListenerCollection(this);
 
 			_properties = new PropertiesBufferList(GeneralProperties.Minimum);
@@ -100,15 +100,15 @@ namespace Tailviewer.Core.Sources
 
 			lock (_syncRoot)
 			{
-				_logBuffers.Clear();
+				_logBuffer.Clear();
 			}
 		}
 
 		/// <inheritdoc />
-		public int Count => _logBuffers.Count;
+		public int Count => _logBuffer.Count;
 
 		/// <inheritdoc />
-		public IReadOnlyList<IColumnDescriptor> Columns => _logBuffers.Columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _logBuffer.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -184,7 +184,7 @@ namespace Tailviewer.Core.Sources
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
 
-			_logBuffers.CopyTo(column, (int)sourceSection.Index, destination, destinationIndex, sourceSection.Count);
+			_logBuffer.CopyTo(column, (int)sourceSection.Index, destination, destinationIndex, sourceSection.Count);
 		}
 
 		/// <inheritdoc />
@@ -199,7 +199,7 @@ namespace Tailviewer.Core.Sources
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
 
-			_logBuffers.CopyTo(column, new Int32View(sourceIndices), destination, destinationIndex);
+			_logBuffer.CopyTo(column, new Int32View(sourceIndices), destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
@@ -208,7 +208,7 @@ namespace Tailviewer.Core.Sources
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceSection, queryOptions);
+					destination.CopyFrom(column, destinationIndex, _logBuffer, new Int32View(sourceSection));
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace Tailviewer.Core.Sources
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
+					destination.CopyFrom(column, destinationIndex, _logBuffer, new Int32View(sourceIndices));
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace Tailviewer.Core.Sources
 		/// <returns></returns>
 		public IReadOnlyLogEntry this[int index]
 		{
-			get { return _logBuffers[index]; }
+			get { return _logBuffer[index]; }
 		}
 
 		/// <summary>
@@ -247,7 +247,7 @@ namespace Tailviewer.Core.Sources
 		{
 			lock (_syncRoot)
 			{
-				if (originalLineIndex >= _logBuffers.Count)
+				if (originalLineIndex >= _logBuffer.Count)
 				{
 					return LogLineIndex.Invalid;
 				}
@@ -266,10 +266,10 @@ namespace Tailviewer.Core.Sources
 		{
 			lock (_syncRoot)
 			{
-				if (_logBuffers.Count > 0)
+				if (_logBuffer.Count > 0)
 				{
-					_logBuffers.Clear();
-					SetValue(GeneralProperties.LogEntryCount, _logBuffers.Count);
+					_logBuffer.Clear();
+					SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
 					_properties.SetValue(TextProperties.MaxCharactersInLine, 0);
 					_properties.SetValue(GeneralProperties.StartTimestamp, null);
 					_properties.SetValue(GeneralProperties.EndTimestamp, null);
@@ -295,15 +295,15 @@ namespace Tailviewer.Core.Sources
 					return;
 				}
 
-				if (index > _logBuffers.Count)
+				if (index > _logBuffer.Count)
 				{
-					Log.WarnFormat("Invalid index '{0}', Count is '{1}'", index, _logBuffers.Count);
+					Log.WarnFormat("Invalid index '{0}', Count is '{1}'", index, _logBuffer.Count);
 					return;
 				}
 
-				var available = _logBuffers.Count - index;
-				_logBuffers.RemoveRange((int)index, available);
-				SetValue(GeneralProperties.LogEntryCount, _logBuffers.Count);
+				var available = _logBuffer.Count - index;
+				_logBuffer.RemoveRange((int)index, available);
+				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
 				_listeners.Invalidate((int)index, available);
 				Touch();
 			}
@@ -379,10 +379,10 @@ namespace Tailviewer.Core.Sources
 				{
 					var logEntry = new LogEntry
 					{
-						Index = _logBuffers.Count,
-						OriginalIndex = _logBuffers.Count,
-						LineNumber = _logBuffers.Count + 1,
-						OriginalLineNumber = _logBuffers.Count + 1,
+						Index = _logBuffer.Count,
+						OriginalIndex = _logBuffer.Count,
+						LineNumber = _logBuffer.Count + 1,
+						OriginalLineNumber = _logBuffer.Count + 1,
 						LogEntryIndex = logEntryIndex,
 						RawContent = line,
 						LogLevel = level,
@@ -390,12 +390,12 @@ namespace Tailviewer.Core.Sources
 						ElapsedTime = elapsed,
 						DeltaTime = deltaTime
 					};
-					_logBuffers.Add(logEntry);
-					SetValue(GeneralProperties.LogEntryCount, _logBuffers.Count);
+					_logBuffer.Add(logEntry);
+					SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
 					SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
-				_listeners.OnRead(_logBuffers.Count);
+				_listeners.OnRead(_logBuffer.Count);
 			}
 		}
 
@@ -447,20 +447,20 @@ namespace Tailviewer.Core.Sources
 					}
 				}
 
-				finalLogEntry.Index = _logBuffers.Count;
-				finalLogEntry.OriginalIndex = _logBuffers.Count;
-				finalLogEntry.LineNumber = _logBuffers.Count + 1;
-				finalLogEntry.OriginalLineNumber = _logBuffers.Count + 1;
+				finalLogEntry.Index = _logBuffer.Count;
+				finalLogEntry.OriginalIndex = _logBuffer.Count;
+				finalLogEntry.LineNumber = _logBuffer.Count + 1;
+				finalLogEntry.OriginalLineNumber = _logBuffer.Count + 1;
 				finalLogEntry.LogEntryIndex = logEntryIndex;
 				finalLogEntry.Timestamp = timestamp;
 				finalLogEntry.ElapsedTime = elapsed;
 				finalLogEntry.DeltaTime = deltaTime;
 
-				_logBuffers.Add(finalLogEntry);
-				SetValue(GeneralProperties.LogEntryCount, _logBuffers.Count);
+				_logBuffer.Add(finalLogEntry);
+				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
 				SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
-				_listeners.OnRead(_logBuffers.Count);
+				_listeners.OnRead(_logBuffer.Count);
 
 				return finalLogEntry;
 			}
@@ -483,9 +483,9 @@ namespace Tailviewer.Core.Sources
 		{
 			LogEntryIndex logEntryIndex;
 			DateTime? lastTimestamp = null;
-			if (_logBuffers.Count > 0)
+			if (_logBuffer.Count > 0)
 			{
-				var last = _logBuffers[_logBuffers.Count - 1];
+				var last = _logBuffer[_logBuffer.Count - 1];
 				logEntryIndex = last.LogEntryIndex + 1;
 				lastTimestamp = last.Timestamp;
 			}

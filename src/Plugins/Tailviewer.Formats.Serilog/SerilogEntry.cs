@@ -10,7 +10,6 @@ namespace Tailviewer.Formats.Serilog
 		private readonly string _rawContent;
 		public LevelFlags LogLevel;
 		public DateTime Timestamp;
-		public string Message;
 
 		public SerilogEntry(string rawContent)
 		{
@@ -80,6 +79,12 @@ namespace Tailviewer.Formats.Serilog
 		public TimeSpan? DeltaTime
 		{
 			get { throw new NotImplementedException(); }
+		}
+
+		public string Message
+		{
+			get;
+			set;
 		}
 
 		public T GetValue<T>(IColumnDescriptor<T> column)

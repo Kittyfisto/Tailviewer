@@ -8,7 +8,7 @@ using Tailviewer.Core.Parsers;
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 {
 	[TestFixture]
-	public sealed class TextLogFileParserTest
+	public sealed class GenericTextLogEntryParserTest
 	{
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/273")]

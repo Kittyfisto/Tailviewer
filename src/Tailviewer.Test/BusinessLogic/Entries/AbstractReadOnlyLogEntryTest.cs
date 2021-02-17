@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Entries
 {
 	[TestFixture]
 	public abstract class AbstractReadOnlyLogEntryTest

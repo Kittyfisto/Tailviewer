@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Entries
 {
 	[TestFixture]
 	public sealed class LogEntryTest2

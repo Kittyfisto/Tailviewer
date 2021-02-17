@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
+using Tailviewer.Test.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.Buffers
 {
 	[TestFixture]
-	public sealed class LogEntryBufferTest
-		: ReadOnlyLogEntriesTest
+	public sealed class LogBufferBufferTest
+		: AbstractReadOnlyLogBufferTest
 	{
 		[Test]
 		public void TestConstruction2([Values(1, 2, 5, 10, 42, 100, 9001)] int count)
@@ -324,12 +324,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			});
 		}
 
-		protected override IReadOnlyLogBuffer CreateEmpty(IEnumerable<IColumnDescriptor> columns)
+		protected override IReadOnlyLogBuffer CreateEmptyReadOnly(IEnumerable<IColumnDescriptor> columns)
 		{
 			return new LogBufferArray(0, columns);
 		}
 
-		protected override IReadOnlyLogBuffer Create(IEnumerable<IReadOnlyLogEntry> entries)
+		protected override IReadOnlyLogBuffer CreateReadOnly(IEnumerable<IReadOnlyLogEntry> entries)
 		{
 			if (entries.Any())
 			{
@@ -346,7 +346,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				return list;
 			}
 
-			return CreateEmpty(new IColumnDescriptor[0]);
+			return CreateEmptyReadOnly(new IColumnDescriptor[0]);
 		}
 	}
 }

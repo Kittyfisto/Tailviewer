@@ -47,6 +47,9 @@ namespace Tailviewer.Core.Entries
 		public TimeSpan? DeltaTime => GetValue(LogColumns.DeltaTime);
 
 		/// <inheritdoc />
+		public string Message => GetValue(LogColumns.Message);
+
+		/// <inheritdoc />
 		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />
