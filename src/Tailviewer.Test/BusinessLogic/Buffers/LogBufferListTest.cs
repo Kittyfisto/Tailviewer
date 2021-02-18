@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 {
 	[TestFixture]
 	public sealed class LogBufferListTest
-		: AbstractReadOnlyLogBufferTest
+		: AbstractLogBufferTest
 	{
 		[Test]
 		public void TestConstruction2()
@@ -704,12 +704,64 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "because the fifth entry's log level should NOT have been overwritten");
 		}
 
-		protected override IReadOnlyLogBuffer CreateEmptyReadOnly(IEnumerable<IColumnDescriptor> columns)
+		[Test]
+		public void TestAddEmpty()
 		{
-			return new LogBufferList(columns);
+			var entries = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent, GeneralColumns.LogLevel);
+			entries.AddEmpty(2);
+			entries.Count.Should().Be(2);
+			entries[0].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			entries[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			entries[0].LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
+
+			entries[1].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			entries[1].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			entries[1].LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
 		}
 
-		protected override IReadOnlyLogBuffer CreateReadOnly(IEnumerable<IReadOnlyLogEntry> entries)
+		[Test]
+		public void TestAddEmpty_InvalidCount()
+		{
+			var entries = new LogBufferList(GeneralColumns.RawContent, GeneralColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{GeneralColumns.RawContent, "I"}, {GeneralColumns.LogLevel, LevelFlags.Debug}}));
+			new Action(() => entries.AddEmpty(-1)).Should().Throw<ArgumentOutOfRangeException>();
+			entries.Count.Should().Be(1);
+
+			entries[0].RawContent.Should().Be("I");
+			entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+		}
+
+		[Test]
+		public void TestAddRange_SingleColumn()
+		{
+			var entries = new LogBufferList(GeneralColumns.RawContent, GeneralColumns.Index);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{GeneralColumns.RawContent, "I"}, {GeneralColumns.Index, (LogLineIndex)42}}));
+
+			entries.AddRange(GeneralColumns.RawContent, new []{"A", "Speed"}, 2);
+			entries.Count.Should().Be(3);
+			entries[0].RawContent.Should().Be("I");
+			entries[1].RawContent.Should().Be("A");
+			entries[2].RawContent.Should().Be("Speed");
+
+			entries[0].Index.Should().Be(42);
+			entries[1].Index.Should().Be(LogLineIndex.Invalid);
+			entries[2].Index.Should().Be(LogLineIndex.Invalid);
+		}
+
+		[Test]
+		public void TestAddRange_SingleColumn_NoSuchColumn()
+		{
+			var entries = new LogBufferList(GeneralColumns.RawContent, GeneralColumns.Index);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{GeneralColumns.RawContent, "I"}, {GeneralColumns.Index, (LogLineIndex)42}}));
+
+			new Action(() => entries.AddRange(GeneralColumns.Message, new[] {"A", "Speed"}, 2)).Should()
+				.Throw<NoSuchColumnException>();
+			entries.Count.Should().Be(1);
+			entries[0].RawContent.Should().Be("I");
+			entries[0].Index.Should().Be(42);
+		}
+
+		protected override ILogBuffer Create(IEnumerable<IReadOnlyLogEntry> entries)
 		{
 			if (entries.Any())
 			{
@@ -721,7 +773,17 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 				return list;
 			}
 
-			return CreateEmptyReadOnly(new IColumnDescriptor[0]);
+			return new LogBufferList(new IColumnDescriptor[0]);
+		}
+
+		protected override IReadOnlyLogBuffer CreateEmptyReadOnly(IEnumerable<IColumnDescriptor> columns)
+		{
+			return new LogBufferList(columns);
+		}
+
+		protected override IReadOnlyLogBuffer CreateReadOnly(IEnumerable<IReadOnlyLogEntry> entries)
+		{
+			return Create(entries);
 		}
 	}
 }

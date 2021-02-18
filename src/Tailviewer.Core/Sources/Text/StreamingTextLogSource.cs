@@ -263,8 +263,24 @@ namespace Tailviewer.Core.Sources.Text
 
 		private bool ReadEntireFile(CancellationToken cancellationToken)
 		{
-			if (!HasFileChanged())
+			if (!HasFileChanged(out var currentFingerprint, out var previousFingerprint))
+			{
+				if (Log.IsDebugEnabled)
+					Log.DebugFormat("File {0} remains unchanged (Fingerprint: {1}), nothing to do...", _fileName, currentFingerprint);
 				return false;
+			}
+
+			var start = DateTime.UtcNow;
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("File {0} change detected (Fingerprint: {1}), scanning for new lines...", _fileName, currentFingerprint);
+
+			if (previousFingerprint?.Size > currentFingerprint.Size)
+			{
+				if (Log.IsDebugEnabled)
+					Log.DebugFormat("File {0} size reduced from {1}bytes to {2} bytes, starting all over", _fileName, previousFingerprint.Size, currentFingerprint.Size);
+
+				Clear();
+			}
 
 			using (var stream = new FileStream(_fileName,
 			                                   FileMode.Open,
@@ -275,18 +291,41 @@ namespace Tailviewer.Core.Sources.Text
 
 				stream.Position = _lastStreamPosition;
 				var detector = new LineOffsetDetector(stream, _encoding);
+				var buffer = new FixedSizeList<long>(1000);
+
 				long lineOffset;
 				while ((lineOffset = detector.FindNextLineOffset()) >= 0)
 				{
 					if (cancellationToken.IsCancellationRequested)
 						return false;
 
-					AddLine(lineOffset);
+					if (!buffer.TryAdd(lineOffset))
+					{
+						AddLines(buffer, Percentage.Of(stream.Position, currentFingerprint.Size));
+						buffer.TryAdd(lineOffset);
+					}
 				}
+
+				AddLines(buffer, Percentage.HundredPercent);
 			}
 
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+			if (Log.IsDebugEnabled)
+			{
+				var elapsed = DateTime.UtcNow - start;
+				Log.DebugFormat("File {0} scan finished, took: {1:F1}ms", _fileName, elapsed.TotalMilliseconds);
+			}
+
 			return true;
+		}
+
+		private void Clear()
+		{
+			lock (_index)
+			{
+				_index.Clear();
+			}
+			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
+			UpdateLineCount(0);
 		}
 
 		private void AddFirstLineIfNecessary(FileStream stream)
@@ -317,6 +356,28 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
+		private void AddLines(FixedSizeList<long> buffer, Percentage percentageProcessed)
+		{
+			int count;
+			lock (_index)
+			{
+				if (buffer.Count > 0)
+				{
+					for (int i = 0; i < buffer.Count; ++i)
+					{
+						_index.Add(CreateLogEntry(buffer.Buffer[i]));
+					}
+					_lastStreamPosition = buffer.Buffer[buffer.Count -1 ];
+					buffer.Clear();
+				}
+
+				count = _index.Count;
+			}
+
+			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, percentageProcessed);
+			UpdateLineCount(count);
+		}
+
 		private void AddLine(long offsetInBytes)
 		{
 			int count;
@@ -327,6 +388,13 @@ namespace Tailviewer.Core.Sources.Text
 				_lastStreamPosition = offsetInBytes;
 				count = _index.Count;
 			}
+			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
+			SynchronizeProperties();
+			_listeners.OnRead(count);
+		}
+
+		private void UpdateLineCount(int count)
+		{
 			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
 			SynchronizeProperties();
 			_listeners.OnRead(count);
@@ -393,16 +461,17 @@ namespace Tailviewer.Core.Sources.Text
 			_listeners.Reset();
 		}
 
-		private bool HasFileChanged()
+		private bool HasFileChanged(out FileFingerprint currentFingerprint, out FileFingerprint lastFingerprint)
 		{
-			var fingerprint = FileFingerprint.FromFile(_fileName);
-			if (Equals(fingerprint, _lastFingerprint))
+			lastFingerprint = _lastFingerprint;
+			currentFingerprint = FileFingerprint.FromFile(_fileName);
+			if (Equals(currentFingerprint, _lastFingerprint))
 				return false;
 
-			_lastFingerprint = fingerprint;
-			_propertiesBuffer.SetValue(GeneralProperties.LastModified, fingerprint.LastModified);
-			_propertiesBuffer.SetValue(GeneralProperties.Created, fingerprint.Created);
-			_propertiesBuffer.SetValue(GeneralProperties.Size, Size.FromBytes(fingerprint.Size));
+			_lastFingerprint = currentFingerprint;
+			_propertiesBuffer.SetValue(GeneralProperties.LastModified, currentFingerprint.LastModified);
+			_propertiesBuffer.SetValue(GeneralProperties.Created, currentFingerprint.Created);
+			_propertiesBuffer.SetValue(GeneralProperties.Size, Size.FromBytes(currentFingerprint.Size));
 			return true;
 		}
 
@@ -512,7 +581,7 @@ namespace Tailviewer.Core.Sources.Text
 				Log.Debug(e);
 			}
 
-			return TimeSpan.FromMilliseconds(1);
+			return TimeSpan.FromMilliseconds(10);
 		}
 
 		private StreamReader TryOpenRead()

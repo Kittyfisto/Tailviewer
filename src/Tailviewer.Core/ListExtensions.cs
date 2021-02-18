@@ -36,6 +36,9 @@ namespace Tailviewer.Core
 			if (that == null)
 				throw new ArgumentNullException(nameof(that));
 
+			if (start + count > that.Count)
+				throw new ArgumentException("Start + count exceeds buffer size");
+
 			for (var i = 0; i < count; ++i)
 				that[start + i] = value;
 		}

@@ -122,6 +122,7 @@ namespace Tailviewer
 			//SetLogLevelOf<MergedLogFile>(Level.Debug);
 			//SetLogLevelOf<MergedLogFileIndex>(Level.Debug);
 			//SetLogLevelOf<LogFileProxy>(Level.Debug);
+			SetLogLevelOf<StreamingTextLogSource>(Level.Debug);
 			SetLogLevelOf<StreamingTextLogSource.AbstractReadRequest>(Level.Debug);
 
 			hierarchy.Root.Level = Level.Info;

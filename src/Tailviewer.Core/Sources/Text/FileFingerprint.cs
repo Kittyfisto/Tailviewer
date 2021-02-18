@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Metrolib;
 
 namespace Tailviewer.Core.Sources.Text
 {
@@ -55,7 +56,7 @@ namespace Tailviewer.Core.Sources.Text
 
 		public override string ToString()
 		{
-			return $"Size: {_size}, Created: {_created}, Modified: {_lastModified}";
+			return $"Size: {Metrolib.Size.FromBytes(_size)}, Created: {_created}, Modified: {_lastModified}";
 		}
 
 		#endregion

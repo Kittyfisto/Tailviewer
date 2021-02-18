@@ -245,13 +245,44 @@ namespace Tailviewer.Core.Buffers
 		///     Adds a completely empty row to this list.
 		///     Every cell will be filled with that column's default value.
 		/// </summary>
-		public void AddEmpty()
+		public void AddEmpty(int count = 1)
 		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be positive");
+
 			foreach (var column in _dataByColumn.Values)
 			{
-				column.AddEmpty();
+				column.AddEmpty(count);
 			}
-			++_count;
+
+			_count += count;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="columnDescriptor"></param>
+		/// <param name="buffer"></param>
+		/// <param name="count"></param>
+		public void AddRange<T>(IColumnDescriptor<T> columnDescriptor, T[] buffer, int count)
+		{
+			if (!_dataByColumn.ContainsKey(columnDescriptor))
+				throw new NoSuchColumnException(columnDescriptor);
+
+			foreach (var pair in _dataByColumn)
+			{
+				if (Equals(pair.Key, columnDescriptor))
+				{
+					pair.Value.AddRange(buffer, count);
+				}
+				else
+				{
+					pair.Value.AddEmpty(count);
+				}
+			}
+
+			_count += count;
 		}
 
 		/// <summary>
@@ -353,7 +384,6 @@ namespace Tailviewer.Core.Buffers
 			if (count < 0)
 				throw new ArgumentOutOfRangeException($"Resize to {count} not allowed");
 
-			
 			if (count < _count)
 			{
 				var startIndex = count;
@@ -606,7 +636,7 @@ namespace Tailviewer.Core.Buffers
 
 			void RemoveAt(int index);
 
-			void AddEmpty();
+			void AddEmpty(int count);
 
 			void Insert(int index, IReadOnlyLogEntry logEntry);
 			void RemoveRange(int index, int count);
@@ -619,6 +649,7 @@ namespace Tailviewer.Core.Buffers
 			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions);
 			void AddRange(int count);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
+			void AddRange(object buffer, int count);
 		}
 
 		private sealed class ColumnData<T>
@@ -663,9 +694,10 @@ namespace Tailviewer.Core.Buffers
 				_data.RemoveAt(index);
 			}
 
-			public void AddEmpty()
+			public void AddEmpty(int count)
 			{
-				_data.Add(_column.DefaultValue);
+				for(int i  = 0; i < count; ++i)
+					_data.Add(_column.DefaultValue);
 			}
 
 			public void Insert(int index, IReadOnlyLogEntry logEntry)
@@ -720,6 +752,12 @@ namespace Tailviewer.Core.Buffers
 			public void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry)
 			{
 				_data[destinationIndex] = logEntry.GetValue(_column);
+			}
+
+			public void AddRange(object buffer, int count)
+			{
+				var tmp = (T[])buffer;
+				_data.AddRange(tmp);
 			}
 
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)

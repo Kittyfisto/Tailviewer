@@ -334,6 +334,92 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		#region Dynamic Data
 
 		[Test]
+		public void TestClearFile()
+		{
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+
+			var logFile = Create(fileName, encoding);
+
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			{
+				writer.WriteLine("What is up people?");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				index[0].Should().Be(encoding.GetPreamble().Length);
+				index[1].Should().Be(23);
+
+				var entries = GetEntries(logFile);
+				entries.Count.Should().Be(2);
+				entries[0].RawContent.Should().Be("What is up people?");
+				entries[1].RawContent.Should().BeNullOrEmpty();
+			}
+
+			using (new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			{
+				_taskScheduler.RunOnce();
+
+				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
+
+				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				index[0].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
+				index[1].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
+
+				var entries = GetEntries(logFile, new LogFileSection(0, 2));
+				entries.Count.Should().Be(2);
+				entries[0].RawContent.Should().BeNullOrEmpty();
+				entries[1].RawContent.Should().BeNullOrEmpty();
+			}
+		}
+
+		[Test]
+		public void TestDeleteFile()
+		{
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+
+			var logFile = Create(fileName, encoding);
+
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			{
+				writer.WriteLine("What is up people?");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				index[0].Should().Be(encoding.GetPreamble().Length);
+				index[1].Should().Be(23);
+
+				var entries = GetEntries(logFile);
+				entries.Count.Should().Be(2);
+				entries[0].RawContent.Should().Be("What is up people?");
+				entries[1].RawContent.Should().BeNullOrEmpty();
+			}
+
+			File.Delete(fileName);
+
+			{
+				_taskScheduler.RunOnce();
+
+				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
+				logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+
+				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				index[0].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
+				index[1].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
+
+				var entries = GetEntries(logFile, new LogFileSection(0, 2));
+				entries.Count.Should().Be(2);
+				entries[0].RawContent.Should().BeNullOrEmpty();
+				entries[1].RawContent.Should().BeNullOrEmpty();
+			}
+		}
+
+		[Test]
 		public void TestTail_WriteTwoLines()
 		{
 			var encoding = Encoding.UTF32;
