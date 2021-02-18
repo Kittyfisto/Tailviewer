@@ -869,6 +869,9 @@ namespace Tailviewer.Core.Sources.Text
 			private int ReadData(StreamReader reader, long firstLineOffset, string[] destination)
 			{
 				reader.BaseStream.Position = firstLineOffset;
+				// TODO: We need to find a way to write a test which predictably detects if this call is missing!
+				reader.DiscardBufferedData();
+
 				int i;
 				for (i = 0; i < destination.Length; ++i)
 				{
@@ -942,6 +945,8 @@ namespace Tailviewer.Core.Sources.Text
 					if (lineOffset >= 0)
 					{
 						reader.BaseStream.Position = lineOffset;
+						reader.DiscardBufferedData();
+
 						line = reader.ReadLine();
 						if (line == null)
 						{

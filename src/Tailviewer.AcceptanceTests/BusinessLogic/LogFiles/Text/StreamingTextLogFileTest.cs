@@ -327,6 +327,40 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			}
 		}
 
+		[Test]
+		public void TestRead_Segmented_VerifyDiscardBuffer()
+		{
+			// Okay so here are the test conditions for this test to trigger the error case:
+			// 1. We have to know the buffer size of StreamReader which seems to be 1024 bytes since ages
+			// 2. We have to write data into the file and then request reads which fall onto different
+			//    1024 byte boundaries into the source data
+			// 3. We have to ensure that the data we read in line doesn't fill the entire buffer,
+			//    but only parts of it, so that the next erroneously reads from the buffer first before
+			//    then reading from the stream again.
+
+			const int expectedStreamReaderBufferSize = 1024;
+			var line1 = "that feeling when you bite into a pickle and it's a little squishier than you expected";
+			var line2 = new string(' ', expectedStreamReaderBufferSize);
+			var line3 = "Speedy gonzales";
+
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+			using (var stream = File.OpenWrite(fileName))
+			using (var writer = new StreamWriter(stream, encoding))
+			{
+				writer.WriteLine(line1);
+				writer.WriteLine(line2);
+				writer.WriteLine(line3);
+			}
+
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+
+			var entries = GetEntries(logFile, new LogLineIndex[] {0, 2});
+			entries[0].RawContent.Should().Be(line1);
+			entries[1].RawContent.Should().Be(line3);
+		}
+
 		#endregion
 
 		#endregion
