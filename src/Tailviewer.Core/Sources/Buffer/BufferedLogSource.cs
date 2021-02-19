@@ -93,6 +93,9 @@ namespace Tailviewer.Core.Sources.Buffer
 		                         int destinationIndex,
 		                         LogSourceQueryOptions queryOptions)
 		{
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
+
 			GetEntries(sourceIndices, new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count), 0, queryOptions);
 		}
 

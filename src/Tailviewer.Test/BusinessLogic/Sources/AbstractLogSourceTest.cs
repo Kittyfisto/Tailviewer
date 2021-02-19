@@ -1173,7 +1173,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
 		[Description("Verifies that the log file implementation appears totally empty after Dispose() has been called")]
-		public void TestDisposeData()
+		public virtual void TestDisposeData()
 		{
 			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent, GeneralColumns.Timestamp)
 			{

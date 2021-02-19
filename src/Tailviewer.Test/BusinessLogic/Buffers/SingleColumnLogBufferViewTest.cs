@@ -219,5 +219,39 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			for (int i = 0; i < offset + count + surplus; ++i)
 				buffer[i].Should().Be(originalBuffer[i], "because the buffer may not have been overwritten");
 		}
+
+		[Test]
+		public void TestFillDefault()
+		{
+			var offset = 5;
+			var count = 3;
+			var surplus = 5;
+			var originalBuffer = new LogLineIndex[offset + count + surplus];
+			var buffer = new LogLineIndex[offset+count+surplus];
+
+			for (int i = 0; i < offset + count + surplus; ++i)
+			{
+				originalBuffer[i] = buffer[i] = i + 1;
+			}
+
+			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var fillOffset = 1;
+			view.FillDefault(fillOffset, count - fillOffset);
+
+			for (int i = 0; i < offset + fillOffset; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+
+			for (int i = offset + fillOffset; i < offset + count; ++i)
+			{
+				buffer[i].Should().Be(GeneralColumns.Index.DefaultValue);
+			}
+
+			for (int i = offset + count; i < offset + count + surplus; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+		}
 	}
 }

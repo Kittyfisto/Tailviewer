@@ -118,7 +118,7 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public void FillDefault(int offset, int length)
 		{
-			throw new System.NotImplementedException();
+			ArrayExtensions.Fill(_buffer, _column.DefaultValue, _offset + offset, length);
 		}
 
 		/// <inheritdoc />

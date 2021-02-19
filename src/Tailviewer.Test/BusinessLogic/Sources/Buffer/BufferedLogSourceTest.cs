@@ -7,7 +7,6 @@ using Tailviewer.Core.Sources.Buffer;
 namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 {
 	[TestFixture]
-	[Ignore("Not yet done")]
 	public sealed class BufferedLogSourceTest
 		: AbstractLogSourceTest
 	{
@@ -32,6 +31,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var source = new InMemoryLogSource(content);
 			return new BufferedLogSource(_taskScheduler, source, TimeSpan.Zero);
 		}
+
+		[Ignore("This test doesn't make much sense")]
+		public override void TestDisposeData()
+		{}
 
 		#endregion
 	}
