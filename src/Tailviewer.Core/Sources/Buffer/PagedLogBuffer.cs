@@ -12,7 +12,9 @@ namespace Tailviewer.Core.Sources.Buffer
 	internal sealed class PagedLogBuffer
 	{
 		private readonly int _pageSize;
-		private readonly IReadOnlyList<IColumnDescriptor> _columns;
+		private readonly int _maxPageCount;
+		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
+		private readonly IReadOnlyList<IColumnDescriptor> _copiedColumns;
 		private readonly List<Page> _pages;
 		private int _sourceCount;
 
@@ -39,7 +41,9 @@ namespace Tailviewer.Core.Sources.Buffer
 				throw new ArgumentOutOfRangeException(nameof(maxPageCount), maxPageCount, "The maximum number of pages must be greater than 0");
 
 			_pageSize = pageSize;
-			_columns = new []{GeneralColumns.Index}.Concat(columns).Distinct().ToList(); //< This buffer only makes sense when it stores the index column, as otherwise one just doesn't know which data is present
+			_maxPageCount = maxPageCount;
+			_allColumns = new []{GeneralColumns.Index}.Concat(columns).Distinct().ToList(); //< This buffer only makes sense when it stores the index column, as otherwise one just doesn't know which data is present
+			_copiedColumns = _allColumns.Except(new []{GeneralColumns.Index}).ToList();
 			_pages = new List<Page>(maxPageCount);
 			_sourceCount = 0;
 		}
@@ -63,8 +67,12 @@ namespace Tailviewer.Core.Sources.Buffer
 		/// <param name="count"></param>
 		public void ResizeTo(int count)
 		{
+			if (count < _sourceCount)
+			{
+				EvictFromOnward(count);
+			}
+
 			_sourceCount = count;
-			// TODO: Find pages that covered the previous region and evict them
 		}
 
 		/// <summary>
@@ -83,6 +91,11 @@ namespace Tailviewer.Core.Sources.Buffer
 		                          ILogBuffer destination,
 		                          int destinationIndex)
 		{
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex), destinationIndex, "The destination index must 0 or greater");
+
 			if (sourceIndices is LogFileSection contiguousSection)
 			{
 				return TryGetEntriesContiguous(contiguousSection, destination, destinationIndex);
@@ -94,37 +107,25 @@ namespace Tailviewer.Core.Sources.Buffer
 		/// <summary>
 		///    Adds data from the given source to this cache.
 		/// </summary>
-		/// <param name="destinationIndices">The destination indices of the log entries from the given source</param>
+		/// <param name="destinationSection">The destination indices of the log entries from the given source</param>
 		/// <param name="source">The source from which to copy data to this buffer</param>
 		/// <param name="sourceIndex">The index into the given source from which onwards log entries may be added to this cache.</param>
-		public void Add(IReadOnlyList<LogLineIndex> destinationIndices, IReadOnlyLogBuffer source, int sourceIndex)
-		{
-			if (destinationIndices is LogFileSection contiguousSection)
-			{
-				AddContiguous(contiguousSection, source, sourceIndex);
-			}
-			else
-			{
-				AddSegmented(destinationIndices, source, sourceIndex);
-			}
-		}
-
-		private void AddContiguous(LogFileSection contiguousSection, IReadOnlyLogBuffer source, int sourceIndex)
+		public void Add(LogFileSection destinationSection, IReadOnlyLogBuffer source, int sourceIndex)
 		{
 			// TODO: What strategy should be choose when the data being entered is bigger than the entire cache?
 
 			// We want to make sure to only read that data, which is actually covered by the log source.
 			// This is because one thread might resize this buffer to a smaller size and then another thread
 			// might try to add data which has been previously read, but is now no longer supposed to be part of the source.
-			var sourceSectionEndIndex = Math.Min((int)(contiguousSection.Index + contiguousSection.Count), _sourceCount);
-			for (LogLineIndex i = contiguousSection.Index; i < sourceSectionEndIndex;)
+			var sourceSectionEndIndex = Math.Min((int)(destinationSection.Index + destinationSection.Count), _sourceCount);
+			for (LogLineIndex i = destinationSection.Index; i < sourceSectionEndIndex;)
 			{
 				var pageIndex = GetPageIndex(i);
 				var page = GetOrCreatePageByIndex(pageIndex);
 
 				var remainingPageCount = (pageIndex + 1) * _pageSize - i;
 				var count = Math.Min(remainingPageCount, sourceSectionEndIndex- i);
-				var sourceStartIndex = (i - contiguousSection.Index) + sourceIndex;
+				var sourceStartIndex = (i - destinationSection.Index) + sourceIndex;
 
 				page.Add(sourceStartIndex, count, source, i);
 
@@ -133,17 +134,12 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		private void AddSegmented(IReadOnlyList<LogLineIndex> destinationIndices, IReadOnlyLogBuffer source, int sourceIndex)
-		{
-			// TODO: What strategy should be choose when the data being entered is bigger than the entire cache?
-			throw new NotImplementedException();
-		}
-
 		private bool TryGetEntriesContiguous(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex)
 		{
 			bool fullyRead = true;
 			var sourceSectionEndIndex = Math.Min((int)(sourceSection.Index + sourceSection.Count), _sourceCount);
-			for (LogLineIndex i = sourceSection.Index; i < sourceSectionEndIndex; i += _pageSize)
+			var numEntriesRead = 0;
+			for (LogLineIndex i = sourceSection.Index; i < sourceSectionEndIndex;)
 			{
 				var pageIndex = GetPageIndex(i);
 				var remainingPageCount = (pageIndex + 1) * _pageSize - i;
@@ -152,19 +148,22 @@ namespace Tailviewer.Core.Sources.Buffer
 				var page = TryGetPage(pageIndex);
 				if (page != null)
 				{
-					fullyRead |= page.TryRead(i, count, destination, destinationIndex);
+					fullyRead &= page.TryRead(i, count, destination, destinationIndex + numEntriesRead, fullyRead);
 				}
 				else
 				{
-					destination.FillDefault(destinationIndex, count);
+					destination.FillDefault(destinationIndex + numEntriesRead, count);
 					fullyRead = false;
 				}
+
+				numEntriesRead += count;
+				i += count;
 			}
 
-			if (sourceSectionEndIndex < sourceSection.Index + sourceSection.Count)
+			if (numEntriesRead < sourceSection.Count)
 			{
-				var start = (int)(sourceSection.Index + destinationIndex) - sourceSectionEndIndex;
-				destination.FillDefault(start, sourceSection.Index + sourceSection.Count - sourceSectionEndIndex);
+				var start = destinationIndex + numEntriesRead;
+				destination.FillDefault(start, sourceSection.Count - numEntriesRead);
 				fullyRead = false;
 			}
 
@@ -173,7 +172,23 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			bool fullyRead = true;
+			for (int i = 0; i < sourceIndices.Count; ++i)
+			{
+				var sourceIndex = sourceIndices[i];
+				var pageIndex = GetPageIndex(sourceIndex);
+				var page = TryGetPage(pageIndex);
+				if (page != null)
+				{
+					fullyRead &= page.TryRead(sourceIndex, 1, destination, destinationIndex + i, fullyRead);
+				}
+				else
+				{
+					destination.FillDefault(destinationIndex, 1);
+					fullyRead = false;
+				}
+			}
+			return fullyRead;
 		}
 
 		[Pure]
@@ -191,9 +206,8 @@ namespace Tailviewer.Core.Sources.Buffer
 			var page = TryGetPage(pageIndex);
 			if (page == null)
 			{
-				
-				page = new Page(pageIndex, _pageSize, _columns);
-				if (_pages.Count >= _pageSize)
+				page = new Page(pageIndex, _pageSize, _allColumns, _copiedColumns);
+				if (_pages.Count >= _maxPageCount)
 				{
 					// TODO: Find a better eviction strategy, maybe evict pages with the smallest read count?
 					_pages.RemoveAt(0);
@@ -214,6 +228,34 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 
 			return null;
+		}
+
+		private void EvictFromOnward(LogLineIndex evictionStartIndex)
+		{
+			// The section of log sources *actually* currently buffered
+			// by pages is incredibly small compared to the section which
+			// may be invalidated. Therefore it is faster to iterate over all pages
+			// (which are only ever a few handful) and see if they are part of
+			// the evicted region
+			for (int i = 0; i < _pages.Count;)
+			{
+				var page = _pages[i];
+				if (page.Section.Index >= evictionStartIndex)
+				{
+					// Fully evict the page
+					_pages.RemoveAt(i);
+				}
+				else
+				{
+					if (page.Section.Index + _pageSize >= evictionStartIndex)
+					{
+						// Partially evict the page
+						page.EvictFromOnward(evictionStartIndex);
+					}
+
+					++i;
+				}
+			}
 		}
 	}
 }

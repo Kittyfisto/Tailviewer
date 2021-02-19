@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
@@ -8,7 +9,6 @@ using Tailviewer.Core.Sources.Buffer;
 namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 {
 	[TestFixture]
-	[Ignore("Not yet finished")]
 	public sealed class PagedLogBufferTest
 	{
 		[Test]
@@ -107,42 +107,67 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
 			{
-				new LogEntry {Index = 2, RawContent = "Ellie",},
-				new LogEntry {Index = 10, RawContent = "Abby"}
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry {RawContent = "Ellie",},
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry {RawContent = "Abby"},
+				new LogEntry()
 			};
-			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+			buffer.Add(new LogFileSection(0, 12), data, 1);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(3, GeneralColumns.Index, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new []{new LogLineIndex(10), new LogLineIndex(2)}, destination, 1).Should().BeTrue("because all requested data is part of the cache");
 
-			destination[0].Index.Should().Be(10);
-			destination[0].RawContent.Should().Be("Abby");
-			destination[1].Index.Should().Be(2);
-			destination[1].RawContent.Should().Be("Ellie");
+			destination[0].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			destination[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			destination[1].Index.Should().Be(10);
+			destination[1].RawContent.Should().Be("Abby");
+			destination[2].Index.Should().Be(2);
+			destination[2].RawContent.Should().Be("Ellie");
 		}
 
 		[Test]
 		[Description("Verifies that the cache can read data from segmented regions of two pages of the buffer")]
 		public void TestRequestFullyCached_Segmented_ReadFromTwoPages()
 		{
-			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+			var buffer = new PagedLogBuffer(8, 10, GeneralColumns.RawContent);
 
 			buffer.ResizeTo(12);
 
 			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
 			{
-				new LogEntry {Index = 321, RawContent = "Dina",},
-				new LogEntry {Index = 1402, RawContent = "Jesse"}
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry(),
+				new LogEntry {RawContent = "Dina",},
+				new LogEntry {RawContent = "Jesse"}
 			};
-			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+			buffer.Add(new LogFileSection(0, 9), data, 1);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
-			buffer.TryGetEntries(new []{new LogLineIndex(321), new LogLineIndex(1402)}, destination, 1).Should().BeTrue("because all requested data is part of the cache");
-
-			destination[0].Index.Should().Be(321);
-			destination[0].RawContent.Should().Be("Dina");
-			destination[1].Index.Should().Be(1402);
-			destination[1].RawContent.Should().Be("Jesse");
+			var destination = new LogBufferArray(4, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new []{new LogLineIndex(7), new LogLineIndex(8)}, destination, 2).Should().BeTrue("because all requested data is part of the cache");
+			
+			destination[0].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			destination[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			destination[1].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			destination[1].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			destination[2].Index.Should().Be(7);
+			destination[2].RawContent.Should().Be("Dina");
+			destination[3].Index.Should().Be(8);
+			destination[3].RawContent.Should().Be("Jesse");
 		}
 
 		[Test]
@@ -158,13 +183,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			buffer.Add(new LogFileSection(512, data.Count), data, 0);
 
 			var destination = new LogBufferArray(1024, GeneralColumns.Index, GeneralColumns.RawContent);
-			buffer.TryGetEntries(new LogFileSection(512, 1024), destination, 0).Should().BeTrue("because all requested data is part of the cache");
+			var readOffset = 512;
+			buffer.TryGetEntries(new LogFileSection(readOffset, destination.Count), destination, 0).Should().BeTrue("because all requested data is part of the cache");
 
 			for (int i = 0; i < destination.Count; ++i)
 			{
 				var logEntry = destination[i];
-				logEntry.Index.Should().Be(i);
-				logEntry.RawContent.Should().Be(i.ToString());
+				logEntry.Index.Should().Be(readOffset + i);
+				logEntry.RawContent.Should().Be((readOffset+i).ToString());
 			}
 		}
 
@@ -181,13 +207,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			buffer.Add(new LogFileSection(0, data.Count), data, 0);
 
 			var destination = new LogBufferArray(2048, GeneralColumns.Index, GeneralColumns.RawContent);
-			buffer.TryGetEntries(new LogFileSection(1024, 2048), destination, 0).Should().BeTrue("because all requested data is part of the cache");
+			var readOffset = 1024;
+			buffer.TryGetEntries(new LogFileSection(readOffset, destination.Count), destination, 0).Should().BeTrue("because all requested data is part of the cache");
 
 			for (int i = 0; i < destination.Count; ++i)
 			{
 				var logEntry = destination[i];
-				logEntry.Index.Should().Be(i);
-				logEntry.RawContent.Should().Be(i.ToString());
+				logEntry.Index.Should().Be(readOffset+i);
+				logEntry.RawContent.Should().Be((readOffset+i).ToString());
 			}
 		}
 
@@ -201,20 +228,97 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
 			{
-				new LogEntry {Index = 321, RawContent = "Dina",},
-				new LogEntry {Index = 1402, RawContent = "Jesse"}
+				new LogEntry(),
+				new LogEntry {RawContent = "Dina",},
+				new LogEntry {RawContent = "Jesse"}
 			};
-			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+			buffer.Add(new LogFileSection(7, 2), data, 1);
+
+			var destination = new LogBufferArray(11, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(4, 5), destination, 6).Should().BeFalse("because we managed to only retrieve the data partially");
+
+
+			for (int i = 6; i < 9; ++i)
+			{
+				destination[i].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			}
+
+			destination[9].Index.Should().Be(7);
+			destination[9].RawContent.Should().Be("Dina");
+			destination[10].Index.Should().Be(8);
+			destination[10].RawContent.Should().Be("Jesse");
+		}
+
+		[Test]
+		public void TestTryGetEntries_DestinationNull()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(4);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"}
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			new Action(() => buffer.TryGetEntries(new LogFileSection(0, 2), null, 1))
+				.Should().Throw<ArgumentNullException>("because the buffer is too small");
+		}
+
+		[Test]
+		[Description("Verifies that TryGetEntries checks boundaries and doesn't partially overwrite data in case the boundaries don't match")]
+		public void TestTryGetEntries_NegativeDestinationIndex()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(4);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"}
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
 
 			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
-			buffer.TryGetEntries(new LogFileSection(320, 3), destination, 1).Should().BeFalse("because we managed to only retrieve the data partially");
+			destination[0].RawContent = "1";
+			destination[1].RawContent = "2";
+			new Action(() => buffer.TryGetEntries(new LogFileSection(0, 2), destination, -1))
+				.Should().Throw<ArgumentOutOfRangeException>("because a negative destination index is not allowed");
 
-			destination[0].Index.Should().Be(GeneralColumns.Index.DefaultValue);
-			destination[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
-			destination[1].Index.Should().Be(321);
-			destination[1].RawContent.Should().Be("Dina");
-			destination[2].Index.Should().Be(GeneralColumns.Index.DefaultValue);
-			destination[2].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			destination[0].RawContent.Should().Be("1", "because the original data may not have been overwritten");
+			destination[1].RawContent.Should().Be("2", "because the original data may not have been overwritten");
+		}
+
+		[Test]
+		[Description("Verifies that TryGetEntries checks boundaries and doesn't partially overwrite data in case the boundaries don't match")]
+		public void TestTryGetEntries_DestinationTooSmall()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(4);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"}
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			destination[0].RawContent = "1";
+			destination[1].RawContent = "2";
+			new Action(() => buffer.TryGetEntries(new LogFileSection(0, 2), destination, 1))
+				.Should().Throw<ArgumentException>("because the destination is too small");
+
+			destination[0].RawContent.Should().Be("1", "because the original data may not have been overwritten");
+			destination[1].RawContent.Should().Be("2", "because the original data may not have been overwritten");
 		}
 
 		[Test]
@@ -237,7 +341,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.Add(new LogFileSection(0, 8), data, 0);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because even though we've tried to add 8 elements to the buffer, only the first 4 are part of the entire log file section and thus the others should have been ignored");
 
 			destination[0].RawContent.Should().Be("A");
@@ -268,16 +372,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.Add(new LogFileSection(0, 8), data, 0);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new[] {new LogLineIndex(3)}, destination, 0).Should().BeTrue("because the data is still in the cache");
-			destination[0].RawContent.Should().Be("A");
-			destination[1].RawContent.Should().Be("B");
-			destination[2].RawContent.Should().Be("C");
-			destination[3].RawContent.Should().Be("D");
-			destination[4].RawContent.Should().Be("E");
-			destination[5].RawContent.Should().Be("F");
-			destination[6].RawContent.Should().Be("G");
-			destination[7].RawContent.Should().Be("H");
+			destination[0].RawContent.Should().Be("D");
 
 
 			data.Clear();
@@ -321,7 +418,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			buffer.ResizeTo(6);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because the data has been partially invalidated");
 
 			destination[0].RawContent.Should().Be("A");
@@ -336,7 +433,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 		[Test]
 		[Description("Verifies that when the source is resized to a smaller size and then resized to a larger one again, once doesn't accidentally read back the invalidated data")]
-		public void TestReadPreviouslyInvalidatedButNowAvailableRegions()
+		public void TestReadPreviouslyInvalidatedButNowAvailableRegions_PartialPageEviction()
 		{
 			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
 
@@ -357,7 +454,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			buffer.ResizeTo(6);
 			buffer.ResizeTo(8);
 
-			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because the data has been partially invalidated");
 
 			destination[0].RawContent.Should().Be("A");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Tailviewer.Core.Entries;
 
@@ -250,6 +251,24 @@ namespace Tailviewer.Core.Buffers
 			return ((ColumnData<T>) data);
 		}
 
+		/// <summary>
+		/// Tests if the specified region of the specified column contains one or more <see cref="IColumnDescriptor.DefaultValue"/> values.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="range"></param>
+		/// <returns>When every value of the specified section contains default values, false otherwise</returns>
+		[Pure]
+		public bool ContainsAnyDefault(IColumnDescriptor column, Int32Range range)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var data))
+				throw new ArgumentException(string.Format("No such column: {0}", column));
+
+			return data.ContainsAnyDefault(range);
+		}
+
 		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index] => this[index];
 
 		private sealed class LogEntryAccessor
@@ -363,6 +382,7 @@ namespace Tailviewer.Core.Buffers
 			void CopyFrom(int destinationIndex, IReadOnlyLogBuffer source, IReadOnlyList<int> sourceIndices);
 			void FillDefault(int destinationIndex, int length);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
+			bool ContainsAnyDefault(Int32Range range);
 		}
 
 		sealed class ColumnData<T>
@@ -513,6 +533,19 @@ namespace Tailviewer.Core.Buffers
 			public void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry)
 			{
 				_data[destinationIndex] = logEntry.GetValue(_column);
+			}
+
+			[Pure]
+			public bool ContainsAnyDefault(Int32Range range)
+			{
+				for(int i = 0; i < range.Count; ++i)
+				{
+					// TODO: Boxing/Unboxing is going to kill us here, we need a generic equality comparer here
+					if (Equals(_data[range.Offset + i], _column.DefaultValue))
+						return true;
+				}
+
+				return false;
 			}
 
 			public IEnumerator<T> GetEnumerator()

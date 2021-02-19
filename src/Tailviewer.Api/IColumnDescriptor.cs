@@ -5,6 +5,10 @@ namespace Tailviewer
 	/// <summary>
 	///     Describes a column of a log file.
 	/// </summary>
+	/// <remarks>
+	///     TODO: Introduce required EqualityComparer
+	///     TODO: Introduce optional Comparer (for sorting)
+	/// </remarks>
 	public interface IColumnDescriptor
 	{
 		/// <summary>

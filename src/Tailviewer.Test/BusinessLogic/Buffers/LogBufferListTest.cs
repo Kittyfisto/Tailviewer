@@ -647,7 +647,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 		}
 
 		[Test]
-		public void TestFillDefault()
+		public void TestFillDefault2()
 		{
 			var entries = new LogBufferList(GeneralColumns.RawContent, GeneralColumns.LogLevel);
 			entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{GeneralColumns.RawContent, "I"}, {GeneralColumns.LogLevel, LevelFlags.Debug}}));

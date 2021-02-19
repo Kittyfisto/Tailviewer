@@ -9,7 +9,7 @@ using Tailviewer.Core.Columns;
 namespace Tailviewer.Test.BusinessLogic.Buffers
 {
 	[TestFixture]
-	public sealed class LogBufferBufferTest
+	public sealed class LogBufferArrayTest
 		: AbstractReadOnlyLogBufferTest
 	{
 		[Test]

@@ -34,6 +34,14 @@ namespace Tailviewer.Core
 			return GetEnumerator();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public int Offset
+		{
+			get { return _offset; }
+		}
+
 		/// <inheritdoc />
 		public int Count => _count;
 

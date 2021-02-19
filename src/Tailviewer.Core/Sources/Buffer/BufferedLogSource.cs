@@ -177,9 +177,12 @@ namespace Tailviewer.Core.Sources.Buffer
 			if ((queryOptions.QueryMode & LogSourceQueryMode.DontCache) == LogSourceQueryMode.DontCache)
 				return;
 
-			lock (_syncRoot)
+			if (sourceIndices is LogFileSection contiguousSection)
 			{
-				_buffer.Add(sourceIndices, destination, destinationIndex);
+				lock (_syncRoot)
+				{
+					_buffer.Add(contiguousSection, destination, destinationIndex);
+				}
 			}
 		}
 	}

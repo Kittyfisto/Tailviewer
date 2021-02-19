@@ -7,7 +7,7 @@ using Tailviewer.Core.Sources.Buffer;
 namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 {
 	[TestFixture]
-	[Ignore("Not yet finished")]
+	[Ignore("Not yet done")]
 	public sealed class BufferedLogSourceTest
 		: AbstractLogSourceTest
 	{

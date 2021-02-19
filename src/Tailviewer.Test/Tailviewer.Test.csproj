@@ -136,7 +136,7 @@
     <Compile Include="BusinessLogic\Entries\LogEntryTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryTest2.cs" />
     <Compile Include="BusinessLogic\Buffers\LogEntryBufferAccessorTest.cs" />
-    <Compile Include="BusinessLogic\Buffers\LogBufferBufferTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferArrayTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogEntryListAccessorTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogBufferListTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryViewTest.cs" />
