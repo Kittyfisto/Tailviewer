@@ -123,6 +123,9 @@
     <Compile Include="BusinessLogic\Sources\AbstractTaskSchedulerLogFileTest.cs" />
     <Compile Include="BusinessLogic\Properties\ConcurrentPropertiesListTest.cs" />
     <Compile Include="BusinessLogic\Columns\CustomColumnDescriptorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PagedLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PageTest.cs" />
     <Compile Include="BusinessLogic\Sources\EmptyLogFileTest.cs" />
     <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />

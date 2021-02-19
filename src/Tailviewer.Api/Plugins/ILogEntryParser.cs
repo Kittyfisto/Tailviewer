@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer.Plugins
 {
@@ -15,11 +16,14 @@ namespace Tailviewer.Plugins
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <returns></returns>
+		[Pure]
+		[ThreadSafe]
 		IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry);
 
 		/// <summary>
 		///     The set of columns this parser can detect.
 		/// </summary>
+		[ThreadSafe]
 		IEnumerable<IColumnDescriptor> Columns { get; }
 	}
 }

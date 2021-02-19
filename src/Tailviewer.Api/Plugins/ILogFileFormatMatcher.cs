@@ -17,6 +17,7 @@
 		/// <param name="initialContent">The first few bytes of the log file.</param>
 		/// <param name="format">The format this matcher has decided the log file is in.</param>
 		/// <returns>true in case this matcher is 100% certain that the given log file is of a particular format, false otherwise.</returns>
+		[ThreadSafe]
 		bool TryMatchFormat(string fileName,
 		                    byte[] initialContent,
 		                    out ILogFileFormat format);

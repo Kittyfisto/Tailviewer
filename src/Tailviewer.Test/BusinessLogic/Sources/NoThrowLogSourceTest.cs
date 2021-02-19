@@ -113,7 +113,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[9101];
 			var destinationIndex = 9001;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
@@ -131,7 +131,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetColumn(indices, GeneralColumns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
@@ -150,7 +150,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			var section = new LogFileSection(42, 100);
 			var buffer = new Mock<ILogBuffer>().Object;
 			var destinationIndex = 9001;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetEntries(section, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
@@ -168,7 +168,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			var indices = new LogLineIndex[] { 1, 2, 3 };
 			var buffer = new Mock<ILogBuffer>().Object;
 			var destinationIndex = 101;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetEntries(indices, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),

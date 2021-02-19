@@ -28,6 +28,7 @@ namespace Tailviewer.Plugins
 		/// <param name="services"></param>
 		/// <param name="format"></param>
 		/// <returns></returns>
+		[ThreadSafe]
 		ILogEntryParser CreateParser(IServiceContainer services, ILogFileFormat format);
 	}
 }

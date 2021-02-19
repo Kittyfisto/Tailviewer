@@ -46,6 +46,6 @@ namespace Tailviewer.Plugins
 		/// <param name="logSource"></param>
 		/// <returns></returns>
 		ILogSourceIssueAnalyser CreateAnalyser(IServiceContainer services,
-		                                     ILogSource logSource);
+		                                       ILogSource logSource);
 	}
 }

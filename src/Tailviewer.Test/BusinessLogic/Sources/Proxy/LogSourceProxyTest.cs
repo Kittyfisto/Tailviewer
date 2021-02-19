@@ -375,7 +375,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			var buffer = new string[142];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
 			var destinationIndex = 42;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			logFile.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
 			                                 GeneralColumns.RawContent,
@@ -441,7 +441,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			{
 				var buffer = new LogLineIndex[100];
 				var destinationIndex = 47;
-				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
 				proxy.GetColumn(new LogFileSection(1, 42),
 				                GeneralColumns.OriginalIndex,

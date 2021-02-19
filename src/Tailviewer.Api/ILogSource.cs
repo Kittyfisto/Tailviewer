@@ -41,15 +41,13 @@ namespace Tailviewer
 	///       Depending on the use case, it is quite acceptable to retrieve the portions of the log file which ARE in memory now and to retrieve the rest at a later point
 	///       in time.
 	/// </remarks>
-	/// <remarks>
-	///    TODO: Rename to ILogSource?
-	/// </remarks>
 	public interface ILogSource
 		: IDisposable
 	{
 		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
+		[ThreadSafe]
 		IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <summary>
@@ -60,6 +58,7 @@ namespace Tailviewer
 		/// <param name="listener"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="maximumLineCount"></param>
+		[ThreadSafe]
 		void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 
 		/// <summary>
@@ -67,6 +66,7 @@ namespace Tailviewer
 		///     The listener will no longer be notified of changes to this log file.
 		/// </summary>
 		/// <param name="listener"></param>
+		[ThreadSafe]
 		void RemoveListener(ILogSourceListener listener);
 
 		#region Properties
@@ -74,6 +74,7 @@ namespace Tailviewer
 		/// <summary>
 		///     The properties offered by this log file.
 		/// </summary>
+		[ThreadSafe]
 		IReadOnlyList<IReadOnlyPropertyDescriptor> Properties { get; }
 
 		/// <summary>
@@ -86,6 +87,7 @@ namespace Tailviewer
 		/// <param name="property"></param>
 		/// <returns></returns>
 		[Pure]
+		[ThreadSafe]
 		object GetProperty(IReadOnlyPropertyDescriptor property);
 
 		/// <summary>
@@ -99,6 +101,7 @@ namespace Tailviewer
 		/// <param name="property"></param>
 		/// <returns></returns>
 		[Pure]
+		[ThreadSafe]
 		T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property);
 
 		/// <summary>
@@ -107,6 +110,7 @@ namespace Tailviewer
 		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchPropertyException">When the given property does not belong to this log file</exception>
+		[ThreadSafe]
 		void SetProperty(IPropertyDescriptor property, object value);
 
 		/// <summary>
@@ -120,12 +124,14 @@ namespace Tailviewer
 		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchPropertyException">When the given property does not belong to this log file</exception>
+		[ThreadSafe]
 		void SetProperty<T>(IPropertyDescriptor<T> property, T value);
 
 		/// <summary>
 		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
 		/// <param name="destination"></param>
+		[ThreadSafe]
 		void GetAllProperties(IPropertiesBuffer destination);
 
 		#endregion
@@ -141,6 +147,7 @@ namespace Tailviewer
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		[ThreadSafe]
 		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		/// <summary>
@@ -151,6 +158,7 @@ namespace Tailviewer
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		[ThreadSafe]
 		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions);
 
 		#endregion
@@ -164,6 +172,7 @@ namespace Tailviewer
 		/// <param name="originalLineIndex"></param>
 		/// <returns></returns>
 		[Pure]
+		[ThreadSafe]
 		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
 
 		#endregion

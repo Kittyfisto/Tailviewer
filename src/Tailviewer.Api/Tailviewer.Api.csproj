@@ -76,6 +76,7 @@
     <Compile Include="Plugins\ILogEntryParserPlugin.cs" />
     <Compile Include="Plugins\ILogSourceParserPlugin.cs" />
     <Compile Include="NoSuchPropertyException.cs" />
+    <Compile Include="ThreadSafeAttribute.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="ILogEntry.cs" />
     <Compile Include="IPropertiesBuffer.cs" />

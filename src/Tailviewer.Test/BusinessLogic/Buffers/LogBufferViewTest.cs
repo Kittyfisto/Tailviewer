@@ -57,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			var view = new LogBufferView(inner.Object, GeneralColumns.LogLevel, GeneralColumns.Message);
 
 			var source = new Mock<ILogSource>();
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			view.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions);
 			inner.Verify(x => x.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions), Times.Once);
 		}
@@ -69,7 +69,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			var view = new LogBufferView(inner.Object, GeneralColumns.LogLevel, GeneralColumns.Message);
 
 			var source = new Mock<ILogSource>();
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => view.CopyFrom(GeneralColumns.Timestamp, 42, source.Object, new LogFileSection(2, 98), queryOptions)).Should().Throw<NoSuchColumnException>();
 			inner.Verify(x => x.CopyFrom(GeneralColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogSource>(), It.IsAny<LogFileSection>(), It.IsAny<LogSourceQueryOptions>()), Times.Never);
 		}
@@ -82,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 
 			var source = new Mock<ILogSource>();
 			var sourceIndices = new[] {new LogLineIndex(1), new LogLineIndex(42)};
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			view.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, sourceIndices, queryOptions);
 			inner.Verify(x => x.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, sourceIndices, queryOptions), Times.Once);
 		}
@@ -95,7 +95,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 
 			var source = new Mock<ILogSource>();
 			var sourceIndices = new[] {new LogLineIndex(1), new LogLineIndex(42)};
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => view.CopyFrom(GeneralColumns.Timestamp, 42, source.Object, sourceIndices, queryOptions)).Should().Throw<NoSuchColumnException>();
 			inner.Verify(x => x.CopyFrom(GeneralColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogSource>(), It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<LogSourceQueryOptions>()), Times.Never);
 		}

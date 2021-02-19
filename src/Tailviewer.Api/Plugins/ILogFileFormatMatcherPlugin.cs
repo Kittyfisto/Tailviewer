@@ -17,6 +17,7 @@
 		/// </summary>
 		/// <param name="services"></param>
 		/// <returns></returns>
+		[ThreadSafe]
 		ILogFileFormatMatcher CreateMatcher(IServiceContainer services);
 	}
 }

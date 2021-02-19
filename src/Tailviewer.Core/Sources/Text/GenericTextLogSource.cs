@@ -15,8 +15,7 @@ namespace Tailviewer.Core.Sources.Text
 	internal sealed class GenericTextLogSource
 		: ILogSource
 	{
-		private readonly object _syncRoot;
-		private readonly Dictionary<ILogSourceListener, ListenerProxy> _listeners;
+		private readonly ProxyLogListenerCollection _listeners;
 		private readonly ILogEntryParser _parser;
 		private readonly IReadOnlyList<IColumnDescriptor> _parsedColumns;
 		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
@@ -26,12 +25,11 @@ namespace Tailviewer.Core.Sources.Text
 		public GenericTextLogSource(ILogSource source,
 		                            ILogEntryParser parser)
 		{
-			_syncRoot = new object();
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 			_parser = parser;
 			_parsedColumns = _parser.Columns.ToList();
 			_allColumns = _source.Columns.Concat(_parsedColumns).Distinct().ToList();
-			_listeners = new Dictionary<ILogSourceListener, ListenerProxy>();
+			_listeners = new ProxyLogListenerCollection(source, this);
 			_nothingParsed = new ReadOnlyLogEntry(_parsedColumns);
 		}
 
@@ -39,28 +37,12 @@ namespace Tailviewer.Core.Sources.Text
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
-			// We need to make sure that whoever registers with us is getting OUR reference through
-			// their listener, not the source we're wrapping (or they might discard events since they're
-			// coming not from the source they subscribed to).
-			var proxy = new ListenerProxy(this, listener);
-			lock (_syncRoot)
-			{
-				_listeners.Add(listener, proxy);
-			}
-
-			_source?.AddListener(proxy, maximumWaitTime, maximumLineCount);
+			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
 		public void RemoveListener(ILogSourceListener listener)
 		{
-			ListenerProxy proxy;
-			lock (_syncRoot)
-			{
-				if (!_listeners.TryGetValue(listener, out proxy))
-					return;
-			}
-
-			_source?.RemoveListener(proxy);
+			_listeners.RemoveListener(listener);
 		}
 
 		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
@@ -168,28 +150,5 @@ namespace Tailviewer.Core.Sources.Text
 		}
 
 		#endregion
-
-		private sealed class ListenerProxy
-			: ILogSourceListener
-		{
-			private readonly ILogSourceListener _listener;
-			private readonly ILogSource _source;
-
-			public ListenerProxy(ILogSource source, ILogSourceListener listener)
-			{
-				_source = source;
-				_listener = listener;
-			}
-
-
-			#region Implementation of ILogSourceListener
-
-			public void OnLogFileModified(ILogSource logSource, LogFileSection section)
-			{
-				_listener.OnLogFileModified(_source, section);
-			}
-
-			#endregion
-		}
 	}
 }

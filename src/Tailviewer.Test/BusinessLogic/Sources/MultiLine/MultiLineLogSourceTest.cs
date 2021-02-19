@@ -847,7 +847,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			var section = new LogFileSection(42, 5);
 			var buffer = new LogBufferArray(3, GeneralColumns.DeltaTime, GeneralColumns.RawContent);
 			var destinationIndex = 2;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
 			logFile.GetEntries(section, buffer, destinationIndex, queryOptions);
 
@@ -886,7 +886,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			var indices = new LogLineIndex[] { 0, 2, 5 };
 			var buffer = new LogBufferArray(5, GeneralColumns.RawContent);
 			var destinationIndex = 2;
-			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCacheOnly);
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
 			logFile.GetEntries(indices, buffer, destinationIndex, queryOptions);
 

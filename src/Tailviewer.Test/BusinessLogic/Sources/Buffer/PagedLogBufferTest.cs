@@ -1,0 +1,404 @@
+﻿using FluentAssertions;
+using NUnit.Framework;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
+using Tailviewer.Core.Sources.Buffer;
+
+namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
+{
+	[TestFixture]
+	[Ignore("Not yet finished")]
+	public sealed class PagedLogBufferTest
+	{
+		[Test]
+		[Description("Verifies that when the cache is empty, then no data can be read from it")]
+		public void TestEmpty()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			var destination = new LogBufferArray(12, GeneralColumns.RawContent);
+			destination[0].RawContent = "Foo";
+			destination[1].RawContent = "Bar";
+			destination[10].RawContent = "Big Smoke";
+			destination[11].RawContent = "Sup";
+			buffer.TryGetEntries(new LogFileSection(0, 10), destination, 1).Should().BeFalse("because the cache is completely empty and thus no data should have been retrieved");
+
+			destination[0].RawContent.Should()
+			              .Be("Foo",
+			                  "because only the data from the specified offset onward may have been overwritten");
+			for (int i = 1; i < 11; ++i)
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue,
+				                                      "because when the region couldn't be read from the cache, then it should have been defaulted");
+			destination[11].RawContent.Should().Be("Sup");
+		}
+
+		[Test]
+		[Description("Verifies that when the cache has been resized, but not filled yet, then it will still not allow reading data from it")]
+		public void TestNoData()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(12);
+
+			var destination = new LogBufferArray(12, GeneralColumns.RawContent);
+			destination[0].RawContent = "Foo";
+			destination[1].RawContent = "Bar";
+			destination[10].RawContent = "Big Smoke";
+			destination[11].RawContent = "Sup";
+			buffer.TryGetEntries(new LogFileSection(0, 10), destination, 1).Should().BeFalse("because the cache is completely empty and thus no data should have been retrieved");
+
+			destination[0].RawContent.Should()
+			              .Be("Foo",
+			                  "because only the data from the specified offset onward may have been overwritten");
+			for (int i = 1; i < 11; ++i)
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue,
+				                                      "because when the region couldn't be read from the cache, then it should have been defaulted");
+			destination[11].RawContent.Should().Be("Sup");
+		}
+
+		[Test]
+		[Description("Verifies that when the cache contains the entire region requested, then it allows reading the data back")]
+		public void TestRequestFullyCached_Contiguous()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(12);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {Index = 2, RawContent = "Scrambled Data",},
+				new LogEntry {Index = 3, RawContent = "This is awesome"},
+				new LogEntry {Index = 4, RawContent = "Yup"},
+				new LogEntry {Index = 5, RawContent = "Twist!"},
+				new LogEntry {Index = 10, RawContent = "I shouldn't be cached"}
+			};
+			buffer.Add(new LogFileSection(3, 3), data, 1);
+
+			var destination = new LogBufferArray(5, GeneralColumns.Index, GeneralColumns.RawContent);
+			destination[0].Index = 32;
+			destination[0].RawContent = "Foo";
+			destination[1].Index = 42;
+			destination[1].RawContent = "Bar";
+			destination[4].Index = 9001;
+			destination[4].RawContent = "His power level is over 9000!";
+			buffer.TryGetEntries(new LogFileSection(3, 2), destination, 2).Should().BeTrue();
+			destination[0].Index.Should().Be(32, "because we specified an offset and the data before it should not have been overwritten");
+			destination[0].RawContent.Should().Be("Foo", "because we specified an offset and the data before it should not have been overwritten");
+			destination[1].Index.Should().Be(42, "because we specified an offset and the data before it should not have been overwritten");
+			destination[1].RawContent.Should().Be("Bar", "because we specified an offset and the data before it should not have been overwritten");
+
+			destination[2].Index.Should().Be(data[1].Index);
+			destination[2].RawContent.Should().Be(data[1].RawContent);
+			destination[3].Index.Should().Be(data[2].Index);
+			destination[3].RawContent.Should().Be(data[2].RawContent);
+
+			destination[4].Index.Should().Be(9001, "because the data after the requested region shouldn't have been overwritten");
+			destination[4].RawContent.Should().Be("His power level is over 9000!", "because the data after the requested region shouldn't have been overwritten");
+		}
+
+		[Test]
+		[Description("Verifies that the cache can read data from segmented regions of one page of the buffer")]
+		public void TestRequestFullyCached_Segmented_ReadFromOnePage()
+		{
+			var buffer = new PagedLogBuffer(20, 10, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(12);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {Index = 2, RawContent = "Ellie",},
+				new LogEntry {Index = 10, RawContent = "Abby"}
+			};
+			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new []{new LogLineIndex(10), new LogLineIndex(2)}, destination, 1).Should().BeTrue("because all requested data is part of the cache");
+
+			destination[0].Index.Should().Be(10);
+			destination[0].RawContent.Should().Be("Abby");
+			destination[1].Index.Should().Be(2);
+			destination[1].RawContent.Should().Be("Ellie");
+		}
+
+		[Test]
+		[Description("Verifies that the cache can read data from segmented regions of two pages of the buffer")]
+		public void TestRequestFullyCached_Segmented_ReadFromTwoPages()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(12);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {Index = 321, RawContent = "Dina",},
+				new LogEntry {Index = 1402, RawContent = "Jesse"}
+			};
+			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new []{new LogLineIndex(321), new LogLineIndex(1402)}, destination, 1).Should().BeTrue("because all requested data is part of the cache");
+
+			destination[0].Index.Should().Be(321);
+			destination[0].RawContent.Should().Be("Dina");
+			destination[1].Index.Should().Be(1402);
+			destination[1].RawContent.Should().Be("Jesse");
+		}
+
+		[Test]
+		[Description("Verifies that the cache can read data from segmented regions of multiple pages of the buffer where each page is only partially filled")]
+		public void TestRequestFullyCached_Contiguous_ReadFromMultipleHalfFiledPages()
+		{
+			var buffer = new PagedLogBuffer(1024, 2, GeneralColumns.RawContent);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent);
+			for (int i = 512; i < 512 + 1024; ++i)
+				data.Add(new LogEntry{Index = i, RawContent = i.ToString()});
+			buffer.ResizeTo(512 + data.Count);
+			buffer.Add(new LogFileSection(512, data.Count), data, 0);
+
+			var destination = new LogBufferArray(1024, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(512, 1024), destination, 0).Should().BeTrue("because all requested data is part of the cache");
+
+			for (int i = 0; i < destination.Count; ++i)
+			{
+				var logEntry = destination[i];
+				logEntry.Index.Should().Be(i);
+				logEntry.RawContent.Should().Be(i.ToString());
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the cache can read data from segmented regions of multiple pages of the buffer")]
+		public void TestRequestFullyCached_Contiguous_ReadFromMultiplePages()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent);
+			for (int i = 0; i < 5 * 1024; ++i)
+				data.Add(new LogEntry{Index = i, RawContent = i.ToString()});
+			buffer.ResizeTo(data.Count);
+			buffer.Add(new LogFileSection(0, data.Count), data, 0);
+
+			var destination = new LogBufferArray(2048, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(1024, 2048), destination, 0).Should().BeTrue("because all requested data is part of the cache");
+
+			for (int i = 0; i < destination.Count; ++i)
+			{
+				var logEntry = destination[i];
+				logEntry.Index.Should().Be(i);
+				logEntry.RawContent.Should().Be(i.ToString());
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the cache allows partial retrieval of the data and fills the rest with default values")]
+		public void TestRequestPartiallyCached_Segmented_ReadFromTwoPages()
+		{
+			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(12);
+
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {Index = 321, RawContent = "Dina",},
+				new LogEntry {Index = 1402, RawContent = "Jesse"}
+			};
+			buffer.Add(new []{new LogLineIndex(2), new LogLineIndex(10)}, data, 1);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(320, 3), destination, 1).Should().BeFalse("because we managed to only retrieve the data partially");
+
+			destination[0].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			destination[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			destination[1].Index.Should().Be(321);
+			destination[1].RawContent.Should().Be("Dina");
+			destination[2].Index.Should().Be(GeneralColumns.Index.DefaultValue);
+			destination[2].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+		}
+
+		[Test]
+		[Description("Verifies that the cache adds those portions of data to it which have been previously specified via ResizeTo()")]
+		public void TestIgnoreDataOutOfBounds()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(4);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"},
+				new LogEntry {RawContent = "E"},
+				new LogEntry {RawContent = "F"},
+				new LogEntry {RawContent = "G"},
+				new LogEntry {RawContent = "H"},
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because even though we've tried to add 8 elements to the buffer, only the first 4 are part of the entire log file section and thus the others should have been ignored");
+
+			destination[0].RawContent.Should().Be("A");
+			destination[1].RawContent.Should().Be("B");
+			destination[2].RawContent.Should().Be("C");
+			destination[3].RawContent.Should().Be("D");
+			for(int i = 4; i < 8; ++i)
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+		}
+
+		[Test]
+		[Description("Verifies that the cache doesn't grow endlessly and removes data once the maximum page limit has been hit")]
+		public void TestCacheRemovesEntriesWhenNeeded()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(16);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"},
+				new LogEntry {RawContent = "E"},
+				new LogEntry {RawContent = "F"},
+				new LogEntry {RawContent = "G"},
+				new LogEntry {RawContent = "H"},
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new[] {new LogLineIndex(3)}, destination, 0).Should().BeTrue("because the data is still in the cache");
+			destination[0].RawContent.Should().Be("A");
+			destination[1].RawContent.Should().Be("B");
+			destination[2].RawContent.Should().Be("C");
+			destination[3].RawContent.Should().Be("D");
+			destination[4].RawContent.Should().Be("E");
+			destination[5].RawContent.Should().Be("F");
+			destination[6].RawContent.Should().Be("G");
+			destination[7].RawContent.Should().Be("H");
+
+
+			data.Clear();
+			data.AddRange(new []{
+				new LogEntry {RawContent = "I"},
+				new LogEntry {RawContent = "J"},
+				new LogEntry {RawContent = "K"},
+				new LogEntry {RawContent = "L"},
+				new LogEntry {RawContent = "M"},
+				new LogEntry {RawContent = "N"},
+				new LogEntry {RawContent = "O"},
+				new LogEntry {RawContent = "P"},
+			});
+			//< We deliberately add data that fills the entire cache because we don't want to verify the specific caching algorithm (i.e. which
+			// data get's removed), we just want to make sure that it *does* get removed once the cache grows too big.
+			buffer.Add(new LogFileSection(8, 8), data, 0);
+			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because we've added so much data than none of the previously added data may still be part of the cache");
+			for (int i = 0; i < destination.Count; ++i)
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+		}
+
+		[Test]
+		[Description("Verifies that when the source is resized to a smaller size and then resized to a larger one again, once doesn't accidentally read back the invalidated data")]
+		public void TestReadInvalidatedRegions()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(16);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"},
+				new LogEntry {RawContent = "E"},
+				new LogEntry {RawContent = "F"},
+				new LogEntry {RawContent = "G"},
+				new LogEntry {RawContent = "H"},
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			buffer.ResizeTo(6);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because the data has been partially invalidated");
+
+			destination[0].RawContent.Should().Be("A");
+			destination[1].RawContent.Should().Be("B");
+			destination[2].RawContent.Should().Be("C");
+			destination[3].RawContent.Should().Be("D");
+			destination[4].RawContent.Should().Be("E");
+			destination[5].RawContent.Should().Be("F");
+			destination[6].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because this row has been invalidated when the log source was downsized");
+			destination[7].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because this row has been invalidated when the log source was downsized");
+		}
+
+		[Test]
+		[Description("Verifies that when the source is resized to a smaller size and then resized to a larger one again, once doesn't accidentally read back the invalidated data")]
+		public void TestReadPreviouslyInvalidatedButNowAvailableRegions()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(16);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"},
+				new LogEntry {RawContent = "E"},
+				new LogEntry {RawContent = "F"},
+				new LogEntry {RawContent = "G"},
+				new LogEntry {RawContent = "H"},
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			buffer.ResizeTo(6);
+			buffer.ResizeTo(8);
+
+			var destination = new LogBufferArray(2, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because the data has been partially invalidated");
+
+			destination[0].RawContent.Should().Be("A");
+			destination[1].RawContent.Should().Be("B");
+			destination[2].RawContent.Should().Be("C");
+			destination[3].RawContent.Should().Be("D");
+			destination[4].RawContent.Should().Be("E");
+			destination[5].RawContent.Should().Be("F");
+			destination[6].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because this row has been invalidated when the log source was downsized");
+			destination[7].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because this row has been invalidated when the log source was downsized");
+		}
+
+		[Test]
+		public void TestReadPreviouslyInvalidatedBigRegion()
+		{
+			var buffer = new PagedLogBuffer(4, 2, GeneralColumns.RawContent);
+
+			buffer.ResizeTo(16);
+			var data = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent)
+			{
+				new LogEntry {RawContent = "A"},
+				new LogEntry {RawContent = "B"},
+				new LogEntry {RawContent = "C"},
+				new LogEntry {RawContent = "D"},
+				new LogEntry {RawContent = "E"},
+				new LogEntry {RawContent = "F"},
+				new LogEntry {RawContent = "G"},
+				new LogEntry {RawContent = "H"},
+			};
+			buffer.Add(new LogFileSection(0, 8), data, 0);
+
+			buffer.ResizeTo(2); //< Let's invalidate an entire
+
+			var destination = new LogBufferArray(4, GeneralColumns.Index, GeneralColumns.RawContent);
+			buffer.TryGetEntries(new LogFileSection(4, 4), destination, 0).Should().BeFalse("because the data we're trying to read has been fully invalidated");
+
+			for (int i = 0; i < destination.Count; ++i)
+			{
+				destination[i].Index.Should().Be(GeneralColumns.Index.DefaultValue, "because the data we're trying to read has been fully invalidated");
+				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because the data we're trying to read has been fully invalidated");
+			}
+		}
+	}
+}

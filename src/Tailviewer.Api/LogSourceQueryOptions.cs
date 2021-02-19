@@ -9,13 +9,13 @@ namespace Tailviewer
 	public sealed class LogSourceQueryOptions
 	{
 		/// <summary>
-		///     The default query options, <see cref="LogSourceQueryMode.FromSource" />.
+		///     The default query options, <see cref="LogSourceQueryMode.Default" />.
 		/// </summary>
 		public static readonly LogSourceQueryOptions Default;
 
 		/// <summary>
 		///     The maximum time the log file shall block in case <see cref="QueryMode" /> is set to
-		///     <see cref="LogSourceQueryMode.FromSource" />.
+		///     <see cref="LogSourceQueryMode.Default" />.
 		///     Ignored otherwise.
 		/// </summary>
 		public TimeSpan MaximumWaitTime;
@@ -27,7 +27,7 @@ namespace Tailviewer
 
 		static LogSourceQueryOptions()
 		{
-			Default = new LogSourceQueryOptions(LogSourceQueryMode.FromSource)
+			Default = new LogSourceQueryOptions(LogSourceQueryMode.Default)
 			{
 				MaximumWaitTime = TimeSpan.MaxValue
 			};
@@ -48,7 +48,7 @@ namespace Tailviewer
 		{
 			var builder = new StringBuilder();
 			builder.Append(QueryMode);
-			if (QueryMode == LogSourceQueryMode.FromSource)
+			if (QueryMode == LogSourceQueryMode.Default)
 			{
 				builder.AppendFormat("Wait: {0}", MaximumWaitTime);
 			}
