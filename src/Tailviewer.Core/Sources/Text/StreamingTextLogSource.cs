@@ -33,6 +33,14 @@ namespace Tailviewer.Core.Sources.Text
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		/// <summary>
+		///     The offset in bytes from the start of the source (file).
+		/// </summary>
+		/// <remarks>
+		///     This column is only available to text log files and really only used internally.
+		/// </remarks>
+		public static readonly IColumnDescriptor<long> LineOffsetInBytes;
+
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly Encoding _encoding;
 		private readonly LogSourceListenerCollection _listeners;
@@ -47,6 +55,11 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 		private FileFingerprint _lastFingerprint;
 		private long _lastStreamPosition;
+
+		static StreamingTextLogSource()
+		{
+			LineOffsetInBytes = new WellKnownColumnDescriptor<long>("line_offset_in_bytes", -1);
+		}
 
 		/// <summary>
 		///    Initializes this text log file.
@@ -68,7 +81,7 @@ namespace Tailviewer.Core.Sources.Text
 			_listeners = new LogSourceListenerCollection(this);
 
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-			_index = new LogBufferList(GeneralColumns.LineOffsetInBytes);
+			_index = new LogBufferList(StreamingTextLogSource.LineOffsetInBytes);
 			_propertiesBuffer = new PropertiesBufferList();
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
 
@@ -76,7 +89,7 @@ namespace Tailviewer.Core.Sources.Text
 			SynchronizeProperties();
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			_columns = new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.LineOffsetInBytes, GeneralColumns.RawContent};
+			_columns = new IColumnDescriptor[] {GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent};
 
 			_pendingReadRequests = new ConcurrentQueue<IReadRequest>();
 
@@ -161,7 +174,7 @@ namespace Tailviewer.Core.Sources.Text
 			{
 				GetIndices(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 			}
-			else if (ReferenceEquals(column, GeneralColumns.LineOffsetInBytes))
+			else if (ReferenceEquals(column, StreamingTextLogSource.LineOffsetInBytes))
 			{
 				lock (_index)
 				{
@@ -403,8 +416,8 @@ namespace Tailviewer.Core.Sources.Text
 		[Pure]
 		private static LogEntry CreateLogEntry(long lastLineOffset)
 		{
-			var logEntry = new LogEntry(GeneralColumns.LineOffsetInBytes);
-			logEntry.SetValue(GeneralColumns.LineOffsetInBytes, lastLineOffset);
+			var logEntry = new LogEntry(StreamingTextLogSource.LineOffsetInBytes);
+			logEntry.SetValue(StreamingTextLogSource.LineOffsetInBytes, lastLineOffset);
 			return logEntry;
 		}
 
@@ -433,7 +446,7 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					if (_index.Count > 0)
 					{
-						var lastLineOffset = _index[_index.Count - 1].GetValue(GeneralColumns.LineOffsetInBytes);
+						var lastLineOffset = _index[_index.Count - 1].GetValue(StreamingTextLogSource.LineOffsetInBytes);
 						stream.Position = lastLineOffset;
 						return lastLineOffset;
 					}
@@ -860,7 +873,7 @@ namespace Tailviewer.Core.Sources.Text
 				var indices = new long[1];
 				lock (index)
 				{
-					index.CopyTo(GeneralColumns.LineOffsetInBytes, new LogFileSection(_sourceSection.Index, 1), indices, 0);
+					index.CopyTo(StreamingTextLogSource.LineOffsetInBytes, new LogFileSection(_sourceSection.Index, 1), indices, 0);
 				}
 
 				return indices[0];
@@ -929,7 +942,7 @@ namespace Tailviewer.Core.Sources.Text
 				var indices = new long[_sourceIndices.Length];
 				lock (index)
 				{
-					index.CopyTo(GeneralColumns.LineOffsetInBytes, _sourceIndices, indices, 0);
+					index.CopyTo(StreamingTextLogSource.LineOffsetInBytes, _sourceIndices, indices, 0);
 				}
 
 				return indices;

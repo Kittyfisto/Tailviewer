@@ -47,11 +47,17 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		public bool TryRead(LogLineIndex sourceStartIndex, int count, ILogBuffer destination, int destinationIndex, bool requiresValidityCheck)
 		{
+			++_numReads;
+			_lastAccessTime = DateTime.UtcNow;
+
 			var pageSourceIndex = sourceStartIndex - _section.Index;
 			var range = new Int32Range(pageSourceIndex, count);
 			foreach (var column in _buffer.Columns)
 			{
-				destination.CopyFrom(column, destinationIndex, _buffer, range);
+				if (destination.Contains(column))
+				{
+					destination.CopyFrom(column, destinationIndex, _buffer, range);
+				}
 			}
 
 			if (requiresValidityCheck)

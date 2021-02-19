@@ -7,7 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
+using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -273,6 +275,9 @@ namespace Tailviewer.Core.Sources.Text
 			if (parsingLogSource != null)
 				newLogSources.Add(parsingLogSource);
 
+			var bufferedLogSource = CreateBufferFor(serviceContainer, newLogSources.Last(), maximumWaitTime);
+			newLogSources.Add(bufferedLogSource);
+
 			var adorner = CreateAdorner(newLogSources.Last());
 			newLogSources.Add(adorner);
 
@@ -295,6 +300,15 @@ namespace Tailviewer.Core.Sources.Text
 			var logSourceParserPlugin = serviceContainer.Retrieve<ILogSourceParserPlugin>();
 			var parsingLogSource = logSourceParserPlugin.CreateParser(serviceContainer, source);
 			return parsingLogSource;
+		}
+
+		private ILogSource CreateBufferFor(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
+		{
+			var nonCachedColumns = new[] {StreamingTextLogSource.LineOffsetInBytes};
+			return new BufferedLogSource(serviceContainer.Retrieve<ITaskScheduler>(),
+			                             source,
+			                             maximumWaitTime,
+			                             nonCachedColumns);
 		}
 
 		private static ILogSource CreateAdorner(ILogSource source)

@@ -479,6 +479,24 @@ namespace Tailviewer.Core.Buffers
 			columnData.FillDefault(destinationIndex, length);
 		}
 
+		/// <summary>
+		/// Tests if the specified region of the specified column contains one or more <see cref="IColumnDescriptor.DefaultValue"/> values.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="range"></param>
+		/// <returns>When every value of the specified section contains default values, false otherwise</returns>
+		[Pure]
+		public bool ContainsAnyDefault(IColumnDescriptor column, Int32Range range)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var data))
+				throw new ArgumentException(string.Format("No such column: {0}", column));
+
+			return data.ContainsAnyDefault(range);
+		}
+
 		private sealed class ReadOnlyLogEntryAccessor
 			: AbstractReadOnlyLogEntry
 		{
@@ -650,6 +668,7 @@ namespace Tailviewer.Core.Buffers
 			void AddRange(int count);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
 			void AddRange(object buffer, int count);
+			bool ContainsAnyDefault(Int32Range range);
 		}
 
 		private sealed class ColumnData<T>
@@ -872,6 +891,13 @@ namespace Tailviewer.Core.Buffers
 						destination[destinationIndex + i] = _column.DefaultValue;
 					}
 				}
+			}
+
+			[Pure]
+			public bool ContainsAnyDefault(Int32Range range)
+			{
+				var idx = _data.IndexOf(_column.DefaultValue, range.Offset, range.Count);
+				return idx != -1;
 			}
 		}
 	}

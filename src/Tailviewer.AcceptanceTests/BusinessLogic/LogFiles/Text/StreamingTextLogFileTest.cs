@@ -145,8 +145,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the source file does exist and can be accessed");
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 1), GeneralColumns.LineOffsetInBytes);
-			indices[0].Should().Be(GeneralColumns.LineOffsetInBytes.DefaultValue);
+			var indices = logFile.GetColumn(new LogFileSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
+			indices[0].Should().Be(StreamingTextLogSource.LineOffsetInBytes.DefaultValue);
 
 			var entries = GetEntries(logFile);
 			entries.Should().BeEmpty();
@@ -165,12 +165,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(109));
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 1), GeneralColumns.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogFileSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(0, "because the first line starts at an offset of 0 bytes wrt the start of the file");
 
 			var entries = GetEntries(logFile);
 			entries.Should().HaveCount(1);
-			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, GeneralColumns.LineOffsetInBytes, GeneralColumns.RawContent});
+			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent});
 			entries[0].Index.Should().Be(0);
 			entries[0].RawContent.Should().Be(@"[00:00:01] git clone -q --branch=master https://github.com/Kittyfisto/SharpRemote.git C:\projects\sharpremote");
 		}
@@ -189,13 +189,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 3), GeneralColumns.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(3, "because the first line starts right after the preamble (also called byte order mark, BOM), which, for UTF-8, is 3 bytes long");
 			indices[1].Should().BeInRange(165L, 166L, "because git fucks with line endings and thus the offset might differ");
 
 			var entries = GetEntries(logFile);
 			entries.Should().HaveCount(3);
-			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, GeneralColumns.LineOffsetInBytes, GeneralColumns.RawContent});
+			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent});
 			entries[0].Index.Should().Be(0);
 			entries[0].RawContent.Should().Be("2015-10-07 19:50:58,981 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
 			entries[1].Index.Should().Be(1);
@@ -218,7 +218,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-			var indices = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 			var expectedOffset = encoding.GetPreamble().Length;
 			indices[0].Should().Be(expectedOffset, "");
 			indices[1].Should().Be(-1);
@@ -382,7 +382,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(23);
 
@@ -398,7 +398,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
 				index[1].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
 
@@ -424,7 +424,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(23);
 
@@ -442,7 +442,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
 				logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
 				index[1].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
 
@@ -471,7 +471,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(76);
 
@@ -485,7 +485,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				index = logFile.GetColumn(new LogFileSection(0, 3), GeneralColumns.LineOffsetInBytes);
+				index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(76);
 				index[2].Should().Be(128);

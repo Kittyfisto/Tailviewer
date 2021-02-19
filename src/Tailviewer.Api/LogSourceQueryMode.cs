@@ -31,12 +31,17 @@ namespace Tailviewer
 		///    - are totally fine with only reading partially from cache (the UI will try again later if that's the case)
 		///    - are happy if the cache were to try to fetch from the source anyways, but just from a BG thread please
 		/// </summary>
-		Display = FromCache | AllowPartialRead | FetchForLater,
+		Display = FromCache | FetchForLater,
 
 
 		/// <summary>
 		///    If the data is readily available in the cache, then it is copied to the destination.
 		/// </summary>
+		/// <remarks>
+		///    When this value is specified and <see cref="FromSource"/> is not, then the data returned might only be
+		///    a subset of the source's actual data. This can be checked via the index column's value, which is set to invalid
+		///    when the data couldn't be retrieved and by checking the number of log entries in the source.
+		/// </remarks>
 		FromCache = 0x01,
 
 		/// <summary>
@@ -54,11 +59,5 @@ namespace Tailviewer
 		///    stand a greater chance of fetching the data.
 		/// </summary>
 		FetchForLater = 0x08,
-
-		/// <summary>
-		///    It is perfectly fine to serve a partial read of what is available and leave the
-		///    rest set to default values.
-		/// </summary>
-		AllowPartialRead = 0x10,
 	}
 }

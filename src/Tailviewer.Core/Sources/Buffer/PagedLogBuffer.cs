@@ -14,7 +14,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private readonly int _pageSize;
 		private readonly int _maxPageCount;
 		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
-		private readonly IReadOnlyList<IColumnDescriptor> _copiedColumns;
+		private readonly IReadOnlyList<IColumnDescriptor> _cachedColumns;
 		private readonly List<Page> _pages;
 		private int _sourceCount;
 
@@ -43,7 +43,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			_pageSize = pageSize;
 			_maxPageCount = maxPageCount;
 			_allColumns = new []{GeneralColumns.Index}.Concat(columns).Distinct().ToList(); //< This buffer only makes sense when it stores the index column, as otherwise one just doesn't know which data is present
-			_copiedColumns = _allColumns.Except(new []{GeneralColumns.Index}).ToList();
+			_cachedColumns = _allColumns.Except(new []{GeneralColumns.Index}).ToList();
 			_pages = new List<Page>(maxPageCount);
 			_sourceCount = 0;
 		}
@@ -91,6 +91,27 @@ namespace Tailviewer.Core.Sources.Buffer
 		                          ILogBuffer destination,
 		                          int destinationIndex)
 		{
+			return TryGetEntries(sourceIndices, destination, destinationIndex, out _);
+		}
+
+		/// <summary>
+		///     Tries to retrieve the given entries from this buffer.
+		/// </summary>
+		/// <remarks>
+		///     This method will fill the index column of the given buffer (if it has one) with the indices of the log entries,
+		///     or <see cref="LogLineIndex.Invalid"/> in case the data isn't part of the cache or it outside of the valid section
+		///     of the log source.
+		/// </remarks>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex"></param>
+		/// <param name="accessedPageBoundaries"></param>
+		/// <returns>True when *all* entries could be retrieved from this buffer, false otherwise</returns>
+		public bool TryGetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
+		                          ILogBuffer destination,
+		                          int destinationIndex,
+		                          out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		{
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
@@ -98,10 +119,10 @@ namespace Tailviewer.Core.Sources.Buffer
 
 			if (sourceIndices is LogFileSection contiguousSection)
 			{
-				return TryGetEntriesContiguous(contiguousSection, destination, destinationIndex);
+				return TryGetEntriesContiguous(contiguousSection, destination, destinationIndex, out accessedPageBoundaries);
 			}
 
-			return TryGetEntriesSegmented(sourceIndices, destination, destinationIndex);
+			return TryGetEntriesSegmented(sourceIndices, destination, destinationIndex, out accessedPageBoundaries);
 		}
 
 		/// <summary>
@@ -110,9 +131,10 @@ namespace Tailviewer.Core.Sources.Buffer
 		/// <param name="destinationSection">The destination indices of the log entries from the given source</param>
 		/// <param name="source">The source from which to copy data to this buffer</param>
 		/// <param name="sourceIndex">The index into the given source from which onwards log entries may be added to this cache.</param>
-		public void Add(LogFileSection destinationSection, IReadOnlyLogBuffer source, int sourceIndex)
+		public void TryAdd(LogFileSection destinationSection, IReadOnlyLogBuffer source, int sourceIndex)
 		{
-			// TODO: What strategy should be choose when the data being entered is bigger than the entire cache?
+			if (!CanCache(source))
+				return;
 
 			// We want to make sure to only read that data, which is actually covered by the log source.
 			// This is because one thread might resize this buffer to a smaller size and then another thread
@@ -134,11 +156,25 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		private bool TryGetEntriesContiguous(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex)
+		private bool CanCache(IReadOnlyLogBuffer source)
+		{
+			var sourceColumns = source.Columns;
+			foreach(var cachedColumn in _cachedColumns)
+			{
+				if (!sourceColumns.Contains(cachedColumn))
+					return false;
+			}
+
+			return true;
+		}
+
+		private bool TryGetEntriesContiguous(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
 		{
 			bool fullyRead = true;
 			var sourceSectionEndIndex = Math.Min((int)(sourceSection.Index + sourceSection.Count), _sourceCount);
 			var numEntriesRead = 0;
+			var tmpAccessedPageBoundaries = new List<LogFileSection>();
+
 			for (LogLineIndex i = sourceSection.Index; i < sourceSectionEndIndex;)
 			{
 				var pageIndex = GetPageIndex(i);
@@ -149,11 +185,13 @@ namespace Tailviewer.Core.Sources.Buffer
 				if (page != null)
 				{
 					fullyRead &= page.TryRead(i, count, destination, destinationIndex + numEntriesRead, fullyRead);
+					tmpAccessedPageBoundaries.Add(page.Section);
 				}
 				else
 				{
 					destination.FillDefault(destinationIndex + numEntriesRead, count);
 					fullyRead = false;
+					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
 
 				numEntriesRead += count;
@@ -167,11 +205,14 @@ namespace Tailviewer.Core.Sources.Buffer
 				fullyRead = false;
 			}
 
+			accessedPageBoundaries = tmpAccessedPageBoundaries;
 			return fullyRead;
 		}
 
-		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex)
+		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
 		{
+			var tmpAccessedPageBoundaries = new List<LogFileSection>();
+
 			bool fullyRead = true;
 			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
@@ -181,14 +222,24 @@ namespace Tailviewer.Core.Sources.Buffer
 				if (page != null)
 				{
 					fullyRead &= page.TryRead(sourceIndex, 1, destination, destinationIndex + i, fullyRead);
+					tmpAccessedPageBoundaries.Add(page.Section);
 				}
 				else
 				{
 					destination.FillDefault(destinationIndex, 1);
 					fullyRead = false;
+					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
 			}
+
+			accessedPageBoundaries = tmpAccessedPageBoundaries;
 			return fullyRead;
+		}
+
+		[Pure]
+		private LogFileSection GetSectionForPage(int pageIndex)
+		{
+			return new LogFileSection(_pageSize * pageIndex, _pageSize);
 		}
 
 		[Pure]
@@ -206,7 +257,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			var page = TryGetPage(pageIndex);
 			if (page == null)
 			{
-				page = new Page(pageIndex, _pageSize, _allColumns, _copiedColumns);
+				page = new Page(pageIndex, _pageSize, _allColumns, _cachedColumns);
 				if (_pages.Count >= _maxPageCount)
 				{
 					// TODO: Find a better eviction strategy, maybe evict pages with the smallest read count?

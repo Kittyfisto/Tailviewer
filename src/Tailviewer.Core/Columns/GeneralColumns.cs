@@ -51,14 +51,6 @@ namespace Tailviewer.Core.Columns
 		public static readonly IColumnDescriptor<LogLineIndex> OriginalIndex;
 
 		/// <summary>
-		///     The offset in bytes from the start of the source (file).
-		/// </summary>
-		/// <remarks>
-		///     This column is only available to text log files and really only used internally.
-		/// </remarks>
-		public static readonly IColumnDescriptor<long> LineOffsetInBytes;
-
-		/// <summary>
 		///     The index of this log entry, from 0 to the number of log entries.
 		/// </summary>
 		/// <remarks>
@@ -143,7 +135,6 @@ namespace Tailviewer.Core.Columns
 		{
 			RawContent = new WellKnownColumnDescriptor<string>("raw_content", "Content");
 			Index = new WellKnownColumnDescriptor<LogLineIndex>("index", "Index", LogLineIndex.Invalid);
-			LineOffsetInBytes = new WellKnownColumnDescriptor<long>("line_offset_in_bytes", -1);
 			OriginalIndex = new WellKnownColumnDescriptor<LogLineIndex>("original_index", "Original Index", LogLineIndex.Invalid);
 			LogEntryIndex = new WellKnownColumnDescriptor<LogEntryIndex>("log_entry_index", "Log Entry Index", Tailviewer.LogEntryIndex.Invalid);
 			LineNumber = new WellKnownColumnDescriptor<int>("line_number", "Line Number");

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Tailviewer.Core.Buffers;
 
@@ -14,24 +16,44 @@ namespace Tailviewer.Core.Sources.Buffer
 	{
 		private readonly object _syncRoot;
 		private readonly ProxyLogListenerCollection _listeners;
+		private readonly IReadOnlyList<IColumnDescriptor> _cachedColumns;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ILogSource _source;
+		private readonly int _maxNumPages;
 		private readonly PagedLogBuffer _buffer;
+		private readonly ConcurrentQueue<LogFileSection> _fetchQueue;
+		private readonly IPeriodicTask _fetchTask;
+		private readonly LogBufferArray _fetchBuffer;
 
-		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = 1000, int maxNumPages = 10)
+		public const int DefaultPageSize = 50;
+		public const int DefaultMaxPageCount = 100;
+
+		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
+			: this(taskScheduler, source, maximumWaitTime, new IColumnDescriptor[0], pageSize, maxNumPages)
+		{ }
+
+		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, IReadOnlyList<IColumnDescriptor> nonCachedColumns, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
 		{
 			_syncRoot = new object();
 			_taskScheduler = taskScheduler;
 			_source = source;
+			_maxNumPages = maxNumPages;
 			_listeners = new ProxyLogListenerCollection(source, this);
-			_buffer = new PagedLogBuffer(pageSize, maxNumPages, source.Columns);
+			_cachedColumns = source.Columns.Except(nonCachedColumns).ToList();
+			_buffer = new PagedLogBuffer(pageSize, maxNumPages, _cachedColumns);
+			_fetchQueue = new ConcurrentQueue<LogFileSection>();
 			_source.AddListener(this, maximumWaitTime, pageSize);
+
+			_fetchBuffer = new LogBufferArray(pageSize, _cachedColumns);
+			_fetchTask = _taskScheduler.StartPeriodic(FetchPagesFromSource, maximumWaitTime);
 		}
 
 		#region Implementation of IDisposable
 
 		public void Dispose()
 		{
+			_taskScheduler.StopPeriodic(_fetchTask);
+
 			lock (_syncRoot)
 			{
 				_buffer.Clear();
@@ -104,7 +126,15 @@ namespace Tailviewer.Core.Sources.Buffer
 		                       int destinationIndex,
 		                       LogSourceQueryOptions queryOptions)
 		{
-			if (TryReadFromCache(sourceIndices, destination, destinationIndex, queryOptions))
+			if (TryReadFromCache(sourceIndices, destination, destinationIndex, queryOptions, out var accessedPageBoundaries))
+				return;
+
+			if ((queryOptions.QueryMode & LogSourceQueryMode.FetchForLater) == LogSourceQueryMode.FetchForLater)
+				FetchForLater(accessedPageBoundaries);
+
+			// For some clients (GUI) it is permissible to serve partial requests and to default out the rest.
+			// The ui will try again at a later date until it gets what it needs.
+			if ((queryOptions.QueryMode & LogSourceQueryMode.FromSource) == 0)
 				return;
 
 			// Whelp, we gotta fetch from the source instead.
@@ -115,6 +145,11 @@ namespace Tailviewer.Core.Sources.Buffer
 
 			// However now that we got some data, we could try to add it to our cache
 			AddToCache(sourceIndices, destination, destinationIndex, queryOptions);
+		}
+
+		private void FetchForLater(IReadOnlyList<LogFileSection> sectionsToFetch)
+		{
+			_fetchQueue.EnqueueMany(sectionsToFetch);
 		}
 
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
@@ -148,24 +183,21 @@ namespace Tailviewer.Core.Sources.Buffer
 		#endregion
 
 		[ThreadSafe]
-		private bool TryReadFromCache(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		private bool TryReadFromCache(IReadOnlyList<LogLineIndex> sourceIndices,
+		                              ILogBuffer destination, int destinationIndex,
+		                              LogSourceQueryOptions queryOptions,
+		                              out IReadOnlyList<LogFileSection> accessedPageBoundaries)
 		{
+			accessedPageBoundaries = null;
+
 			// For whatever reason some people prefer to read directly from the source (this might not be a real use case but whatever..)
 			if ((queryOptions.QueryMode & LogSourceQueryMode.FromCache) != LogSourceQueryMode.FromCache)
 				return false;
 
 			lock (_syncRoot)
 			{
-				if (_buffer.TryGetEntries(sourceIndices, destination, destinationIndex))
+				if (_buffer.TryGetEntries(sourceIndices, destination, destinationIndex, out accessedPageBoundaries))
 					return true;
-
-				// For some clients (GUI) it is permissible to serve partial requests and to default out the rest.
-				// The ui will try again at a later date until it gets what it needs.
-				if ((queryOptions.QueryMode & LogSourceQueryMode.AllowPartialRead) == LogSourceQueryMode.AllowPartialRead)
-				{
-					destination.FillDefault(destinationIndex, sourceIndices.Count);
-					return true;
-				}
 			}
 
 			return false;
@@ -173,8 +205,8 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		[ThreadSafe]
 		private void AddToCache(IReadOnlyList<LogLineIndex> sourceIndices,
-		                        ILogBuffer destination,
-		                        int destinationIndex,
+		                        ILogBuffer source,
+		                        int sourceIndex,
 		                        LogSourceQueryOptions queryOptions)
 		{
 			if ((queryOptions.QueryMode & LogSourceQueryMode.DontCache) == LogSourceQueryMode.DontCache)
@@ -182,10 +214,36 @@ namespace Tailviewer.Core.Sources.Buffer
 
 			if (sourceIndices is LogFileSection contiguousSection)
 			{
-				lock (_syncRoot)
-				{
-					_buffer.Add(contiguousSection, destination, destinationIndex);
-				}
+				AddToCache(source, sourceIndex, contiguousSection);
+			}
+		}
+
+		[ThreadSafe]
+		private void AddToCache(ILogBuffer source, int destinationIndex, LogFileSection contiguousSection)
+		{
+			lock (_syncRoot)
+			{
+				_buffer.TryAdd(contiguousSection, source, destinationIndex);
+			}
+		}
+
+		private void FetchPagesFromSource()
+		{
+			var sections = _fetchQueue.DequeueAll();
+			if (sections.Count > _maxNumPages)
+			{
+				// There's no point in fetching more data than can fit in the cache.
+				// When that happens, we assume that the data accessed last is more important than
+				// the one we accessed earlier...
+				sections = sections.Skip(sections.Count - _maxNumPages).ToList();
+			}
+
+			foreach (var section in sections)
+			{
+				// Yes, we could make this async and fetch data even faster, but we gotta
+				// start somewhere...
+				_source.GetEntries(section, _fetchBuffer);
+				AddToCache(_fetchBuffer, 0, section);
 			}
 		}
 	}

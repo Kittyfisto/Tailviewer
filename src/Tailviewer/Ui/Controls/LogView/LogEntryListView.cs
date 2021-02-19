@@ -705,6 +705,9 @@ namespace Tailviewer.Ui.Controls.LogView
 					ScrollToBottomIfRequired();
 
 					PartTextCanvas.UpdateVisibleLines();
+					if (PartTextCanvas.RequiresFurtherUpdate)
+						Interlocked.Increment(ref _pendingModificationsCount);
+
 					PartTextCanvas.OnMouseMove();
 				}
 				catch (Exception e)

@@ -18,27 +18,33 @@ namespace Tailviewer
 		///     <see cref="LogSourceQueryMode.Default" />.
 		///     Ignored otherwise.
 		/// </summary>
-		public TimeSpan MaximumWaitTime;
+		public readonly TimeSpan MaximumWaitTime;
 
 		/// <summary>
 		///     How the log file shall block, if at all.
 		/// </summary>
-		public LogSourceQueryMode QueryMode;
+		public readonly LogSourceQueryMode QueryMode;
 
 		static LogSourceQueryOptions()
 		{
-			Default = new LogSourceQueryOptions(LogSourceQueryMode.Default)
-			{
-				MaximumWaitTime = TimeSpan.MaxValue
-			};
+			Default = new LogSourceQueryOptions(LogSourceQueryMode.Default, TimeSpan.MaxValue);
 		}
 
 		/// <summary>
 		/// </summary>
 		/// <param name="queryMode"></param>
 		public LogSourceQueryOptions(LogSourceQueryMode queryMode)
+			: this(queryMode, TimeSpan.MaxValue)
+		{}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="queryMode"></param>
+		/// <param name="maximumWaitTime"></param>
+		public LogSourceQueryOptions(LogSourceQueryMode queryMode, TimeSpan maximumWaitTime)
 		{
 			QueryMode = queryMode;
+			MaximumWaitTime = maximumWaitTime;
 		}
 
 		#region Overrides of Object

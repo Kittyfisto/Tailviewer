@@ -124,6 +124,7 @@
     <Compile Include="BusinessLogic\Properties\ConcurrentPropertiesListTest.cs" />
     <Compile Include="BusinessLogic\Columns\CustomColumnDescriptorTest.cs" />
     <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest2.cs" />
     <Compile Include="BusinessLogic\Sources\Buffer\PagedLogBufferTest.cs" />
     <Compile Include="BusinessLogic\Sources\Buffer\PageTest.cs" />
     <Compile Include="BusinessLogic\Sources\EmptyLogFileTest.cs" />

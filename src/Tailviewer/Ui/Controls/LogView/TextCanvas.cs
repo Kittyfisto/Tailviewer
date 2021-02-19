@@ -13,6 +13,7 @@ using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
+using Tailviewer.Core;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
@@ -51,6 +52,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private bool _colorByLevel;
 		private ILogSourceSearch _search;
 		private int _selectedSearchResultIndex;
+		private bool _requiresFurtherUpdate;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
 		{
@@ -91,6 +93,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			Focusable = true;
 			ClipToBounds = true;
 			FocusVisualStyle = null;
+		}
+
+		public bool RequiresFurtherUpdate
+		{
+			get { return _requiresFurtherUpdate; }
 		}
 
 		public LogFileSection CurrentlyVisibleSection
@@ -318,7 +325,27 @@ namespace Tailviewer.Ui.Controls.LogView
 				_visibleBufferBuffer.Resize(_currentlyVisibleSection.Count);
 				if (_currentlyVisibleSection.Count > 0)
 				{
-					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0);
+					// We don't want to block the UI thread for very long at all so we instruct the log source to only
+					// fetch data from the cache, but to fetch missing data for later (from the source).
+					var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater, TimeSpan.Zero);
+					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0, queryOptions);
+
+					// Now comes the fun part. We need to detect if we could fetch *all* the data.
+					// This is done by inspecting the GeneralColumns.Index value - if we encounter any InvalidValue, then we either accessed an invalid
+					// region (which only happens when the file shrinks and is no common-occurrence) or when we couldn't retrieve
+					// all the data (which will be the case 99% of the time).
+					// If that's the case, we will instruct this canvas to re-fetch the once more in a bit. This loop will terminate once the
+					// cache has managed to fetch the desired data which should happen some time...
+					if (_visibleBufferBuffer.ContainsAnyDefault(GeneralColumns.Index,
+					                                            new Int32Range(0, _currentlyVisibleSection.Count)))
+					{
+						_requiresFurtherUpdate = true;
+					}
+					else
+					{
+						_requiresFurtherUpdate = false;
+					}
+
 					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
 						var line = new TextLine(_visibleBufferBuffer[i], _hoveredIndices, _selectedIndices,
