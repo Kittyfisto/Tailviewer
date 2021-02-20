@@ -79,5 +79,31 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			_source.Verify(x => x.GetEntries(new LogFileSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Once, "Because the buffer should have tried to retrieve the page for the entire page which was accessed");
 		}
+
+		[Test]
+		[Description("Verifies that the buffer tries not to fetch the same data multiple times in case multiple sources tried to read adjacent data")]
+		public void TestPrefetchAsyncBatch()
+		{
+			var pageSize = 100;
+			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
+
+			buffer.OnLogFileModified(_source.Object, new LogFileSection(0, 10));
+
+			var section1ToQuery = new LogFileSection(2, 4);
+			buffer.GetEntries(section1ToQuery, destination, 0, queryOptions);
+			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
+			               Times.Never, "Because we didn't allow data to be retrieved on the calling thread");
+
+			var section2ToQuery = new LogFileSection(7, 3);
+			buffer.GetEntries(section2ToQuery, destination, 0, queryOptions);
+			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
+			               Times.Never, "Because we didn't allow data to be retrieved on the calling thread");
+
+			_taskScheduler.RunOnce();
+			_source.Verify(x => x.GetEntries(new LogFileSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
+			               Times.Once, "Because the buffer should avoid reading the same data for the same page multiple times in a row");
+		}
 	}
 }

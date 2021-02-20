@@ -217,7 +217,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			return fullyRead;
 		}
 
-		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationStartIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
 		{
 			var tmpAccessedPageBoundaries = new List<LogFileSection>();
 
@@ -225,21 +225,35 @@ namespace Tailviewer.Core.Sources.Buffer
 			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
 				var sourceIndex = sourceIndices[i];
-				var pageIndex = GetPageIndex(sourceIndex);
-				var page = TryGetPage(pageIndex);
-				if (page != null)
+				var destinationIndex = destinationStartIndex + i;
+				if (sourceIndex.IsValid)
 				{
-					fullyRead &= page.TryRead(sourceIndex, 1, destination, destinationIndex + i, fullyRead);
-					tmpAccessedPageBoundaries.Add(page.Section);
+					var pageIndex = GetPageIndex(sourceIndex);
+					var page = TryGetPage(pageIndex);
+					if (page != null)
+					{
+						fullyRead &= page.TryRead(sourceIndex, 1, destination, destinationIndex, fullyRead);
+						tmpAccessedPageBoundaries.Add(page.Section);
+					}
+					else
+					{
+						destination.FillDefault(destinationIndex, 1);
+						if (destination.Contains(BufferedLogSource.RetrievalState))
+						{
+							var state = sourceIndex >= _sourceCount
+								? RetrievalState.NotInSource
+								: RetrievalState.NotCached;
+							destination.Fill(BufferedLogSource.RetrievalState, state, destinationIndex, 1);
+						}
+						fullyRead = false;
+						tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
+					}
 				}
 				else
 				{
 					destination.FillDefault(destinationIndex, 1);
-					if (destination.Contains(BufferedLogSource.RetrievalState))
-						destination.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotCached, destinationIndex, 1);
-					fullyRead = false;
-					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
+				
 			}
 
 			accessedPageBoundaries = tmpAccessedPageBoundaries;

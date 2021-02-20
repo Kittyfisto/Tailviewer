@@ -694,7 +694,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnTimer(object sender, EventArgs args)
 		{
-			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0)
+			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0 || PartTextCanvas.RequiresFurtherUpdate)
 			{
 				try
 				{
@@ -705,8 +705,6 @@ namespace Tailviewer.Ui.Controls.LogView
 					ScrollToBottomIfRequired();
 
 					PartTextCanvas.UpdateVisibleLines();
-					if (PartTextCanvas.RequiresFurtherUpdate)
-						Interlocked.Increment(ref _pendingModificationsCount);
 
 					PartTextCanvas.OnMouseMove();
 				}

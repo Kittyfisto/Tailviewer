@@ -4,6 +4,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Test

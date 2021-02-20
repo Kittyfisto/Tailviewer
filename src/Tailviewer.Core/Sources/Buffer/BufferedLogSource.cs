@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 
@@ -15,6 +17,8 @@ namespace Tailviewer.Core.Sources.Buffer
 		: ILogSource
 		, ILogSourceListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		/// <summary>
 		///     Tests if the log entry was successfully retrieved.
 		/// </summary>
@@ -213,17 +217,6 @@ namespace Tailviewer.Core.Sources.Buffer
 			{
 				if (_buffer.TryGetEntries(sourceIndices, destination, destinationIndex, out accessedPageBoundaries))
 					return true;
-
-				if (destination.Contains(GeneralColumns.RawContent) && (queryOptions.QueryMode& LogSourceQueryMode.FetchForLater) == LogSourceQueryMode.FetchForLater)
-				{
-					for (int i = destinationIndex; i < destination.Count; ++i)
-					{
-						if (destination[i].RawContent == null)
-						{
-							Console.WriteLine("fuck");
-						}
-					}
-				}
 			}
 
 			return false;
@@ -258,14 +251,20 @@ namespace Tailviewer.Core.Sources.Buffer
 			// There's no point in fetching more data than can fit in the cache.
 			// When that happens, we assume that the data accessed last is more important than
 			// the one we accessed earlier...
-			var sections = _fetchQueue.DequeueAll().Reverse().Take(_maxNumPages).ToList();
+			var sections = _fetchQueue.DequeueAll().Reverse().Take(_maxNumPages).Distinct().ToList();
 
-			foreach (var section in sections)
+			if (sections.Count > 0)
 			{
-				// Yes, we could make this async and fetch data even faster, but we gotta
-				// start somewhere...
-				_source.GetEntries(section, _fetchBuffer);
-				AddToCache(_fetchBuffer, 0, section);
+				if(Log.IsDebugEnabled)
+					Log.DebugFormat("Fetching data in {0} batches...", sections.Count);
+
+				foreach (var section in sections)
+				{
+					// Yes, we could make this async and fetch data even faster, but we gotta
+					// start somewhere...
+					_source.GetEntries(section, _fetchBuffer);
+					AddToCache(_fetchBuffer, 0, section);
+				}
 			}
 		}
 	}

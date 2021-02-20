@@ -54,6 +54,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private ILogSourceSearch _search;
 		private int _selectedSearchResultIndex;
 		private bool _requiresFurtherUpdate;
+		private DateTime _updateStart;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
 		{
@@ -331,11 +332,6 @@ namespace Tailviewer.Ui.Controls.LogView
 					var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater, TimeSpan.Zero);
 					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0, queryOptions);
 
-					if (_visibleBufferBuffer.ContainsAnyDefault(GeneralColumns.RawContent, new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
-					{
-						Console.WriteLine("fuck");
-					}
-
 					// Now comes the fun part. We need to detect if we could fetch *all* the data.
 					// This is done by inspecting the BufferedLogSource.RetrievalState - if we encounter any NotCached value,
 					// then the entry is part of the source, but was not cached at the time of trying to access it.
@@ -345,17 +341,21 @@ namespace Tailviewer.Ui.Controls.LogView
 					                                     RetrievalState.NotCached,
 					                                     new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
 					{
-						Log.DebugFormat("Requires further update (at least one entry is not in cache)");
-						_requiresFurtherUpdate = true;
+						if (!_requiresFurtherUpdate)
+						{
+							Log.DebugFormat("Requires further update (at least one entry is not in cache)");
+							_requiresFurtherUpdate = true;
+							_updateStart = DateTime.Now;
+						}
 					}
 					else
 					{
 						if (_requiresFurtherUpdate)
 						{
-							Log.DebugFormat("No longer requires further update (all retrieved log entries are in cache)");
+							var elapsed = DateTime.Now - _updateStart;
+							Log.DebugFormat("No longer requires further update (all retrieved log entries are in cache), took {0:F1}ms", elapsed.TotalMilliseconds); 
+							_requiresFurtherUpdate = false;
 						}
-
-						_requiresFurtherUpdate = false;
 					}
 
 					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)

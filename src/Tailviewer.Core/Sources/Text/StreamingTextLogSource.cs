@@ -845,7 +845,7 @@ namespace Tailviewer.Core.Sources.Text
 
 			public override string ToString()
 			{
-				return $"Read {_sourceSection.Count} contiguous lines";
+				return $"Read {_sourceSection.Count} lines: {_sourceSection.Index} through {_sourceSection.LastIndex + 1}";
 			}
 
 			#endregion
