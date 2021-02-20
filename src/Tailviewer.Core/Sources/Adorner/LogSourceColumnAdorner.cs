@@ -6,18 +6,16 @@ using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 
-namespace Tailviewer.Core.Sources
+namespace Tailviewer.Core.Sources.Adorner
 {
 	/// <summary>
-	///     This class is responsible for calculating the values for certain columns and properties based on the data of an underlying
+	///     This class is responsible for calculating the values for certain columns based on the data of an underlying
 	///     <see cref="ILogSource" />.
 	/// </summary>
 	/// <remarks>
-	///     Before this class existed, lots of <see cref="ILogSource"/> implementations contained the same piece of code
-	///     implemented over and over. However this isn't necessary for lots of columns, namely:
-	///      - <see cref="GeneralColumns.DeltaTime"/>
+	///     This class calculates the values of the adorned columns on the fly for only the region specified.
 	/// </remarks>
-	internal sealed class LogSourceAdorner
+	internal sealed class LogSourceColumnAdorner
 		: ILogSource
 	{
 		private static readonly IReadOnlyList<IColumnDescriptor> MaxAdornedColumns;
@@ -26,7 +24,7 @@ namespace Tailviewer.Core.Sources
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 		private ILogSource _source;
 
-		static LogSourceAdorner()
+		static LogSourceColumnAdorner()
 		{
 			MaxAdornedColumns = new IColumnDescriptor[]
 			{
@@ -40,11 +38,11 @@ namespace Tailviewer.Core.Sources
 			};
 		}
 
-		public LogSourceAdorner(ILogSource source)
+		public LogSourceColumnAdorner(ILogSource source)
 			: this(source, MaxAdornedColumns)
 		{ }
 
-		public LogSourceAdorner(ILogSource source, IReadOnlyList<IColumnDescriptor> adornedColumns)
+		public LogSourceColumnAdorner(ILogSource source, IReadOnlyList<IColumnDescriptor> adornedColumns)
 		{
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 			_columns = source.Columns.Concat(adornedColumns).Distinct().ToList();

@@ -84,11 +84,12 @@
     <Compile Include="FixedSizeList.cs" />
     <Compile Include="Int32Range.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
+    <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
     <Compile Include="Sources\Buffer\BufferedLogSource.cs" />
     <Compile Include="Sources\Buffer\RetrievalState.cs" />
     <Compile Include="Sources\Buffer\Page.cs" />
     <Compile Include="Sources\Buffer\PagedLogBuffer.cs" />
-    <Compile Include="Sources\LogSourceAdorner.cs" />
+    <Compile Include="Sources\Adorner\LogSourceColumnAdorner.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />

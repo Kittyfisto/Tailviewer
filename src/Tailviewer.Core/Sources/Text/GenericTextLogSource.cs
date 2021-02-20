@@ -113,12 +113,16 @@ namespace Tailviewer.Core.Sources.Text
 			var source = _source;
 			if (source != null)
 			{
-				var tmp = new LogBufferArray(sourceIndices.Count, GeneralColumns.RawContent);
+				var columnsToCopy = new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent};
+				var tmp = new LogBufferArray(sourceIndices.Count, columnsToCopy);
 				source.GetEntries(sourceIndices, tmp, 0, queryOptions);
 
-				if (destination.Contains(GeneralColumns.RawContent))
+				foreach (var column in columnsToCopy)
 				{
-					destination.CopyFrom(GeneralColumns.RawContent, destinationIndex, tmp, new Int32Range(0, sourceIndices.Count));
+					if (destination.Contains(column))
+					{
+						destination.CopyFrom(column, destinationIndex, tmp, new Int32Range(0, sourceIndices.Count));
+					}
 				}
 
 				for (var i = 0; i < sourceIndices.Count; ++i)

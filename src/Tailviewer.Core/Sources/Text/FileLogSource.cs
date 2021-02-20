@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using log4net;
 using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources.Adorner;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Plugins;
 
@@ -395,8 +396,11 @@ namespace Tailviewer.Core.Sources.Text
 			var bufferedLogSource = CreateBufferFor(serviceContainer, newLogSources.Last(), maximumWaitTime);
 			newLogSources.Add(bufferedLogSource);
 
-			var adorner = CreateAdorner(newLogSources.Last());
-			newLogSources.Add(adorner);
+			var propertyAdorner = new LogSourcePropertyAdorner(serviceContainer.Retrieve<ITaskScheduler>(), newLogSources.Last(), maximumWaitTime);
+			newLogSources.Add(propertyAdorner);
+
+			var columnAdorner = new LogSourceColumnAdorner(newLogSources.Last());
+			newLogSources.Add(columnAdorner);
 
 			var multiLineLogSource = TryCreateMultiLineLogFile(serviceContainer, newLogSources.Last(), maximumWaitTime);
 			if (multiLineLogSource != null)
@@ -426,11 +430,6 @@ namespace Tailviewer.Core.Sources.Text
 			                             source,
 			                             maximumWaitTime,
 			                             nonCachedColumns);
-		}
-
-		private static ILogSource CreateAdorner(ILogSource source)
-		{
-			return new LogSourceAdorner(source);
 		}
 
 		private static ILogSource TryCreateMultiLineLogFile(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)

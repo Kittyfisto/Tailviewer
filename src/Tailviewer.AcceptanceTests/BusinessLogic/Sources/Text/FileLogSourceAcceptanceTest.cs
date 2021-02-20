@@ -173,7 +173,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				var overwrittenEncoding = Encoding.GetEncoding(1252);
 				logSource.SetProperty(TextProperties.OverwrittenEncoding, overwrittenEncoding);
 				logSource.Property(x => x.GetProperty(TextProperties.Encoding)).ShouldEventually().Be(overwrittenEncoding);
-				logSource.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because there's still no BOM and thus Tailviewer may not have claimed to auto detect the encoding");
 				logSource.GetProperty(TextProperties.Encoding).Should().Be(overwrittenEncoding, "because we've overwritten the encoding for this source");
 			}

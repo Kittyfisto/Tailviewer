@@ -17,7 +17,6 @@ using Tailviewer.Test.BusinessLogic.Sources;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 {
 	[TestFixture]
-	[Ignore("I broke a few tests will fix em with the next commit")]
 	public sealed class FileLogSourceAcceptanceTest2
 		: AbstractLogSourceTest
 	{
