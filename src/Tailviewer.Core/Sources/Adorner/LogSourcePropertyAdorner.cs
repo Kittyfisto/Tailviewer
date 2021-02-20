@@ -38,7 +38,8 @@ namespace Tailviewer.Core.Sources.Adorner
 			AllAdornedProperties = new IReadOnlyPropertyDescriptor[]
 			{
 				GeneralProperties.StartTimestamp,
-				GeneralProperties.EndTimestamp
+				GeneralProperties.EndTimestamp,
+				GeneralProperties.Duration
 			};
 		}
 
@@ -49,7 +50,8 @@ namespace Tailviewer.Core.Sources.Adorner
 				GeneralColumns.Index
 			};
 			if (adornedProperties.Contains(GeneralProperties.StartTimestamp) ||
-			    adornedProperties.Contains(GeneralProperties.EndTimestamp))
+			    adornedProperties.Contains(GeneralProperties.EndTimestamp) ||
+			    adornedProperties.Contains(GeneralProperties.Duration))
 				requiredColumns.Add(GeneralColumns.Timestamp);
 
 			return requiredColumns;
@@ -154,8 +156,7 @@ namespace Tailviewer.Core.Sources.Adorner
 				{
 					_count = 0;
 					Listeners.Reset();
-					_propertiesBuffer.SetValue(GeneralProperties.StartTimestamp, GeneralProperties.StartTimestamp.DefaultValue);
-					_propertiesBuffer.SetValue(GeneralProperties.EndTimestamp, GeneralProperties.EndTimestamp.DefaultValue);
+					_propertiesBuffer.SetToDefault(_adornedProperties);
 					SynchronizeProperties();
 				}
 				else if (section.IsInvalidate)
@@ -201,6 +202,7 @@ namespace Tailviewer.Core.Sources.Adorner
 
 			_propertiesBuffer.SetValue(GeneralProperties.StartTimestamp, startTime);
 			_propertiesBuffer.SetValue(GeneralProperties.EndTimestamp, endTime);
+			_propertiesBuffer.SetValue(GeneralProperties.Duration, endTime - startTime);
 		}
 
 		private void SynchronizeProperties()

@@ -129,7 +129,7 @@ namespace Tailviewer.Core.Properties
 		{
 			lock (_syncRoot)
 			{
-				_storage.Reset();
+				_storage.SetToDefault();
 			}
 		}
 

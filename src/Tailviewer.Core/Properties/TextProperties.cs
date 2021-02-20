@@ -68,7 +68,7 @@ namespace Tailviewer.Core.Properties
 			var category = "text";
 			LineCount = new WellKnownReadOnlyProperty<long>(new []{category, "line_count"});
 			MaxCharactersInLine = new WellKnownReadOnlyProperty<int>(new []{category, "max_characters_in_line"});
-			AllowsMultiline = new WellKnownProperty<bool>(new[] {category, "is_multiline"});
+			AllowsMultiline = new WellKnownProperty<bool>(new[] {category, "allows_multiline"});
 			ByteOrderMark = new WellKnownReadOnlyProperty<bool?>(new[] {category, "byte_order_mark"});
 			AutoDetectedEncoding = new WellKnownReadOnlyProperty<Encoding>(new []{category, "auto_detected_encoding"});
 			OverwrittenEncoding = new WellKnownProperty<Encoding>(new []{category, "overwritten_encoding"});

@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		private Mock<ILogSource> _source;
 		private LogSourceListenerCollection _listeners;
 		private ManualTaskScheduler _scheduler;
-		private LogBufferList _entries;
+		private LogBufferList _sourceEntries;
 		private PropertiesBufferList _sourceProperties;
 
 		[SetUp]
@@ -31,14 +31,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			_scheduler = new ManualTaskScheduler();
 			_source = new Mock<ILogSource>();
 			_listeners = new LogSourceListenerCollection(_source.Object);
-			_entries = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp);
+			_sourceEntries = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp);
 			_sourceProperties = new PropertiesBufferList();
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer destination) => _sourceProperties.CopyAllValuesTo(destination));
 			_source.Setup(x => x.GetProperty(It.IsAny<IPropertyDescriptor>()))
 			       .Returns((IPropertyDescriptor property) => _sourceProperties.GetValue(property));
 
-			_source.Setup(x => x.Columns).Returns(() => _entries.Columns);
+			_source.Setup(x => x.Columns).Returns(() => _sourceEntries.Columns);
 			_source.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 			       .Callback((ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount) =>
 			       {
@@ -53,7 +53,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			                                It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
 			       .Callback((IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions) =>
 			       {
-				       _entries.CopyTo(new Int32View(sourceIndices), destination, destinationIndex);
+				       _sourceEntries.CopyTo(new Int32View(sourceIndices), destination, destinationIndex);
 			       });
 		}
 
@@ -125,12 +125,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 0,
 				Timestamp = new DateTime(2021, 02, 20, 18, 31, 45)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>())).Callback((IPropertiesBuffer
@@ -153,11 +153,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			_scheduler.RunOnce();
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			adorner.GetProperty(GeneralProperties.Duration).Should().BeNull();
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.Duration).Should().BeNull();
 		}
 
 		[Test]
@@ -167,25 +169,36 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			_scheduler.RunOnce();
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			adorner.GetProperty(GeneralProperties.Duration).Should().BeNull();
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.Duration).Should().BeNull();
 		}
 
 		[Test]
 		public void TestOneEntryNullTimestamp()
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				Timestamp = null
+			});
+
 			_scheduler.RunOnce();
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			adorner.GetProperty(GeneralProperties.Duration).Should().BeNull();
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.Duration).Should().BeNull();
 		}
 
 		[Test]
@@ -193,21 +206,23 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 0,
 				Timestamp = new DateTime(2021, 02, 20, 17, 52, 31)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 
 			_scheduler.RunOnce();
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.Zero);
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.Duration).Should().Be(TimeSpan.Zero);
 		}
 
 		[Test]
@@ -215,29 +230,31 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 0,
 				Timestamp = new DateTime(2021, 02, 20, 17, 52, 31)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 1,
 				Timestamp = new DateTime(2021, 02, 20, 18, 02, 12)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.FromSeconds(581));
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.FromSeconds(581));
 		}
 
 		[Test]
@@ -246,32 +263,35 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 0,
 				Timestamp = new DateTime(2021, 02, 20, 18, 03, 37)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 03, 37));
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 03, 37));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 1,
 				Timestamp = new DateTime(2021, 02, 20, 18, 02, 12)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 03, 37));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.FromSeconds(85));
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 03, 37));
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 02, 12));
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 18, 03, 37));
+			buffer.GetValue(GeneralProperties.Duration).Should().Be(TimeSpan.FromSeconds(85));
 		}
 
 		[Test]
@@ -279,31 +299,35 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
-			_entries.Add(new LogEntry
+			_sourceEntries.Add(new LogEntry
 			{
 				Index = 0,
 				Timestamp = new DateTime(2021, 02, 20, 17, 52, 31)
 			});
-			_listeners.OnRead(_entries.Count);
+			_listeners.OnRead(_sourceEntries.Count);
 			_scheduler.RunOnce();
 
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			adorner.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.Zero);
 
 			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2021, 02, 20, 17, 52, 31));
+			buffer.GetValue(GeneralProperties.Duration).Should().Be(TimeSpan.Zero);
 
-			_entries.Clear();
+			_sourceEntries.Clear();
 			_listeners.Reset();
 			_scheduler.RunOnce();
 			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
 			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			adorner.GetProperty(GeneralProperties.Duration).Should().BeNull();
 
 			adorner.GetAllProperties(buffer);
-			adorner.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			adorner.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.StartTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.EndTimestamp).Should().BeNull();
+			buffer.GetValue(GeneralProperties.Duration).Should().BeNull();
 		}
 	}
 }

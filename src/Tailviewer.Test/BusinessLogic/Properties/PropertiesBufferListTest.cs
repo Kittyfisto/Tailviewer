@@ -59,15 +59,41 @@ namespace Tailviewer.Test.BusinessLogic.Properties
 
 		[Test]
 		[Description("Verifies that values are reset to the default value as specified by their property")]
-		public void TestReset()
+		public void TestSetToDefault()
 		{
 			var properties = new PropertiesBufferList();
 			properties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 			properties.SetValue(GeneralProperties.PercentageProcessed, Percentage.Of(50, 100));
 
-			properties.Reset();
+			properties.SetToDefault();
 			properties.GetValue(GeneralProperties.EmptyReason).Should().Be(GeneralProperties.EmptyReason.DefaultValue);
 			properties.GetValue(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+		}
+
+		[Test]
+		[Description("Verifies that only the properties specified are reset to default")]
+		public void TestSetToDefaultPartial()
+		{
+			var properties = new PropertiesBufferList();
+			properties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(GeneralProperties.PercentageProcessed, Percentage.Of(50, 100));
+
+			properties.SetToDefault(new []{GeneralProperties.PercentageProcessed});
+			properties.GetValue(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed, "because only the PercentageProcessed property may have been reset");
+			properties.GetValue(GeneralProperties.PercentageProcessed).Should().Be(GeneralProperties.PercentageProcessed.DefaultValue);
+		}
+
+		[Test]
+		[Description("Verifies that only the properties specified are reset to default")]
+		public void TestSetToDefaultNull()
+		{
+			var properties = new PropertiesBufferList();
+			properties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(GeneralProperties.PercentageProcessed, Percentage.Of(50, 100));
+
+			new Action(() => properties.SetToDefault(null)).Should().Throw<ArgumentNullException>();
+			properties.GetValue(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+			properties.GetValue(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Of(50, 100));
 		}
 
 		[Test]

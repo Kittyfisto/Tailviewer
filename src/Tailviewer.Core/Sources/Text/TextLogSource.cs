@@ -11,6 +11,7 @@ using Metrolib;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Settings;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -235,6 +236,10 @@ namespace Tailviewer.Core.Sources.Text
 				else if (Equals(column, GeneralColumns.RawContent))
 				{
 					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
+				}
+				else if (Equals(column, BufferedLogSource.RetrievalState))
+				{
+					GetRetrievalState(sourceIndices, (RetrievalState[])(object)destination, destinationIndex);
 				}
 				else
 				{
@@ -472,8 +477,9 @@ namespace Tailviewer.Core.Sources.Text
 			certainty = length >= maxHeaderLength
 				? Certainty.Sure
 				: Certainty.Uncertain;
+			var memoryStream = new MemoryStream(header);
 
-			_formatMatcher.TryMatchFormat(_fullFilename, stream, _encoding, out var format);
+			_formatMatcher.TryMatchFormat(_fullFilename, memoryStream, _encoding, out var format);
 			if (format != null)
 				return format;
 
@@ -555,6 +561,21 @@ namespace Tailviewer.Core.Sources.Text
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Message
 						: GeneralColumns.RawContent.DefaultValue;
+				}
+			}
+		}
+
+		private void GetRetrievalState(IReadOnlyList<LogLineIndex> indices, RetrievalState[] destination, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					var line = GetLogLine(index);
+					destination[destinationIndex + i] = line != null
+						? RetrievalState.Retrieved
+						: RetrievalState.NotInSource;
 				}
 			}
 		}
