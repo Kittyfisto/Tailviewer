@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Buffers;
@@ -39,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 		[Test]
 		public void TestGetSetValue()
 		{
-			var buffer = new string[]
+			var buffer = new[]
 			{
 				"Good",
 				"Morning",
@@ -249,6 +248,124 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			}
 
 			for (int i = offset + count; i < offset + count + surplus; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+		}
+
+		[Test]
+		public void TestFillDefault_SingleColumn()
+		{
+			var offset = 5;
+			var count = 3;
+			var surplus = 5;
+			var originalBuffer = new LogLineIndex[offset + count + surplus];
+			var buffer = new LogLineIndex[offset+count+surplus];
+
+			for (int i = 0; i < offset + count + surplus; ++i)
+			{
+				originalBuffer[i] = buffer[i] = i + 1;
+			}
+
+			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var fillOffset = 1;
+			view.FillDefault(GeneralColumns.Index, fillOffset, count - fillOffset);
+
+			for (int i = 0; i < offset + fillOffset; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+
+			for (int i = offset + fillOffset; i < offset + count; ++i)
+			{
+				buffer[i].Should().Be(GeneralColumns.Index.DefaultValue);
+			}
+
+			for (int i = offset + count; i < offset + count + surplus; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+		}
+
+		[Test]
+		public void TestFillDefault_NoSuchColumn()
+		{
+			var offset = 5;
+			var count = 3;
+			var surplus = 5;
+			var originalBuffer = new LogLineIndex[offset + count + surplus];
+			var buffer = new LogLineIndex[offset+count+surplus];
+
+			for (int i = 0; i < offset + count + surplus; ++i)
+			{
+				originalBuffer[i] = buffer[i] = i + 1;
+			}
+
+			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var fillOffset = 1;
+			new Action(() => view.FillDefault(GeneralColumns.OriginalIndex, fillOffset, count - fillOffset))
+				.Should().Throw<NoSuchColumnException>();
+
+			for (int i = 0; i <  offset + count + surplus; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+		}
+
+		[Test]
+		public void TestFill_SingleColumn()
+		{
+			var offset = 5;
+			var count = 3;
+			var surplus = 5;
+			var originalBuffer = new LogLineIndex[offset + count + surplus];
+			var buffer = new LogLineIndex[offset+count+surplus];
+
+			for (int i = 0; i < offset + count + surplus; ++i)
+			{
+				originalBuffer[i] = buffer[i] = i + 1;
+			}
+
+			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var fillOffset = 1;
+			view.Fill(GeneralColumns.Index, 42,fillOffset, count - fillOffset);
+
+			for (int i = 0; i < offset + fillOffset; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+
+			for (int i = offset + fillOffset; i < offset + count; ++i)
+			{
+				buffer[i].Should().Be(42);
+			}
+
+			for (int i = offset + count; i < offset + count + surplus; ++i)
+			{
+				buffer[i].Should().Be(originalBuffer[i]);
+			}
+		}
+
+		[Test]
+		public void TestFill_NoSuchColumn()
+		{
+			var offset = 5;
+			var count = 3;
+			var surplus = 5;
+			var originalBuffer = new LogLineIndex[offset + count + surplus];
+			var buffer = new LogLineIndex[offset+count+surplus];
+
+			for (int i = 0; i < offset + count + surplus; ++i)
+			{
+				originalBuffer[i] = buffer[i] = i + 1;
+			}
+
+			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var fillOffset = 1;
+			new Action(() => view.Fill(GeneralColumns.OriginalIndex, 42, fillOffset, count - fillOffset))
+				.Should().Throw<NoSuchColumnException>();
+
+			for (int i = 0; i < offset + count + surplus; ++i)
 			{
 				buffer[i].Should().Be(originalBuffer[i]);
 			}

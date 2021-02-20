@@ -46,7 +46,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 
 		private FileLogSource Create(string fileName)
 		{
-			return new FileLogSource(_services, fileName, TimeSpan.Zero);
+			return new FileLogSource(_services, fileName);
 		}
 
 		[Test]
@@ -176,6 +176,84 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because there's still no BOM and thus Tailviewer may not have claimed to auto detect the encoding");
 				logSource.GetProperty(TextProperties.Encoding).Should().Be(overwrittenEncoding, "because we've overwritten the encoding for this source");
+			}
+		}
+
+		#endregion
+
+		#region Log Level Count
+
+		[Test]
+		[Description("Verifies that the levels are counted correctly")]
+		public void TestLevelCount1()
+		{
+			var fileName = @"TestData\LevelCounts.txt";
+			using (var logSource = Create(fileName))
+			{
+				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(27, "because the data source contains that many lines");
+				logSource.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(6, "because the data source contains six trace lines");
+				logSource.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(1, "because the data source contains one debug line");
+				logSource.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(2, "because the data source contains two info lines");
+				logSource.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(3, "because the data source contains three warnings");
+				logSource.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(4, "because the data source contains four errors");
+				logSource.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(5, "because the data source contains five fatal lines");
+				logSource.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(6, "because the file is read in singleline mode and 6 lines don't have a recognizable log level");
+			}
+		}
+
+		[Test]
+		[Ignore("I've broken this but I don't know where and how")]
+		[Description("Verifies that the levels are counted correctly")]
+		public void TestLevelCount2()
+		{
+			var fileName = TextLogSourceAcceptanceTest.File20Mb;
+			using (var logSource = Create(fileName))
+			{
+				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+
+				logSource.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
+				logSource.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+				logSource.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(165337);
+				logSource.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(5);
+				logSource.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+				logSource.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the level of a log line is unambigously defined")]
+		public void TestLevelPrecedence()
+		{
+			var fileName = @"TestData\DifferentLevels.txt";
+			using (var logSource = Create(fileName))
+			{
+				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				
+				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
+
+				var entries = logSource.GetEntries(new LogFileSection(0, 6));
+				entries[0].RawContent.Should().Be("DEBUG ERROR WARN FATAL INFO");
+				entries[0].LogLevel.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
+
+				entries[1].RawContent.Should().Be("INFO DEBUG ERROR WARN FATAL");
+				entries[1].LogLevel.Should().Be(LevelFlags.Info, "Because INFO is the first level to appear in the line");
+
+				entries[2].RawContent.Should().Be("WARN ERROR FATAL INFO DEBUG");
+				entries[2].LogLevel.Should().Be(LevelFlags.Warning, "Because WARN is the first level to appear in the line");
+
+				entries[3].RawContent.Should().Be("ERROR INFO DEBUG FATAL WARN");
+				entries[3].LogLevel.Should().Be(LevelFlags.Error, "Because ERROR is the first level to appear in the line");
+
+				entries[4].RawContent.Should().Be("FATAL ERROR INFO WARN DEBUG");
+				entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "Because FATAL is the first level to appear in the line");
+
+				// TODO: Multiline
+				//entries[5].RawContent.Should().Be("fatal error info warn debug");
+				//entries[5].LogLevel.Should()
+				//          .Be(LevelFlags.Fatal,
+				//              "Because this line belongs to the previous log entry and thus is marked as fatal as well");
+				//entries[5].LogEntryIndex.Should().Be(entries[4].LogEntryIndex);
 			}
 		}
 

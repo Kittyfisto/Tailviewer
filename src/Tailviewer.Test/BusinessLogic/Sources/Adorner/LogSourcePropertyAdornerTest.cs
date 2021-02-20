@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			_scheduler = new ManualTaskScheduler();
 			_source = new Mock<ILogSource>();
 			_listeners = new LogSourceListenerCollection(_source.Object);
-			_sourceEntries = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp);
+			_sourceEntries = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogLevel, GeneralColumns.Timestamp);
 			_sourceProperties = new PropertiesBufferList();
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer destination) => _sourceProperties.CopyAllValuesTo(destination));
@@ -66,6 +66,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 		public void TestConstruction()
 		{
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			adorner.Properties.Should().Contain(LogSourcePropertyAdorner.AllAdornedProperties);
+
 			adorner.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because no processing has been done just yet");
 
 			var buffer = new PropertiesBufferList();
@@ -107,17 +110,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
 
 			var format = new Mock<ILogFileFormat>();
-			_source.Setup(x => x.GetProperty(GeneralProperties.Format)).Returns(format.Object);
-			_source.Setup(x => x.GetProperty((IReadOnlyPropertyDescriptor)GeneralProperties.Format)).Returns((object)format.Object);
+			_sourceProperties.SetValue(GeneralProperties.Format, format.Object);
+			_scheduler.RunOnce();
 
 			adorner.GetProperty(GeneralProperties.Format).Should().Be(format.Object,
 			                                                          "because the adorner should forward GetProperty calls to the source when they aren't adorned and return its return value");
-			_source.Verify(x => x.GetProperty(GeneralProperties.Format), Times.Once);
-
-
 			adorner.GetProperty((IReadOnlyPropertyDescriptor)GeneralProperties.Format).Should().Be(format.Object,
 			                                                          "because the adorner should forward GetProperty calls to the source when they aren't adorned and return its return value");
-			_source.Verify(x => x.GetProperty((IReadOnlyPropertyDescriptor)GeneralProperties.Format), Times.Once);
 		}
 
 		[Test]
@@ -131,13 +130,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 				Timestamp = new DateTime(2021, 02, 20, 18, 31, 45)
 			});
 			_listeners.OnRead(_sourceEntries.Count);
+			_sourceProperties.SetValue(TextProperties.Encoding, Encoding.UTF32);
 			_scheduler.RunOnce();
-
-			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>())).Callback((IPropertiesBuffer
-				destination) =>
-			{
-				destination.SetValue(TextProperties.Encoding, Encoding.UTF32);
-			});
 
 			var buffer = new PropertiesBufferList();
 			adorner.GetAllProperties(buffer);
@@ -328,6 +322,370 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Adorner
 			buffer.GetValue(GeneralProperties.StartTimestamp).Should().BeNull();
 			buffer.GetValue(GeneralProperties.EndTimestamp).Should().BeNull();
 			buffer.GetValue(GeneralProperties.Duration).Should().BeNull();
+		}
+
+		[Test]
+		public void TestLogLevelOther()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Other
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(1);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(1);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelTrace()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Trace
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelDebug()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Debug
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelInfo()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Info
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelWarning()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Warning
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelError()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Error
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+		}
+
+		[Test]
+		public void TestLogLevelFatal()
+		{
+			var adorner = new LogSourcePropertyAdorner(_scheduler, _source.Object, TimeSpan.Zero);
+
+			_sourceEntries.Add(new LogEntry
+			{
+				Index = 0,
+				LogLevel = LevelFlags.Fatal
+			});
+			_listeners.OnRead(_sourceEntries.Count);
+			_scheduler.RunOnce();
+
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(1);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			var buffer = new PropertiesBufferList(GeneralProperties.StartTimestamp, GeneralProperties.EndTimestamp);
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(1);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			_sourceEntries.Clear();
+			_listeners.Reset();
+			_scheduler.RunOnce();
+			adorner.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			adorner.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(0);
+
+			adorner.GetAllProperties(buffer);
+			buffer.GetValue(GeneralProperties.TraceLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.DebugLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.InfoLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.WarningLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+			buffer.GetValue(GeneralProperties.OtherLogEntryCount).Should().Be(0);
 		}
 	}
 }

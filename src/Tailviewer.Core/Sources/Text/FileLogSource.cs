@@ -357,7 +357,7 @@ namespace Tailviewer.Core.Sources.Text
 				else
 				{
 					Listeners.OnRead(section.LastIndex);
-					_count = section.LastIndex;
+					_count = (int) (section.Index + section.Count);
 				}
 
 				workDone = true;

@@ -20,7 +20,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly LogSourceCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
 		private readonly LogSourceProxy _logSource;
@@ -46,7 +45,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_taskScheduler = taskScheduler;
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
-			_counter = new LogSourceCounter();
 
 			_logSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
 			_search = new LogSourceSearchProxy(taskScheduler, _logSource, maximumWaitTime);
@@ -174,21 +172,21 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public abstract ILogSource UnfilteredLogSource { get; }
 
-		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
+		public int NoLevelCount => UnfilteredLogSource.GetProperty(GeneralProperties.OtherLogEntryCount);
 
-		public int TraceCount => _counter.Trace.LogEntryCount;
+		public int TraceCount => UnfilteredLogSource.GetProperty(GeneralProperties.TraceLogEntryCount);
 
-		public int DebugCount => _counter.Debugs.LogEntryCount;
+		public int DebugCount => UnfilteredLogSource.GetProperty(GeneralProperties.DebugLogEntryCount);
 
-		public int InfoCount => _counter.Infos.LogEntryCount;
+		public int InfoCount => UnfilteredLogSource.GetProperty(GeneralProperties.InfoLogEntryCount);
 
-		public int WarningCount => _counter.Warnings.LogEntryCount;
+		public int WarningCount => UnfilteredLogSource.GetProperty(GeneralProperties.WarningLogEntryCount);
 
-		public int ErrorCount => _counter.Errors.LogEntryCount;
+		public int ErrorCount => UnfilteredLogSource.GetProperty(GeneralProperties.ErrorLogEntryCount);
 
-		public int FatalCount => _counter.Fatals.LogEntryCount;
+		public int FatalCount => UnfilteredLogSource.GetProperty(GeneralProperties.FatalLogEntryCount);
 
-		public int NoTimestampCount => _counter.NoTimestamp.LogEntryCount;
+		public int NoTimestampCount => 0;
 
 		public string FullFileName => _settings.File;
 
@@ -243,7 +241,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DataSource Settings => _settings;
 
-		public int TotalCount => _counter.Total.LogLineCount;
+		public int TotalCount => UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount);
 
 		public Size? FileSize => UnfilteredLogSource.GetProperty(GeneralProperties.Size);
 
@@ -283,7 +281,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			_logSource.Dispose();
 			_search.Dispose();
-			_counter.Dispose();
 
 			_findAllLogSource.Dispose();
 			_findAllSearch.Dispose();
@@ -321,8 +318,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		protected void OnUnfilteredLogFileChanged()
 		{
-			_previousUnfilteredLogSource?.RemoveListener(_counter);
-			UnfilteredLogSource.AddListener(_counter, TimeSpan.Zero, 1000);
 			_previousUnfilteredLogSource = UnfilteredLogSource;
 
 			CreateFilteredLogFile();

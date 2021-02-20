@@ -88,6 +88,7 @@
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceManualTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceRealTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\FilteredAndMergedLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\FilteredLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\MergedLogFileTest.CustomTimestampParser.cs" />

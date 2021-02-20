@@ -185,7 +185,6 @@
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogSourceSearchTest.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
     <Compile Include="BusinessLogic\Sources\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />

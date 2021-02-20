@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using Tailviewer.Core.Buffers;
@@ -20,6 +21,7 @@ namespace Tailviewer.Core.Sources.Adorner
 		: AbstractLogSource
 		, ILogSourceListener
 	{
+		private static readonly IReadOnlyDictionary<IReadOnlyPropertyDescriptor, IColumnDescriptor> ColumnsByProperty;
 		public static readonly IReadOnlyList<IReadOnlyPropertyDescriptor> AllAdornedProperties;
 
 		private readonly ILogSource _source;
@@ -27,7 +29,6 @@ namespace Tailviewer.Core.Sources.Adorner
 		private readonly IReadOnlyList<IReadOnlyPropertyDescriptor> _adornedProperties;
 		private readonly IReadOnlyList<IColumnDescriptor> _requiredColumns;
 		private readonly PropertiesBufferList _propertiesBuffer;
-		private readonly PropertiesBufferList _sourceProperties;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly ConcurrentQueue<LogFileSection> _pendingSections;
 		private readonly LogBufferArray _buffer;
@@ -35,26 +36,41 @@ namespace Tailviewer.Core.Sources.Adorner
 
 		static LogSourcePropertyAdorner()
 		{
-			AllAdornedProperties = new IReadOnlyPropertyDescriptor[]
+			ColumnsByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IColumnDescriptor>
 			{
-				GeneralProperties.StartTimestamp,
-				GeneralProperties.EndTimestamp,
-				GeneralProperties.Duration
+				{GeneralProperties.StartTimestamp, GeneralColumns.Timestamp },
+				{GeneralProperties.EndTimestamp, GeneralColumns.Timestamp },
+				{GeneralProperties.Duration, GeneralColumns.Timestamp },
+
+				{GeneralProperties.TraceLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.DebugLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.InfoLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.WarningLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.ErrorLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.FatalLogEntryCount, GeneralColumns.LogLevel },
+				{GeneralProperties.OtherLogEntryCount, GeneralColumns.LogLevel },
 			};
+
+			AllAdornedProperties = ColumnsByProperty.Keys.ToList();
 		}
 
+		[Pure]
 		private static IReadOnlyList<IColumnDescriptor> GetColumnsRequiredFor(IReadOnlyList<IReadOnlyPropertyDescriptor> adornedProperties)
 		{
-			var requiredColumns = new List<IColumnDescriptor>
+			var requiredColumns = new HashSet<IColumnDescriptor>
 			{
 				GeneralColumns.Index
 			};
-			if (adornedProperties.Contains(GeneralProperties.StartTimestamp) ||
-			    adornedProperties.Contains(GeneralProperties.EndTimestamp) ||
-			    adornedProperties.Contains(GeneralProperties.Duration))
-				requiredColumns.Add(GeneralColumns.Timestamp);
 
-			return requiredColumns;
+			foreach (var property in adornedProperties)
+			{
+				if (!ColumnsByProperty.TryGetValue(property, out var column))
+					throw new ArgumentException($"This log source doesn't support adorning '{property}'!");
+
+				requiredColumns.Add(column);
+			}
+
+			return requiredColumns.ToList();
 		}
 
 		public LogSourcePropertyAdorner(ITaskScheduler scheduler, ILogSource source, TimeSpan maximumWaitTime)
@@ -67,14 +83,7 @@ namespace Tailviewer.Core.Sources.Adorner
 			_source = source;
 			_maximumWaitTime = maximumWaitTime;
 			_adornedProperties = adornedProperties;
-			foreach (var adornedProperty in _adornedProperties)
-			{
-				if (!AllAdornedProperties.Contains(adornedProperty))
-					throw new ArgumentException($"This log source doesn't support adorning '{adornedProperty}'!");
-			}
-
 			_propertiesBuffer = new PropertiesBufferList(_adornedProperties);
-			_sourceProperties = new PropertiesBufferList();
 			_properties = new ConcurrentPropertiesList(_adornedProperties);
 			_pendingSections = new ConcurrentQueue<LogFileSection>();
 			_requiredColumns = GetColumnsRequiredFor(_adornedProperties);
@@ -89,20 +98,16 @@ namespace Tailviewer.Core.Sources.Adorner
 
 		public override IReadOnlyList<IColumnDescriptor> Columns => _source.Columns;
 
-		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _source.Properties.Concat(_adornedProperties).ToList();
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
 
 		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			if (_properties.Contains(property))
-				return _properties.GetValue(property);
-			return _source.GetProperty(property);
+			return _properties.GetValue(property);
 		}
 
 		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			if (_properties.Contains(property))
-				return _properties.GetValue(property);
-			return _source.GetProperty(property);
+			return _properties.GetValue(property);
 		}
 
 		public override void SetProperty(IPropertyDescriptor property, object value)
@@ -117,7 +122,6 @@ namespace Tailviewer.Core.Sources.Adorner
 
 		public override void GetAllProperties(IPropertiesBuffer destination)
 		{
-			_source.GetAllProperties(destination);
 			_properties.CopyAllValuesTo(destination);
 		}
 
@@ -141,15 +145,22 @@ namespace Tailviewer.Core.Sources.Adorner
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			var pendingSections = _pendingSections.DequeueAll();
-			Process(pendingSections);
+			if (!Process(pendingSections))
+			{
+				SynchronizeProperties();
+				Listeners.OnRead(_count);
+			}
 
 			return _maximumWaitTime;
 		}
 
 		#endregion
 
-		private void Process(IReadOnlyList<LogFileSection> pendingSections)
+		private bool Process(IReadOnlyList<LogFileSection> pendingSections)
 		{
+			if (pendingSections.Count == 0)
+				return false;
+
 			foreach (var section in pendingSections)
 			{
 				if (section.IsReset)
@@ -173,49 +184,109 @@ namespace Tailviewer.Core.Sources.Adorner
 					Listeners.OnRead(_count);
 				}
 			}
+
+			return true;
 		}
 
 		private void Process(LogFileSection section)
 		{
 			DateTime? startTime = _propertiesBuffer.GetValue(GeneralProperties.StartTimestamp);
 			DateTime? endTime = _propertiesBuffer.GetValue(GeneralProperties.EndTimestamp);
+			int traceCount = _propertiesBuffer.GetValue(GeneralProperties.TraceLogEntryCount);
+			int debugCount = _propertiesBuffer.GetValue(GeneralProperties.DebugLogEntryCount);
+			int infoCount = _propertiesBuffer.GetValue(GeneralProperties.InfoLogEntryCount);
+			int warningCount = _propertiesBuffer.GetValue(GeneralProperties.WarningLogEntryCount);
+			int errorCount = _propertiesBuffer.GetValue(GeneralProperties.ErrorLogEntryCount);
+			int fatalCount = _propertiesBuffer.GetValue(GeneralProperties.FatalLogEntryCount);
+			int otherCount = _propertiesBuffer.GetValue(GeneralProperties.OtherLogEntryCount);
+
 			_source.GetEntries(section, _buffer, 0, LogSourceQueryOptions.Default);
+			bool evaluateTimestamp = _requiredColumns.Contains(GeneralColumns.Timestamp);
+			bool evaluateLevel = _requiredColumns.Contains(GeneralColumns.LogLevel);
+
 			foreach (var entry in _buffer)
 			{
 				if (!entry.Index.IsValid)
 					break;
 
-				var timestamp = entry.Timestamp;
-				if (timestamp != null)
+				if (evaluateTimestamp)
 				{
-					if (startTime == null)
-						startTime = timestamp;
-					else if (timestamp < startTime)
-						startTime = timestamp;
+					var timestamp = entry.Timestamp;
+					if (timestamp != null)
+					{
+						if (startTime == null)
+							startTime = timestamp;
+						else if (timestamp < startTime)
+							startTime = timestamp;
 
-					if (endTime == null)
-						endTime = timestamp;
-					else if (timestamp > endTime)
-						endTime = timestamp;
+						if (endTime == null)
+							endTime = timestamp;
+						else if (timestamp > endTime)
+							endTime = timestamp;
+					}
+				}
+
+				if (evaluateLevel)
+				{
+					var level = entry.LogLevel;
+					switch (level)
+					{
+						case LevelFlags.Fatal:
+							++fatalCount;
+							break;
+						case LevelFlags.Error:
+							++errorCount;
+							break;
+						case LevelFlags.Warning:
+							++warningCount;
+							break;
+						case LevelFlags.Info:
+							++infoCount;
+							break;
+						case LevelFlags.Debug:
+							++debugCount;
+							break;
+						case LevelFlags.Trace:
+							++traceCount;
+							break;
+						case LevelFlags.Other:
+							++otherCount;
+							break;
+					}
 				}
 			}
 
-			_propertiesBuffer.SetValue(GeneralProperties.StartTimestamp, startTime);
-			_propertiesBuffer.SetValue(GeneralProperties.EndTimestamp, endTime);
-			_propertiesBuffer.SetValue(GeneralProperties.Duration, endTime - startTime);
+			if (evaluateTimestamp)
+			{
+				_propertiesBuffer.SetValue(GeneralProperties.StartTimestamp, startTime);
+				_propertiesBuffer.SetValue(GeneralProperties.EndTimestamp, endTime);
+				_propertiesBuffer.SetValue(GeneralProperties.Duration, endTime - startTime);
+			}
+
+			if (evaluateLevel)
+			{
+				_propertiesBuffer.SetValue(GeneralProperties.TraceLogEntryCount, traceCount);
+				_propertiesBuffer.SetValue(GeneralProperties.DebugLogEntryCount, debugCount);
+				_propertiesBuffer.SetValue(GeneralProperties.InfoLogEntryCount, infoCount);
+				_propertiesBuffer.SetValue(GeneralProperties.WarningLogEntryCount, warningCount);
+				_propertiesBuffer.SetValue(GeneralProperties.ErrorLogEntryCount, errorCount);
+				_propertiesBuffer.SetValue(GeneralProperties.FatalLogEntryCount, fatalCount);
+				_propertiesBuffer.SetValue(GeneralProperties.OtherLogEntryCount, otherCount);
+			}
 		}
 
 		private void SynchronizeProperties()
 		{
-			_source.GetAllProperties(_sourceProperties);
+			_source.GetAllProperties(_propertiesBuffer.Except(_adornedProperties));
 
-			var sourceProcessed = _sourceProperties.GetValue(GeneralProperties.PercentageProcessed);
-			var sourceCount = _sourceProperties.GetValue(GeneralProperties.LogEntryCount);
+			var sourceProcessed = _propertiesBuffer.GetValue(GeneralProperties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(GeneralProperties.LogEntryCount);
 			var ownProgress = sourceCount > 0
 				? Percentage.Of(_count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
 			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, _count);
 			_properties.CopyFrom(_propertiesBuffer);
 		}
 

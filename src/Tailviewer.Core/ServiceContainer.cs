@@ -133,8 +133,8 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogSource CreateTextLogFile(string fileName)
 		{
-			//return new FileLogSource(this, fileName);
-			return new TextLogSource(this, fileName);
+			return new FileLogSource(this, fileName);
+			//return new TextLogSource(this, fileName);
 		}
 
 		/// <inheritdoc />

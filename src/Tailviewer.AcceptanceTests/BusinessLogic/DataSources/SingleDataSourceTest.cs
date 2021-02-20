@@ -1,17 +1,18 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using FluentAssertions;
+using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
-namespace Tailviewer.Test.BusinessLogic.DataSources
+namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class SingleDataSourceTest
@@ -155,26 +156,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_scheduler.PeriodicTaskCount.Should().BeGreaterThan(0);
 			source.Dispose();
 			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
-		}
-
-		[Test]
-		[Description("Verifies that the levels are counted correctly")]
-		public void TestLevelCount1()
-		{
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = DataSourceId.CreateNew() }))
-			{
-				_scheduler.Run(2);
-				dataSource.UnfilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-
-				dataSource.TotalCount.Should().Be(27, "because the data source contains that many lines");
-				dataSource.DebugCount.Should().Be(1, "because the data source contains one debug line");
-				dataSource.InfoCount.Should().Be(2, "because the data source contains two info lines");
-				dataSource.WarningCount.Should().Be(3, "because the data source contains three warnings");
-				dataSource.ErrorCount.Should().Be(4, "because the data source contains four errors");
-				dataSource.FatalCount.Should().Be(5, "because the data source contains five fatal lines");
-				dataSource.TraceCount.Should().Be(6, "because the data source contains six trace lines");
-				dataSource.NoLevelCount.Should().Be(0, "because all non-matching lines are assumed to belong to the previous line");
-			}
 		}
 
 		[Test]

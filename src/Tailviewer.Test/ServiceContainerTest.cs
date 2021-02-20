@@ -54,22 +54,5 @@ namespace Tailviewer.Test
 			container.TryRetrieve(out ITypeFactory service).Should().BeFalse();
 			service.Should().BeNull();
 		}
-
-		[Test]
-		[Description("Verifies that the encoding of the text log file can be specified via text log file settings")]
-		public void TestCreateTextLogFileOverwriteEncoding()
-		{
-			var container = new ServiceContainer();
-			container.RegisterInstance<ITaskScheduler>(new ManualTaskScheduler());
-			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
-
-			var settings = new LogFileSettings();
-			settings.DefaultEncoding = Encoding.UTF32;
-			container.RegisterInstance<ILogFileSettings>(settings);
-
-			var logFile = container.CreateTextLogFile("foo");
-			logFile.GetProperty(TextProperties.AutoDetectedEncoding).Should().Be(Encoding.UTF32);
-		}
 	}
 }
