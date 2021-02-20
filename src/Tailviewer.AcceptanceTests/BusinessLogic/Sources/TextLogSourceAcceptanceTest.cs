@@ -4,20 +4,20 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using FluentAssertions;
+using log4net;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.Test;
-using log4net;
 using Tailviewer.Core;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
+using Tailviewer.Test;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	[TestFixture]
-	public sealed class TextLogFileAcceptanceTest
+	public sealed class TextLogSourceAcceptanceTest
 	{
 		public const string File1Mb_1Line = @"TestData\1Mb_1Line.txt";
 		public const string File1Mb_2Lines = @"TestData\1Mb_2Lines.txt";

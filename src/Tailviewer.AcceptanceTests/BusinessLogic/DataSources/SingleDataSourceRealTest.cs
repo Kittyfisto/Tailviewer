@@ -2,7 +2,7 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
@@ -20,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			_scheduler = new DefaultTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
-			_settings = new DataSource(TextLogFileAcceptanceTest.File20Mb)
+			_settings = new DataSource(TextLogSourceAcceptanceTest.File20Mb)
 			{
 				Id = DataSourceId.CreateNew()
 			};

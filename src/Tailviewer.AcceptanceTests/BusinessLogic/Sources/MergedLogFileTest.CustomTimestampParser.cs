@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	internal sealed class CustomTimestampParser : ITimestampParser
 	{

@@ -3,7 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
@@ -41,8 +41,8 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Description("Verifies that the number of search results is properly forwarded to the view model upon Update()")]
 		public void TestSearch1()
 		{
-			var settings = new DataSource(TextLogFileAcceptanceTest.File2Mb) { Id = DataSourceId.CreateNew() };
-			using (var logFile = Create(TextLogFileAcceptanceTest.File2Mb))
+			var settings = new DataSource(TextLogSourceAcceptanceTest.File2Mb) { Id = DataSourceId.CreateNew() };
+			using (var logFile = Create(TextLogSourceAcceptanceTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);

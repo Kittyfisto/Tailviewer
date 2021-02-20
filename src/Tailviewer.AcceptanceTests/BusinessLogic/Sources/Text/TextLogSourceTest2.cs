@@ -6,7 +6,7 @@ using Tailviewer.Plugins;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.Sources;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 {
 	[TestFixture]
 	public sealed class TextLogSourceTest2

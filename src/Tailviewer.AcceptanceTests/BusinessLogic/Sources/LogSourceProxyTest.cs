@@ -6,7 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Core.Sources;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	[TestFixture]
 	public sealed class LogSourceProxyTest

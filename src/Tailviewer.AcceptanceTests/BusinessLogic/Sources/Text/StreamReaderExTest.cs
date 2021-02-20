@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 {
 	[TestFixture]
 	public sealed class StreamReaderExTest
@@ -13,7 +13,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		[Test]
 		public void TestReadBigLine1()
 		{
-			var fileName = TextLogFileAcceptanceTest.File1Mb_1Line;
+			var fileName = TextLogSourceAcceptanceTest.File1Mb_1Line;
 			var actualLines = File.ReadAllLines(fileName);
 			using (var stream = File.OpenRead(fileName))
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
@@ -31,7 +31,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		[Test]
 		public void TestReadBigLine2()
 		{
-			var fileName = TextLogFileAcceptanceTest.File1Mb_2Lines;
+			var fileName = TextLogSourceAcceptanceTest.File1Mb_2Lines;
 			var actualLines = File.ReadAllLines(fileName);
 			using (var stream = File.OpenRead(fileName))
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
@@ -66,7 +66,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		public void TestReadLine_Performance()
 		{
 			using (var stream =
-				File.OpenRead(TextLogFileAcceptanceTest.File1Mb_1Line))
+				File.OpenRead(TextLogSourceAcceptanceTest.File1Mb_1Line))
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
 			{
 				reader.ExecutionTimeOf(x => x.ReadLine()).Should().BeLessThan(TimeSpan.FromSeconds(0.5));

@@ -11,7 +11,7 @@ using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	[TestFixture]
 	public sealed class MultiLineLogSourceTest
@@ -47,7 +47,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies accessing entries by log file section")]
 		public void TestMultilineNoLevel1()
 		{
-			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogSourceAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogSource(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
@@ -103,7 +103,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies accessing entries by log file index list")]
 		public void TestMultilineNoLevel2()
 		{
-			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogSourceAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogSource(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
@@ -167,7 +167,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies accessing entries by log file index list")]
 		public void TestMultilineNoLevel3()
 		{
-			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogSourceAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogSource(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);

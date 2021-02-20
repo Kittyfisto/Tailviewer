@@ -10,10 +10,10 @@ using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Core.Sources.Text;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	[TestFixture]
-	public sealed class FilteredAndMergedLogFileTest
+	public sealed class FilteredAndMergedLogSourceTest
 	{
 		private DefaultTaskScheduler _scheduler;
 
@@ -40,8 +40,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Ignore("Test isn't finished yet")]
 		public void Test()
 		{
-			using (var source1 = Create(TextLogFileAcceptanceTest.File2Entries))
-			using (var source2 = Create(TextLogFileAcceptanceTest.File2Lines))
+			using (var source1 = Create(TextLogSourceAcceptanceTest.File2Entries))
+			using (var source2 = Create(TextLogSourceAcceptanceTest.File2Lines))
 			{
 				var sources = new List<ILogSource> {source1, source2};
 				using (var merged = new MergedLogSource(_scheduler, TimeSpan.FromMilliseconds(10), sources))

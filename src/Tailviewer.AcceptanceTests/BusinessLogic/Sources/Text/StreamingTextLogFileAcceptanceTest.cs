@@ -10,7 +10,7 @@ using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 {
 	[TestFixture]
 	public sealed class StreamingTextLogFileAcceptanceTest

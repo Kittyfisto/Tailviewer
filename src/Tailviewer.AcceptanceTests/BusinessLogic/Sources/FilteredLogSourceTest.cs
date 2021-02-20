@@ -13,12 +13,12 @@ using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 {
 	[TestFixture]
 	public sealed class FilteredLogSourceTest
 	{
-		private const string File20Mb = TextLogFileAcceptanceTest.File20Mb;
+		private const string File20Mb = TextLogSourceAcceptanceTest.File20Mb;
 
 		private DefaultTaskScheduler _scheduler;
 
