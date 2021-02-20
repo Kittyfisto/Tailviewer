@@ -9,7 +9,7 @@ using Tailviewer.Core.Properties;
 namespace Tailviewer.Core.Sources
 {
 	/// <summary>
-	///     This class is responsible for calculating the values for certain columns based on the data of an underlying
+	///     This class is responsible for calculating the values for certain columns and properties based on the data of an underlying
 	///     <see cref="ILogSource" />.
 	/// </summary>
 	/// <remarks>

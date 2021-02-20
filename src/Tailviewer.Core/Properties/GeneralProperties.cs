@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Metrolib;
 using Tailviewer.Plugins;
 
@@ -79,11 +78,6 @@ namespace Tailviewer.Core.Properties
 		public static readonly IReadOnlyPropertyDescriptor<Certainty> FormatDetectionCertainty;
 
 		/// <summary>
-		///     The <see cref="Encoding"/> used by tailviewer to interpret the log file's content as text.
-		/// </summary>
-		public static readonly IPropertyDescriptor<Encoding> Encoding;
-
-		/// <summary>
 		///     The minimum set of properties a log file is expected to provide.
 		/// </summary>
 		public static readonly IReadOnlyList<IReadOnlyPropertyDescriptor> Minimum;
@@ -105,7 +99,6 @@ namespace Tailviewer.Core.Properties
 			EmptyReason = new WellKnownReadOnlyProperty<ErrorFlags>(new []{category, "empty_reason"});
 			Format = new WellKnownReadOnlyProperty<ILogFileFormat>(new []{category, "format"});
 			FormatDetectionCertainty = new WellKnownReadOnlyProperty<Certainty>(new []{category, "format_detection_certainty"});
-			Encoding = new WellKnownProperty<Encoding>(new []{category, "encoding"});
 
 			Minimum = new IReadOnlyPropertyDescriptor[]
 			{
@@ -120,8 +113,7 @@ namespace Tailviewer.Core.Properties
 				PercentageProcessed,
 				EmptyReason,
 				Format,
-				FormatDetectionCertainty,
-				Encoding
+				FormatDetectionCertainty
 			};
 		}
 

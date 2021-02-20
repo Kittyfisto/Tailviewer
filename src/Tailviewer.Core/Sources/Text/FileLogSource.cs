@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Plugins;
@@ -35,7 +35,8 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly object _syncRoot;
 		private readonly IServiceContainer _services;
 		private readonly string _fullFilename;
-		private readonly FileFormatDetector _detector;
+		private readonly EncodingDetector _encodingDetector;
+		private readonly FileFormatDetector _formatDetector;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly TimeSpan _maximumWaitTime;
@@ -48,6 +49,7 @@ namespace Tailviewer.Core.Sources.Text
 		private IReadOnlyList<ILogSource> _logSources;
 		private ILogSource _finalLogSource;
 		private int _count;
+		private FileFingerprint _lastFingerprint;
 
 		#endregion
 
@@ -66,8 +68,8 @@ namespace Tailviewer.Core.Sources.Text
 			_maximumWaitTime = maximumWaitTime;
 
 			var formatMatcher = services.Retrieve<ILogFileFormatMatcher>();
-			// TODO: Fetch default encoding from settings
-			_detector = new FileFormatDetector(formatMatcher, _fullFilename, Encoding.Default);
+			_encodingDetector = new EncodingDetector();
+			_formatDetector = new FileFormatDetector(formatMatcher);
 
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>>();
 
@@ -129,7 +131,16 @@ namespace Tailviewer.Core.Sources.Text
 			}
 			else
 			{
-				// TODO: Fill
+				if (sourceIndices == null)
+					throw new ArgumentNullException(nameof(sourceIndices));
+				if (column == null)
+					throw new ArgumentNullException(nameof(column));
+				if (destination == null)
+					throw new ArgumentNullException(nameof(destination));
+				if (destinationIndex < 0)
+					throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+				destination.Fill(column.DefaultValue, destinationIndex, sourceIndices.Count);
 			}
 		}
 
@@ -161,6 +172,7 @@ namespace Tailviewer.Core.Sources.Text
 				// We do not want to dispose those sources from within the lock!
 				// We don't know what they're doing and for how long they're doing it...
 			}
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
 			Dispose(logSources);
 
 			base.DisposeAdditional();
@@ -180,32 +192,137 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void UpdateFormat()
 		{
-			var format = _detector.TryDetermineFormat(out var encoding);
-			var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
-			var encodingChanged = _propertiesBuffer.SetValue(GeneralProperties.Encoding, encoding);
-			var currentLogSources = _logSources;
-
-			if (currentLogSources == null || currentLogSources.Count == 0 ||
-			    formatChanged || encodingChanged)
+			try
 			{
-				Dispose(currentLogSources);
-
-				// Depending on the log file we're actually opening, the plugins we have installed, the final log source
-				// that we expose here could be anything. It could be the raw log source which reads everything line by line,
-				// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
-				var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
-				if (!StartListenTo(newLogSources))
+				if (DetectFileChange(out var overwrittenEncoding))
 				{
-					Dispose(newLogSources);
+					if (!File.Exists(_fullFilename))
+					{
+						_propertiesBuffer.SetValue(GeneralProperties.Format, null);
+						_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
+						_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
+						_propertiesBuffer.SetValue(TextProperties.Encoding, null);
+					}
+					else
+					{
+						using (var stream = new FileStream(_fullFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+						{
+							var autoDetectedEncoding = _encodingDetector.TryFindEncoding(stream);
+							var defaultEncoding = _services.TryRetrieve<Encoding>() ?? Encoding.Default;
+							var format = _formatDetector.TryDetermineFormat(_fullFilename, stream, overwrittenEncoding ?? autoDetectedEncoding ?? defaultEncoding);
+							var encoding = PickEncoding(overwrittenEncoding, format, autoDetectedEncoding, defaultEncoding);
+							var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
+							_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, autoDetectedEncoding);
+							_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, autoDetectedEncoding != null);
+							var encodingChanged = _propertiesBuffer.SetValue(TextProperties.Encoding, encoding);
+							var currentLogSources = _logSources;
+
+							if (currentLogSources == null || currentLogSources.Count == 0 ||
+							    formatChanged || encodingChanged)
+							{
+								Dispose(currentLogSources);
+
+								// Depending on the log file we're actually opening, the plugins we have installed, the final log source
+								// that we expose here could be anything. It could be the raw log source which reads everything line by line,
+								// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
+								var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
+								if (!StartListenTo(newLogSources))
+								{
+									Dispose(newLogSources);
+								}
+							}
+						}
+					}
+
+					
 				}
 			}
+			catch (IOException e)
+			{
+				Log.DebugFormat("Caught exception while reading '{0}': {1}", _fullFilename, e);
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught unexpected exception while reading '{0}': {1}", _fullFilename, e);
+			}
+		}
+
+		private bool DetectFileChange(out Encoding overwrittenEncoding)
+		{
+			overwrittenEncoding = null;
+			if (!File.Exists(_fullFilename))
+			{
+				if (_lastFingerprint != null)
+				{
+					_lastFingerprint = null;
+					Log.DebugFormat("File {0} no longer exists", _fullFilename);
+					return true;
+				}
+
+				return false;
+			}
+
+			var currentFingerprint = FileFingerprint.FromFile(_fullFilename);
+			if (!Equals(currentFingerprint, _lastFingerprint))
+			{
+				Log.DebugFormat("File {0} fingerprint changed from {1} to {2}", _fullFilename, _lastFingerprint, currentFingerprint);
+				_lastFingerprint = currentFingerprint;
+				return true;
+			}
+
+			overwrittenEncoding = _properties.GetValue(TextProperties.OverwrittenEncoding);
+			var currentEncoding = _properties.GetValue(TextProperties.Encoding);
+			if (!Equals(overwrittenEncoding, null) && !Equals(overwrittenEncoding, currentEncoding))
+			{
+				Log.DebugFormat("File {0} user chose an overwritten encoding {1} which differs from the current encoding {2}", _fullFilename, overwrittenEncoding, overwrittenEncoding);
+				return true;
+			}
+
+			return false;
+		}
+
+		[Pure]
+		private Encoding PickEncoding(Encoding overwrittenEncoding, ILogFileFormat format, Encoding detectedEncoding, Encoding defaultEncoding)
+		{
+			var formatEncoding = format?.Encoding;
+			if (overwrittenEncoding != null)
+			{
+				if (formatEncoding != null)
+					Log.DebugFormat("File {0} format specifies Encoding {1} but the user forced the encoding to be {2} instead",
+					                _fullFilename,
+					                formatEncoding.WebName,
+					                overwrittenEncoding.WebName);
+
+				return overwrittenEncoding;
+			}
+
+			if (formatEncoding != null)
+			{
+				if (detectedEncoding != null)
+					Log.WarnFormat("File {0} has been detected to be encoded with {1}, but its format ({2}) says it's encoded with {3}, choosing the latter....",
+					               _fullFilename,
+					               detectedEncoding.WebName,
+					               format,
+					               formatEncoding.WebName);
+
+				return formatEncoding;
+			}
+
+			if (detectedEncoding != null)
+			{
+				Log.DebugFormat("File {0}: Encoding was auto detected to be {1}", _fullFilename, detectedEncoding);
+				return detectedEncoding;
+			}
+
+			Log.DebugFormat("File {0}: No encoding could be determined, falling back to {1}", _fullFilename, defaultEncoding);
+			return defaultEncoding;
 		}
 
 		private void UpdateProperties()
 		{
 			if (_finalLogSource != null)
 			{
-				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(GeneralProperties.Encoding, GeneralProperties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
+				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(TextProperties.AutoDetectedEncoding, GeneralProperties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
 			}
 			else
 			{
@@ -318,7 +435,7 @@ namespace Tailviewer.Core.Sources.Text
 
 		private static ILogSource TryCreateMultiLineLogFile(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
 		{
-			if (!source.GetProperty(TextProperties.IsMultiline))
+			if (!source.GetProperty(TextProperties.AllowsMultiline))
 				return null;
 
 			var multiLineLogSource = new MultiLineLogSource(serviceContainer.Retrieve<ITaskScheduler>(), source, maximumWaitTime);

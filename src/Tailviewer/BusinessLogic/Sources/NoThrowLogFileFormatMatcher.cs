@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using log4net;
 using Tailviewer.Plugins;
 
@@ -30,7 +32,10 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		#region Implementation of ILogFileFormatMatcher
 
-		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+		public bool TryMatchFormat(string fileName,
+		                           Stream fileStream,
+		                           Encoding encoding,
+		                           out ILogFileFormat format)
 		{
 			try
 			{
@@ -40,7 +45,7 @@ namespace Tailviewer.BusinessLogic.Sources
 					return false;
 				}
 
-				return _inner.TryMatchFormat(fileName, initialContent, out format);
+				return _inner.TryMatchFormat(fileName, fileStream, encoding, out format);
 			}
 			catch (Exception e)
 			{

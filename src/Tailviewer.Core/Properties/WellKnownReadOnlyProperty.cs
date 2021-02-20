@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,12 +14,13 @@ namespace Tailviewer.Core.Properties
 		: IReadOnlyPropertyDescriptor<T>
 		, IWellKnownReadOnlyPropertyDescriptor
 	{
-		private readonly string _id;
 		private readonly T _defaultValue;
+		private readonly string _id;
 
 		public WellKnownReadOnlyProperty(string id, T defaultValue = default)
-			: this(new []{id}, defaultValue)
-		{}
+			: this(new[] {id}, defaultValue)
+		{
+		}
 
 		public WellKnownReadOnlyProperty(IEnumerable<string> path, T defaultValue = default)
 		{
@@ -31,13 +33,35 @@ namespace Tailviewer.Core.Properties
 			_defaultValue = defaultValue;
 		}
 
-		public string Id => _id;
+		public string Id
+		{
+			get { return _id; }
+		}
 
-		public Type DataType => typeof(T);
+		public Type DataType
+		{
+			get { return typeof(T); }
+		}
 
-		public T DefaultValue => _defaultValue;
+		public T DefaultValue
+		{
+			get { return _defaultValue; }
+		}
 
-		object IReadOnlyPropertyDescriptor.DefaultValue => DefaultValue;
+		IEqualityComparer<T> IReadOnlyPropertyDescriptor<T>.Comparer
+		{
+			get { return null; }
+		}
+
+		IEqualityComparer IReadOnlyPropertyDescriptor.Comparer
+		{
+			get { return null; }
+		}
+
+		object IReadOnlyPropertyDescriptor.DefaultValue
+		{
+			get { return DefaultValue; }
+		}
 
 		public override string ToString()
 		{

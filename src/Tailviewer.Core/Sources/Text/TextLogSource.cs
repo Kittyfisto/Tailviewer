@@ -130,7 +130,7 @@ namespace Tailviewer.Core.Sources.Text
 			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
 			var encoding = overwrittenEncoding ?? defaultEncoding;
 			_encoding = encoding ?? Encoding.UTF8;
-			_properties.SetValue(GeneralProperties.Encoding, encoding);
+			_properties.SetValue(TextProperties.AutoDetectedEncoding, encoding);
 
 			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
 
@@ -299,7 +299,7 @@ namespace Tailviewer.Core.Sources.Text
 						}
 
 						var encoding = format?.Encoding ?? _encoding;
-						_localProperties.SetValue(GeneralProperties.Encoding, encoding);
+						_localProperties.SetValue(TextProperties.AutoDetectedEncoding, encoding);
 						using (var reader = new StreamReaderEx(stream, encoding))
 						{
 							// We change the error flag explicitly AFTER opening
@@ -473,7 +473,7 @@ namespace Tailviewer.Core.Sources.Text
 				? Certainty.Sure
 				: Certainty.Uncertain;
 
-			_formatMatcher.TryMatchFormat(_fullFilename, header, out var format);
+			_formatMatcher.TryMatchFormat(_fullFilename, stream, _encoding, out var format);
 			if (format != null)
 				return format;
 
@@ -646,7 +646,7 @@ namespace Tailviewer.Core.Sources.Text
 			_localProperties.SetValue(GeneralProperties.Size, null);
 			_localProperties.SetValue(GeneralProperties.Format, null);
 			_localProperties.SetValue(GeneralProperties.FormatDetectionCertainty, Certainty.None);
-			_localProperties.SetValue(GeneralProperties.Encoding, null);
+			_localProperties.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_localProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
 			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
 			SetError(ErrorFlags.SourceDoesNotExist);

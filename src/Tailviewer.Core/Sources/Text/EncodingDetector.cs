@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using log4net;
 
 namespace Tailviewer.Core.Sources.Text
 {
@@ -16,6 +18,8 @@ namespace Tailviewer.Core.Sources.Text
 	internal sealed class EncodingDetector
 	{
 		private readonly List<KeyValuePair<byte[], Encoding>> _encodingsByPreamble;
+
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public EncodingDetector()
 		{
@@ -46,8 +50,14 @@ namespace Tailviewer.Core.Sources.Text
 					return TryFindEncoding(stream);
 				}
 			}
-			catch (Exception)
+			catch (IOException e)
 			{
+				Log.DebugFormat("Caught exception while reading '{0}': {1}", fileName, e);
+				return null;
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught unexpected exception while reading '{0}': {1}", fileName, e);
 				return null;
 			}
 		}

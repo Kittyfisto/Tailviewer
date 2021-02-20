@@ -466,7 +466,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 
 			#region Implementation of ILogFileFormatMatcher
 
-			public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+			public bool TryMatchFormat(string fileName,
+			                           Stream stream,
+			                           Encoding encoding,
+			                           out ILogFileFormat format)
 			{
 				++NumTries;
 				format = Format;

@@ -42,11 +42,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			source.Setup(x => x.Properties).Returns(GeneralProperties.Minimum);
 			using (var file = Create(source.Object))
 			{
-				file.SetProperty(GeneralProperties.Encoding, Encoding.BigEndianUnicode);
-				source.Verify(x => x.SetProperty(GeneralProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
+				file.SetProperty(TextProperties.OverwrittenEncoding, Encoding.BigEndianUnicode);
+				source.Verify(x => x.SetProperty(TextProperties.OverwrittenEncoding, Encoding.BigEndianUnicode), Times.Once);
 
-				file.SetProperty((IPropertyDescriptor)GeneralProperties.Encoding, Encoding.BigEndianUnicode);
-				source.Verify(x => x.SetProperty((IPropertyDescriptor)GeneralProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
+				file.SetProperty((IPropertyDescriptor)TextProperties.OverwrittenEncoding, Encoding.BigEndianUnicode);
+				source.Verify(x => x.SetProperty((IPropertyDescriptor)TextProperties.OverwrittenEncoding, Encoding.BigEndianUnicode), Times.Once);
 			}
 		}
 

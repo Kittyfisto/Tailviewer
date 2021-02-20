@@ -33,11 +33,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 				{ GeneralProperties.PercentageProcessed, "Processed" },
 				{ GeneralProperties.Format, "Format" },
-				{ GeneralProperties.Encoding, "Encoding" }
+				{ TextProperties.AutoDetectedEncoding, "Encoding" }
 			};
 			_wellKnownPresenters = new Dictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>>
 			{
-				{GeneralProperties.Encoding, displayName => new EncodingPropertyPresenter(displayName)}
+				{TextProperties.AutoDetectedEncoding, displayName => new EncodingPropertyPresenter(displayName)}
 			};
 		}
 

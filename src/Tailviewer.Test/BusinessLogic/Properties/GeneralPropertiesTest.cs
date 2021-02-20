@@ -25,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic.Properties
 			GeneralProperties.EmptyReason.Should().NotBeNull();
 			GeneralProperties.Format.Should().NotBeNull();
 			GeneralProperties.FormatDetectionCertainty.Should().NotBeNull();
-			GeneralProperties.Encoding.Should().NotBeNull();
+			TextProperties.AutoDetectedEncoding.Should().NotBeNull();
 		}
 
 		[Test]

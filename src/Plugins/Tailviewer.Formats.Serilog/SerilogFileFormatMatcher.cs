@@ -20,14 +20,17 @@ namespace Tailviewer.Formats.Serilog
 
 		#region Implementation of ILogFileFormatMatcher
 
-		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+		public bool TryMatchFormat(string fileName,
+		                           Stream stream,
+		                           Encoding encoding,
+		                           out ILogFileFormat format)
 		{
 			var formats = _repository.Formats.OfType<SerilogFileFormat>();
 
 			foreach (var serilogFormat in formats)
 			{
 				var parser = serilogFormat.Parser;
-				using (var reader = CreateStreamReader(initialContent, serilogFormat.Encoding))
+				using (var reader = CreateStreamReader(stream, serilogFormat.Encoding ?? encoding))
 				{
 					if (TryParseFormat(reader, parser))
 					{
@@ -54,9 +57,8 @@ namespace Tailviewer.Formats.Serilog
 			return true;
 		}
 
-		private static StreamReader CreateStreamReader(byte[] initialContent, Encoding encoding)
+		private static StreamReader CreateStreamReader(Stream stream, Encoding encoding)
 		{
-			var stream = new MemoryStream(initialContent);
 			if (encoding != null)
 				return new StreamReader(stream, encoding);
 
