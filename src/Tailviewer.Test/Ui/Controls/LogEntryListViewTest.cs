@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -10,7 +11,9 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
+using Tailviewer.Test.BusinessLogic.Sources.Buffer;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 using WpfUnit;
@@ -44,7 +47,7 @@ namespace Tailviewer.Test.Ui.Controls
 			DispatcherExtensions.ExecuteAllEvents();
 
 
-			_logSource = new InMemoryLogSource();
+			_logSource = new InMemoryLogSource(GeneralColumns.Minimum.Concat(new[]{BufferedLogSource.RetrievalState}));
 
 			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}

@@ -118,13 +118,19 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public void FillDefault(int offset, int length)
 		{
-			ArrayExtensions.Fill(_buffer, _column.DefaultValue, _offset + offset, length);
+			_buffer.Fill(_column.DefaultValue, _offset + offset, length);
 		}
 
 		/// <inheritdoc />
 		public void FillDefault(IColumnDescriptor column, int destinationIndex, int length)
 		{
 			throw new System.NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void Fill<T1>(IColumnDescriptor<T1> column, T1 value, int destinationIndex, int length)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

@@ -7,6 +7,7 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Core.Sources.Text;
+using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer
 {
@@ -124,6 +125,7 @@ namespace Tailviewer
 			//SetLogLevelOf<LogFileProxy>(Level.Debug);
 			SetLogLevelOf<StreamingTextLogSource>(Level.Debug);
 			SetLogLevelOf<StreamingTextLogSource.AbstractReadRequest>(Level.Debug);
+			SetLogLevelOf<TextCanvas>(Level.Debug);
 
 			hierarchy.Root.Level = Level.Info;
 			hierarchy.Configured = true;

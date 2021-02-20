@@ -24,6 +24,8 @@ namespace Tailviewer.Core.Sources.Buffer
 			_buffer = new LogBufferArray(pageSize, columns);
 			_lastAccessTime = DateTime.MinValue;
 			_numReads = 0;
+
+			_buffer.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotInSource, 0, _pageSize);
 		}
 
 		public int NumReads => _numReads;
@@ -43,6 +45,7 @@ namespace Tailviewer.Core.Sources.Buffer
 
 			// We neither need, nor want the source buffer to have to supply the indices - we know them ourselves
 			_buffer.CopyFrom(GeneralColumns.Index, pageDestinationIndex, new LogFileSection(_section.Index + pageDestinationIndex, count), 0, count);
+			_buffer.Fill(BufferedLogSource.RetrievalState, RetrievalState.Retrieved, pageDestinationIndex, count);
 		}
 
 		public bool TryRead(LogLineIndex sourceStartIndex, int count, ILogBuffer destination, int destinationIndex, bool requiresValidityCheck)
@@ -74,6 +77,34 @@ namespace Tailviewer.Core.Sources.Buffer
 			var offset = evictionStartIndex - _section.Index;
 			var count = _pageSize - offset;
 			_buffer.FillDefault(offset, count);
+			_buffer.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotInSource, offset, count);
+		}
+
+		public void FillTo(int sourceCount)
+		{
+			// We have to determine ourselves how much the page needs to be filled.
+			// It's possible (nay, likely) that the source covers more than this entire page,
+			// so we will have to pay attention to not fill too much
+			var count = Math.Min(sourceCount - _section.Index, _pageSize);
+			_buffer.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotCached, 0, count);
+		}
+
+		public void SetSourceSize(int count)
+		{
+			// We need to check how much of the source has become available and especially how many entries that is
+			// into our page (it might still only be a partial page):
+			var countInPage = Math.Min(count - _section.Index, _pageSize);
+
+			// Alright, so we have to fill those entries where we previously said "NotInSource" with "NotInCache", because
+			// those entries just became part of the source (albeit have not been cached, hence the change in state).
+			for (int i = 0; i < countInPage; ++i)
+			{
+				var entry = _buffer[i];
+				if (entry.GetValue(BufferedLogSource.RetrievalState) == RetrievalState.NotInSource)
+				{
+					entry.SetValue(BufferedLogSource.RetrievalState, RetrievalState.NotCached);
+				}
+			}
 		}
 	}
 }

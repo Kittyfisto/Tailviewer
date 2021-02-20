@@ -111,6 +111,15 @@ namespace Tailviewer.Core.Buffers
 			_inner.FillDefault(column, destinationIndex, length);
 		}
 
+		/// <inheritdoc />
+		public void Fill<T>(IColumnDescriptor<T> column, T value, int destinationIndex, int length)
+		{
+			if (!_columns.Contains(column))
+				throw new NoSuchColumnException(column);
+
+			_inner.Fill(column, value, destinationIndex, length);
+		}
+
 		ILogEntry ILogBuffer.this[int index]
 		{
 			get

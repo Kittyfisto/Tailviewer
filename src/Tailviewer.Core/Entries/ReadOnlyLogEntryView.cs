@@ -246,6 +246,12 @@ namespace Tailviewer.Core.Entries
 			return _columns.Contains(column);
 		}
 
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return ReadOnlyLogEntryExtensions.ToString(this);
+		}
+
 		#endregion
 	}
 }

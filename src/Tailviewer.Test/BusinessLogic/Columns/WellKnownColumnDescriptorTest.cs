@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic.Columns
 		[Test]
 		public void TestCustomDefaultValue()
 		{
-			var column = new WellKnownColumnDescriptor<double>("foo", "Foo", 42);
+			var column = new WellKnownColumnDescriptor<double>("foo", 42);
 			column.DefaultValue.Should().Be(42.0);
 			((IColumnDescriptor) column).DefaultValue.Should().Be(42.0);
 		}

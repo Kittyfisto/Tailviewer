@@ -35,6 +35,9 @@ namespace Tailviewer.Core
 			if (that == null)
 				throw new ArgumentNullException(nameof(that));
 
+			if (start + count > that.Length)
+				throw new ArgumentException("The given array is not large enough to hold the required data");
+
 			for (var i = 0; i < count; ++i)
 				that[start + i] = value;
 		}

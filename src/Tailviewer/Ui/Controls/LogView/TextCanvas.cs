@@ -18,6 +18,7 @@ using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -66,7 +67,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, GeneralColumns.LogLevel, GeneralColumns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, BufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -330,19 +331,30 @@ namespace Tailviewer.Ui.Controls.LogView
 					var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater, TimeSpan.Zero);
 					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0, queryOptions);
 
+					if (_visibleBufferBuffer.ContainsAnyDefault(GeneralColumns.RawContent, new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
+					{
+						Console.WriteLine("fuck");
+					}
+
 					// Now comes the fun part. We need to detect if we could fetch *all* the data.
-					// This is done by inspecting the GeneralColumns.Index value - if we encounter any InvalidValue, then we either accessed an invalid
-					// region (which only happens when the file shrinks and is no common-occurrence) or when we couldn't retrieve
-					// all the data (which will be the case 99% of the time).
+					// This is done by inspecting the BufferedLogSource.RetrievalState - if we encounter any NotCached value,
+					// then the entry is part of the source, but was not cached at the time of trying to access it.
 					// If that's the case, we will instruct this canvas to re-fetch the once more in a bit. This loop will terminate once the
 					// cache has managed to fetch the desired data which should happen some time...
-					if (_visibleBufferBuffer.ContainsAnyDefault(GeneralColumns.Index,
-					                                            new Int32Range(0, _currentlyVisibleSection.Count)))
+					if (_visibleBufferBuffer.ContainsAny(BufferedLogSource.RetrievalState,
+					                                     RetrievalState.NotCached,
+					                                     new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
 					{
+						Log.DebugFormat("Requires further update (at least one entry is not in cache)");
 						_requiresFurtherUpdate = true;
 					}
 					else
 					{
+						if (_requiresFurtherUpdate)
+						{
+							Log.DebugFormat("No longer requires further update (all retrieved log entries are in cache)");
+						}
+
 						_requiresFurtherUpdate = false;
 					}
 

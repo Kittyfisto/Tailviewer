@@ -71,6 +71,18 @@ namespace Tailviewer
 		void FillDefault(IColumnDescriptor column, int destinationIndex, int length);
 
 		/// <summary>
+		///    Fills the given region of the given column with default values for that column's data type.
+		/// </summary>
+		/// <remarks>
+		///     This buffer must be large enough already to accomodate the data.
+		/// </remarks>
+		/// <param name="column"></param>
+		/// <param name="value"></param>
+		/// <param name="destinationIndex"></param>
+		/// <param name="length"></param>
+		void Fill<T>(IColumnDescriptor<T> column, T value, int destinationIndex, int length);
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="index"></param>

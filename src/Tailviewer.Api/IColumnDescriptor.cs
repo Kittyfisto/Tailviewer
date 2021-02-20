@@ -17,11 +17,6 @@ namespace Tailviewer
 		string Id { get; }
 
 		/// <summary>
-		///     The human readable name of this column. If none is given, then <see cref="Id"/> is used.
-		/// </summary>
-		string DisplayName { get; }
-
-		/// <summary>
 		///     The type of the data provided by this column.
 		/// </summary>
 		Type DataType { get; }

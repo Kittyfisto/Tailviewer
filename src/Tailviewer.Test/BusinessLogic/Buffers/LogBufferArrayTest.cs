@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Core;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 
@@ -28,6 +29,26 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			buffer.Columns.Should().Equal(new object[] {GeneralColumns.RawContent, GeneralColumns.DeltaTime });
 			buffer.Count.Should().Be(count);
 			buffer.Should().HaveCount(count);
+		}
+
+		[Test]
+		public void TestConstructionNullColumns()
+		{
+			new Action(() => new LogBufferArray(1, null))
+				.Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestContainsColumn()
+		{
+			var buffer = new LogBufferArray(42, new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Index, GeneralColumns.RawContent});
+			buffer.Contains(GeneralColumns.LogLevel).Should().BeTrue();
+			buffer.Contains(GeneralColumns.Index).Should().BeTrue();
+			buffer.Contains(GeneralColumns.RawContent).Should().BeTrue();
+
+			buffer.Contains(GeneralColumns.Message).Should().BeFalse();
+			buffer.Contains(GeneralColumns.OriginalLineNumber).Should().BeFalse();
+			buffer.Contains(GeneralColumns.DeltaTime).Should().BeFalse();
 		}
 
 		[Test]
@@ -321,6 +342,65 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 				null,
 				TimeSpan.FromMinutes(-10)
 			});
+		}
+
+		[Test]
+		public void TestFill()
+		{
+			var buffer = new LogBufferArray(10, GeneralColumns.LineNumber);
+			buffer.Fill(GeneralColumns.LineNumber, 42, 2, 4);
+			buffer.Fill(GeneralColumns.LineNumber, 1337, 7, 2);
+
+			buffer[0].LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
+			buffer[1].LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
+			buffer[2].LineNumber.Should().Be(42);
+			buffer[3].LineNumber.Should().Be(42);
+			buffer[4].LineNumber.Should().Be(42);
+			buffer[5].LineNumber.Should().Be(42);
+			buffer[6].LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
+			buffer[7].LineNumber.Should().Be(1337);
+			buffer[8].LineNumber.Should().Be(1337);
+			buffer[9].LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
+		}
+
+		[Test]
+		public void TestFill_NullColumn()
+		{
+			var buffer = new LogBufferArray(10, GeneralColumns.LineNumber);
+			new Action(() => buffer.Fill(null, 42, 2, 4)).Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestFillInvalidLength()
+		{
+			var buffer = new LogBufferArray(10, GeneralColumns.LineNumber);
+			buffer.Fill(GeneralColumns.LineNumber, 42, 0, 10);
+			new Action(() => buffer.Fill(GeneralColumns.LineNumber, 9001, 0, 11))
+				.Should().Throw<ArgumentException>();
+
+			for(int i = 0; i < 10; ++i)
+				buffer[i].LineNumber.Should().Be(42, "because nothing may have been overwritten");
+		}
+
+		[Test]
+		public void TestContainsAny()
+		{
+			var buffer = new LogBufferArray(3, GeneralColumns.LineNumber);
+			buffer[0].LineNumber = 1;
+			buffer[1].LineNumber = 2;
+			buffer[2].LineNumber = 3;
+
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(0, 1)).Should().BeTrue();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(0, 2)).Should().BeTrue();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(0, 3)).Should().BeTrue();
+			
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(1, 1)).Should().BeFalse();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(1, 2)).Should().BeFalse();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 1, new Int32Range(2, 1)).Should().BeFalse();
+
+			buffer.ContainsAny(GeneralColumns.LineNumber, 2, new Int32Range(0, 3)).Should().BeTrue();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 2, new Int32Range(0, 1)).Should().BeFalse();
+			buffer.ContainsAny(GeneralColumns.LineNumber, 2, new Int32Range(2, 1)).Should().BeFalse();
 		}
 
 		protected override IReadOnlyLogBuffer CreateEmptyReadOnly(IEnumerable<IColumnDescriptor> columns)

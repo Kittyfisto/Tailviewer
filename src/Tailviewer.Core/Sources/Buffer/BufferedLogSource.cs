@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Sources.Buffer
 {
@@ -14,6 +15,15 @@ namespace Tailviewer.Core.Sources.Buffer
 		: ILogSource
 		, ILogSourceListener
 	{
+		/// <summary>
+		///     Tests if the log entry was successfully retrieved.
+		/// </summary>
+		/// <remarks>
+		///     This column is necessary for when a client requests to fetch data *only* from the cache *and* wants
+		///     to check which entries were successfully retrieved (and especially which ones were not).
+		/// </remarks>
+		public static readonly IColumnDescriptor<RetrievalState> RetrievalState;
+
 		private readonly object _syncRoot;
 		private readonly ProxyLogListenerCollection _listeners;
 		private readonly IReadOnlyList<IColumnDescriptor> _cachedColumns;
@@ -27,6 +37,11 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		public const int DefaultPageSize = 50;
 		public const int DefaultMaxPageCount = 100;
+
+		static BufferedLogSource()
+		{
+			RetrievalState = new WellKnownColumnDescriptor<RetrievalState>("retrieval_state", Buffer.RetrievalState.NotInSource);
+		}
 
 		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
 			: this(taskScheduler, source, maximumWaitTime, new IColumnDescriptor[0], pageSize, maxNumPages)
@@ -198,6 +213,17 @@ namespace Tailviewer.Core.Sources.Buffer
 			{
 				if (_buffer.TryGetEntries(sourceIndices, destination, destinationIndex, out accessedPageBoundaries))
 					return true;
+
+				if (destination.Contains(GeneralColumns.RawContent) && (queryOptions.QueryMode& LogSourceQueryMode.FetchForLater) == LogSourceQueryMode.FetchForLater)
+				{
+					for (int i = destinationIndex; i < destination.Count; ++i)
+					{
+						if (destination[i].RawContent == null)
+						{
+							Console.WriteLine("fuck");
+						}
+					}
+				}
 			}
 
 			return false;
@@ -229,14 +255,10 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		private void FetchPagesFromSource()
 		{
-			var sections = _fetchQueue.DequeueAll();
-			if (sections.Count > _maxNumPages)
-			{
-				// There's no point in fetching more data than can fit in the cache.
-				// When that happens, we assume that the data accessed last is more important than
-				// the one we accessed earlier...
-				sections = sections.Skip(sections.Count - _maxNumPages).ToList();
-			}
+			// There's no point in fetching more data than can fit in the cache.
+			// When that happens, we assume that the data accessed last is more important than
+			// the one we accessed earlier...
+			var sections = _fetchQueue.DequeueAll().Reverse().Take(_maxNumPages).ToList();
 
 			foreach (var section in sections)
 			{

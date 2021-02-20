@@ -14,7 +14,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private readonly int _pageSize;
 		private readonly int _maxPageCount;
 		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
-		private readonly IReadOnlyList<IColumnDescriptor> _cachedColumns;
+		private readonly IReadOnlyList<IColumnDescriptor> _requiredColumns;
 		private readonly List<Page> _pages;
 		private int _sourceCount;
 
@@ -42,8 +42,11 @@ namespace Tailviewer.Core.Sources.Buffer
 
 			_pageSize = pageSize;
 			_maxPageCount = maxPageCount;
-			_allColumns = new []{GeneralColumns.Index}.Concat(columns).Distinct().ToList(); //< This buffer only makes sense when it stores the index column, as otherwise one just doesn't know which data is present
-			_cachedColumns = _allColumns.Except(new []{GeneralColumns.Index}).ToList();
+			// This buffer only makes sense when it offers the index and retrieval state column, as otherwise one just doesn't know which data is present
+			var calculatedColumns = new IColumnDescriptor[] {GeneralColumns.Index, BufferedLogSource.RetrievalState};
+			_allColumns = calculatedColumns.Concat(columns).Distinct().ToList();
+			// Since we calculate the retrieval state ourselves, we don't require log entries to have it..
+			_requiredColumns = _allColumns.Except(calculatedColumns).ToList();
 			_pages = new List<Page>(maxPageCount);
 			_sourceCount = 0;
 		}
@@ -71,10 +74,13 @@ namespace Tailviewer.Core.Sources.Buffer
 			{
 				EvictFromOnward(count);
 			}
+			else
+			{
+				SetSourceSize(count);
+			}
 
 			_sourceCount = count;
 		}
-
 		/// <summary>
 		///     Tries to retrieve the given entries from this buffer.
 		/// </summary>
@@ -159,7 +165,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private bool CanCache(IReadOnlyLogBuffer source)
 		{
 			var sourceColumns = source.Columns;
-			foreach(var cachedColumn in _cachedColumns)
+			foreach(var cachedColumn in _requiredColumns)
 			{
 				if (!sourceColumns.Contains(cachedColumn))
 					return false;
@@ -190,6 +196,8 @@ namespace Tailviewer.Core.Sources.Buffer
 				else
 				{
 					destination.FillDefault(destinationIndex + numEntriesRead, count);
+					if (destination.Contains(BufferedLogSource.RetrievalState))
+						destination.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotCached, destinationIndex + numEntriesRead, count);
 					fullyRead = false;
 					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
@@ -227,6 +235,8 @@ namespace Tailviewer.Core.Sources.Buffer
 				else
 				{
 					destination.FillDefault(destinationIndex, 1);
+					if (destination.Contains(BufferedLogSource.RetrievalState))
+						destination.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotCached, destinationIndex, 1);
 					fullyRead = false;
 					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
@@ -257,7 +267,8 @@ namespace Tailviewer.Core.Sources.Buffer
 			var page = TryGetPage(pageIndex);
 			if (page == null)
 			{
-				page = new Page(pageIndex, _pageSize, _allColumns, _cachedColumns);
+				page = new Page(pageIndex, _pageSize, _allColumns, _requiredColumns);
+				page.FillTo(_sourceCount);
 				if (_pages.Count >= _maxPageCount)
 				{
 					// TODO: Find a better eviction strategy, maybe evict pages with the smallest read count?
@@ -308,5 +319,15 @@ namespace Tailviewer.Core.Sources.Buffer
 				}
 			}
 		}
+
+		private void SetSourceSize(int count)
+		{
+			for (int i = 0; i < _pages.Count; ++i)
+			{
+				var page = _pages[i];
+				page.SetSourceSize(count);
+			}
+		}
+
 	}
 }

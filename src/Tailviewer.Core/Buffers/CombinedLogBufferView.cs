@@ -145,6 +145,15 @@ namespace Tailviewer.Core.Buffers
 		}
 
 		/// <inheritdoc />
+		public void Fill<T>(IColumnDescriptor<T> column, T value, int destinationIndex, int length)
+		{
+			if (!_sourceBufferByColumn.TryGetValue(column, out var source))
+				throw new NoSuchColumnException(column);
+
+			source.Fill(column, value, destinationIndex, length);
+		}
+
+		/// <inheritdoc />
 		public ILogEntry this[int index]
 		{
 			get

@@ -85,6 +85,7 @@
     <Compile Include="Int32Range.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\Buffer\BufferedLogSource.cs" />
+    <Compile Include="Sources\Buffer\RetrievalState.cs" />
     <Compile Include="Sources\Buffer\Page.cs" />
     <Compile Include="Sources\Buffer\PagedLogBuffer.cs" />
     <Compile Include="Sources\LogSourceAdorner.cs" />

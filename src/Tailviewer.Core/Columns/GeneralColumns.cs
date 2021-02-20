@@ -133,18 +133,18 @@ namespace Tailviewer.Core.Columns
 
 		static GeneralColumns()
 		{
-			RawContent = new WellKnownColumnDescriptor<string>("raw_content", "Content");
-			Index = new WellKnownColumnDescriptor<LogLineIndex>("index", "Index", LogLineIndex.Invalid);
-			OriginalIndex = new WellKnownColumnDescriptor<LogLineIndex>("original_index", "Original Index", LogLineIndex.Invalid);
-			LogEntryIndex = new WellKnownColumnDescriptor<LogEntryIndex>("log_entry_index", "Log Entry Index", Tailviewer.LogEntryIndex.Invalid);
-			LineNumber = new WellKnownColumnDescriptor<int>("line_number", "Line Number");
-			OriginalLineNumber = new WellKnownColumnDescriptor<int>("original_line_number", "Original Line Number");
-			OriginalDataSourceName = new WellKnownColumnDescriptor<string>("original_data_source_name", "Original Data Source Name");
-			SourceId = new WellKnownColumnDescriptor<LogLineSourceId>("source_id", "Source Id");
-			LogLevel = new WellKnownColumnDescriptor<LevelFlags>("log_level", "Log Level");
-			Timestamp = new WellKnownColumnDescriptor<DateTime?>("timestamp", "Timestamp");
-			ElapsedTime = new WellKnownColumnDescriptor<TimeSpan?>("elapsed_time", "Elapsed Time");
-			DeltaTime = new WellKnownColumnDescriptor<TimeSpan?>("delta_time", "Delta Time");
+			RawContent = new WellKnownColumnDescriptor<string>("raw_content");
+			Index = new WellKnownColumnDescriptor<LogLineIndex>("index", LogLineIndex.Invalid);
+			OriginalIndex = new WellKnownColumnDescriptor<LogLineIndex>("original_index", LogLineIndex.Invalid);
+			LogEntryIndex = new WellKnownColumnDescriptor<LogEntryIndex>("log_entry_index", Tailviewer.LogEntryIndex.Invalid);
+			LineNumber = new WellKnownColumnDescriptor<int>("line_number");
+			OriginalLineNumber = new WellKnownColumnDescriptor<int>("original_line_number");
+			OriginalDataSourceName = new WellKnownColumnDescriptor<string>("original_data_source_name");
+			SourceId = new WellKnownColumnDescriptor<LogLineSourceId>("source_id");
+			LogLevel = new WellKnownColumnDescriptor<LevelFlags>("log_level");
+			Timestamp = new WellKnownColumnDescriptor<DateTime?>("timestamp");
+			ElapsedTime = new WellKnownColumnDescriptor<TimeSpan?>("elapsed_time");
+			DeltaTime = new WellKnownColumnDescriptor<TimeSpan?>("delta_time");
 			Message = new WellKnownColumnDescriptor<string>("message", "Message");
 
 			RawContentMaxPresentationWidth = new WellKnownColumnDescriptor<float>("raw_content_max_presentation_width");
