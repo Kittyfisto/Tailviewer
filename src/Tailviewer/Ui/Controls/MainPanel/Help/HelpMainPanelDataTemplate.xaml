@@ -1,0 +1,35 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:help="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Help"
+                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
+
+    <DataTemplate DataType="{x:Type help:HelpMainPanelViewModel}">
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock>
+                <textBlocks:HyperlinkRun ProcessName="{Binding DefaultWebBrowser}"
+                                         ProcessStartArguments="{Binding Source}"
+                                         Text="View documentation" />
+            </TextBlock>
+            <TextBlock Grid.Row="1">
+                <textBlocks:HyperlinkRun NavigateUri="https://github.com/Kittyfisto/Metrolib/issues/new/choose"
+                                         Text="Report a defect" />
+            </TextBlock>
+            <TextBlock Grid.Row="2">
+                <textBlocks:HyperlinkRun NavigateUri="https://github.com/Kittyfisto/Metrolib/issues/new/choose"
+                                         Text="Ask a question" />
+            </TextBlock>
+            <TextBlock Grid.Row="3">
+                <textBlocks:HyperlinkRun NavigateUri="https://github.com/Kittyfisto/Tailviewer/discussions/new"
+                                         Text="Start a discussion" />
+            </TextBlock>
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>
