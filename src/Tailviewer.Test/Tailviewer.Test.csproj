@@ -96,6 +96,7 @@
     <Compile Include="BusinessLogic\Buffers\AbstractLogBufferTest.cs" />
     <Compile Include="BusinessLogic\Buffers\CombinedLogBufferViewTest.cs" />
     <Compile Include="BusinessLogic\Buffers\SingleColumnLogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\ConcurrentQueueExtensionsTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />

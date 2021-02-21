@@ -3,26 +3,35 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources.Buffer
 {
+	/// <summary>
+	///     Buffers the entire underlying source in memory.
+	/// </summary>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class FullyBufferedLogSource
-		: AbstractProxyLogSource
+		: AbstractProcessingLogSource
 	{
 		private readonly LogBufferList _buffer;
 		private readonly object _syncRoot;
 
 		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
-		                               ILogSource source)
-			: this(taskScheduler, source, source.Columns, TimeSpan.FromMilliseconds(100))
-		{ }
+		                              ILogSource source)
+			: this(taskScheduler, source, source.Columns, TimeSpan.FromMilliseconds(value: 100))
+		{
+		}
 
 		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
-		                               ILogSource source,
-		                               IReadOnlyList<IColumnDescriptor> bufferedColumns,
-		                               TimeSpan maximumWaitTime)
-			: base(taskScheduler, source, bufferedColumns, maximumWaitTime)
+		                              ILogSource source,
+		                              IReadOnlyList<IColumnDescriptor> bufferedColumns,
+		                              TimeSpan maximumWaitTime)
+			: base(taskScheduler,
+			       source,
+			       bufferedColumns,
+			       new IReadOnlyPropertyDescriptor[0],
+			       maximumWaitTime)
 		{
 			_buffer = new LogBufferList(bufferedColumns);
 			_syncRoot = new object();
@@ -32,48 +41,43 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		#region Overrides of AbstractLogSource
 
-		public override IReadOnlyList<IColumnDescriptor> Columns
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public override object GetProperty(IReadOnlyPropertyDescriptor property)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void SetProperty(IPropertyDescriptor property, object value)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void GetAllProperties(IPropertiesBuffer destination)
-		{
-			throw new NotImplementedException();
-		}
-
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
 		                                  IColumnDescriptor<T> column,
 		                                  T[] destination,
 		                                  int destinationIndex,
 		                                  LogSourceQueryOptions queryOptions)
 		{
-			throw new NotImplementedException();
+			lock (_syncRoot)
+			{
+				if (Equals(column, PageBufferedLogSource.RetrievalState))
+				{
+					var dest = (RetrievalState[]) (object) destination;
+					if (sourceIndices is LogFileSection section)
+					{
+						var totalCount = (int)(section.Index + section.Count);
+						var fillCount = Math.Min(totalCount, _buffer.Count);
+						dest.Fill(RetrievalState.Retrieved, destinationIndex, fillCount);
+						if (totalCount > fillCount)
+						{
+							dest.Fill(RetrievalState.NotInSource, fillCount, totalCount - fillCount);
+						}
+					}
+					else
+					{
+						for(int i = 0; i < sourceIndices.Count; ++i)
+						{
+							var index = sourceIndices[i];
+							dest[destinationIndex + i] = index < _buffer.Count
+								? RetrievalState.Retrieved
+								: RetrievalState.NotInSource;
+						}
+					}
+				}
+				else
+				{
+					_buffer.CopyTo(column, new Int32View(sourceIndices), destination, destinationIndex);
+				}
+			}
 		}
 
 		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
@@ -81,10 +85,13 @@ namespace Tailviewer.Core.Sources.Buffer
 		                                int destinationIndex,
 		                                LogSourceQueryOptions queryOptions)
 		{
-			throw new NotImplementedException();
+			lock (_syncRoot)
+			{
+				_buffer.CopyTo(new Int32View(sourceIndices), destination, destinationIndex);
+			}
 		}
 
-		protected override void OnReset()
+		protected override void OnResetSection()
 		{
 			lock (_syncRoot)
 			{
@@ -92,7 +99,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		protected override void OnInvalidate(int totalCount)
+		protected override void OnInvalidateSection(int totalCount)
 		{
 			lock (_syncRoot)
 			{
@@ -100,7 +107,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		protected override void OnAdd(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
+		protected override void OnAppendSection(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
 		{
 			lock (_syncRoot)
 			{
@@ -110,7 +117,10 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		protected override void NothingToProcess()
 		{
-			
+		}
+
+		protected override void GetOverwrittenProperties(PropertiesBufferList destination)
+		{
 		}
 
 		#endregion

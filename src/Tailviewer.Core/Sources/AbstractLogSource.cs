@@ -147,7 +147,7 @@ namespace Tailviewer.Core.Sources
 		///     Any subclass MUST call this method in its constructor (preferably after the log file has been initialized,
 		///     as after this call, <see cref="RunOnce" /> will be called.
 		/// </summary>
-		protected void StartTask()
+		protected virtual void StartTask()
 		{
 			_readTask = _scheduler.StartPeriodic(Run, ToString());
 		}

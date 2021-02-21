@@ -37,10 +37,14 @@ namespace Tailviewer.Core
 		/// <returns></returns>
 		public static IReadOnlyList<T> DequeueAll<T>(this ConcurrentQueue<T> queue)
 		{
-			var values = new List<T>();
+			List<T> values = null;
 			while (queue.TryDequeue(out var value))
+			{
+				if (values == null)
+					values = new List<T>();
 				values.Add(value);
-			return values;
+			}
+			return values ?? EnumerableExtensions<T>.Empty;
 		}
 
 		/// <summary>

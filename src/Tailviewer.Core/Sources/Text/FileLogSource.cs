@@ -11,7 +11,6 @@ using log4net;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Adorner;
 using Tailviewer.Core.Sources.Buffer;
-using Tailviewer.Core.Sources.Text.Streaming;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -475,11 +474,16 @@ namespace Tailviewer.Core.Sources.Text
 
 		private ILogSource CreateBufferFor(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
 		{
-			var nonCachedColumns = new[] {StreamingTextLogSource.LineOffsetInBytes};
+			// Our streaming architecture isn't ready yet (the paged cache sucks, how when and what is cached suck, etc..
+			// In order to get a release out, we will use the new streaming log source implementation, but we will
+			// cache it all in memory anyways.
+			return new FullyBufferedLogSource(serviceContainer.Retrieve<ITaskScheduler>(), source);
+
+			/*var nonCachedColumns = new[] {StreamingTextLogSource.LineOffsetInBytes};
 			return new PageBufferedLogSource(serviceContainer.Retrieve<ITaskScheduler>(),
 			                             source,
 			                             maximumWaitTime,
-			                             nonCachedColumns);
+			                             nonCachedColumns);*/
 		}
 
 		private static ILogSource TryCreateMultiLineLogFile(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
