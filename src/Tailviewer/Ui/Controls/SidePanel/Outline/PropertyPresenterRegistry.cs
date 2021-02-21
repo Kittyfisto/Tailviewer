@@ -23,6 +23,14 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			_wellKnownDisplayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
 				{ GeneralProperties.LogEntryCount, "Count" },
+				{ GeneralProperties.TraceLogEntryCount, "Trace Count" },
+				{ GeneralProperties.DebugLogEntryCount, "Debug Count" },
+				{ GeneralProperties.InfoLogEntryCount, "Info Count" },
+				{ GeneralProperties.WarningLogEntryCount, "Warning Count" },
+				{ GeneralProperties.ErrorLogEntryCount, "Error Count" },
+				{ GeneralProperties.FatalLogEntryCount, "Fatal Count" },
+				{ GeneralProperties.OtherLogEntryCount, "Other Count" },
+
 				{ GeneralProperties.Name, "Name" },
 				{ GeneralProperties.StartTimestamp, "First Timestamp" },
 				{ GeneralProperties.EndTimestamp, "Last Timestamp" },
@@ -33,11 +41,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 				{ GeneralProperties.PercentageProcessed, "Processed" },
 				{ GeneralProperties.Format, "Format" },
-				{ GeneralProperties.Encoding, "Encoding" }
+				{ TextProperties.AutoDetectedEncoding, "Auto Detected Encoding" },
+				{ TextProperties.OverwrittenEncoding, "Overwritten Encoding" },
+				{ TextProperties.Encoding, "Encoding" }
 			};
 			_wellKnownPresenters = new Dictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>>
 			{
-				{GeneralProperties.Encoding, displayName => new EncodingPropertyPresenter(displayName)}
+				{TextProperties.OverwrittenEncoding, displayName => new EncodingPropertyPresenter(displayName)}
 			};
 		}
 

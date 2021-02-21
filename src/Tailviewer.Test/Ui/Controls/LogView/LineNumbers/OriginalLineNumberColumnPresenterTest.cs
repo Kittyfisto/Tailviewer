@@ -49,7 +49,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(4);
 			logFile.Setup(x => x.GetProperty(TextProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-			                               It.Is<IColumnDescriptor<int>>(y => y == LogColumns.OriginalLineNumber),
+			                               It.Is<IColumnDescriptor<int>>(y => y == GeneralColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
 			                               It.IsAny<LogSourceQueryOptions>()))

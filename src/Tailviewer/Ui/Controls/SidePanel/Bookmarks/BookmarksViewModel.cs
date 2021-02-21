@@ -188,7 +188,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 			if (dataSource == null || lines == null)
 				return;
 
-			var originalIndices = dataSource.FilteredLogSource.GetColumn(lines.ToList(), LogColumns.OriginalIndex);
+			var originalIndices = dataSource.FilteredLogSource.GetColumn(lines.ToList(), GeneralColumns.OriginalIndex);
 
 			foreach (var line in originalIndices)
 			{

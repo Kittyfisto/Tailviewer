@@ -14,6 +14,7 @@
 		/// <param name="services"></param>
 		/// <param name="source"></param>
 		/// <returns></returns>
+		[ThreadSafe]
 		ILogSource CreateParser(IServiceContainer services, ILogSource source);
 	}
 }

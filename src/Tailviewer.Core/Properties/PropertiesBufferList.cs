@@ -166,6 +166,57 @@ namespace Tailviewer.Core.Properties
 			}
 		}
 
+		/// <summary>
+		///   Sets only the given properties to their default value.
+		/// </summary>
+		/// <param name="properties"></param>
+		public void SetToDefault(IReadOnlyList<IReadOnlyPropertyDescriptor> properties)
+		{
+			if (properties == null)
+				throw new ArgumentNullException(nameof(properties));
+
+			foreach (var property in properties)
+			{
+				if (!_values.TryGetValue(property, out var storage))
+					throw new NoSuchPropertyException(property);
+
+				storage.SetToDefault();
+			}
+		}
+
+		/// <summary>
+		///    Sets all properties in this buffer to their <see cref="IColumnDescriptor.DefaultValue"/>.
+		/// </summary>
+		public void SetToDefault()
+		{
+			foreach (var pair in _values)
+			{
+				pair.Value.SetToDefault();
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public void Clear()
+		{
+			_propertyDescriptors.Clear();
+			_values.Clear();
+		}
+
+		/// <summary>
+		/// Adds the given property to this list.
+		/// </summary>
+		/// <param name="property"></param>
+		public void Add<T>(IReadOnlyPropertyDescriptor<T> property)
+		{
+			if (!_values.ContainsKey(property))
+			{
+				_values.Add(property, new PropertyStorage<T>(property));
+				_propertyDescriptors.Add(property);
+			}
+		}
+
 		private IPropertyStorage CreateValueStorage(IReadOnlyPropertyDescriptor propertyDescriptor)
 		{
 			dynamic tmp = propertyDescriptor;
@@ -186,7 +237,7 @@ namespace Tailviewer.Core.Properties
 			bool SetValue(object value);
 			void CopyFrom(IPropertiesBuffer properties);
 			void CopyTo(IPropertiesBuffer destination);
-			void Reset();
+			void SetToDefault();
 		}
 
 		/// <summary>
@@ -237,7 +288,7 @@ namespace Tailviewer.Core.Properties
 				destination.SetValue(_property, _value);
 			}
 
-			public void Reset()
+			public void SetToDefault()
 			{
 				_value = _property.DefaultValue;
 			}
@@ -245,39 +296,6 @@ namespace Tailviewer.Core.Properties
 			object IPropertyStorage.Value
 			{
 				get { return Value; }
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Reset()
-		{
-			foreach (var pair in _values)
-			{
-				pair.Value.Reset();
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Clear()
-		{
-			_propertyDescriptors.Clear();
-			_values.Clear();
-		}
-
-		/// <summary>
-		/// Adds the given property to this list.
-		/// </summary>
-		/// <param name="property"></param>
-		public void Add<T>(IReadOnlyPropertyDescriptor<T> property)
-		{
-			if (!_values.ContainsKey(property))
-			{
-				_values.Add(property, new PropertyStorage<T>(property));
-				_propertyDescriptors.Add(property);
 			}
 		}
 	}

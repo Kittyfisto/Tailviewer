@@ -2,7 +2,6 @@
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Test.BusinessLogic.Entries;
-using Tailviewer.Test.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Buffers
 {
@@ -13,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 		protected override IReadOnlyLogEntry CreateDefault()
 		{
 			// TODO: Swap
-			var buffer = new LogBufferList(LogColumns.Minimum);
+			var buffer = new LogBufferList(GeneralColumns.Minimum);
 			buffer.AddEmpty();
 			return buffer[0];
 		}

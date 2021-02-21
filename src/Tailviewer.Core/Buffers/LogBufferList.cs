@@ -108,8 +108,7 @@ namespace Tailviewer.Core.Buffers
 			if (destinationIndex + length > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			IColumnData data;
-			if (_dataByColumn.TryGetValue(column, out data))
+			if (_dataByColumn.TryGetValue(column, out var data))
 			{
 				((ColumnData<T>)data).CopyTo(sourceIndex, destination, destinationIndex, length);
 			}
@@ -125,8 +124,7 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData data;
-			if (_dataByColumn.TryGetValue(column, out data))
+			if (_dataByColumn.TryGetValue(column, out var data))
 			{
 				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex);
 			}
@@ -142,8 +140,7 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData data;
-			if (_dataByColumn.TryGetValue(column, out data))
+			if (_dataByColumn.TryGetValue(column, out var data))
 			{
 				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex);
 			}
@@ -166,8 +163,7 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData data;
-			if (_dataByColumn.TryGetValue(column, out data))
+			if (_dataByColumn.TryGetValue(column, out var data))
 			{
 				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex);
 			}
@@ -245,13 +241,44 @@ namespace Tailviewer.Core.Buffers
 		///     Adds a completely empty row to this list.
 		///     Every cell will be filled with that column's default value.
 		/// </summary>
-		public void AddEmpty()
+		public void AddEmpty(int count = 1)
 		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be positive");
+
 			foreach (var column in _dataByColumn.Values)
 			{
-				column.AddEmpty();
+				column.AddEmpty(count);
 			}
-			++_count;
+
+			_count += count;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="columnDescriptor"></param>
+		/// <param name="buffer"></param>
+		/// <param name="count"></param>
+		public void AddRange<T>(IColumnDescriptor<T> columnDescriptor, T[] buffer, int count)
+		{
+			if (!_dataByColumn.ContainsKey(columnDescriptor))
+				throw new NoSuchColumnException(columnDescriptor);
+
+			foreach (var pair in _dataByColumn)
+			{
+				if (Equals(pair.Key, columnDescriptor))
+				{
+					pair.Value.AddRange(buffer, count);
+				}
+				else
+				{
+					pair.Value.AddEmpty(count);
+				}
+			}
+
+			_count += count;
 		}
 
 		/// <summary>
@@ -263,6 +290,21 @@ namespace Tailviewer.Core.Buffers
 			foreach (var logEntry in buffer)
 			{
 				Add(logEntry);
+			}
+		}
+
+		/// <summary>
+		///   
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="count"></param>
+		public void AddRange(IReadOnlyLogBuffer source, int count)
+		{
+			var start = _count;
+			Resize(_count + count);
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.CopyFrom(start, source, new Int32Range(0, count));
 			}
 		}
 
@@ -353,7 +395,6 @@ namespace Tailviewer.Core.Buffers
 			if (count < 0)
 				throw new ArgumentOutOfRangeException($"Resize to {count} not allowed");
 
-			
 			if (count < _count)
 			{
 				var startIndex = count;
@@ -389,8 +430,7 @@ namespace Tailviewer.Core.Buffers
 			if (destinationIndex + length > _count)
 				throw new ArgumentOutOfRangeException();
 
-			IColumnData columnData;
-			if (_dataByColumn.TryGetValue(column, out columnData))
+			if (_dataByColumn.TryGetValue(column, out var columnData))
 			{
 				((ColumnData<T>)columnData).CopyFrom(destinationIndex, source, sourceIndex, length);
 			}
@@ -442,11 +482,59 @@ namespace Tailviewer.Core.Buffers
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
-			IColumnData columnData;
-			if (!_dataByColumn.TryGetValue(column, out columnData))
+			if (!_dataByColumn.TryGetValue(column, out var columnData))
 				throw new NoSuchColumnException(column);
 
 			columnData.FillDefault(destinationIndex, length);
+		}
+
+		/// <inheritdoc />
+		public void Fill<T>(IColumnDescriptor<T> column, T value, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var columnData))
+				throw new NoSuchColumnException(column);
+
+			((ColumnData<T>)columnData).Fill(value, destinationIndex, length);
+		}
+
+		/// <summary>
+		/// Tests if the specified region of the specified column contains one or more <see cref="IColumnDescriptor.DefaultValue"/> values.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="range"></param>
+		/// <returns>When every value of the specified section contains default values, false otherwise</returns>
+		[Pure]
+		public bool ContainsAnyDefault(IColumnDescriptor column, Int32Range range)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var data))
+				throw new ArgumentException(string.Format("No such column: {0}", column));
+
+			return data.ContainsAnyDefault(range);
+		}
+
+		/// <summary>
+		/// Tests if the specified region of the specified column contains one or more <see cref="IColumnDescriptor.DefaultValue"/> values.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="value"></param>
+		/// <param name="range"></param>
+		/// <returns>When every value of the specified section contains default values, false otherwise</returns>
+		[Pure]
+		public bool ContainsAny<T>(IColumnDescriptor<T> column, T value, Int32Range range)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var data))
+				throw new ArgumentException(string.Format("No such column: {0}", column));
+
+			return ((ColumnData<T>)data).ContainsAny(value, range);
 		}
 
 		private sealed class ReadOnlyLogEntryAccessor
@@ -463,8 +551,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override T GetValue<T>(IColumnDescriptor<T> column)
 			{
-				T data;
-				if (!TryGetValue(column, out data))
+				if (!TryGetValue(column, out var data))
 					throw new ColumnNotRetrievedException(column);
 
 				return data;
@@ -472,8 +559,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
-				IColumnData data;
-				if (!_list._dataByColumn.TryGetValue(column, out data))
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
 				{
 					value = column.DefaultValue;
 					return false;
@@ -485,8 +571,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override object GetValue(IColumnDescriptor column)
 			{
-				object data;
-				if (!TryGetValue(column, out data))
+				if (!TryGetValue(column, out var data))
 					throw new ColumnNotRetrievedException(column);
 
 				return data;
@@ -494,8 +579,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override bool TryGetValue(IColumnDescriptor column, out object value)
 			{
-				IColumnData data;
-				if (!_list._dataByColumn.TryGetValue(column, out data))
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
 				{
 					value = column.DefaultValue;
 					return false;
@@ -522,8 +606,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override T GetValue<T>(IColumnDescriptor<T> column)
 			{
-				T data;
-				if (!TryGetValue(column, out data))
+				if (!TryGetValue(column, out var data))
 					throw new ColumnNotRetrievedException(column);
 
 				return data;
@@ -531,8 +614,7 @@ namespace Tailviewer.Core.Buffers
 
 			public override bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
-				IColumnData data;
-				if (!_list._dataByColumn.TryGetValue(column, out data))
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
 				{
 					value = column.DefaultValue;
 					return false;
@@ -606,7 +688,7 @@ namespace Tailviewer.Core.Buffers
 
 			void RemoveAt(int index);
 
-			void AddEmpty();
+			void AddEmpty(int count);
 
 			void Insert(int index, IReadOnlyLogEntry logEntry);
 			void RemoveRange(int index, int count);
@@ -619,6 +701,8 @@ namespace Tailviewer.Core.Buffers
 			void CopyFrom(int destinationIndex, ILogSource source, IReadOnlyList<LogLineIndex> indices, LogSourceQueryOptions queryOptions);
 			void AddRange(int count);
 			void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry);
+			void AddRange(object buffer, int count);
+			bool ContainsAnyDefault(Int32Range range);
 		}
 
 		private sealed class ColumnData<T>
@@ -652,10 +736,9 @@ namespace Tailviewer.Core.Buffers
 
 			public void Add(IReadOnlyLogEntry logEntry)
 			{
-				T value;
-				_data.Add(logEntry.TryGetValue(_column, out value)
-					? value
-					: _column.DefaultValue);
+				_data.Add(logEntry.TryGetValue(_column, out var value)
+					          ? value
+					          : _column.DefaultValue);
 			}
 
 			public void RemoveAt(int index)
@@ -663,9 +746,10 @@ namespace Tailviewer.Core.Buffers
 				_data.RemoveAt(index);
 			}
 
-			public void AddEmpty()
+			public void AddEmpty(int count)
 			{
-				_data.Add(_column.DefaultValue);
+				for(int i  = 0; i < count; ++i)
+					_data.Add(_column.DefaultValue);
 			}
 
 			public void Insert(int index, IReadOnlyLogEntry logEntry)
@@ -686,7 +770,12 @@ namespace Tailviewer.Core.Buffers
 
 			public void FillDefault(int destinationIndex, int length)
 			{
-				_data.Fill(_column.DefaultValue, destinationIndex, length);
+				Fill(_column.DefaultValue, destinationIndex, length);
+			}
+
+			public void Fill(T value, int destinationIndex, int length)
+			{
+				_data.Fill(value, destinationIndex, length);
 			}
 
 			public void CopyFrom(int destinationIndex, IReadOnlyLogBuffer source, IReadOnlyList<int> sourceIndices)
@@ -720,6 +809,12 @@ namespace Tailviewer.Core.Buffers
 			public void CopyFrom(int destinationIndex, IReadOnlyLogEntry logEntry)
 			{
 				_data[destinationIndex] = logEntry.GetValue(_column);
+			}
+
+			public void AddRange(object buffer, int count)
+			{
+				var tmp = (T[])buffer;
+				_data.AddRange(tmp);
 			}
 
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
@@ -834,6 +929,19 @@ namespace Tailviewer.Core.Buffers
 						destination[destinationIndex + i] = _column.DefaultValue;
 					}
 				}
+			}
+
+			[Pure]
+			public bool ContainsAnyDefault(Int32Range range)
+			{
+				return ContainsAny(_column.DefaultValue, range);
+			}
+
+			[Pure]
+			public bool ContainsAny(T value, Int32Range range)
+			{
+				var idx = _data.IndexOf(value, range.Offset, range.Count);
+				return idx != -1;
 			}
 		}
 	}

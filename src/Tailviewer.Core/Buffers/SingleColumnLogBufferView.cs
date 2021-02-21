@@ -118,13 +118,26 @@ namespace Tailviewer.Core.Buffers
 		/// <inheritdoc />
 		public void FillDefault(int offset, int length)
 		{
-			throw new System.NotImplementedException();
+			_buffer.Fill(_column.DefaultValue, _offset + offset, length);
 		}
 
 		/// <inheritdoc />
 		public void FillDefault(IColumnDescriptor column, int destinationIndex, int length)
 		{
-			throw new System.NotImplementedException();
+			if (!Equals(column, _column))
+				throw new NoSuchColumnException(column);
+
+			FillDefault(destinationIndex, length);
+		}
+
+		/// <inheritdoc />
+		public void Fill<T1>(IColumnDescriptor<T1> column, T1 value, int destinationIndex, int length)
+		{
+			if (!Equals(column, _column))
+				throw new NoSuchColumnException(column);
+
+			// We now know that T1 and T are the same type, so we may cast our internal buffer to T1 to avoid boxing/unboxing
+			((T1[])(object)_buffer).Fill(value, _offset + destinationIndex, length);
 		}
 
 		/// <inheritdoc />

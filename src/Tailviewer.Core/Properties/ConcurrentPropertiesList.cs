@@ -129,7 +129,7 @@ namespace Tailviewer.Core.Properties
 		{
 			lock (_syncRoot)
 			{
-				_storage.Reset();
+				_storage.SetToDefault();
 			}
 		}
 
@@ -141,6 +141,19 @@ namespace Tailviewer.Core.Properties
 			lock (_syncRoot)
 			{
 				_storage.Clear();
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		public bool Contains(IReadOnlyPropertyDescriptor property)
+		{
+			lock (_syncRoot)
+			{
+				return _storage.Properties.Contains(property);
 			}
 		}
 	}

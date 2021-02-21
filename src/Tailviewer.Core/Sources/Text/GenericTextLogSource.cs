@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -14,48 +15,34 @@ namespace Tailviewer.Core.Sources.Text
 	internal sealed class GenericTextLogSource
 		: ILogSource
 	{
-		private readonly object _syncRoot;
-		private readonly Dictionary<ILogSourceListener, ListenerProxy> _listeners;
+		private readonly ProxyLogListenerCollection _listeners;
 		private readonly ILogEntryParser _parser;
-		private readonly IReadOnlyList<IColumnDescriptor> _columns;
+		private readonly IReadOnlyList<IColumnDescriptor> _parsedColumns;
+		private readonly IReadOnlyList<IColumnDescriptor> _allColumns;
+		private readonly IReadOnlyLogEntry _nothingParsed;
 		private ILogSource _source;
 
 		public GenericTextLogSource(ILogSource source,
 		                            ILogEntryParser parser)
 		{
-			_syncRoot = new object();
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 			_parser = parser;
-			_columns = _source.Columns.Concat(_parser.Columns).Distinct().ToList();
-			_listeners = new Dictionary<ILogSourceListener, ListenerProxy>();
+			_parsedColumns = _parser.Columns.ToList();
+			_allColumns = _source.Columns.Concat(_parsedColumns).Distinct().ToList();
+			_listeners = new ProxyLogListenerCollection(source, this);
+			_nothingParsed = new ReadOnlyLogEntry(_parsedColumns);
 		}
 
-		public IReadOnlyList<IColumnDescriptor> Columns => _columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _allColumns;
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
-			// We need to make sure that whoever registers with us is getting OUR reference through
-			// their listener, not the source we're wrapping (or they might discard events since they're
-			// coming not from the source they subscribed to).
-			var proxy = new ListenerProxy(this, listener);
-			lock (_syncRoot)
-			{
-				_listeners.Add(listener, proxy);
-			}
-
-			_source?.AddListener(proxy, maximumWaitTime, maximumLineCount);
+			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
 		public void RemoveListener(ILogSourceListener listener)
 		{
-			ListenerProxy proxy;
-			lock (_syncRoot)
-			{
-				if (!_listeners.TryGetValue(listener, out proxy))
-					return;
-			}
-
-			_source?.RemoveListener(proxy);
+			_listeners.RemoveListener(listener);
 		}
 
 		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
@@ -115,7 +102,7 @@ namespace Tailviewer.Core.Sources.Text
 
 			GetEntries(sourceIndices,
 			           new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count),
-			           destinationIndex: 0, queryOptions);
+			           0, queryOptions);
 		}
 
 		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
@@ -123,23 +110,28 @@ namespace Tailviewer.Core.Sources.Text
 		                       int destinationIndex,
 		                       LogSourceQueryOptions queryOptions)
 		{
-			if (destinationIndex != 0)
-				throw new NotImplementedException();
-
-			//var actualDestination = destination.CreateViewWithAdditionalColumn(LogColumns.RawContent);
-			var actualDestination = destination.CreateViewOnlyWithColumn(LogColumns.RawContent);
-
 			var source = _source;
 			if (source != null)
 			{
-				source.GetEntries(sourceIndices, actualDestination, destinationIndex: 0, queryOptions);
+				var columnsToCopy = new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent};
+				var tmp = new LogBufferArray(sourceIndices.Count, columnsToCopy);
+				source.GetEntries(sourceIndices, tmp, 0, queryOptions);
 
-				for (var i = 0; i < actualDestination.Count; ++i)
+				foreach (var column in columnsToCopy)
 				{
-					var logEntry = actualDestination[i];
-					// TODO: we should tell the parser about the columns we're interested in so the parser can skip work, if it's lazy
-					var parsedLogEntry = _parser.Parse(logEntry);
-					destination[i].CopyFrom(parsedLogEntry);
+					if (destination.Contains(column))
+					{
+						destination.CopyFrom(column, destinationIndex, tmp, new Int32Range(0, sourceIndices.Count));
+					}
+				}
+
+				for (var i = 0; i < sourceIndices.Count; ++i)
+				{
+					var parsedLogEntry = _parser.Parse(tmp[i]);
+					if (parsedLogEntry != null)
+						destination[destinationIndex + i].CopyFrom(parsedLogEntry);
+					else
+						destination[destinationIndex + i].CopyFrom(_nothingParsed);
 				}
 			}
 			else
@@ -162,28 +154,5 @@ namespace Tailviewer.Core.Sources.Text
 		}
 
 		#endregion
-
-		private sealed class ListenerProxy
-			: ILogSourceListener
-		{
-			private readonly ILogSourceListener _listener;
-			private readonly ILogSource _source;
-
-			public ListenerProxy(ILogSource source, ILogSourceListener listener)
-			{
-				_source = source;
-				_listener = listener;
-			}
-
-
-			#region Implementation of ILogSourceListener
-
-			public void OnLogFileModified(ILogSource logSource, LogFileSection section)
-			{
-				_listener.OnLogFileModified(_source, section);
-			}
-
-			#endregion
-		}
 	}
 }

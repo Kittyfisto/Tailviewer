@@ -41,8 +41,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.RawContent))
-					throw new NoSuchColumnException(LogColumns.RawContent);
+				if (!_columns.Contains(GeneralColumns.RawContent))
+					throw new NoSuchColumnException(GeneralColumns.RawContent);
 
 				return _logEntry.RawContent;
 			}
@@ -53,8 +53,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.Index))
-					throw new NoSuchColumnException(LogColumns.Index);
+				if (!_columns.Contains(GeneralColumns.Index))
+					throw new NoSuchColumnException(GeneralColumns.Index);
 
 				return _logEntry.Index;
 			}
@@ -65,8 +65,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.OriginalIndex))
-					throw new NoSuchColumnException(LogColumns.OriginalIndex);
+				if (!_columns.Contains(GeneralColumns.OriginalIndex))
+					throw new NoSuchColumnException(GeneralColumns.OriginalIndex);
 
 				return _logEntry.OriginalIndex;
 			}
@@ -77,8 +77,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.LogEntryIndex))
-					throw new NoSuchColumnException(LogColumns.LogEntryIndex);
+				if (!_columns.Contains(GeneralColumns.LogEntryIndex))
+					throw new NoSuchColumnException(GeneralColumns.LogEntryIndex);
 
 				return _logEntry.LogEntryIndex;
 			}
@@ -89,8 +89,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.LineNumber))
-					throw new NoSuchColumnException(LogColumns.LineNumber);
+				if (!_columns.Contains(GeneralColumns.LineNumber))
+					throw new NoSuchColumnException(GeneralColumns.LineNumber);
 
 				return _logEntry.LineNumber;
 			}
@@ -101,8 +101,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(LogColumns.OriginalLineNumber);
+				if (!_columns.Contains(GeneralColumns.OriginalLineNumber))
+					throw new NoSuchColumnException(GeneralColumns.OriginalLineNumber);
 
 				return _logEntry.OriginalLineNumber;
 			}
@@ -113,8 +113,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(LogColumns.OriginalDataSourceName);
+				if (!_columns.Contains(GeneralColumns.OriginalDataSourceName))
+					throw new NoSuchColumnException(GeneralColumns.OriginalDataSourceName);
 
 				return _logEntry.OriginalDataSourceName;
 			}
@@ -125,8 +125,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.SourceId))
-					throw new NoSuchColumnException(LogColumns.SourceId);
+				if (!_columns.Contains(GeneralColumns.SourceId))
+					throw new NoSuchColumnException(GeneralColumns.SourceId);
 
 				return _logEntry.SourceId;
 			}
@@ -137,8 +137,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.LogLevel))
-					throw new NoSuchColumnException(LogColumns.LogLevel);
+				if (!_columns.Contains(GeneralColumns.LogLevel))
+					throw new NoSuchColumnException(GeneralColumns.LogLevel);
 
 				return _logEntry.LogLevel;
 			}
@@ -149,8 +149,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.Timestamp))
-					throw new NoSuchColumnException(LogColumns.Timestamp);
+				if (!_columns.Contains(GeneralColumns.Timestamp))
+					throw new NoSuchColumnException(GeneralColumns.Timestamp);
 
 				return _logEntry.Timestamp;
 			}
@@ -161,8 +161,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.ElapsedTime))
-					throw new NoSuchColumnException(LogColumns.ElapsedTime);
+				if (!_columns.Contains(GeneralColumns.ElapsedTime))
+					throw new NoSuchColumnException(GeneralColumns.ElapsedTime);
 
 				return _logEntry.ElapsedTime;
 			}
@@ -173,8 +173,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.DeltaTime))
-					throw new NoSuchColumnException(LogColumns.DeltaTime);
+				if (!_columns.Contains(GeneralColumns.DeltaTime))
+					throw new NoSuchColumnException(GeneralColumns.DeltaTime);
 
 				return _logEntry.DeltaTime;
 			}
@@ -185,8 +185,8 @@ namespace Tailviewer.Core.Entries
 		{
 			get
 			{
-				if (!_columns.Contains(LogColumns.Message))
-					throw new NoSuchColumnException(LogColumns.Message);
+				if (!_columns.Contains(GeneralColumns.Message))
+					throw new NoSuchColumnException(GeneralColumns.Message);
 
 				return _logEntry.Message;
 			}
@@ -238,6 +238,18 @@ namespace Tailviewer.Core.Entries
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return _columns; }
+		}
+
+		/// <inheritdoc />
+		public bool Contains(IColumnDescriptor column)
+		{
+			return _columns.Contains(column);
+		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return ReadOnlyLogEntryExtensions.ToString(this);
 		}
 
 		#endregion

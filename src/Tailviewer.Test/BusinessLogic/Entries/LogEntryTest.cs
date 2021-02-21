@@ -4,7 +4,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Test.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Entries
 {
@@ -15,17 +14,17 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 		[Test]
 		public void TestConstruction1()
 		{
-			var entry = new LogEntry(LogColumns.RawContent, LogColumns.DeltaTime);
-			entry.RawContent.Should().Be(LogColumns.RawContent.DefaultValue);
-			entry.DeltaTime.Should().Be(LogColumns.DeltaTime.DefaultValue);
+			var entry = new LogEntry(GeneralColumns.RawContent, GeneralColumns.DeltaTime);
+			entry.RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			entry.DeltaTime.Should().Be(GeneralColumns.DeltaTime.DefaultValue);
 		}
 
 		[Test]
 		public void TestConstruction2()
 		{
-			var entry = new LogEntry(new List<IColumnDescriptor> { LogColumns.Timestamp, LogColumns.LineNumber});
-			entry.Timestamp.Should().Be(LogColumns.Timestamp.DefaultValue);
-			entry.LineNumber.Should().Be(LogColumns.LineNumber.DefaultValue);
+			var entry = new LogEntry(new List<IColumnDescriptor> { GeneralColumns.Timestamp, GeneralColumns.LineNumber});
+			entry.Timestamp.Should().Be(GeneralColumns.Timestamp.DefaultValue);
+			entry.LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
 		}
 
 		[Test]
@@ -36,8 +35,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.LogLevel = LevelFlags.Fatal;
 			entry.LogLevel.Should().Be(LevelFlags.Fatal);
-			entry.Columns.Should().Equal(LogColumns.LogLevel);
-			entry.GetValue(LogColumns.LogLevel).Should().Be(LevelFlags.Fatal);
+			entry.Columns.Should().Equal(GeneralColumns.LogLevel);
+			entry.GetValue(GeneralColumns.LogLevel).Should().Be(LevelFlags.Fatal);
 		}
 
 		[Test]
@@ -48,8 +47,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.LogEntryIndex = 42;
 			entry.LogEntryIndex.Should().Be(42);
-			entry.Columns.Should().Equal(LogColumns.LogEntryIndex);
-			entry.GetValue(LogColumns.LogEntryIndex).Should().Be(42);
+			entry.Columns.Should().Equal(GeneralColumns.LogEntryIndex);
+			entry.GetValue(GeneralColumns.LogEntryIndex).Should().Be(42);
 		}
 
 		[Test]
@@ -60,8 +59,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.DeltaTime = TimeSpan.FromSeconds(23);
 			entry.DeltaTime.Should().Be(TimeSpan.FromSeconds(23));
-			entry.Columns.Should().Equal(LogColumns.DeltaTime);
-			entry.GetValue(LogColumns.DeltaTime).Should().Be(TimeSpan.FromSeconds(23));
+			entry.Columns.Should().Equal(GeneralColumns.DeltaTime);
+			entry.GetValue(GeneralColumns.DeltaTime).Should().Be(TimeSpan.FromSeconds(23));
 		}
 
 		[Test]
@@ -72,8 +71,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.ElapsedTime = TimeSpan.FromSeconds(23);
 			entry.ElapsedTime.Should().Be(TimeSpan.FromSeconds(23));
-			entry.Columns.Should().Equal(LogColumns.ElapsedTime);
-			entry.GetValue(LogColumns.ElapsedTime).Should().Be(TimeSpan.FromSeconds(23));
+			entry.Columns.Should().Equal(GeneralColumns.ElapsedTime);
+			entry.GetValue(GeneralColumns.ElapsedTime).Should().Be(TimeSpan.FromSeconds(23));
 		}
 
 		[Test]
@@ -84,8 +83,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.Timestamp = new DateTime(2017, 12, 20, 13, 33, 0);
 			entry.Timestamp.Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
-			entry.Columns.Should().Equal(LogColumns.Timestamp);
-			entry.GetValue(LogColumns.Timestamp).Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
+			entry.Columns.Should().Equal(GeneralColumns.Timestamp);
+			entry.GetValue(GeneralColumns.Timestamp).Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
 		}
 
 		[Test]
@@ -96,8 +95,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.RawContent = "The last Jedi";
 			entry.RawContent.Should().Be("The last Jedi");
-			entry.Columns.Should().Equal(LogColumns.RawContent);
-			entry.GetValue(LogColumns.RawContent).Should().Be("The last Jedi");
+			entry.Columns.Should().Equal(GeneralColumns.RawContent);
+			entry.GetValue(GeneralColumns.RawContent).Should().Be("The last Jedi");
 		}
 
 		[Test]
@@ -108,8 +107,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.Index = 9001;
 			entry.Index.Should().Be(9001);
-			entry.Columns.Should().Equal(LogColumns.Index);
-			entry.GetValue(LogColumns.Index).Should().Be(9001);
+			entry.Columns.Should().Equal(GeneralColumns.Index);
+			entry.GetValue(GeneralColumns.Index).Should().Be(9001);
 		}
 
 		[Test]
@@ -120,8 +119,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.OriginalIndex = 8999;
 			entry.OriginalIndex.Should().Be(8999);
-			entry.Columns.Should().Equal(LogColumns.OriginalIndex);
-			entry.GetValue(LogColumns.OriginalIndex).Should().Be(8999);
+			entry.Columns.Should().Equal(GeneralColumns.OriginalIndex);
+			entry.GetValue(GeneralColumns.OriginalIndex).Should().Be(8999);
 		}
 
 		[Test]
@@ -132,8 +131,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.LineNumber = 42;
 			entry.LineNumber.Should().Be(42);
-			entry.Columns.Should().Equal(LogColumns.LineNumber);
-			entry.GetValue(LogColumns.LineNumber).Should().Be(42);
+			entry.Columns.Should().Equal(GeneralColumns.LineNumber);
+			entry.GetValue(GeneralColumns.LineNumber).Should().Be(42);
 		}
 
 		[Test]
@@ -144,17 +143,17 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 
 			entry.OriginalLineNumber = 1337;
 			entry.OriginalLineNumber.Should().Be(1337);
-			entry.Columns.Should().Equal(LogColumns.OriginalLineNumber);
-			entry.GetValue(LogColumns.OriginalLineNumber).Should().Be(1337);
+			entry.Columns.Should().Equal(GeneralColumns.OriginalLineNumber);
+			entry.GetValue(GeneralColumns.OriginalLineNumber).Should().Be(1337);
 		}
 
 		[Test]
 		public void TestSetValueWrongType()
 		{
 			var entry = new LogEntry(new IColumnDescriptor[0]);
-			new Action(() => entry.SetValue(LogColumns.RawContent, 42)).Should().Throw<ArgumentException>();
+			new Action(() => entry.SetValue(GeneralColumns.RawContent, 42)).Should().Throw<ArgumentException>();
 			entry.Columns.Should().BeEmpty();
-			new Action(() => entry.GetValue(LogColumns.RawContent)).Should().Throw<ArgumentException>();
+			new Action(() => entry.GetValue(GeneralColumns.RawContent)).Should().Throw<ArgumentException>();
 		}
 
 		[Test]
@@ -173,7 +172,7 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogColumns.RawContent, "Starbuck"}
+				{GeneralColumns.RawContent, "Starbuck"}
 			};
 			var entry = new LogEntry(values);
 			var equalEntry = new LogEntry(values);
@@ -188,11 +187,11 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogColumns.RawContent, "Starbuck"}
+				{GeneralColumns.RawContent, "Starbuck"}
 			};
 			var otherValues = new Dictionary<IColumnDescriptor, object>
 			{
-				{LogColumns.RawContent, "Apollo"}
+				{GeneralColumns.RawContent, "Apollo"}
 			};
 			var entry = new LogEntry(values);
 			var otherEntry = new LogEntry(otherValues);
@@ -205,11 +204,11 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 		[Test]
 		public void TestEqualBothEmpty_DifferentColumns()
 		{
-			var entry = new LogEntry(LogColumns.RawContent);
-			var otherEntry = new LogEntry(LogColumns.RawContent, LogColumns.Timestamp);
+			var entry = new LogEntry(GeneralColumns.RawContent);
+			var otherEntry = new LogEntry(GeneralColumns.RawContent, GeneralColumns.Timestamp);
 			Equals(entry, otherEntry).Should().BeFalse();
 
-			var equalReadOnlyEntry = new ReadOnlyLogEntry(LogColumns.RawContent, LogColumns.Timestamp);
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(GeneralColumns.RawContent, GeneralColumns.Timestamp);
 			Equals(entry, equalReadOnlyEntry).Should().BeFalse();
 		}
 

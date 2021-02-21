@@ -89,12 +89,12 @@ namespace Tailviewer.Formats.Serilog
 
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			if (Equals(column, LogColumns.RawContent))
+			if (Equals(column, GeneralColumns.RawContent))
 			{
 				return (T) (object) _rawContent;
 			}
 
-			if (Equals(column, LogColumns.Message))
+			if (Equals(column, GeneralColumns.Message))
 			{
 				return (T)(object)Message;
 			}
@@ -120,6 +120,11 @@ namespace Tailviewer.Formats.Serilog
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { throw new NotImplementedException(); }
+		}
+
+		public bool Contains(IColumnDescriptor column)
+		{
+			throw new NotImplementedException();
 		}
 
 		#endregion

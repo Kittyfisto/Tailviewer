@@ -43,7 +43,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				new PropertyMetadata(defaultValue: null, propertyChangedCallback: OnLogFileChanged));
 
 		public static readonly DependencyProperty SearchProperty =
-			DependencyProperty.Register("Search", typeof(ILogFileSearch), typeof(LogEntryListView),
+			DependencyProperty.Register("Search", typeof(ILogSourceSearch), typeof(LogEntryListView),
 				new PropertyMetadata(defaultValue: null, propertyChangedCallback: OnSearchChanged));
 
 		public static readonly DependencyProperty FollowTailProperty =
@@ -141,18 +141,18 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_columnPresenterFactories = new Dictionary<IColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
 			{
-				{LogColumns.DeltaTime, settings => new DeltaTimeColumnPresenter(settings)},
-				{LogColumns.ElapsedTime, settings => new ElapsedTimeColumnPresenter(settings) },
-				{LogColumns.OriginalLineNumber, settings => new OriginalLineNumberColumnPresenter(settings) },
-				{LogColumns.LogLevel, settings => new  LogLevelColumnPresenter(settings)},
-				{LogColumns.Message, settings => new MessageColumnPresenter(settings) },
-				{LogColumns.Timestamp, settings => new TimestampColumnPresenter(settings)}
+				{GeneralColumns.DeltaTime, settings => new DeltaTimeColumnPresenter(settings)},
+				{GeneralColumns.ElapsedTime, settings => new ElapsedTimeColumnPresenter(settings) },
+				{GeneralColumns.OriginalLineNumber, settings => new OriginalLineNumberColumnPresenter(settings) },
+				{GeneralColumns.LogLevel, settings => new  LogLevelColumnPresenter(settings)},
+				{GeneralColumns.Message, settings => new MessageColumnPresenter(settings) },
+				{GeneralColumns.Timestamp, settings => new TimestampColumnPresenter(settings)}
 			};
 			_columnPresenters = new Dictionary<IColumnDescriptor, AbstractLogColumnPresenter>();
 			_columnDefinitionsByColumn = new Dictionary<IColumnDescriptor, ColumnDefinition>();
 			_columnsByColumnDefinition = new Dictionary<ColumnDefinition, IColumnDescriptor>();
 
-			_lineNumberColumn = (OriginalLineNumberColumnPresenter) AddColumn(LogColumns.OriginalLineNumber);
+			_lineNumberColumn = (OriginalLineNumberColumnPresenter) AddColumn(GeneralColumns.OriginalLineNumber);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
 			_dataSourceCanvas = new DataSourceCanvas(textSettings);
@@ -161,11 +161,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 
-			_deltaTimesColumn = (DeltaTimeColumnPresenter) AddColumn(LogColumns.DeltaTime);
+			_deltaTimesColumn = (DeltaTimeColumnPresenter) AddColumn(GeneralColumns.DeltaTime);
 			_deltaTimesColumn.Visibility = Visibility.Collapsed;
 			_deltaTimesColumn.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_elapsedTimeColumn = (ElapsedTimeColumnPresenter) AddColumn(LogColumns.ElapsedTime);
+			_elapsedTimeColumn = (ElapsedTimeColumnPresenter) AddColumn(GeneralColumns.ElapsedTime);
 			_elapsedTimeColumn.Visibility = Visibility.Collapsed;
 			_elapsedTimeColumn.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
@@ -276,9 +276,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(LogSourceProperty, value); }
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
-			get { return (ILogFileSearch) GetValue(SearchProperty); }
+			get { return (ILogSourceSearch) GetValue(SearchProperty); }
 			set { SetValue(SearchProperty, value); }
 		}
 
@@ -377,7 +377,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				columnIndex = 0;
 			}
-			else if (Equals(column, LogColumns.Message))
+			else if (Equals(column, GeneralColumns.Message))
 			{
 				columnIndex = ColumnDefinitions.IndexOf(_messageColumnDefinition);
 			}
@@ -456,10 +456,10 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private static void OnSearchChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogEntryListView) dependencyObject).OnSearchChanged((ILogFileSearch) args.NewValue);
+			((LogEntryListView) dependencyObject).OnSearchChanged((ILogSourceSearch) args.NewValue);
 		}
 
-		private void OnSearchChanged(ILogFileSearch search)
+		private void OnSearchChanged(ILogSourceSearch search)
 		{
 			PartTextCanvas.Search = search;
 		}
@@ -694,7 +694,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnTimer(object sender, EventArgs args)
 		{
-			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0)
+			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0 || PartTextCanvas.RequiresFurtherUpdate)
 			{
 				try
 				{
@@ -705,6 +705,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					ScrollToBottomIfRequired();
 
 					PartTextCanvas.UpdateVisibleLines();
+
 					PartTextCanvas.OnMouseMove();
 				}
 				catch (Exception e)

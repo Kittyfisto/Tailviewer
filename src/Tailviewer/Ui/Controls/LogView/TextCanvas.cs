@@ -13,10 +13,12 @@ using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
+using Tailviewer.Core;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -49,8 +51,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		private double _xOffset;
 		private double _yOffset;
 		private bool _colorByLevel;
-		private ILogFileSearch _search;
+		private ILogSourceSearch _search;
 		private int _selectedSearchResultIndex;
+		private bool _requiresFurtherUpdate;
+		private DateTime _updateStart;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
 		{
@@ -64,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleBufferBuffer = new LogBufferList(LogColumns.Index, LogColumns.LogEntryIndex, LogColumns.LogLevel, LogColumns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, PageBufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -91,6 +95,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			Focusable = true;
 			ClipToBounds = true;
 			FocusVisualStyle = null;
+		}
+
+		public bool RequiresFurtherUpdate
+		{
+			get { return _requiresFurtherUpdate; }
 		}
 
 		public LogFileSection CurrentlyVisibleSection
@@ -189,7 +198,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _search; }
 			set
@@ -318,7 +327,37 @@ namespace Tailviewer.Ui.Controls.LogView
 				_visibleBufferBuffer.Resize(_currentlyVisibleSection.Count);
 				if (_currentlyVisibleSection.Count > 0)
 				{
-					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0);
+					// We don't want to block the UI thread for very long at all so we instruct the log source to only
+					// fetch data from the cache, but to fetch missing data for later (from the source).
+					var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater, TimeSpan.Zero);
+					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0, queryOptions);
+
+					// Now comes the fun part. We need to detect if we could fetch *all* the data.
+					// This is done by inspecting the BufferedLogSource.RetrievalState - if we encounter any NotCached value,
+					// then the entry is part of the source, but was not cached at the time of trying to access it.
+					// If that's the case, we will instruct this canvas to re-fetch the once more in a bit. This loop will terminate once the
+					// cache has managed to fetch the desired data which should happen some time...
+					if (_visibleBufferBuffer.ContainsAny(PageBufferedLogSource.RetrievalState,
+					                                     RetrievalState.NotCached,
+					                                     new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
+					{
+						if (!_requiresFurtherUpdate)
+						{
+							Log.DebugFormat("Requires further update (at least one entry is not in cache)");
+							_requiresFurtherUpdate = true;
+							_updateStart = DateTime.Now;
+						}
+					}
+					else
+					{
+						if (_requiresFurtherUpdate)
+						{
+							var elapsed = DateTime.Now - _updateStart;
+							Log.DebugFormat("No longer requires further update (all retrieved log entries are in cache), took {0:F1}ms", elapsed.TotalMilliseconds); 
+							_requiresFurtherUpdate = false;
+						}
+					}
+
 					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
 						var line = new TextLine(_visibleBufferBuffer[i], _hoveredIndices, _selectedIndices,
@@ -664,7 +703,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					sortedIndices.Sort();
 					// TODO: What do we do if some mad man has 1 million lines selected?
 					// TODO: Request in batches
-					var buffer = new LogBufferArray(_selectedIndices.Count, LogColumns.RawContent);
+					var buffer = new LogBufferArray(_selectedIndices.Count, GeneralColumns.RawContent);
 					logSource.GetEntries(sortedIndices, buffer);
 
 					for (int i = 0; i < sortedIndices.Count; ++i)

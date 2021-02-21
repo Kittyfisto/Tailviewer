@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -31,6 +32,6 @@ namespace Tailviewer.Formats.Serilog
 		/// </summary>
 		/// <param name="match"></param>
 		/// <param name="logEntry"></param>
-		void MatchInto(Match match, SerilogEntry logEntry);
+		void MatchInto(Match match, LogEntry logEntry);
 	}
 }

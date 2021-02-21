@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Metrolib;
 using Tailviewer.Plugins;
 
@@ -12,9 +11,53 @@ namespace Tailviewer.Core.Properties
 	public static class GeneralProperties
 	{
 		/// <summary>
-		///     The number of log entries in the log file.
+		///     The number of log entries in the log source.
 		/// </summary>
 		public static readonly IReadOnlyPropertyDescriptor<int> LogEntryCount;
+
+		#region Log Levels
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Trace"/>.
+		/// </summary>
+		public static readonly IReadOnlyPropertyDescriptor<int> TraceLogEntryCount;
+		
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Debug"/>.
+		/// </summary>
+		public static readonly IReadOnlyPropertyDescriptor<int> DebugLogEntryCount;
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Info"/>.
+		/// </summary>
+
+		public static readonly IReadOnlyPropertyDescriptor<int> InfoLogEntryCount;
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Warning"/>.
+		/// </summary>
+
+		public static readonly IReadOnlyPropertyDescriptor<int> WarningLogEntryCount;
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Error"/>.
+		/// </summary>
+
+		public static readonly IReadOnlyPropertyDescriptor<int> ErrorLogEntryCount;
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Fatal"/>.
+		/// </summary>
+
+		public static readonly IReadOnlyPropertyDescriptor<int> FatalLogEntryCount;
+
+		/// <summary>
+		///     The number of log entries with a log level of <see cref="LevelFlags.Other"/>.
+		/// </summary>
+
+		public static readonly IReadOnlyPropertyDescriptor<int> OtherLogEntryCount;
+
+		#endregion
 
 		/// <summary>
 		///     The name of the log file (for example the file name of a text log file).
@@ -79,11 +122,6 @@ namespace Tailviewer.Core.Properties
 		public static readonly IReadOnlyPropertyDescriptor<Certainty> FormatDetectionCertainty;
 
 		/// <summary>
-		///     The <see cref="Encoding"/> used by tailviewer to interpret the log file's content as text.
-		/// </summary>
-		public static readonly IPropertyDescriptor<Encoding> Encoding;
-
-		/// <summary>
 		///     The minimum set of properties a log file is expected to provide.
 		/// </summary>
 		public static readonly IReadOnlyList<IReadOnlyPropertyDescriptor> Minimum;
@@ -93,6 +131,15 @@ namespace Tailviewer.Core.Properties
 			var category = "general";
 
 			LogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "log_entry_count"});
+
+			TraceLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "trace_log_entry_count"});
+			DebugLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "debug_log_entry_count"});
+			InfoLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "info_log_entry_count"});
+			WarningLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "warning_log_entry_count"});
+			ErrorLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "error_log_entry_count"});
+			FatalLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "fatal_log_entry_count"});
+			OtherLogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "other_log_entry_count"});
+
 			Name = new WellKnownReadOnlyProperty<string>(new []{category, "name"});
 			StartTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "start_timestamp"});
 			EndTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "end_timestamp"});
@@ -105,7 +152,6 @@ namespace Tailviewer.Core.Properties
 			EmptyReason = new WellKnownReadOnlyProperty<ErrorFlags>(new []{category, "empty_reason"});
 			Format = new WellKnownReadOnlyProperty<ILogFileFormat>(new []{category, "format"});
 			FormatDetectionCertainty = new WellKnownReadOnlyProperty<Certainty>(new []{category, "format_detection_certainty"});
-			Encoding = new WellKnownProperty<Encoding>(new []{category, "encoding"});
 
 			Minimum = new IReadOnlyPropertyDescriptor[]
 			{
@@ -120,8 +166,7 @@ namespace Tailviewer.Core.Properties
 				PercentageProcessed,
 				EmptyReason,
 				Format,
-				FormatDetectionCertainty,
-				Encoding
+				FormatDetectionCertainty
 			};
 		}
 

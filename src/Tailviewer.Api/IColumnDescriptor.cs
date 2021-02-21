@@ -5,17 +5,16 @@ namespace Tailviewer
 	/// <summary>
 	///     Describes a column of a log file.
 	/// </summary>
+	/// <remarks>
+	///     TODO: Introduce required EqualityComparer
+	///     TODO: Introduce optional Comparer (for sorting)
+	/// </remarks>
 	public interface IColumnDescriptor
 	{
 		/// <summary>
 		///     Id of this column, two columns are the same if they have the same id.
 		/// </summary>
 		string Id { get; }
-
-		/// <summary>
-		///     The human readable name of this column. If none is given, then <see cref="Id"/> is used.
-		/// </summary>
-		string DisplayName { get; }
 
 		/// <summary>
 		///     The type of the data provided by this column.

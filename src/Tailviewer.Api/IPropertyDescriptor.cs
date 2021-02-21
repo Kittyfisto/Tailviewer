@@ -12,7 +12,7 @@
 	/// <summary>
 	///    Describes a property of an <see cref="ILogSource"/> which may be changed by the end-user.
 	/// </summary>
-	public interface IPropertyDescriptor<out T>
+	public interface IPropertyDescriptor<T>
 		: IReadOnlyPropertyDescriptor<T>
 		, IPropertyDescriptor
 	{

@@ -255,7 +255,7 @@ namespace Tailviewer
 						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);
 
 						window.Show();
-						mutex.SetListener(window);
+						mutex?.SetListener(window);
 
 						return application.Run();
 					}

@@ -35,7 +35,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _noEntriesExplanation;
 		private string _noEntriesSubtext;
 		private int _totalLogEntryCount;
-		private ILogFileSearch _search;
+		private ILogSourceSearch _search;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource,
 			IActionCenter actionCenter,
@@ -85,7 +85,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _search; }
 			private set

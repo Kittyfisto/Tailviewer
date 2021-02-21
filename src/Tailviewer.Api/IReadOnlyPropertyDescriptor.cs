@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Tailviewer
 {
@@ -6,9 +8,10 @@ namespace Tailviewer
 	///     Describes a particular property of an <see cref="ILogSource"/>.
 	/// </summary>
 	/// <remarks>
-	///     By default, properties are read-only as far as the user is concerned, e.g. properties may change their values over time,
-	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="IPropertyDescriptor"/> on top of this one
-	///     to mark it as non read-only.
+	///     Read-Only properties exist to forward information about the log source *from* the source *to* the user.
+	///     A user may not change them, but the source may change the properties' values over time.
+	///     Properties with the intention of having the user forward information *to* the log source which implement
+	///     <see cref="IPropertyDescriptor"/> instead.
 	/// </remarks>
 	public interface IReadOnlyPropertyDescriptor
 	{
@@ -26,26 +29,37 @@ namespace Tailviewer
 		Type DataType { get; }
 
 		/// <summary>
-		/// 
+		///     The default value of this property which is used by Tailviewer when the property is requested, but hasn't been set before.
 		/// </summary>
 		object DefaultValue { get; }
+
+		/// <summary>
+		///    The comparer Tailviewer should use to compare two values of this property.
+		/// </summary>
+		IEqualityComparer Comparer { get; }
 	}
 
 	/// <summary>
 	///     Describes a particular property of type <typeparamref name="T"/> of an <see cref="ILogSource"/>.
 	/// </summary>
 	/// <remarks>
-	///     By default, properties are read-only as far as the user is concerned, e.g. properties may change their values over time,
-	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="IPropertyDescriptor"/> on top of this one
-	///     to mark it as non read-only.
+	///     Read-Only properties exist to forward information about the log source *from* the source *to* the user.
+	///     A user may not change them, but the source may change the properties' values over time.
+	///     Properties with the intention of having the user forward information *to* the log source which implement
+	///     <see cref="IPropertyDescriptor{T}"/> instead.
 	/// </remarks>
 	/// <typeparam name="T"></typeparam>
-	public interface IReadOnlyPropertyDescriptor<out T>
+	public interface IReadOnlyPropertyDescriptor<T>
 		: IReadOnlyPropertyDescriptor
 	{
 		/// <summary>
-		/// 
+		///     The default value of this property which is used by Tailviewer when the property is requested, but hasn't been set before.
 		/// </summary>
 		new T DefaultValue { get; }
+
+		/// <summary>
+		///    The comparer Tailviewer should use to compare two values of this property.
+		/// </summary>
+		new IEqualityComparer<T> Comparer { get; }
 	}
 }

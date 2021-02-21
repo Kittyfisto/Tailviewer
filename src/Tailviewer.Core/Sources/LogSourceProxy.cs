@@ -204,7 +204,7 @@ namespace Tailviewer.Core.Sources
 				if (logSource != null)
 					return logSource.Columns;
 
-				return LogColumns.Minimum;
+				return GeneralColumns.Minimum;
 			}
 		}
 

@@ -14,8 +14,9 @@ namespace Tailviewer.Serilog.Test
 		[Pure]
 		private static IReadOnlyLogEntry Parse(SerilogEntryParser parser, string rawContent)
 		{
-			var logEntry = new LogEntry(LogColumns.RawContent)
+			var logEntry = new LogEntry(GeneralColumns.Index, GeneralColumns.RawContent)
 			{
+				Index = 0,
 				RawContent = rawContent
 			};
 			return parser.Parse(logEntry);
@@ -216,7 +217,7 @@ namespace Tailviewer.Serilog.Test
 		public void TestParse_Message()
 		{
 			var parser = new SerilogEntryParser("{Message}");
-			Parse(parser, "This is an error").GetValue(LogColumns.Message).Should().Be("This is an error");
+			Parse(parser, "This is an error").GetValue(GeneralColumns.Message).Should().Be("This is an error");
 		}
 
 		[Test]
@@ -236,7 +237,17 @@ namespace Tailviewer.Serilog.Test
 			var logEntry = Parse(parser, "16/09/2020 01:21:59 +02:00 [Fatal] This is a fatal message!");
 			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 16, 01, 21, 59));
 			logEntry.LogLevel.Should().Be(LevelFlags.Fatal);
-			logEntry.GetValue(LogColumns.Message).Should().Be("This is a fatal message!");
+			logEntry.GetValue(GeneralColumns.Message).Should().Be("This is a fatal message!");
+		}
+
+		[Test]
+		public void TestParse_Timestamp2_LogLevel_Message()
+		{
+			var parser = new SerilogEntryParser("{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u3}] {Message}");
+			var logEntry = Parse(parser, "2020-09-13 00:00:12.207 +04:30 [DBG] Fetch modification job triggered at 9/13/2020 12:00:12 AM!!!");
+			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 13, 00, 00, 12, 207));
+			logEntry.LogLevel.Should().Be(LevelFlags.Debug);
+			logEntry.GetValue(GeneralColumns.Message).Should().Be("Fetch modification job triggered at 9/13/2020 12:00:12 AM!!!");
 		}
 
 		[Test]

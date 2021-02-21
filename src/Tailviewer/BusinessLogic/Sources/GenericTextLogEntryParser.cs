@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
@@ -33,7 +34,7 @@ namespace Tailviewer.BusinessLogic.Sources
 		public GenericTextLogEntryParser(ITimestampParser timestampParser)
 		{
 			_timestampParser = timestampParser ?? throw new ArgumentNullException(nameof(timestampParser));
-			_columns = new IColumnDescriptor[] {LogColumns.Timestamp, LogColumns.LogLevel};
+			_columns = new IColumnDescriptor[] {GeneralColumns.Timestamp, GeneralColumns.LogLevel};
 		}
 
 		#region Implementation of IDisposable
@@ -49,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			var rawContent = logEntry.RawContent;
 			if (string.IsNullOrEmpty(rawContent))
-				return logEntry;
+				return null;
 
 			var line = RemoveGarbage(rawContent);
 			var level = LogLine.DetermineLevelFromLine(line);
@@ -155,12 +156,12 @@ namespace Tailviewer.BusinessLogic.Sources
 
 			public T GetValue<T>(IColumnDescriptor<T> column)
 			{
-				if (Equals(column, LogColumns.Timestamp))
+				if (Equals(column, GeneralColumns.Timestamp))
 				{
 					return (T)(object)_timestamp;
 				}
 
-				if (Equals(column, LogColumns.LogLevel))
+				if (Equals(column, GeneralColumns.LogLevel))
 				{
 					return (T)(object)_logLevel;
 				}
@@ -170,13 +171,13 @@ namespace Tailviewer.BusinessLogic.Sources
 
 			public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
-				if (Equals(column, LogColumns.Timestamp))
+				if (Equals(column, GeneralColumns.Timestamp))
 				{
 					value = (T)(object)_timestamp;
 					return true;
 				}
 
-				if (Equals(column, LogColumns.LogLevel))
+				if (Equals(column, GeneralColumns.LogLevel))
 				{
 					value = (T)(object)_logLevel;
 					return true;
@@ -187,12 +188,12 @@ namespace Tailviewer.BusinessLogic.Sources
 
 			public object GetValue(IColumnDescriptor column)
 			{
-				if (Equals(column, LogColumns.Timestamp))
+				if (Equals(column, GeneralColumns.Timestamp))
 				{
 					return _timestamp;
 				}
 
-				if (Equals(column, LogColumns.LogLevel))
+				if (Equals(column, GeneralColumns.LogLevel))
 				{
 					return _logLevel;
 				}
@@ -202,13 +203,13 @@ namespace Tailviewer.BusinessLogic.Sources
 
 			public bool TryGetValue(IColumnDescriptor column, out object value)
 			{
-				if (Equals(column, LogColumns.Timestamp))
+				if (Equals(column, GeneralColumns.Timestamp))
 				{
 					value = _timestamp;
 					return true;
 				}
 
-				if (Equals(column, LogColumns.LogLevel))
+				if (Equals(column, GeneralColumns.LogLevel))
 				{
 					value = _logLevel;
 					return true;
@@ -219,7 +220,12 @@ namespace Tailviewer.BusinessLogic.Sources
 
 			public IReadOnlyList<IColumnDescriptor> Columns
 			{
-				get { return _inner.Columns.Concat(new IColumnDescriptor[]{LogColumns.LogLevel, LogColumns.Timestamp}).ToList(); }
+				get { return _inner.Columns.Concat(new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp}).ToList(); }
+			}
+
+			public bool Contains(IColumnDescriptor column)
+			{
+				return _inner.Columns.Contains(column);
 			}
 
 			#endregion

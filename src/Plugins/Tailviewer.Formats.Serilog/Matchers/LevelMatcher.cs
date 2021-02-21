@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {
@@ -176,10 +177,10 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return LogColumns.LogLevel; }
+			get { return GeneralColumns.LogLevel; }
 		}
 
-		public void MatchInto(Match match, SerilogEntry logEntry)
+		public void MatchInto(Match match, LogEntry logEntry)
 		{
 			var capture = match.Groups[_groupIndex].Value;
 			logEntry.LogLevel = _mapping[capture];

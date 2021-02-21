@@ -25,10 +25,10 @@ namespace Tailviewer.Core.Entries
 		private readonly IReadOnlyDictionary<IColumnDescriptor, object> _values;
 
 		/// <summary>
-		///    Initializes a new readonly log entry with <see cref="LogColumns.Minimum"/> columns, each set to their default value.
+		///    Initializes a new readonly log entry with <see cref="GeneralColumns.Minimum"/> columns, each set to their default value.
 		/// </summary>
 		public ReadOnlyLogEntry()
-			: this(LogColumns.Minimum)
+			: this(GeneralColumns.Minimum)
 		{}
 
 		/// <summary>

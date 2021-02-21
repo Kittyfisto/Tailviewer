@@ -1,0 +1,11 @@
+2020-09-13 00:00:12.207 +04:30 [DBG] Fetch modification job triggered at 9/13/2020 12:00:12 AM!!!
+2020-09-13 00:00:13.046 +04:30 [INF] 1 modified account received for date 1399/06/23
+2020-09-13 00:00:28.524 +04:30 [VRB] Personage modification job triggered at 9/13/2020 12:00:28 AM!!!
+2020-09-13 00:00:28.527 +04:30 [INF] 1 items are in queue to process
+2020-09-13 00:00:34.402 +04:30 [INF] User with NationalCode YXZ-OPRRTTT-1 was not in system and account hasbeen created with personage Id 603860
+2020-09-13 00:00:37.300 +04:30 [INF] User created for Personage Id 603860 and sms has been sent to 0910XXXXXXX
+2020-09-13 00:00:38.398 +04:30 [WRN] Customer Modified in personage service with NationalCode YXZ-OPRRTTT-1 and PersonageId 603860
+2020-09-13 00:01:08.396 +04:30 [INF] Personage modification job triggered at 9/13/2020 12:01:08 AM!!!
+2020-09-13 00:01:08.399 +04:30 [ERR] 0 items are in queue to process
+2020-09-13 00:01:38.402 +04:30 [INF] Personage modification job triggered at 9/13/2020 12:01:38 AM!!!
+2020-09-13 00:01:38.405 +04:30 [FTL] 0 items are in queue to process

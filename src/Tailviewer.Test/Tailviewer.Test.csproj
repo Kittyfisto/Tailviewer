@@ -70,18 +70,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
@@ -104,6 +96,7 @@
     <Compile Include="BusinessLogic\Buffers\AbstractLogBufferTest.cs" />
     <Compile Include="BusinessLogic\Buffers\CombinedLogBufferViewTest.cs" />
     <Compile Include="BusinessLogic\Buffers\SingleColumnLogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\ConcurrentQueueExtensionsTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
@@ -120,63 +113,70 @@
     <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\OrFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\RangeFilterTest.cs" />
+    <Compile Include="BusinessLogic\FixedSizeListTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterTest.cs" />
     <Compile Include="BusinessLogic\LevelFlagsTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractAggregatedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Properties\AbstractPropertiesBufferTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractAggregatedLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Entries\AbstractReadOnlyLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractTaskSchedulerLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ConcurrentLogFilePropertyCollectionTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\EmptyLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractTaskSchedulerLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Properties\ConcurrentPropertiesListTest.cs" />
+    <Compile Include="BusinessLogic\Columns\CustomColumnDescriptorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Adorner\LogSourceColumnAdornerTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Adorner\LogSourcePropertyAdornerTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PagedLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PageTest.cs" />
+    <Compile Include="BusinessLogic\Sources\EmptyLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest2.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest3.cs" />
-    <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\InMemoryLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogBufferViewTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryTest2.cs" />
     <Compile Include="BusinessLogic\Buffers\LogEntryBufferAccessorTest.cs" />
-    <Compile Include="BusinessLogic\Buffers\LogBufferBufferTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferArrayTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogEntryListAccessorTest.cs" />
     <Compile Include="BusinessLogic\Buffers\LogBufferListTest.cs" />
     <Compile Include="BusinessLogic\Entries\LogEntryViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryParserFactoryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileFormatsTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFilePropertiesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest2.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileChangesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFilePendingModificationTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest3.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLine\MultiLineLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLine\MultiLineLogFileTest2.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLine\MultiLineLogFileTest3.cs" />
-    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\LogEntryParserFactoryTest.cs" />
+    <Compile Include="BusinessLogic\Columns\GeneralColumnsTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogFileFormatsTest.cs" />
+    <Compile Include="BusinessLogic\Properties\GeneralPropertiesTest.cs" />
+    <Compile Include="BusinessLogic\Properties\PropertiesBufferListTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileChangesTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileIndexTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFilePendingModificationTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\PluginLogFileFactoryTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest2.cs" />
     <Compile Include="BusinessLogic\Buffers\AbstractReadOnlyLogBufferTest.cs" />
     <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\EncodingDetectorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\FileFingerprintTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\GenericTextLogSourceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\LineOffsetDetectorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\GenericTextLogEntryParserTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\EncodingDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\FileFingerprintTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\FileFormatDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\GenericTextLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\LineOffsetDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\GenericTextLogEntryParserTest.cs" />
+    <Compile Include="BusinessLogic\Columns\WellKnownColumnDescriptorTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Entries\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
@@ -186,12 +186,11 @@
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersionTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearchTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Parsers\TimestampParserTest.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="DataSourceIdTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterIdTest.cs" />
@@ -312,7 +311,19 @@
     <Content Include="TestData\Empty.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\Encodings\utf16_be_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\utf16_le_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\Encodings\utf8_w_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\windows_1252.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Formats\Serilog\Serilog.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\LevelCounts.txt">

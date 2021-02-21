@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer
 {
@@ -169,5 +170,13 @@ namespace Tailviewer
 		///     The columns offered by this log entry.
 		/// </summary>
 		IReadOnlyList<IColumnDescriptor> Columns { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		[Pure]
+		bool Contains(IColumnDescriptor column);
 	}
 }

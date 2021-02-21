@@ -9,36 +9,42 @@ namespace Tailviewer
 	public sealed class LogSourceQueryOptions
 	{
 		/// <summary>
-		///     The default query options, <see cref="LogSourceQueryMode.FromSource" />.
+		///     The default query options, <see cref="LogSourceQueryMode.Default" />.
 		/// </summary>
 		public static readonly LogSourceQueryOptions Default;
 
 		/// <summary>
 		///     The maximum time the log file shall block in case <see cref="QueryMode" /> is set to
-		///     <see cref="LogSourceQueryMode.FromSource" />.
+		///     <see cref="LogSourceQueryMode.Default" />.
 		///     Ignored otherwise.
 		/// </summary>
-		public TimeSpan MaximumWaitTime;
+		public readonly TimeSpan MaximumWaitTime;
 
 		/// <summary>
 		///     How the log file shall block, if at all.
 		/// </summary>
-		public LogSourceQueryMode QueryMode;
+		public readonly LogSourceQueryMode QueryMode;
 
 		static LogSourceQueryOptions()
 		{
-			Default = new LogSourceQueryOptions(LogSourceQueryMode.FromSource)
-			{
-				MaximumWaitTime = TimeSpan.MaxValue
-			};
+			Default = new LogSourceQueryOptions(LogSourceQueryMode.Default, TimeSpan.MaxValue);
 		}
 
 		/// <summary>
 		/// </summary>
 		/// <param name="queryMode"></param>
 		public LogSourceQueryOptions(LogSourceQueryMode queryMode)
+			: this(queryMode, TimeSpan.MaxValue)
+		{}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="queryMode"></param>
+		/// <param name="maximumWaitTime"></param>
+		public LogSourceQueryOptions(LogSourceQueryMode queryMode, TimeSpan maximumWaitTime)
 		{
 			QueryMode = queryMode;
+			MaximumWaitTime = maximumWaitTime;
 		}
 
 		#region Overrides of Object
@@ -48,7 +54,7 @@ namespace Tailviewer
 		{
 			var builder = new StringBuilder();
 			builder.Append(QueryMode);
-			if (QueryMode == LogSourceQueryMode.FromSource)
+			if (QueryMode == LogSourceQueryMode.Default)
 			{
 				builder.AppendFormat("Wait: {0}", MaximumWaitTime);
 			}

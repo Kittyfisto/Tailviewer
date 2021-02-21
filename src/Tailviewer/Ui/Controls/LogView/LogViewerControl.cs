@@ -22,14 +22,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		                                                "FindAllLogFile", typeof(ILogSource), typeof(LogViewerControl), new PropertyMetadata(default(ILogSource)));
 
 		public static readonly DependencyProperty FindAllSearchProperty = DependencyProperty.Register(
-		                                                "FindAllSearch", typeof(ILogFileSearch), typeof(LogViewerControl), new PropertyMetadata(default(ILogFileSearch)));
+		                                                "FindAllSearch", typeof(ILogSourceSearch), typeof(LogViewerControl), new PropertyMetadata(default(ILogSourceSearch)));
 
 		public static readonly DependencyProperty ShowFindAllProperty = DependencyProperty.Register(
 		                                                "ShowFindAll", typeof(bool), typeof(LogViewerControl), new PropertyMetadata(default(bool)));
 
 		public static readonly DependencyProperty SearchProperty =
-			DependencyProperty.Register("Search", typeof(ILogFileSearch), typeof(LogViewerControl),
-				new PropertyMetadata(default(ILogFileSearch)));
+			DependencyProperty.Register("Search", typeof(ILogSourceSearch), typeof(LogViewerControl),
+				new PropertyMetadata(default(ILogSourceSearch)));
 
 		public static readonly DependencyProperty DataSourceProperty =
 			DependencyProperty.Register("DataSource", typeof(IDataSourceViewModel), typeof(LogViewerControl),
@@ -160,9 +160,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FindAllLogFileProperty, value); }
 		}
 
-		public ILogFileSearch FindAllSearch
+		public ILogSourceSearch FindAllSearch
 		{
-			get { return (ILogFileSearch) GetValue(FindAllSearchProperty); }
+			get { return (ILogSourceSearch) GetValue(FindAllSearchProperty); }
 			set { SetValue(FindAllSearchProperty, value); }
 		}
 
@@ -172,9 +172,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(ShowFindAllProperty, value); }
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
-			get { return (ILogFileSearch) GetValue(SearchProperty); }
+			get { return (ILogSourceSearch) GetValue(SearchProperty); }
 			set { SetValue(SearchProperty, value); }
 		}
 

@@ -7,7 +7,7 @@ namespace Tailviewer.Ui.Controls.LogView.Messages
 		: AbstractLogColumnPresenter<string>
 	{
 		public MessageColumnPresenter(TextSettings textSettings)
-			: base(LogColumns.Message, textSettings)
+			: base(GeneralColumns.Message, textSettings)
 		{}
 
 		#region Overrides of AbstractLogColumnPresenter<string>

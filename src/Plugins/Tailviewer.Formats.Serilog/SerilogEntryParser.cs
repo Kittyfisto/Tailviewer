@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Tailviewer.Core.Entries;
 using Tailviewer.Formats.Serilog.Matchers;
 using Tailviewer.Plugins;
 
@@ -94,7 +95,7 @@ namespace Tailviewer.Formats.Serilog
 
 		public IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry)
 		{
-			if (!TryParse(logEntry.RawContent, out var parsedLogEntry))
+			if (!TryParse(logEntry.Index, logEntry.RawContent, out var parsedLogEntry))
 				return logEntry;
 
 			return parsedLogEntry;
@@ -107,7 +108,7 @@ namespace Tailviewer.Formats.Serilog
 
 		#endregion
 
-		public bool TryParse(string rawContent, out IReadOnlyLogEntry logEntry)
+		public bool TryParse(LogLineIndex index, string rawContent, out IReadOnlyLogEntry logEntry)
 		{
 			if (rawContent == null)
 			{
@@ -122,7 +123,11 @@ namespace Tailviewer.Formats.Serilog
 				return false;
 			}
 
-			var parsedLogEntry = new SerilogEntry(rawContent);
+			var parsedLogEntry = new LogEntry
+			{
+				Index = index,
+				RawContent = rawContent
+			};
 			foreach (var matcher in _matchers) matcher.MatchInto(match, parsedLogEntry);
 
 			logEntry = parsedLogEntry;

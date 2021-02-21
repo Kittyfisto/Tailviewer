@@ -1,4 +1,4 @@
-﻿using Tailviewer.BusinessLogic.Plugins;
+﻿using System.Text;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
@@ -6,18 +6,35 @@ namespace Tailviewer.Test
 	public sealed class SimpleLogFileFormatMatcher
 		: ILogFileFormatMatcher
 	{
-		private readonly ILogFileFormat _format;
+		public ILogFileFormat Format;
+		public byte[] Header;
+		public Encoding Encoding;
+		public int NumInvocations;
+		public Certainty Certainty;
 
 		public SimpleLogFileFormatMatcher(ILogFileFormat format)
+			: this(format, Certainty.Sure)
+		{ }
+
+		public SimpleLogFileFormatMatcher(ILogFileFormat format, Certainty certainty)
 		{
-			_format = format;
+			Format = format;
+			Certainty = certainty;
 		}
 
 		#region Implementation of ILogFileFormatMatcher
 
-		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+		public bool TryMatchFormat(string fileName,
+		                           byte[] header,
+		                           Encoding encoding,
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
-			format = _format;
+			Header = header;
+			Encoding = encoding;
+			NumInvocations++;
+			format = Format;
+			certainty = Certainty;
 			return format != null;
 		}
 

@@ -32,11 +32,11 @@ namespace Tailviewer.Core.Sources.Merged
 
 		private const int MaximumBatchSizePerSource = 1000;
 
-		private readonly MergedLogFileIndex _index;
+		private readonly MergedLogSourceIndex _index;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 
-		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
+		private readonly ConcurrentQueue<MergedLogSourcePendingModification> _pendingModifications;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly IReadOnlyList<ILogSource> _sources;
@@ -70,10 +70,10 @@ namespace Tailviewer.Core.Sources.Merged
 			if (sources.Length > LogLineSourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported ({1} were given)", LogLineSourceId.MaxSources, sources.Length));
 
 			_sources = sources;
-			_index = new MergedLogFileIndex(sources);
-			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
+			_index = new MergedLogSourceIndex(sources);
+			_pendingModifications = new ConcurrentQueue<MergedLogSourcePendingModification>();
 			_maximumWaitTime = maximumWaitTime;
-			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogColumns.SourceId}).Distinct().ToList();
+			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {GeneralColumns.SourceId}).Distinct().ToList();
 			_propertiesBuffer = new PropertiesBufferList(GeneralProperties.Minimum);
 			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
 
@@ -150,7 +150,7 @@ namespace Tailviewer.Core.Sources.Merged
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("OnLogFileModified({0}, {1})", logSource, section);
 
-			_pendingModifications.Enqueue(new MergedLogFilePendingModification(logSource, section));
+			_pendingModifications.Enqueue(new MergedLogSourcePendingModification(logSource, section));
 		}
 
 		/// <inheritdoc />
@@ -167,29 +167,29 @@ namespace Tailviewer.Core.Sources.Merged
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogColumns.ElapsedTime))
+			if (Equals(column, GeneralColumns.ElapsedTime))
 			{
 				GetElapsedTime(sourceIndices, (TimeSpan?[]) (object) destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, LogColumns.DeltaTime))
+			else if (Equals(column, GeneralColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, LogColumns.Index) ||
-			         Equals(column, LogColumns.OriginalIndex))
+			else if (Equals(column, GeneralColumns.Index) ||
+			         Equals(column, GeneralColumns.OriginalIndex))
 			{
 				_index.GetLogLineIndices(sourceIndices, (LogLineIndex[]) (object) destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.LogEntryIndex))
+			else if (Equals(column, GeneralColumns.LogEntryIndex))
 			{
 				_index.GetLogEntryIndices(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.LineNumber) ||
-			         Equals(column, LogColumns.OriginalLineNumber))
+			else if (Equals(column, GeneralColumns.LineNumber) ||
+			         Equals(column, GeneralColumns.OriginalLineNumber))
 			{
 				_index.GetLineNumbers(sourceIndices, (int[]) (object) destination, destinationIndex);
 			}
-			else if (Equals(column, LogColumns.SourceId))
+			else if (Equals(column, GeneralColumns.SourceId))
 			{
 				_index.GetSourceIds(sourceIndices, (LogLineSourceId[]) (object) destination, destinationIndex);
 			}
@@ -258,7 +258,7 @@ namespace Tailviewer.Core.Sources.Merged
 		{
 			var start = GetProperty(GeneralProperties.StartTimestamp);
 			var timestamps = new DateTime?[indices.Count];
-			GetColumn(indices, LogColumns.Timestamp, timestamps, 0, queryOptions);
+			GetColumn(indices, GeneralColumns.Timestamp, timestamps, 0, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var current = timestamps[i];
@@ -289,7 +289,7 @@ namespace Tailviewer.Core.Sources.Merged
 				timestampIndices[i * 2 + 0] = indices[i] - 1;
 				timestampIndices[i * 2 + 1] = indices[i];
 			}
-			GetColumn(timestampIndices, LogColumns.Timestamp, timestamps, 0, queryOptions);
+			GetColumn(timestampIndices, GeneralColumns.Timestamp, timestamps, 0, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previous = timestamps[i * 2 + 0];
@@ -338,9 +338,9 @@ namespace Tailviewer.Core.Sources.Merged
 			return _maximumWaitTime;
 		}
 
-		private bool TryDequeueUpTo(int maxLineCount, out IEnumerable<MergedLogFilePendingModification> sections)
+		private bool TryDequeueUpTo(int maxLineCount, out IEnumerable<MergedLogSourcePendingModification> sections)
 		{
-			var tmp = new List<MergedLogFilePendingModification>();
+			var tmp = new List<MergedLogSourcePendingModification>();
 			int count = 0;
 
 			while (_pendingModifications.TryDequeue(out var modification))

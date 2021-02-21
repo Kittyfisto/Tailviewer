@@ -9,7 +9,7 @@ namespace Tailviewer.Ui.Controls.LogView.Timestamps
 		: AbstractLogColumnPresenter<DateTime?>
 	{
 		public TimestampColumnPresenter(TextSettings textSettings)
-			: base(LogColumns.Timestamp, textSettings)
+			: base(GeneralColumns.Timestamp, textSettings)
 		{
 		}
 

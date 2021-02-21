@@ -19,7 +19,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			var builder = new StringBuilder();
 			foreach(var line in logEntry)
 			{
-				builder.AppendLine(line.GetValue(LogColumns.Message));
+				builder.AppendLine(line.GetValue(GeneralColumns.Message));
 			}
 			return builder.ToString();
 		}

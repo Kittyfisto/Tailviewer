@@ -38,6 +38,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "src\Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "src\Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0A1431F6-8548-44D4-B82B-049B94A7F57D} = {0A1431F6-8548-44D4-B82B-049B94A7F57D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "src\Tailviewer.Core\Tailviewer.Core.csproj", "{62C60D20-180E-4A59-9EF3-30161E1E31CB}"
 EndProject

@@ -38,7 +38,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -108,7 +108,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogSource>();
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -151,7 +151,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.LevelFilter).Returns(flags);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -175,7 +175,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.SearchTerm).Returns("");
 			dataSource.Setup(x => x.QuickFilterChain).Returns(new List<ILogEntryFilter> {new Mock<ILogEntryFilter>().Object});
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
@@ -197,7 +197,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.SearchTerm).Returns("s");
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
-			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
