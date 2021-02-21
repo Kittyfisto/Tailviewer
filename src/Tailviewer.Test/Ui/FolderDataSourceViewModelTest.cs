@@ -57,8 +57,8 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 
-			var sources = new List<ISingleDataSource>();
-			var childDataSource = new Mock<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
+			var childDataSource = new Mock<IFileDataSource>();
 			childDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(childDataSource.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
@@ -85,8 +85,8 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 
-			var sources = new List<ISingleDataSource>();
-			var childDataSource = new Mock<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
+			var childDataSource = new Mock<IFileDataSource>();
 			childDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(childDataSource.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
@@ -107,8 +107,8 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 
-			var sources = new List<ISingleDataSource>();
-			var childDataSource = new Mock<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
+			var childDataSource = new Mock<IFileDataSource>();
 			childDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(childDataSource.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
@@ -131,7 +131,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 
-			var sources = new List<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
 			dataSource.Setup(x => x.FilteredFileCount).Returns(() => sources.Count);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(() => sources.Count);
@@ -140,11 +140,11 @@ namespace Tailviewer.Test.Ui
 			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
 			viewModel.Observable.Should().BeEmpty();
 
-			var child1 = new Mock<ISingleDataSource>();
+			var child1 = new Mock<IFileDataSource>();
 			child1.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(child1.Object);
 
-			var child2 = new Mock<ISingleDataSource>();
+			var child2 = new Mock<IFileDataSource>();
 			child2.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(child2.Object);
 
@@ -156,9 +156,9 @@ namespace Tailviewer.Test.Ui
 		public void TestUpdateFiltered3Files()
 		{
 			var dataSource = new Mock<IFolderDataSource>();
-			var sources = new List<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
-			var child1 = new Mock<ISingleDataSource>();
+			var child1 = new Mock<IFileDataSource>();
 			child1.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(child1.Object);
 
@@ -174,11 +174,11 @@ namespace Tailviewer.Test.Ui
 		public void TestUpdateSkippedFilesDueToLimitation()
 		{
 			var dataSource = new Mock<IFolderDataSource>();
-			var sources = new List<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
 			for (int i = 0; i < 256; ++i)
 			{
-				var child = new Mock<ISingleDataSource>();
+				var child = new Mock<IFileDataSource>();
 				child.Setup(x => x.Settings).Returns(new DataSource());
 				sources.Add(child.Object);
 			}
@@ -195,11 +195,11 @@ namespace Tailviewer.Test.Ui
 		public void TestUpdateFilterAndSkippedFilesDueToLimitation()
 		{
 			var dataSource = new Mock<IFolderDataSource>();
-			var sources = new List<ISingleDataSource>();
+			var sources = new List<IFileDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
 			for (int i = 0; i < 256; ++i)
 			{
-				var child = new Mock<ISingleDataSource>();
+				var child = new Mock<IFileDataSource>();
 				child.Setup(x => x.Settings).Returns(new DataSource());
 				sources.Add(child.Object);
 			}

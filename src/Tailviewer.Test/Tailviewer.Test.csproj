@@ -263,7 +263,7 @@
     <Compile Include="Ui\FolderDataSourceViewModelTest.cs" />
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
-    <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\FileDataSourceViewModelTest.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />

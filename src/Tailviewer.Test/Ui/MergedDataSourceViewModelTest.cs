@@ -115,8 +115,8 @@ namespace Tailviewer.Test.Ui
 		public void TestAddChild1()
 		{
 			var model = new MergedDataSourceViewModel(_dataSources.AddGroup(), _actionCenter.Object);
-			SingleDataSource source = _dataSources.AddFile("foo");
-			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
+			FileDataSource source = _dataSources.AddFile("foo");
+			var sourceViewModel = new FileDataSourceViewModel(source, _actionCenter.Object);
 			model.AddChild(sourceViewModel);
 			model.Observable.Should().Equal(sourceViewModel);
 			sourceViewModel.Parent.Should().BeSameAs(model);
@@ -128,8 +128,8 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			SingleDataSource source = _dataSources.AddFile("foo");
-			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
+			FileDataSource source = _dataSources.AddFile("foo");
+			var sourceViewModel = new FileDataSourceViewModel(source, _actionCenter.Object);
 
 			model.AddChild(sourceViewModel);
 			sourceViewModel.CharacterCode.Should().Be("A", "because the merged data source is responsible for providing unique character codes");
@@ -142,18 +142,18 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			var sources = new List<SingleDataSourceViewModel>();
+			var sources = new List<FileDataSourceViewModel>();
 			for (int i = 0; i < LogLineSourceId.MaxSources; ++i)
 			{
 				var source = _dataSources.AddFile(i.ToString());
-				var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var sourceViewModel = new FileDataSourceViewModel(source, _actionCenter.Object);
 				sources.Add(sourceViewModel);
 
 				model.AddChild(sourceViewModel).Should().BeTrue("because the child should've been added");
 				model.Observable.Should().Equal(sources, "because all previously added children should be there");
 			}
 
-			var tooMuch = new SingleDataSourceViewModel(_dataSources.AddFile("dadw"), _actionCenter.Object);
+			var tooMuch = new FileDataSourceViewModel(_dataSources.AddFile("dadw"), _actionCenter.Object);
 			model.AddChild(tooMuch).Should().BeFalse("because no more children can be added");
 			model.Observable.Should().Equal(sources, "because only those sources which could be added should be present");
 		}
@@ -164,8 +164,8 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			SingleDataSource source = _dataSources.AddFile("foo");
-			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
+			FileDataSource source = _dataSources.AddFile("foo");
+			var sourceViewModel = new FileDataSourceViewModel(source, _actionCenter.Object);
 
 			model.Insert(0, sourceViewModel);
 			sourceViewModel.CharacterCode.Should().Be("A", "because the merged data source is responsible for providing unique character codes");
@@ -177,11 +177,11 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			var child1 = new SingleDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
+			var child1 = new FileDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
 			model.AddChild(child1);
 			child1.CharacterCode.Should().Be("A");
 
-			var child2 = new SingleDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
+			var child2 = new FileDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
 			model.Insert(0, child2);
 			model.Observable.Should().Equal(new object[]
 			{
@@ -199,10 +199,10 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			var child1 = new SingleDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
+			var child1 = new FileDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
 			model.AddChild(child1);
 
-			var child2 = new SingleDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
+			var child2 = new FileDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
 			model.AddChild(child2);
 			model.Observable.Should().Equal(new object[]
 			{

@@ -5,6 +5,7 @@ using System.Xml;
 using log4net;
 using Metrolib;
 using Tailviewer.Core;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Settings
 {
@@ -85,6 +86,16 @@ namespace Tailviewer.Settings
 		/// </summary>
 		public string DisplayName;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public CustomDataSourceId CustomDataSourceId;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ICustomDataSourceConfiguration CustomDataSourceConfiguration;
+
 		public DataSource()
 		{
 			Order = -1;
@@ -109,6 +120,9 @@ namespace Tailviewer.Settings
 
 		public override string ToString()
 		{
+			if (CustomDataSourceConfiguration != null)
+				return string.Format("Custom ({0})", CustomDataSourceConfiguration);
+
 			if (File == null)
 				return string.Format("Merged ({0})", Id);
 
