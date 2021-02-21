@@ -97,12 +97,12 @@
     <Compile Include="BusinessLogic\Sources\Text\FileLogSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\FileLogSourceAcceptanceTest2.cs" />
     <Compile Include="BusinessLogic\Sources\Text\FileLogSourceTest.cs" />
-    <Compile Include="BusinessLogic\Sources\Text\Sreaming\StreamingTextLogSourceAcceptanceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\Streaming\StreamingTextLogSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\Simple\TextLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\LogSourceProxyTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\Simple\TextLogSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Sources\MergedLogSourceTest.cs" />
-    <Compile Include="BusinessLogic\Sources\Text\Sreaming\StreamingTextLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\Streaming\StreamingTextLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\Simple\TextLogSourceTest2.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\Simple\StreamReaderExTest.cs" />

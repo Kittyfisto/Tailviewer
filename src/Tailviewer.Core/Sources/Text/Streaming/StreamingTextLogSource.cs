@@ -90,6 +90,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
 			_propertiesBuffer.SetValue(GeneralProperties.Format, format);
 			_propertiesBuffer.SetValue(TextProperties.RequiresBuffer, true);
+			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
 
 			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
 			SynchronizeProperties();
@@ -408,6 +409,8 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 				_lastStreamPosition = offsetInBytes;
 				count = _index.Count;
 			}
+
+			_propertiesBuffer.SetValue(TextProperties.LineCount, count);
 			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
 			SynchronizeProperties();
 			_listeners.OnRead(count);
@@ -415,6 +418,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 
 		private void UpdateLineCount(int count)
 		{
+			_propertiesBuffer.SetValue(TextProperties.LineCount, count);
 			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
 			SynchronizeProperties();
 			_listeners.OnRead(count);
@@ -434,41 +438,6 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		/// <remarks>
 		///    This method may only ever be called from within <see cref="RunFileScan"/>.
 		/// </remarks>
-		/// <param name="stream"></param>
-		private long RepositionStreamToLastLine(FileStream stream)
-		{
-			var currentSize = stream.Length;
-			if (currentSize < _lastStreamPosition)
-			{
-				ResetIndex();
-
-				return 0;
-			}
-			else
-			{
-				// Okay so we can never be sure if the existing line was appended to or if
-				// a new line was written so in order to check that, we move the buffer back
-				// to the *start* of the last known line and then check...
-				lock (_index)
-				{
-					if (_index.Count > 0)
-					{
-						var lastLineOffset = _index[_index.Count - 1].GetValue(StreamingTextLogSource.LineOffsetInBytes);
-						stream.Position = lastLineOffset;
-						return lastLineOffset;
-					}
-
-					return stream.Position;
-				}
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <remarks>
-		///    This method may only ever be called from within <see cref="RunFileScan"/>.
-		/// </remarks>
 		private void ResetIndex()
 		{
 			lock (_index)
@@ -476,7 +445,6 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 				_index.Clear();
 			}
 
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, 0);
 			SynchronizeProperties();
 			_listeners.Reset();
 		}
@@ -504,6 +472,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			_propertiesBuffer.SetValue(GeneralProperties.LastModified, null);
 			_propertiesBuffer.SetValue(GeneralProperties.Created, null);
 			_propertiesBuffer.SetValue(GeneralProperties.Size, null);
+			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
 			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, 0);
 
 			ResetIndex();

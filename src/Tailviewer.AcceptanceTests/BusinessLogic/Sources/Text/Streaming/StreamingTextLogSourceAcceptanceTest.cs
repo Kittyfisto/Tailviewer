@@ -1,10 +1,9 @@
 ﻿using System.Text;
 using System.Threading;
 using NUnit.Framework;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Streaming;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 {
 	[TestFixture]
 	public sealed class StreamingTextLogSourceAcceptanceTest

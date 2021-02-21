@@ -26,9 +26,21 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		{
 			int lineNumberCharacterCount;
 			if (logSource != null)
-				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logSource.GetProperty(TextProperties.LineCount)));
+			{
+				var lineCount = logSource.GetProperty(TextProperties.LineCount);
+				if (lineCount > 0)
+				{
+					lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(lineCount));
+				}
+				else
+				{
+					lineNumberCharacterCount = 0;
+				}
+			}
 			else
+			{
 				lineNumberCharacterCount = 0;
+			}
 
 			// We always reserve space for at least 3 characters.
 			_lineNumberWidth = textSettings.EstimateWidthUpperLimit(Math.Max(lineNumberCharacterCount, val2: 3));

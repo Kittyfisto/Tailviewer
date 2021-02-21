@@ -18,7 +18,7 @@ using Tailviewer.Plugins;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.Sources.Text;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 {
 	[TestFixture]
 	public sealed class StreamingTextLogSourceTest
@@ -100,6 +100,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 		{
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
 			logFile.GetProperty(TextProperties.RequiresBuffer).Should().BeTrue();
+			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(GeneralProperties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
@@ -115,7 +116,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 		{
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
-
+			
+			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(GeneralProperties.Created).Should().BeNull("because the source file does not exist");
@@ -145,6 +147,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 
 			var logFile = Create(fileName, Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
+			logFile.GetProperty(TextProperties.LineCount).Should().Be(0, "because the file is empty");
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the file is empty");
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.Zero, "because the file is empty");
 			logFile.GetProperty(GeneralProperties.Created).Should().Be(info.Created);
@@ -167,7 +170,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 
 			var logFile = Create(fileName, Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
-
+			
+			logFile.GetProperty(TextProperties.LineCount).Should().Be(1);
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(109));
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
@@ -192,7 +196,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 			var logFile = Create(fileName, Encoding.UTF8);
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+			logFile.GetProperty(TextProperties.LineCount).Should().Be(3, "because there's 3 lines, the last one is empty though");
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3, "because there's 3 lines, the last one is empty though");
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
@@ -446,6 +451,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 			{
 				_taskScheduler.RunOnce();
 
+				logFile.GetProperty(TextProperties.LineCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
 				logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
