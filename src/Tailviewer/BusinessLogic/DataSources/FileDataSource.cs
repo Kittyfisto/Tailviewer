@@ -7,21 +7,21 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	public sealed class SingleDataSource
+	public sealed class FileDataSource
 		: AbstractDataSource
-			, ISingleDataSource
+		, IFileDataSource
 	{
 		private readonly ILogSource _originalLogSource;
 		private readonly LogSourceProxy _unfilteredLogSource;
 		private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogSource _multiLineLogSource;
 
-		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
+		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
 			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
-		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings,
+		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings,
 			TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
@@ -34,7 +34,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			OnUnfilteredLogFileChanged();
 		}
 
-		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogSource unfilteredLogSource,
+		public FileDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogSource unfilteredLogSource,
 			TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{

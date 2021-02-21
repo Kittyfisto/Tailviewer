@@ -199,7 +199,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				if (!_dataSourceViewModelsByDataSource.TryGetValue(dataSource, out var viewModel))
 				{
-					viewModel = new SingleDataSourceViewModel((ISingleDataSource) dataSource, _actionCenter)
+					viewModel = new FileDataSourceViewModel((IFileDataSource) dataSource, _actionCenter)
 					{
 						Parent = this
 					};

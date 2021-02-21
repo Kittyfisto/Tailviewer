@@ -54,6 +54,7 @@
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Certainty.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="LogSourceQueryMode.cs" />
     <Compile Include="LogSourceQueryOptions.cs" />
     <Compile Include="NoSuchServiceException.cs" />
+    <Compile Include="Plugins\CustomDataSourceId.cs" />
+    <Compile Include="Plugins\ICustomDataSourceConfiguration.cs" />
+    <Compile Include="Plugins\ICustomDataSourcePlugin.cs" />
     <Compile Include="Plugins\ICustomLogFileFormat.cs" />
     <Compile Include="Plugins\ICustomLogFileFormatCreatorPlugin.cs" />
     <Compile Include="Plugins\ILogFileFormatMatcher.cs" />
@@ -77,6 +81,7 @@
     <Compile Include="Plugins\ILogSourceParserPlugin.cs" />
     <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="ThreadSafeAttribute.cs" />
+    <Compile Include="Ui\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="ILogEntry.cs" />
     <Compile Include="IPropertiesBuffer.cs" />

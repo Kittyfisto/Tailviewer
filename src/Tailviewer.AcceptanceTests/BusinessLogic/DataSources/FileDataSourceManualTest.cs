@@ -8,7 +8,6 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Settings;
 using Tailviewer.Test;
@@ -16,7 +15,7 @@ using Tailviewer.Test;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceManualTest
+	public sealed class FileDataSourceManualTest
 	{
 		private ManualTaskScheduler _scheduler;
 		private string _fname;
@@ -54,7 +53,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite1([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("ssss");
 				_writer.Flush();
@@ -75,7 +74,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite2([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
@@ -96,7 +95,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestWrite3([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
@@ -118,7 +117,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadOneLine3([Values(true, false)] bool isSingleLine)
 		{
 			_settings.IsSingleLine = isSingleLine;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.Write("A");
 				_writer.Flush();
@@ -148,7 +147,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadMultiline()
 		{
 			_settings.IsSingleLine = false;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");
@@ -180,7 +179,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void TestReadSingleLine()
 		{
 			_settings.IsSingleLine = true;
-			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
+			using (var dataSource = new FileDataSource(_scheduler, _settings, _logSource, TimeSpan.Zero))
 			{
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");

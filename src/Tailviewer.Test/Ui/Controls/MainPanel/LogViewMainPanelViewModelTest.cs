@@ -17,6 +17,7 @@ using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.Core;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -47,6 +48,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			_actionCenter = new Mock<IActionCenter>();
 			_dataSources = new Mock<IDataSources>();
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource>());
+			_dataSources.Setup(x => x.CustomDataSources).Returns(new List<ICustomDataSourcePlugin>());
 
 			_quickFilters = new Mock<IQuickFilters>();
 			_quickFilters.Setup(x => x.AddQuickFilter()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
@@ -97,10 +99,10 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[NUnit.Framework.Description("Verifies that update retrieves certain changed values from ALL data sources, even if they aren't the selected one")]
 		public void TestUpdate3()
 		{
-			var dataSource1 = new Mock<ISingleDataSource>();
+			var dataSource1 = new Mock<IFileDataSource>();
 			dataSource1.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource1.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
-			var dataSource2 = new Mock<ISingleDataSource>();
+			var dataSource2 = new Mock<IFileDataSource>();
 			dataSource2.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource2.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 
@@ -211,7 +213,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			mergedDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			mergedDataSource.Setup(x => x.DisplayName).Returns("My custom merged data source");
 
-			var dataSource1 = new Mock<ISingleDataSource>();
+			var dataSource1 = new Mock<IFileDataSource>();
 			dataSource1.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource1.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource1.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
@@ -220,7 +222,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource1.Setup(x => x.FullFileName).Returns("log1.txt");
 			dataSource1.SetupProperty(x => x.CharacterCode);
 
-			var dataSource2 = new Mock<ISingleDataSource>();
+			var dataSource2 = new Mock<IFileDataSource>();
 			dataSource2.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource2.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			dataSource2.Setup(x => x.Id).Returns(DataSourceId.CreateNew());

@@ -19,7 +19,7 @@
     <converters:CountConverter x:Key="NewLogLineCountConverter" HasPlural="False" Suffix="new" />
     <converters2:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
-    <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
+    <DataTemplate DataType="{x:Type viewModels:FileDataSourceViewModel}">
         <Grid Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

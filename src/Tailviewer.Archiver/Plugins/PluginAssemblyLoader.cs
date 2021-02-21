@@ -38,7 +38,8 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(ILogFileFormatMatcherPlugin),
 				typeof(ICustomLogFileFormatCreatorPlugin),
 				typeof(ILogEntryParserPlugin),
-				typeof(IPropertyPresenterPlugin)
+				typeof(IPropertyPresenterPlugin),
+				typeof(ICustomDataSourcePlugin)
 			};
 		}
 

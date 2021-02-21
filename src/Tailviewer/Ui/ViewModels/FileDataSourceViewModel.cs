@@ -14,22 +14,22 @@ namespace Tailviewer.Ui.ViewModels
 	/// <summary>
 	///     Represents a data source and is capable of opening the source folder in explorer
 	/// </summary>
-	public sealed class SingleDataSourceViewModel
+	public sealed class FileDataSourceViewModel
 		: AbstractDataSourceViewModel
-		, ISingleDataSourceViewModel
+			, IFileDataSourceViewModel
 	{
 		private readonly IActionCenter _actionCenter;
-		private readonly ISingleDataSource _dataSource;
+		private readonly IFileDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly ICommand _openInExplorerCommand;
-		private string _folder;
-		private bool _displayNoTimestampCount;
 		private bool _canBeRemoved;
+		private bool _displayNoTimestampCount;
 		private bool _excludeFromParent;
+		private string _folder;
 
-		public SingleDataSourceViewModel(ISingleDataSource dataSource,
-							IActionCenter actionCenter)
-								: base(dataSource)
+		public FileDataSourceViewModel(IFileDataSource dataSource,
+		                               IActionCenter actionCenter)
+			: base(dataSource)
 		{
 			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
 
@@ -59,7 +59,20 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
+		public string Folder
+		{
+			get { return _folder; }
+		}
+
+		public string FullName
+		{
+			get { return _dataSource.FullFileName; }
+		}
+
+		public override ICommand OpenInExplorerCommand
+		{
+			get { return _openInExplorerCommand; }
+		}
 
 		public override string DisplayName
 		{
@@ -67,13 +80,15 @@ namespace Tailviewer.Ui.ViewModels
 			set { throw new InvalidOperationException(); }
 		}
 
-		public override bool CanBeRenamed => false;
+		public override bool CanBeRenamed
+		{
+			get { return false; }
+		}
 
-		public override string DataSourceOrigin => FullName;
-
-		public string Folder => _folder;
-
-		public string FullName => _dataSource.FullFileName;
+		public override string DataSourceOrigin
+		{
+			get { return FullName; }
+		}
 
 		public bool CanBeRemoved
 		{
@@ -113,7 +128,7 @@ namespace Tailviewer.Ui.ViewModels
 				if (Parent?.DataSource is IMultiDataSource parentDataSource)
 					parentDataSource.SetExcluded(_dataSource, _excludeFromParent);
 
-				foreach(var item in ContextMenuItems.OfType<ToggleExcludeFromGroupViewModel>())
+				foreach (var item in ContextMenuItems.OfType<ToggleExcludeFromGroupViewModel>())
 					item.UpdateHeader();
 
 				EmitPropertyChanged();
@@ -125,10 +140,8 @@ namespace Tailviewer.Ui.ViewModels
 			switch (e.PropertyName)
 			{
 				case nameof(Parent):
-					if (Parent?.DataSource is IMultiDataSource parentDataSource && parentDataSource.IsExcluded(_dataSource))
-					{
-						ExcludeFromParent = true;
-					}
+					if (Parent?.DataSource is IMultiDataSource parentDataSource &&
+					    parentDataSource.IsExcluded(_dataSource)) ExcludeFromParent = true;
 					break;
 
 				case nameof(IsGrouped):
@@ -169,13 +182,9 @@ namespace Tailviewer.Ui.ViewModels
 			CanBeRemoved = !(Parent is FolderDataSourceViewModel);
 
 			if (Parent?.DataSource is IMultiDataSource parentDataSource)
-			{
-				SetContextMenuItems(new []{new ToggleExcludeFromGroupViewModel(this)});
-			}
+				SetContextMenuItems(new[] {new ToggleExcludeFromGroupViewModel(this)});
 			else
-			{
 				SetContextMenuItems(Enumerable.Empty<IContextMenuViewModel>());
-			}
 		}
 
 		[Pure]
@@ -187,13 +196,13 @@ namespace Tailviewer.Ui.ViewModels
 			if (!folderRoot.EndsWith("\\") && !folderRoot.EndsWith("/"))
 				folderRoot += '\\';
 
-			Uri fullPath = new Uri(fullFilePath);
-			Uri folder = new Uri(folderRoot);
-			string relativePath = 
+			var fullPath = new Uri(fullFilePath);
+			var folder = new Uri(folderRoot);
+			var relativePath =
 				Uri.UnescapeDataString(
 				                       folder.MakeRelativeUri(fullPath)
 				                             .ToString()
-				                             .Replace('/', Path.DirectorySeparatorChar)
+				                             .Replace(oldChar: '/', Path.DirectorySeparatorChar)
 				                      );
 			return relativePath;
 		}
@@ -213,6 +222,5 @@ namespace Tailviewer.Ui.ViewModels
 			var action = new OpenFolderAction(FullName, new FileExplorer());
 			_actionCenter.Add(action);
 		}
-
 	}
 }

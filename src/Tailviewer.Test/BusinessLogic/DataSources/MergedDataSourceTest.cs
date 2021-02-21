@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
 			        .Be(_settings.Id, "Because the parent-child relationship should've been declared via ParentId");
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd2()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			var mergedLogFile = GetMergedLogFile();
 			mergedLogFile.Sources.Should().Equal(new object[] {dataSource.OriginalLogSource});
@@ -74,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd3()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
@@ -88,7 +88,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestMultiline()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
@@ -105,7 +105,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			var logFile1 = GetMergedLogFile();
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 			var logFile2 = GetMergedLogFile();
 
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose2()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Dispose();
@@ -178,7 +178,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Settings.ParentId.Should().Be(DataSourceId.Empty);
@@ -189,11 +189,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove2()
 		{
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 
 			var settings2 = new DataSource("bar") {Id = DataSourceId.CreateNew()};
-			var dataSource2 = new SingleDataSource(_logFileFactory, _taskScheduler, settings2);
+			var dataSource2 = new FileDataSource(_logFileFactory, _taskScheduler, settings2);
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);
@@ -217,14 +217,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			var logFile1 = new InMemoryLogSource();
 			var source1Id = new LogLineSourceId(0);
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			var logFile2 = new InMemoryLogSource();
 			var source2Id = new LogLineSourceId(1);
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -283,7 +283,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestSetDataSourcesOneSource()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
@@ -297,7 +297,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestSetDataSourcesOneNewSource()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
@@ -305,7 +305,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.SetDataSources(new []{source1});
 
 			var logFile2 = new InMemoryLogSource();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -321,13 +321,13 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestSetDataSourcesOneLessSource()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			var logFile2 = new InMemoryLogSource();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -347,19 +347,19 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDataSourceOrder()
 		{
 			var logFile2 = new InMemoryLogSource();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
 
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			var logFile3 = new InMemoryLogSource();
-			var source3 = new SingleDataSource(_taskScheduler,
+			var source3 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile3,
 			                                   TimeSpan.Zero);
@@ -374,13 +374,13 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestExcludeDataSource1()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			var logFile2 = new InMemoryLogSource();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -400,7 +400,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestExcludeDataSource2()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);

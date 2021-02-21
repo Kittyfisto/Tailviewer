@@ -1,17 +1,12 @@
 ﻿using System.Threading;
-using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources;
-using Tailviewer.Settings;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceAcceptanceTest
+	public sealed class FileDataSourceAcceptanceTest
 	{
 		private ManualTaskScheduler _scheduler;
 		private PluginLogFileFactory _logFileFactory;
