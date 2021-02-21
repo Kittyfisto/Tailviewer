@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
@@ -24,14 +22,14 @@ namespace Tailviewer.Core.Filters
 		#region Implementation of ILogLineFilter
 
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
-			var index = logLine.LineIndex;
+			var index = logLine.Index;
 			return !_filteredSection.Contains(index);
 		}
 		
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			return null;
 		}
@@ -41,7 +39,7 @@ namespace Tailviewer.Core.Filters
 		#region Implementation of ILogEntryFilter
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			foreach (var line in logEntry)
 			{
@@ -53,7 +51,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{}
 
 		#endregion

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 
@@ -67,6 +67,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats
 		private void Remove(CustomFormatViewModel viewModel)
 		{
 			_formats.Remove(viewModel);
+			_settings.CustomFormats.Remove(viewModel.CustomFormat);
 		}
 
 		public string Name => _name;

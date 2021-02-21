@@ -8,36 +8,34 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using log4net;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	public sealed class LogViewerViewModel
 		: INotifyPropertyChanged
-		  , ILogFileListener
+		  , ILogSourceListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDataSourceViewModel _dataSource;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
+		private readonly List<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
 
-		private ILogFile _logFile;
+		private ILogSource _logSource;
 		private int _logEntryCount;
 		private string _noEntriesExplanation;
 		private string _noEntriesSubtext;
 		private int _totalLogEntryCount;
-		private ILogFileSearch _search;
+		private ILogSourceSearch _search;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource,
 			IActionCenter actionCenter,
@@ -53,10 +51,10 @@ namespace Tailviewer.Ui.ViewModels
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
 
-			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
+			_pendingSections = new List<KeyValuePair<ILogSource, LogFileSection>>();
 
-			LogFile = _dataSource.DataSource.FilteredLogFile;
-			LogFile.AddListener(this, _maximumWaitTime, 1000);
+			LogSource = _dataSource.DataSource.FilteredLogSource;
+			LogSource.AddListener(this, _maximumWaitTime, 1000);
 			Search = _dataSource.DataSource.Search;
 
 			UpdateCounts();
@@ -71,23 +69,23 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override string ToString()
 		{
-			return _logFile.ToString();
+			return _logSource.ToString();
 		}
 
-		public ILogFile LogFile
+		public ILogSource LogSource
 		{
-			get { return _logFile; }
+			get { return _logSource; }
 			private set
 			{
-				if (value == _logFile)
+				if (value == _logSource)
 					return;
 
-				_logFile = value;
+				_logSource = value;
 				EmitPropertyChanged();
 			}
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _search; }
 			private set
@@ -181,7 +179,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var viewModel = DataSource;
 			var dataSource = viewModel?.DataSource;
-			var logFile = dataSource?.FilteredLogFile;
+			var logFile = dataSource?.FilteredLogSource;
 			if (logFile == null)
 			{
 				Log.Warn("DataSource is null, cancelling export...");
@@ -200,14 +198,14 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenter.Add(action);
 		}
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
 		{
 			lock (_pendingSections)
 			{
 				if (section == LogFileSection.Reset)
 					_pendingSections.Clear();
 
-				_pendingSections.Add(new KeyValuePair<ILogFile, LogFileSection>(_logFile, section));
+				_pendingSections.Add(new KeyValuePair<ILogSource, LogFileSection>(_logSource, section));
 			}
 		}
 
@@ -224,8 +222,8 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				foreach (var pair in _pendingSections)
 				{
-					ILogFile file = pair.Key;
-					if (file != _logFile)
+					ILogSource source = pair.Key;
+					if (source != _logSource)
 						continue; //< This message belongs to an old change and must be ignored
 
 					LogEntryCount = 0;
@@ -240,8 +238,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void UpdateCounts()
 		{
-			LogEntryCount = _logFile.Count;
-			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.Count;
+			LogEntryCount = _logSource.GetProperty(GeneralProperties.LogEntryCount);
+			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount);
 			UpdateNoEntriesExplanation();
 		}
 
@@ -249,13 +247,13 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			IDataSource dataSource = _dataSource.DataSource;
 			var folderDataSource = dataSource as IFolderDataSource;
-			ILogFile source = dataSource.UnfilteredLogFile;
-			ILogFile filtered = dataSource.FilteredLogFile;
+			ILogSource source = dataSource.UnfilteredLogSource;
+			ILogSource filtered = dataSource.FilteredLogSource;
 
-			if (filtered.Count == 0)
+			if (filtered.GetProperty(GeneralProperties.LogEntryCount) == 0)
 			{
 				IEnumerable<ILogEntryFilter> chain = dataSource.QuickFilterChain;
-				var emptyReason = source.GetValue(LogFileProperties.EmptyReason);
+				var emptyReason = source.GetProperty(GeneralProperties.EmptyReason);
 				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
 					NoEntriesExplanation = string.Format("Can't find \"{0}\"", Path.GetFileName(dataSource.FullFileName));
@@ -276,7 +274,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file matching \"{1}\"", Path.GetFileName(dataSource.FullFileName), folderDataSource.LogFileSearchPattern);
 					NoEntriesSubtext = dataSource.FullFileName;
 				}
-				else if (source.GetValue(LogFileProperties.Size) == Size.Zero)
+				else if (source.GetProperty(GeneralProperties.Size) == Size.Zero)
 				{
 					NoEntriesExplanation = "The data source is empty";
 					NoEntriesSubtext = null;
@@ -296,7 +294,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = "Not a single log entry matches the activated quick filters";
 					NoEntriesSubtext = null;
 				}
-				else if (source is MergedLogFile)
+				else if (source is MergedLogSource)
 				{
 					NoEntriesExplanation = "None of the data sources' contains identifiable timestamps: Merging them is not possible";
 					NoEntriesSubtext = null;

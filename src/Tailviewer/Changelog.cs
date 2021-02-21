@@ -55,6 +55,47 @@ namespace Tailviewer
 			AddV093();
 			AddV094();
 			AddV095();
+			AddV096();
+			AddV100();
+		}
+
+		private static void AddV100()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new[]
+			{
+				"The file format property of a generic text log is displayed empty [#277](https://github.com/Kittyfisto/Tailviewer/issues/277)",
+				"Deleted Serilog custom format entries show up again after Tailviewer is restarted [#278](https://github.com/Kittyfisto/Tailviewer/issues/278)",
+				"The progress bar always shows 100% [#279](https://github.com/Kittyfisto/Tailviewer/issues/279)",
+				"Tailviewer takes an an enormous amount of time to read \"big\" lines [#280](https://github.com/Kittyfisto/Tailviewer/issues/280)",
+				"Tailviewer deadlocks sometimes when removing a data source [#281](https://github.com/Kittyfisto/Tailviewer/issues/281)",
+				"Memory used to read text log files is never reclaimed [#282](https://github.com/Kittyfisto/Tailviewer/issues/282)"
+			};
+			var misc = new[]
+			{
+				"Introduce service container [#198](https://github.com/Kittyfisto/Tailviewer/issues/198)"
+			};
+			var releaseDate = new DateTime(2021, 3, 1);
+			var version = new Version(1, 0, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV096()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{
+				"Tailviewer displays an empty file when the first line contains lots of garbage data [#273](https://github.com/Kittyfisto/Tailviewer/issues/273)"
+			};
+			var misc = new string[]
+			{};
+			var releaseDate = new DateTime(2021, 2, 8);
+			var version = new Version(0, 9, 6);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV095()

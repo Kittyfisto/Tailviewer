@@ -1,6 +1,4 @@
 ﻿using System;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.LogLevelPlugin
 {
@@ -9,7 +7,7 @@ namespace Tailviewer.LogLevelPlugin
 	{
 		#region Implementation of ILogLineTranslator
 
-		public LogLine Translate(ILogFile logFile, LogLine line)
+		public LogLine Translate(ILogSource logSource, LogLine line)
 		{
 			line.Level = GetLogLevel(line.Message);
 			return line;

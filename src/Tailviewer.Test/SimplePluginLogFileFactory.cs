@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
 {
@@ -20,7 +20,10 @@ namespace Tailviewer.Test
 			var container = new ServiceContainer();
 			container.RegisterInstance<ITaskScheduler>(scheduler);
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
-			container.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
+			container.RegisterInstance<IFileLogSourceFactory>(new FileLogSourceFactory(scheduler));
+			container.RegisterInstance<IPluginLoader>(new PluginRegistry());
+			container.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(container));
 			return container;
 		}
 	}

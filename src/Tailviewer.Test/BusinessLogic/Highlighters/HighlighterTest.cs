@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.Highlighters

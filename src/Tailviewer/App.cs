@@ -20,13 +20,16 @@ using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFileFormats;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Core.Sources.Text;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
+using Tailviewer.Ui.Controls.SidePanel.Outline;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -176,8 +179,17 @@ namespace Tailviewer
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
-					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
-					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
+					var textLogFileParserPlugin = new LogEntryParserFactory(services);
+					services.RegisterInstance<ILogEntryParserPlugin>(textLogFileParserPlugin);
+
+					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
+					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);
+
+					var fileLogSourceFactory = new FileLogSourceFactory(taskScheduler);
+					services.RegisterInstance<IFileLogSourceFactory>(fileLogSourceFactory);
+
+					var parsingLogSourceFactory = new ParsingLogSourceFactory(services);
+					services.RegisterInstance<ILogSourceParserPlugin>(parsingLogSourceFactory);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
@@ -243,7 +255,7 @@ namespace Tailviewer
 						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);
 
 						window.Show();
-						mutex.SetListener(window);
+						mutex?.SetListener(window);
 
 						return application.Run();
 					}

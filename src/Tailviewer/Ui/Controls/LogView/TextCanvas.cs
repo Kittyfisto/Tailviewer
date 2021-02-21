@@ -11,16 +11,20 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Metrolib;
 using Metrolib.Controls;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
+using Tailviewer.Core;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
 	/// <summary>
-	///     Responsible for drawing the individual <see cref="LogLine" />s of the <see cref="ILogFile" />.
+	///     Responsible for drawing the individual <see cref="LogLine" />s of the <see cref="ILogSource" />.
 	/// </summary>
 	public sealed class TextCanvas
 		: FrameworkElement
@@ -35,6 +39,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private TextSettings _textSettings;
 		private TextBrushes _textBrushes;
 		private readonly List<TextLine> _visibleTextLines;
+		private readonly LogBufferList _visibleBufferBuffer;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
 
@@ -42,12 +47,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		private LogFileSection _currentlyVisibleSection;
 		private LogLineIndex _firstSelection;
 		private LogLineIndex _lastSelection;
-		private ILogFile _logFile;
+		private ILogSource _logSource;
 		private double _xOffset;
 		private double _yOffset;
 		private bool _colorByLevel;
-		private ILogFileSearch _search;
+		private ILogSourceSearch _search;
 		private int _selectedSearchResultIndex;
+		private bool _requiresFurtherUpdate;
+		private DateTime _updateStart;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
 		{
@@ -61,6 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
+			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, PageBufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -89,6 +97,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			FocusVisualStyle = null;
 		}
 
+		public bool RequiresFurtherUpdate
+		{
+			get { return _requiresFurtherUpdate; }
+		}
+
 		public LogFileSection CurrentlyVisibleSection
 		{
 			get { return _currentlyVisibleSection; }
@@ -103,12 +116,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public ILogFile LogFile
+		public ILogSource LogSource
 		{
-			get { return _logFile; }
+			get { return _logSource; }
 			set
 			{
-				_logFile = value;
+				_logSource = value;
 				_visibleTextLines.Clear();
 
 				_currentLine = 0;
@@ -185,7 +198,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _search; }
 			set
@@ -305,22 +318,56 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void UpdateVisibleLines()
 		{
 			_visibleTextLines.Clear();
-			if (_logFile == null)
+			if (_logSource == null)
 				return;
 
 			try
 			{
-				// TODO: Should we even do anything when count = 0? Probably not...
-				var data = new LogLine[_currentlyVisibleSection.Count];
-				_logFile.GetSection(_currentlyVisibleSection, data);
-				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+				_visibleBufferBuffer.Clear();
+				_visibleBufferBuffer.Resize(_currentlyVisibleSection.Count);
+				if (_currentlyVisibleSection.Count > 0)
 				{
-					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings, _textBrushes)
+					// We don't want to block the UI thread for very long at all so we instruct the log source to only
+					// fetch data from the cache, but to fetch missing data for later (from the source).
+					var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater, TimeSpan.Zero);
+					_logSource.GetEntries(_currentlyVisibleSection, _visibleBufferBuffer, 0, queryOptions);
+
+					// Now comes the fun part. We need to detect if we could fetch *all* the data.
+					// This is done by inspecting the BufferedLogSource.RetrievalState - if we encounter any NotCached value,
+					// then the entry is part of the source, but was not cached at the time of trying to access it.
+					// If that's the case, we will instruct this canvas to re-fetch the once more in a bit. This loop will terminate once the
+					// cache has managed to fetch the desired data which should happen some time...
+					if (_visibleBufferBuffer.ContainsAny(PageBufferedLogSource.RetrievalState,
+					                                     RetrievalState.NotCached,
+					                                     new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
 					{
-						IsFocused = IsFocused,
-						SearchResults = _searchResults
-					};
-					_visibleTextLines.Add(line);
+						if (!_requiresFurtherUpdate)
+						{
+							Log.DebugFormat("Requires further update (at least one entry is not in cache)");
+							_requiresFurtherUpdate = true;
+							_updateStart = DateTime.Now;
+						}
+					}
+					else
+					{
+						if (_requiresFurtherUpdate)
+						{
+							var elapsed = DateTime.Now - _updateStart;
+							Log.DebugFormat("No longer requires further update (all retrieved log entries are in cache), took {0:F1}ms", elapsed.TotalMilliseconds); 
+							_requiresFurtherUpdate = false;
+						}
+					}
+
+					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+					{
+						var line = new TextLine(_visibleBufferBuffer[i], _hoveredIndices, _selectedIndices,
+						                        _colorByLevel, _textSettings, _textBrushes)
+						{
+							IsFocused = IsFocused,
+							SearchResults = _searchResults
+						};
+						_visibleTextLines.Add(line);
+					}
 				}
 
 				Action fn = VisibleLinesChanged;
@@ -409,15 +456,15 @@ namespace Tailviewer.Ui.Controls.LogView
 		[Pure]
 		public LogFileSection CalculateVisibleSection()
 		{
-			if (_logFile == null)
+			if (_logSource == null)
 				return new LogFileSection(0, 0);
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			var logLineCount = LogFile.Count;
+			var logLineCount = LogSource.GetProperty(GeneralProperties.LogEntryCount);
 			// Somebody may have specified that he wants to view line X, but if the source
 			// doesn't offer this line (yet), then we must show something else...
-			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, LogFile.Count - maxCount) : _currentLine;
+			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, logLineCount - maxCount) : _currentLine;
 			int linesLeft = logLineCount - actualCurrentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			if (count < 0)
@@ -439,7 +486,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			var visibleLineIndex = (int) Math.Floor(y/_textSettings.LineHeight);
 			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 			{
-				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
+				var lineIndex = _visibleTextLines[visibleLineIndex].LogEntry.Index;
 				if (SetHovered(lineIndex, SelectMode.Replace))
 					InvalidateVisual();
 			}
@@ -503,7 +550,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				int count = _logFile.Count;
+				int count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
 				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
 				{
 					LogLineIndex newIndex;
@@ -540,7 +587,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSelectUp()
 		{
-			var logFile = _logFile;
+			var logFile = _logSource;
 			var first = _firstSelection;
 			var last = _lastSelection;
 			if (logFile == null)
@@ -567,7 +614,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSelectDown()
 		{
-			var logFile = _logFile;
+			var logFile = _logSource;
 			var first = _firstSelection;
 			var last = _lastSelection;
 			if (logFile == null)
@@ -578,7 +625,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				return;
 
 			var next = last + 1;
-			if (next >= _logFile.Count)
+			if (next >= _logSource.GetProperty(GeneralProperties.LogEntryCount))
 				return;
 
 			var indices = LogLineIndex.Range(first, next);
@@ -596,7 +643,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.Count - 1)
+				if (_selectedIndices.Count > 0 && _lastSelection < _logSource.GetProperty(GeneralProperties.LogEntryCount) - 1)
 				{
 					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
@@ -625,10 +672,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				ILogFile logFile = _logFile;
-				if (logFile != null)
+				ILogSource logSource = _logSource;
+				if (logSource != null)
 				{
-					var count = logFile.Count;
+					var count = logSource.GetProperty(GeneralProperties.LogEntryCount);
 					if (count > 0)
 					{
 						var newIndex = new LogLineIndex(count - 1);
@@ -649,18 +696,23 @@ namespace Tailviewer.Ui.Controls.LogView
 			try
 			{
 				var builder = new StringBuilder();
-				ILogFile logFile = _logFile;
-				if (logFile != null)
+				ILogSource logSource = _logSource;
+				if (logSource != null)
 				{
 					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
 					sortedIndices.Sort();
+					// TODO: What do we do if some mad man has 1 million lines selected?
+					// TODO: Request in batches
+					var buffer = new LogBufferArray(_selectedIndices.Count, GeneralColumns.RawContent);
+					logSource.GetEntries(sortedIndices, buffer);
+
 					for (int i = 0; i < sortedIndices.Count; ++i)
 					{
-						LogLine line = logFile.GetLine((int) sortedIndices[i]);
+						var entry = buffer[i];
 						if (i < sortedIndices.Count - 1)
-							builder.AppendLine(line.Message);
+							builder.AppendLine(entry.RawContent);
 						else
-							builder.Append(line.Message);
+							builder.Append(entry.RawContent);
 					}
 				}
 				string message = builder.ToString();

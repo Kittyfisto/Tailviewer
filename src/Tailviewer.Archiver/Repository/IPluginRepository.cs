@@ -6,7 +6,7 @@ namespace Tailviewer.Archiver.Repository
 	///     Provides (remote) access to Tailviewer's plugin repository.
 	/// </summary>
 	/// <remarks>
-	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALISED.
+	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALIZED.
 	///     Doing so will break the communication between tailviewer client
 	///     and the repository.
 	/// </remarks>

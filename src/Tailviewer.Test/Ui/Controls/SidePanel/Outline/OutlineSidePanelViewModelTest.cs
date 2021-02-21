@@ -5,11 +5,12 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Plugins;
+using Tailviewer.Ui;
 using Tailviewer.Ui.Controls.SidePanel.Outline;
-using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 {
@@ -43,7 +44,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			var viewModel = new OutlineSidePanelViewModel(_services);
 
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new InMemoryLogFile());
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(new InMemoryLogSource());
 
 			viewModel.CurrentDataSource = dataSource.Object;
 			viewModel.CurrentDataSource.Should().Be(dataSource.Object);
@@ -57,7 +58,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 		{
 			var plugin = new Mock<ILogFileOutlinePlugin>();
 			plugin.Setup(x => x.SupportedFormats).Returns(new[] {LogFileFormats.ExtendedLogFormat});
-			plugin.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<ILogFile>()))
+			plugin.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<ILogSource>()))
 			      .Returns(new Mock<ILogFileOutlineViewModel>().Object);
 
 			var pluginContent = new FrameworkElement();
@@ -69,8 +70,8 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			var viewModel = new OutlineSidePanelViewModel(_services);
 
 			var dataSource = new Mock<IMultiDataSource>();
-			var logFile = new Mock<ILogFile>();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			var logFile = new Mock<ILogSource>();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(new[]{CreateDataSource(LogFileFormats.CommonLogFormat), CreateDataSource(LogFileFormats.ExtendedLogFormat)});
 
 			viewModel.CurrentContent.Should().BeNull();
@@ -84,9 +85,9 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 		private IDataSource CreateDataSource(ILogFileFormat format)
 		{
 			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.GetValue(LogFileProperties.Format)).Returns(format);
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.Format)).Returns(format);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			return dataSource.Object;
 		}
 	}

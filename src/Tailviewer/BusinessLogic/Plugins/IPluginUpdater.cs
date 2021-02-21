@@ -4,6 +4,10 @@ using Tailviewer.Archiver.Repository;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	[Service]
 	public interface IPluginUpdater
 	{
 		/// <summary>

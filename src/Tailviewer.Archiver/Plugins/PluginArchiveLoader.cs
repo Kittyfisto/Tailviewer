@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -38,7 +38,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			try
 			{
-				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
+				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded which is sad
 				foreach (var path in pluginPaths)
 				{
 					TryLoadPluginsFrom(filesystem, path);

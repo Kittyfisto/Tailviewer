@@ -7,7 +7,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
@@ -180,10 +181,10 @@ namespace Tailviewer.Test.Ui.Controls
 
 			var oldLog = new Mock<IDataSourceViewModel>();
 			var oldDataSource = new Mock<IDataSource>();
-			var oldLogFile = new Mock<ILogFile>();
-			oldLogFile.Setup(x => x.Count).Returns(10000);
-			oldDataSource.Setup(x => x.FilteredLogFile).Returns(oldLogFile.Object);
-			oldDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			var oldLogFile = new Mock<ILogSource>();
+			oldLogFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(10000);
+			oldDataSource.Setup(x => x.FilteredLogSource).Returns(oldLogFile.Object);
+			oldDataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
 			oldLog.SetupProperty(x => x.VisibleLogLine);
 			oldLog.Object.VisibleLogLine = 42;
@@ -194,8 +195,8 @@ namespace Tailviewer.Test.Ui.Controls
 
 			var newLog = new Mock<IDataSourceViewModel>();
 			var newDataSource = new Mock<IDataSource>();
-			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			newDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			newDataSource.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
+			newDataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
 			newLog.SetupProperty(x => x.VisibleLogLine);
 			newLog.Object.VisibleLogLine = 1;
@@ -215,10 +216,10 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLogView2()
 		{
 			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.VisibleLogLine).Returns(new LogLineIndex(42));
@@ -237,10 +238,10 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.DataSource = null;
 
 			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
@@ -259,10 +260,10 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.DataSource = null;
 
 			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});

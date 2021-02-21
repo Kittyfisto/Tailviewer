@@ -19,7 +19,7 @@ namespace Tailviewer.Test.Settings
 		[Test]
 		public void TestClone()
 		{
-			string fname = Path.GetTempFileName();
+			string fname = PathEx.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			settings.LogFile.DefaultEncoding = Encoding.UTF32;
 
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Settings
 		[Description("Verifies that the GUID of a data source is written to the file and read again")]
 		public void TestDataSourceId()
 		{
-			string fname = Path.GetTempFileName();
+			string fname = PathEx.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			var dataSource = new DataSource("foo");
 			dataSource.Id = DataSourceId.CreateNew();
@@ -68,7 +68,7 @@ namespace Tailviewer.Test.Settings
 		[Description("Verifies that the GUID of a data source's parent is written to the file and read again")]
 		public void TestDataSourceParentId()
 		{
-			string fname = Path.GetTempFileName();
+			string fname = PathEx.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			var dataSource = new DataSource("foo");
 			dataSource.Id = DataSourceId.CreateNew();
@@ -104,7 +104,7 @@ namespace Tailviewer.Test.Settings
 		[Description("Verifies that the last viewed datetime is restored from the file")]
 		public void TestRestore3()
 		{
-			string fname = Path.GetTempFileName();
+			string fname = PathEx.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			DateTime timestamp = DateTime.Now;
 			settings.DataSources.Add(new DataSource("dawadaw")
@@ -126,7 +126,7 @@ namespace Tailviewer.Test.Settings
 		[Description("Verifies that the visible log line and horizontal offset is restored")]
 		public void TestRestore4()
 		{
-			string fname = Path.GetTempFileName();
+			string fname = PathEx.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			settings.DataSources.Add(new DataSource("dawadaw")
 			{

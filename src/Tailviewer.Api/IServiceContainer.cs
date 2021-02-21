@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer
 {
@@ -45,7 +43,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		/// <exception cref="ArgumentException">
+		/// <exception cref="NoSuchServiceException">
 		///     In case no service which implements the interface <typeparamref name="T" /> has
 		///     been registered with this container.
 		/// </exception>
@@ -79,7 +77,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		ILogFile CreateEventLogFile(string fileName);
+		ILogSource CreateEventLogFile(string fileName);
 
 		/// <summary>
 		///     Creates a new instance of the Tailviewer.Core.LogFiles.FilteredLogFile type.
@@ -88,8 +86,8 @@ namespace Tailviewer
 		/// <param name="source"></param>
 		/// <param name="filter"></param>
 		/// <returns></returns>
-		ILogFile CreateFilteredLogFile(TimeSpan maximumWaitTime,
-		                               ILogFile source,
+		ILogSource CreateFilteredLogFile(TimeSpan maximumWaitTime,
+		                               ILogSource source,
 		                               ILogEntryFilter filter);
 
 		/// <summary>
@@ -98,7 +96,7 @@ namespace Tailviewer
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		ILogFileProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogFile source);
+		ILogSourceProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogSource source);
 
 		/// <summary>
 		///     Creates a new instance of the Tailviewer.Core.LogFiles.MergedLogFile type.
@@ -106,7 +104,7 @@ namespace Tailviewer
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="sources"></param>
 		/// <returns></returns>
-		IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources);
+		IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogSource> sources);
 
 		/// <summary>
 		///     Creates a new instance of the Tailviewer.Core.LogFiles.MultiLineLogFile type.
@@ -114,7 +112,7 @@ namespace Tailviewer
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		ILogFile CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogFile source);
+		ILogSource CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogSource source);
 
 		/// <summary>
 		///     Creates a new instance of the Tailviewer.Core.LogFiles.NoThrowLogFile type.
@@ -122,7 +120,7 @@ namespace Tailviewer
 		/// <param name="pluginName"></param>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		ILogFile CreateNoThrowLogFile(string pluginName, ILogFile source);
+		ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source);
 
 		/// <summary>
 		///     Creates a new log file object which interprets the given file as a text file.
@@ -135,7 +133,7 @@ namespace Tailviewer
 		/// </remarks>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		ILogFile CreateTextLogFile(string fileName);
+		ILogSource CreateTextLogFile(string fileName);
 
 		#endregion
 	}

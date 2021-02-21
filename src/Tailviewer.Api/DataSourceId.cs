@@ -70,7 +70,7 @@ namespace Tailviewer
 		}
 
 		/// <summary>
-		///     Creates a new id that is guarantueed to be globally unique.
+		///     Creates a new id that is guaranteed to be globally unique.
 		/// </summary>
 		/// <returns></returns>
 		[Pure]

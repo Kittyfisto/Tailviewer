@@ -1,17 +1,13 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Tailviewer.Serilog")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer.Serilog")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

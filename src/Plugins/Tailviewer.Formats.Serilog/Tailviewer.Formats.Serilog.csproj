@@ -47,8 +47,8 @@
     <Compile Include="SerilogFileFormatCreatorPlugin.cs" />
     <Compile Include="SerilogFileFormatMatcher.cs" />
     <Compile Include="SerilogFileFormatMatcherPlugin.cs" />
-    <Compile Include="SerilogFileParser.cs" />
-    <Compile Include="SerilogFileParserPlugin.cs" />
+    <Compile Include="SerilogEntryParser.cs" />
+    <Compile Include="SerilogEntryParserPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerilogFileFormat.cs" />
     <Compile Include="SerilogEntry.cs" />

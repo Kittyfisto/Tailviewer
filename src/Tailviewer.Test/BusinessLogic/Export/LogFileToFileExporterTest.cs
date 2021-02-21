@@ -4,7 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Exporter;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic.Export
 {
@@ -24,7 +24,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		[Test]
 		public void TestExportTwoLines()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello,", LevelFlags.Other);
 			logFile.AddEntry("World!", LevelFlags.Other);
 			var exporter = new LogFileToFileExporter(logFile, _directory, "foo");
@@ -39,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		[Test]
 		public void TestExportTwice()
 		{
-			var logFile = new InMemoryLogFile();
+			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("Hello", LevelFlags.Other);
 			var exporter1 = new LogFileToFileExporter(logFile, _directory, "foo");
 			exporter1.Export();

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Highlighters
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	[Service]
 	public interface IHighlighters
 	{
 		IEnumerable<Highlighter> Highlighters { get; }

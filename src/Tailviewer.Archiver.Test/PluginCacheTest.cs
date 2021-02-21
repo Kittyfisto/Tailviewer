@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Ui.Outline;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Test
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
@@ -28,7 +26,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (var i = 0; i < _filters.Length; ++i)
@@ -39,7 +37,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			var matches = new List<LogLineMatch>();
 			Match(line, matches);
@@ -47,7 +45,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			foreach (var logLine in logEntry)
 				if (PassesFilter(logLine))
@@ -57,7 +55,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (var i = 0; i < _filters.Length; ++i)

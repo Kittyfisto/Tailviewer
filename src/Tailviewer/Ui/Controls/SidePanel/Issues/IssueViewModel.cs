@@ -2,17 +2,16 @@
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
 	internal sealed class IssueViewModel
 	{
-		private readonly ILogFileIssue _issue;
+		private readonly ILogSourceIssue _issue;
 		private readonly Action<LogLineIndex> _goto;
 
-		public IssueViewModel(ILogFileIssue issue, Action<LogLineIndex> @goto)
+		public IssueViewModel(ILogSourceIssue issue, Action<LogLineIndex> @goto)
 		{
 			_issue = issue;
 			_goto = @goto;
@@ -25,6 +24,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		public string Description => _issue.Description;
 		public DateTime? Timestamp => _issue.Timestamp;
 		public Severity Severity => _issue.Severity;
-		public ILogFileIssue Issue => _issue;
+		public ILogSourceIssue Issue => _issue;
 	}
 }

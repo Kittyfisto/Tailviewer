@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
@@ -20,12 +19,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(IInterval<DateTime?>);
 
-		public IInterval<DateTime?> Evaluate(IReadOnlyList<LogLine> logEntry)
+		public IInterval<DateTime?> Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return new Interval<DateTime?>(_minimum, _maximum);
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

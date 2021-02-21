@@ -16,6 +16,21 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -117,15 +132,16 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterCollection.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\Sources\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFileFormats\ILogFileFormatRegistry.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\Sources\LogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\LogFileFormats\LogFileFormatRegistry.cs" />
-    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileFormatMatcher.cs" />
-    <Compile Include="BusinessLogic\LogFiles\NoThrowTextLogFileParser.cs" />
-    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
-    <Compile Include="BusinessLogic\LogFiles\TextLogFileParser.cs" />
-    <Compile Include="BusinessLogic\LogFiles\TextLogFileParserPlugin.cs" />
+    <Compile Include="BusinessLogic\Sources\ParsingLogSourceFactory.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogEntryParser.cs" />
+    <Compile Include="BusinessLogic\Sources\PluginLogFileFactory.cs" />
+    <Compile Include="BusinessLogic\Sources\GenericTextLogEntryParser.cs" />
+    <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="Int32RangeRule.cs" />
@@ -172,15 +188,14 @@
     <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilters.cs" />
-    <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
-    <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogSourceSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
     <Compile Include="BusinessLogic\Searches\ISearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ISearchResultsByLogLineIndex.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearch.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatchIndex.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatchSection.cs" />
@@ -211,6 +226,7 @@
     <Compile Include="Ui\Controls\FlatImage.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\DoubleOneToHiddenConverter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
@@ -239,7 +255,7 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogEntryValueFormatter.cs" />
-    <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
+    <Compile Include="Ui\Controls\LogView\PresentationLogSource.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -288,8 +304,8 @@
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssueViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserDummy.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssueAnalyser.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\LogSourceIssueAnalyserDummy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogSourceIssueAnalyser.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssuePlugin.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToBrushConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToIconConverter.cs" />
@@ -297,11 +313,12 @@
       <DependentUpon>DefaultLogFileOutline.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutlineViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\DefaultPropertyPresenter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\EncodingPropertyPresenter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\PropertyPresenterRegistry.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyConverter.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />
@@ -657,6 +674,18 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

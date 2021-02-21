@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {
@@ -29,12 +29,12 @@ namespace Tailviewer.Formats.Serilog.Matchers
 			get { return 1; }
 		}
 
-		public ILogFileColumn Column
+		public IColumnDescriptor Column
 		{
-			get { return LogFileColumns.Message; }
+			get { return GeneralColumns.Message; }
 		}
 
-		public void MatchInto(Match match, SerilogEntry logEntry)
+		public void MatchInto(Match match, LogEntry logEntry)
 		{
 			logEntry.Message = match.Groups[_groupIndex].Value;
 		}

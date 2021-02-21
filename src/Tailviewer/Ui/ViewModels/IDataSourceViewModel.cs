@@ -4,9 +4,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 
 namespace Tailviewer.Ui.ViewModels
 {

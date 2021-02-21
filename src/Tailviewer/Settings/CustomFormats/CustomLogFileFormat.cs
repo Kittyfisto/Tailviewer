@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using log4net;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Settings.CustomFormats
 {

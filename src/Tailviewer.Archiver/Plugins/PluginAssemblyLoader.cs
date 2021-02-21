@@ -8,11 +8,9 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.BusinessLogic.Plugins.Issues;
 using Tailviewer.Core;
-using Tailviewer.Ui.Outline;
+using Tailviewer.Plugins;
+using Tailviewer.Ui;
 using Constants = Tailviewer.Core.Constants;
 
 namespace Tailviewer.Archiver.Plugins
@@ -39,7 +37,8 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(ILogFileIssuesPlugin),
 				typeof(ILogFileFormatMatcherPlugin),
 				typeof(ICustomLogFileFormatCreatorPlugin),
-				typeof(ITextLogFileParserPlugin)
+				typeof(ILogEntryParserPlugin),
+				typeof(IPropertyPresenterPlugin)
 			};
 		}
 
@@ -133,7 +132,7 @@ namespace Tailviewer.Archiver.Plugins
 			var versionAttribute = assembly.GetCustomAttribute<PluginVersionAttribute>();
 
 			if (idAttribute == null)
-				throw new PackException(string.Format("Plugin '{0}' is missing the reqired PluginId attribute, please add it", pluginPath));
+				throw new PackException(string.Format("Plugin '{0}' is missing the required PluginId attribute, please add it", pluginPath));
 
 			if (string.IsNullOrWhiteSpace(idAttribute.Namespace))
 				throw new PackException(string.Format("The PluginId Namespace of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));
@@ -220,7 +219,7 @@ namespace Tailviewer.Archiver.Plugins
 				{"log4net,", typeof(ILog).Assembly},
 				{"Metrolib,", typeof(AbstractBootstrapper).Assembly},
 				{"System.Threading.Extensions,", typeof(ITaskScheduler).Assembly},
-				{"Tailviewer.Api,", typeof(ILogFile).Assembly},
+				{"Tailviewer.Api,", typeof(ILogSource).Assembly},
 				{"Tailviewer.Core,", typeof(ServiceContainer).Assembly}
 			};
 

@@ -9,11 +9,10 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -41,8 +40,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ILogFileFactory _logFileFactory;
 		private readonly DataSource _settings;
-		private readonly LogFileProxy _unfilteredLogFileProxy;
-		private readonly LogFileProxy _filteredLogFileProxy;
+		private readonly LogSourceProxy _unfilteredLogSourceProxy;
+		private readonly LogSourceProxy _filteredLogSourceProxy;
 		private readonly object _syncRoot;
 		private IFilesystemWatcher _watcher;
 		private Predicate<string> _filter;
@@ -71,8 +70,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_syncRoot = new object();
 			_dataSources = new Dictionary<IFileInfo, SingleDataSource>();
 			_mergedDataSource = new MergedDataSource(taskScheduler, settings, maximumWaitTime);
-			_unfilteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_filteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
+			_unfilteredLogSourceProxy = new LogSourceProxy(taskScheduler, maximumWaitTime);
+			_filteredLogSourceProxy = new LogSourceProxy(taskScheduler, maximumWaitTime);
 
 			DoChange();
 		}
@@ -91,7 +90,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 
 			_watcher?.Dispose();
-			_unfilteredLogFileProxy?.Dispose();
+			_unfilteredLogSourceProxy?.Dispose();
 			_mergedDataSource.Dispose();
 			_isDisposed = true;
 		}
@@ -108,36 +107,36 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set
 			{
 				_mergedDataSource.QuickFilterChain = value;
-				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 			}
 		}
 
-		public ILogFile OriginalLogFile
+		public ILogSource OriginalLogSource
 		{
-			get { return _mergedDataSource.OriginalLogFile; }
+			get { return _mergedDataSource.OriginalLogSource; }
 		}
 
-		public ILogFile UnfilteredLogFile
+		public ILogSource UnfilteredLogSource
 		{
-			get { return _unfilteredLogFileProxy; }
+			get { return _unfilteredLogSourceProxy; }
 		}
 
-		public ILogFile FilteredLogFile
+		public ILogSource FilteredLogSource
 		{
-			get { return _mergedDataSource.FilteredLogFile; }
+			get { return _mergedDataSource.FilteredLogSource; }
 		}
 
-		public ILogFile FindAllLogFile
+		public ILogSource FindAllLogSource
 		{
-			get { return _mergedDataSource.FindAllLogFile; }
+			get { return _mergedDataSource.FindAllLogSource; }
 		}
 
-		public ILogFileSearch FindAllSearch
+		public ILogSourceSearch FindAllSearch
 		{
 			get { return _mergedDataSource.FindAllSearch; }
 		}
 
-		public ILogFileSearch Search
+		public ILogSourceSearch Search
 		{
 			get { return _mergedDataSource.Search; }
 		}
@@ -202,7 +201,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set
 			{
 				_mergedDataSource.LevelFilter = value;
-				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 			}
 		}
 
@@ -251,7 +250,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set
 			{
 				_mergedDataSource.HideEmptyLines = value;
-				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 			}
 		}
 
@@ -261,7 +260,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set
 			{
 				_mergedDataSource.IsSingleLine = value;
-				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 			}
 		}
 
@@ -273,13 +272,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public void ClearScreen()
 		{
 			_mergedDataSource.ClearScreen();
-			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 		}
 
 		public void ShowAll()
 		{
 			_mergedDataSource.ShowAll();
-			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 		}
 
 		public DataSourceId Id
@@ -447,8 +446,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			                        out _filteredFileCount);
 			var dataSources = SynchronizeDataSources(files);
 			_mergedDataSource.SetDataSources(dataSources);
-			_unfilteredLogFileProxy.InnerLogFile = _mergedDataSource.UnfilteredLogFile;
-			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			_unfilteredLogSourceProxy.InnerLogSource = _mergedDataSource.UnfilteredLogSource;
+			_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
 		}
 
 		private IReadOnlyList<IDataSource> SynchronizeDataSources(IReadOnlyList<IFileInfo> files)

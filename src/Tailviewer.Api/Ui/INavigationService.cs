@@ -1,11 +1,10 @@
-﻿using Tailviewer.BusinessLogic;
-
-namespace Tailviewer.Ui
+﻿namespace Tailviewer.Ui
 {
 	/// <summary>
 	///     This service enables users to navigate tailviewer programmatically.
 	///     Is part of <see cref="IServiceContainer" />.
 	/// </summary>
+	[Service]
 	public interface INavigationService
 	{
 		/// <summary>

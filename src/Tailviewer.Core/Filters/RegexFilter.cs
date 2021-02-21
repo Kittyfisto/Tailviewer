@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
@@ -29,7 +27,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
 			foreach (var logLine in logEntry)
@@ -41,16 +39,16 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
-			if (_regex.IsMatch(logLine.Message))
+			if (_regex.IsMatch(logLine.RawContent))
 				return true;
 
 			return false;
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			var ret = new List<LogLineMatch>();
 			Match(line, ret);
@@ -58,9 +56,9 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
-			var regexMatches = _regex.Matches(line.Message);
+			var regexMatches = _regex.Matches(line.RawContent);
 			matches.Capacity += regexMatches.Count;
 			for (var i = 0; i < regexMatches.Count; ++i)
 				matches.Add(new LogLineMatch(regexMatches[i]));

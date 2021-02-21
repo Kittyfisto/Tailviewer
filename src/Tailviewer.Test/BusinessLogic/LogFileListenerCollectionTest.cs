@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -17,12 +16,12 @@ namespace Tailviewer.Test.BusinessLogic
 			)]
 		public void TestAddListener1()
 		{
-			ILogFile logFile = new Mock<ILogFile>().Object;
-			var collection = new LogFileListenerCollection(logFile);
-			var listener = new Mock<ILogFileListener>();
+			ILogSource logSource = new Mock<ILogSource>().Object;
+			var collection = new LogSourceListenerCollection(logSource);
+			var listener = new Mock<ILogSourceListener>();
 			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogSource file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
 			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).Should().NotThrow();
@@ -38,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestInvalidate()
 		{
-			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 			collection.OnRead(1);
 			collection.CurrentLineIndex.Should().Be(1);
 			collection.Invalidate(0, 1);
@@ -49,12 +48,12 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that Flush() forces calling the OnLogFileModified method, even when neither the maximum amount of lines has been reached, nor the maximum amount of time has ellapsed")]
 		public void TestFlush1()
 		{
-			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
-			var listener = new Mock<ILogFileListener>();
+			var listener = new Mock<ILogSourceListener>();
 			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
@@ -75,12 +74,12 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestFlush2()
 		{
-			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
-			var listener = new Mock<ILogFileListener>();
+			var listener = new Mock<ILogSourceListener>();
 			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
@@ -97,12 +96,12 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestFlush3()
 		{
-			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
-			var listener = new Mock<ILogFileListener>();
+			var listener = new Mock<ILogSourceListener>();
 			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
@@ -115,6 +114,35 @@ namespace Tailviewer.Test.BusinessLogic
 					new LogFileSection(0, 1),
 					new LogFileSection(1, 1)
 				});
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
+		public void TestClear()
+		{
+			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
+
+			var listener = new Mock<ILogSourceListener>();
+			var sections = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+
+			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+			collection.OnRead(1);
+			collection.Flush();
+			sections.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 1),
+			});
+
+			collection.Clear();
+			sections.Clear();
+
+			collection.OnRead(2);
+			collection.Flush();
+			sections.Should()
+			        .BeEmpty("because the collection should have removed all listeners and thus we may not have been notified anymore");
 		}
 	}
 }

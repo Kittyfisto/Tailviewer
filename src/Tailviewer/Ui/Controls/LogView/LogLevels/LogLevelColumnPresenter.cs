@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.LogLevels
@@ -12,12 +10,12 @@ namespace Tailviewer.Ui.Controls.LogView.LogLevels
 		: AbstractLogColumnPresenter<LevelFlags>
 	{
 		public LogLevelColumnPresenter(TextSettings textSettings)
-			: base(LogFileColumns.LogLevel, textSettings)
+			: base(GeneralColumns.LogLevel, textSettings)
 		{}
 
 		#region Overrides of AbstractLogColumnPresenter<LevelFlags>
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{
 			var culture = CultureInfo.CurrentCulture;
 			var values = Enum.GetValues(typeof(LevelFlags)).Cast<LevelFlags>().ToList();

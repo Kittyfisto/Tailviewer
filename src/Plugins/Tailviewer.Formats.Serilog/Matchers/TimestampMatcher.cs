@@ -4,8 +4,8 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {
@@ -89,12 +89,12 @@ namespace Tailviewer.Formats.Serilog.Matchers
 			get { return _numGroups; }
 		}
 
-		public ILogFileColumn Column
+		public IColumnDescriptor Column
 		{
-			get { return LogFileColumns.Timestamp; }
+			get { return GeneralColumns.Timestamp; }
 		}
 
-		public void MatchInto(Match match, SerilogEntry logEntry)
+		public void MatchInto(Match match, LogEntry logEntry)
 		{
 			var tmpValue = new TmpDateTime();
 			int groupIndex = _groupIndex;

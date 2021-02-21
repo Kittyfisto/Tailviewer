@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer", "src\Tailviewer\Tailviewer.csproj", "{799F74C7-6DE8-455D-936D-E11D7525AB36}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9997F434-58B2-4C26-B622-5CA411A82BF7} = {9997F434-58B2-4C26-B622-5CA411A82BF7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Test", "src\Tailviewer.Test\Tailviewer.Test.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
 EndProject
@@ -35,6 +38,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "src\Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "src\Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0A1431F6-8548-44D4-B82B-049B94A7F57D} = {0A1431F6-8548-44D4-B82B-049B94A7F57D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "src\Tailviewer.Core\Tailviewer.Core.csproj", "{62C60D20-180E-4A59-9EF3-30161E1E31CB}"
 EndProject
@@ -61,6 +67,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.LogLevelPlugin", "examples\Tailviewer.LogLevelPlugin\Tailviewer.LogLevelPlugin.csproj", "{A628892A-4BE2-4726-983E-CCE47C716CC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog", "src\Plugins\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj", "{9997F434-58B2-4C26-B622-5CA411A82BF7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.Test", "src\Plugins\Tailviewer.Formats.Serilog.Test\Tailviewer.Formats.Serilog.Test.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
 EndProject

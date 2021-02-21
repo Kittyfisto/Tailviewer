@@ -4,21 +4,19 @@ using System.Diagnostics.Contracts;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
 	/// <summary>
-	///     Is responsible for representing the contents of a <see cref="LogLine" /> as a <see cref="FormattedText" />,
+	///     Is responsible for representing the contents of a <see cref="LogEntry" /> as a <see cref="FormattedText" />,
 	///     ready to be rendered.
 	/// </summary>
 	public sealed class TextLine
 	{
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
-		private readonly LogLine _logLine;
+		private readonly IReadOnlyLogEntry _logEntry;
 		private readonly List<TextSegment> _segments;
 		private readonly TextSettings _textSettings;
 		private readonly TextBrushes _textBrushes;
@@ -28,27 +26,27 @@ namespace Tailviewer.Ui.Controls.LogView
 		private bool _colorByLevel;
 		private bool _isFocused;
 
-		public TextLine(LogLine logLine,
+		public TextLine(IReadOnlyLogEntry logEntry,
 		                HashSet<LogLineIndex> hoveredIndices,
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel)
-			: this(logLine, hoveredIndices, selectedIndices, colorByLevel, TextSettings.Default,
+			: this(logEntry, hoveredIndices, selectedIndices, colorByLevel, TextSettings.Default,
 			       new TextBrushes(null))
 		{}
 
-		public TextLine(LogLine logLine,
+		public TextLine(IReadOnlyLogEntry logEntry,
 		                HashSet<LogLineIndex> hoveredIndices,
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel,
 		                TextSettings textSettings,
 		                TextBrushes textBrushes)
 		{
-			if (logLine == null) throw new ArgumentNullException(nameof(logLine));
+			if (logEntry == null) throw new ArgumentNullException(nameof(logEntry));
 			if (hoveredIndices == null) throw new ArgumentNullException(nameof(hoveredIndices));
 			if (selectedIndices == null) throw new ArgumentNullException(nameof(selectedIndices));
 			if (textBrushes == null) throw new ArgumentNullException(nameof(textBrushes));
 
-			_logLine = logLine;
+			_logEntry = logEntry;
 			_hoveredIndices = hoveredIndices;
 			_selectedIndices = selectedIndices;
 			_segments = new List<TextSegment>();
@@ -71,7 +69,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public LogLine LogLine => _logLine;
+		public IReadOnlyLogEntry LogEntry => _logEntry;
 
 		public bool ColorByLevel
 		{
@@ -86,13 +84,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public bool IsHovered => _hoveredIndices.Contains(_logLine.LineIndex);
+		public bool IsHovered => _hoveredIndices.Contains(_logEntry.Index);
 
 		public Brush ForegroundBrush
 		{
 			get
 			{
-				return _textBrushes.ForegroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level);
+				return _textBrushes.ForegroundBrush(IsSelected, IsFocused, ColorByLevel, _logEntry.LogLevel);
 			}
 		}
 
@@ -100,11 +98,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get
 			{
-				return _textBrushes.BackgroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level, LogLine.LogEntryIndex);
+				return _textBrushes.BackgroundBrush(IsSelected, IsFocused, ColorByLevel, _logEntry.LogLevel, (int) _logEntry.LogEntryIndex);
 			}
 		}
 
-		public bool IsSelected => _selectedIndices.Contains(_logLine.LineIndex);
+		public bool IsSelected => _selectedIndices.Contains(_logEntry.Index);
 
 		public IReadOnlyList<TextSegment> Segments
 		{
@@ -140,10 +138,10 @@ namespace Tailviewer.Ui.Controls.LogView
 						// The search results are based on the unformatted message (e.g. before we replace tabs by the appropriate
 						// amount of spaces). Therefore we'll have to subdivide the message into chunks based on the search results
 						// and then reformat the individual chunks.
-						var unformattedMessage = _logLine.Message;
+						var unformattedMessage = _logEntry.RawContent ?? string.Empty;
 						string substring;
 						int lastIndex = 0;
-						foreach (LogLineMatch match in searchResults.MatchesByLine[_logLine.LineIndex])
+						foreach (LogLineMatch match in searchResults.MatchesByLine[_logEntry.Index])
 						{
 							if (match.Index > lastIndex)
 							{
@@ -166,13 +164,13 @@ namespace Tailviewer.Ui.Controls.LogView
 					{
 						_segments.Clear();
 
-						string message = FormatMessage(_logLine.Message);
+						string message = FormatMessage(_logEntry.RawContent);
 						AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 					}
 				}
 				else
 				{
-					string message = FormatMessage(_logLine.Message);
+					string message = FormatMessage(_logEntry.RawContent);
 					AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 				}
 				_lastForegroundBrush = regularForegroundBrush;

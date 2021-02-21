@@ -16,6 +16,11 @@ namespace Tailviewer
 		public static readonly Percentage HundredPercent;
 
 		/// <summary>
+		///     50%.
+		/// </summary>
+		public static readonly Percentage FiftyPercent;
+
+		/// <summary>
 		///     0%.
 		/// </summary>
 		public static readonly Percentage Zero;
@@ -23,6 +28,7 @@ namespace Tailviewer
 		static Percentage()
 		{
 			Zero = new Percentage(value: 0);
+			FiftyPercent = new Percentage(value: 0.5f);
 			HundredPercent = new Percentage(value: 1);
 		}
 
@@ -112,7 +118,7 @@ namespace Tailviewer
 		public float Percent => RelativeValue * 100;
 
 		/// <summary>
-		///     Returns a number that represents this value in absolut [0, 1].
+		///     Returns a number that represents this value in absolute [0, 1].
 		/// </summary>
 		public float RelativeValue { get; }
 
@@ -135,6 +141,17 @@ namespace Tailviewer
 		public static Percentage Of(int current, int count)
 		{
 			return new Percentage((float) current / count);
+		}
+
+		/// <summary>
+		///     Returns the fraction between <paramref name="current" /> and <paramref name="count" />.
+		/// </summary>
+		/// <param name="current"></param>
+		/// <param name="count"></param>
+		/// <returns></returns>
+		public static Percentage Of(long current, long count)
+		{
+			return new Percentage((float) ((double)current / count));
 		}
 
 		/// <summary>
@@ -179,6 +196,32 @@ namespace Tailviewer
 		public static bool operator <(Percentage lhs, Percentage rhs)
 		{
 			return lhs.RelativeValue < rhs.RelativeValue;
+		}
+
+		/// <summary>
+		///     Multiplies two percentages.
+		/// </summary>
+		/// <param name="lhs"></param>
+		/// <param name="rhs"></param>
+		/// <returns></returns>
+		public static Percentage operator *(Percentage lhs, Percentage rhs)
+		{
+			return new Percentage(lhs.RelativeValue * rhs.RelativeValue);
+		}
+
+		/// <summary>
+		/// Returns a new percentage value based on this one, but clamped to [0, 1].
+		/// </summary>
+		/// <returns></returns>
+		[Pure]
+		public Percentage Clamped()
+		{
+			if (RelativeValue < 0)
+				return Zero;
+			if (RelativeValue > 1)
+				return HundredPercent;
+
+			return this;
 		}
 
 		/// <summary>

@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Text;
 using System.Windows.Data;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
@@ -21,7 +20,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 			if (value is ILogFileFormat format)
 			{
-				return format.Description;
+				var description = format.Description;
+				if (string.IsNullOrWhiteSpace(description))
+					return format.Name;
+
+				return description;
 			}
 
 			if (value is Encoding encoding)

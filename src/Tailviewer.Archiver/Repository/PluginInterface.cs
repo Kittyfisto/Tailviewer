@@ -9,7 +9,7 @@ namespace Tailviewer.Archiver.Repository
 	///     Used during transport between repository and tailviewer client.
 	/// </remarks>
 	/// <remarks>
-	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALISED.
+	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALIZED.
 	///     Doing so will break the communication between tailviewer client
 	///     and the repository.
 	/// </remarks>

@@ -10,7 +10,6 @@ using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
@@ -34,17 +33,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 
 		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources, IActionCenter actionCenter)
 		{
-			if (settings == null) throw new ArgumentNullException(nameof(settings));
-			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
-			if (actionCenter == null) throw  new ArgumentNullException(nameof(actionCenter));
-
-			_actionCenter = actionCenter;
-			_settings = settings;
+			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
+			_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
 			_addDataSourceFromFileCommand = new DelegateCommand(AddDataSourceFromFile);
 			_addDataSourceFromFolderCommand = new DelegateCommand(AddDataSourceFromFolder);
-			_dataSources = dataSources;
+			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
 			foreach (IDataSource dataSource in dataSources.Sources)
 			{
 				if (dataSource.ParentId == DataSourceId.Empty)

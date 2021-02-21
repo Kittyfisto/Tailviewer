@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -11,10 +11,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 		: AbstractDataSource
 			, ISingleDataSource
 	{
-		private readonly ILogFile _originalLogFile;
-		private readonly LogFileProxy _unfilteredLogFile;
+		private readonly ILogSource _originalLogSource;
+		private readonly LogSourceProxy _unfilteredLogSource;
 		private readonly IPluginDescription _pluginDescription;
-		private MultiLineLogFile _multiLineLogFile;
+		private MultiLineLogSource _multiLineLogSource;
 
 		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
 			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
@@ -28,51 +28,51 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (logFileFactory == null)
 				throw new ArgumentNullException(nameof(logFileFactory));
 
-			_originalLogFile = logFileFactory.Open(settings.File, out _pluginDescription);
-			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
+			_originalLogSource = logFileFactory.Open(settings.File, out _pluginDescription);
+			_unfilteredLogSource = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
 		}
 
-		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile,
+		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogSource unfilteredLogSource,
 			TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			if (unfilteredLogFile == null)
-				throw new ArgumentNullException(nameof(unfilteredLogFile));
+			if (unfilteredLogSource == null)
+				throw new ArgumentNullException(nameof(unfilteredLogSource));
 
-			_originalLogFile = unfilteredLogFile;
-			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
+			_originalLogSource = unfilteredLogSource;
+			_unfilteredLogSource = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
 		}
 
 		public override IPluginDescription TranslationPlugin => _pluginDescription;
 
-		public override ILogFile OriginalLogFile => _originalLogFile;
+		public override ILogSource OriginalLogSource => _originalLogSource;
 
-		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
+		public override ILogSource UnfilteredLogSource => _unfilteredLogSource;
 
 		protected override void OnSingleLineChanged()
 		{
-			_multiLineLogFile?.Dispose();
+			_multiLineLogSource?.Dispose();
 
 			if (!IsSingleLine)
 			{
-				_multiLineLogFile = new MultiLineLogFile(TaskScheduler, _originalLogFile, MaximumWaitTime);
-				_unfilteredLogFile.InnerLogFile = _multiLineLogFile;
+				_multiLineLogSource = new MultiLineLogSource(TaskScheduler, _originalLogSource, MaximumWaitTime);
+				_unfilteredLogSource.InnerLogSource = _multiLineLogSource;
 			}
 			else
 			{
-				_unfilteredLogFile.InnerLogFile = _originalLogFile;
+				_unfilteredLogSource.InnerLogSource = _originalLogSource;
 			}
 		}
 
 		protected override void DisposeAdditional()
 		{
-			_originalLogFile?.Dispose();
-			_unfilteredLogFile?.Dispose();
-			_multiLineLogFile?.Dispose();
+			_originalLogSource?.Dispose();
+			_unfilteredLogSource?.Dispose();
+			_multiLineLogSource?.Dispose();
 		}
 	}
 }

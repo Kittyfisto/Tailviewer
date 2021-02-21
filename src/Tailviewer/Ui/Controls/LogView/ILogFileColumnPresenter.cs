@@ -1,5 +1,4 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Settings;
+﻿using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -8,16 +7,16 @@ namespace Tailviewer.Ui.Controls.LogView
 	/// </summary>
 	public interface ILogFileColumnPresenter
 	{
-		ILogFileColumn Column { get; }
+		IColumnDescriptor Column { get; }
 
 		TextSettings TextSettings { get; set; }
 
 		/// <summary>
 		///     Fetches the newest values for this presenter's column from the given log file.
 		/// </summary>
-		/// <param name="logFile"></param>
+		/// <param name="logSource"></param>
 		/// <param name="visibleSection"></param>
 		/// <param name="yOffset"></param>
-		void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset);
+		void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset);
 	}
 }
