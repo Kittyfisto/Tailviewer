@@ -16,9 +16,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 	public sealed class TextLogSourceAcceptanceTest
 		: AbstractTextLogSourceAcceptanceTest
 	{
-		protected override ILogSource Create(ITaskScheduler taskScheduler, string fileName, Encoding encoding)
+		protected override ILogSource Create(ITaskScheduler taskScheduler, string fileName, ILogFileFormat format, Encoding encoding)
 		{
-			return new TextLogSource(taskScheduler, fileName, encoding);
+			return new TextLogSource(taskScheduler, fileName, format, encoding);
 		}
 
 		[Test]

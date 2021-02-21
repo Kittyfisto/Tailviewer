@@ -106,7 +106,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				logSource.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(info.Length));
 
 				var entries = logSource.GetEntries();
-				entries.Should().HaveCount(9997);
+				entries.Should().HaveCount(9996);
+				//entries.Should().HaveCount(9997); //< Streaming and non streaming handle empty newlines differently
 				entries[0].RawContent.Should().Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
 			}
 		}
@@ -505,6 +506,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 					null
 				});
 			}
+		}
+
+		#endregion
+
+		#region Custom Formats
+
+		[Test]
+		public void TestParseCustomFormat()
+		{
+			
 		}
 
 		#endregion

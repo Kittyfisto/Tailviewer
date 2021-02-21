@@ -72,9 +72,11 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
+		/// <param name="format"></param>
 		/// <param name="encoding"></param>
 		internal StreamingTextLogSource(ITaskScheduler taskScheduler,
 		                                string fileName,
+		                                ILogFileFormat format,
 		                                Encoding encoding)
 		{
 			_taskScheduler = taskScheduler;
@@ -86,6 +88,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			_index = new LogBufferList(StreamingTextLogSource.LineOffsetInBytes);
 			_propertiesBuffer = new PropertiesBufferList();
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
+			_propertiesBuffer.SetValue(GeneralProperties.Format, format);
 			_propertiesBuffer.SetValue(TextProperties.RequiresBuffer, true);
 
 			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
@@ -8,6 +7,8 @@ namespace Tailviewer.Test
 		: ILogFileFormatMatcher
 	{
 		private readonly ILogFileFormat _format;
+		public byte[] Header;
+		public Encoding Encoding;
 
 		public SimpleLogFileFormatMatcher(ILogFileFormat format)
 		{
@@ -17,11 +18,16 @@ namespace Tailviewer.Test
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName,
-		                           Stream fileStream,
+		                           byte[] header,
 		                           Encoding encoding,
-		                           out ILogFileFormat format)
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
+			Header = header;
+			Encoding = encoding;
+
 			format = _format;
+			certainty = Certainty.Sure;
 			return format != null;
 		}
 

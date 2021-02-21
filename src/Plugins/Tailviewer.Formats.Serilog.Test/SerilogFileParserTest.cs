@@ -240,6 +240,16 @@ namespace Tailviewer.Serilog.Test
 		}
 
 		[Test]
+		public void TestParse_Timestamp2_LogLevel_Message()
+		{
+			var parser = new SerilogEntryParser("{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u3}] {Message}");
+			var logEntry = Parse(parser, "2020-09-13 00:00:12.207 +04:30 [DBG] Fetch modification job triggered at 9/13/2020 12:00:12 AM!!!");
+			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 13, 00, 00, 12, 207));
+			logEntry.LogLevel.Should().Be(LevelFlags.Debug);
+			logEntry.GetValue(GeneralColumns.Message).Should().Be("Fetch modification job triggered at 9/13/2020 12:00:12 AM!!!");
+		}
+
+		[Test]
 		public void TestParse_NullMessage()
 		{
 			var parser = new SerilogEntryParser("{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}] {Message}");

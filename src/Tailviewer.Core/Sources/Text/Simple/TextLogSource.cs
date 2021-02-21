@@ -79,9 +79,11 @@ namespace Tailviewer.Core.Sources.Text.Simple
 		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
+		/// <param name="format"></param>
 		/// <param name="encoding"></param>
 		internal TextLogSource(ITaskScheduler taskScheduler,
 		                       string fileName,
+		                       ILogFileFormat format,
 		                       Encoding encoding)
 			: base(taskScheduler)
 		{
@@ -104,6 +106,7 @@ namespace Tailviewer.Core.Sources.Text.Simple
 			_localProperties = new PropertiesBufferList(GeneralProperties.Minimum);
 			_localProperties.SetValue(GeneralProperties.Name, _fileName);
 			_localProperties.Add(TextProperties.LineCount);
+			_localProperties.SetValue(GeneralProperties.Format, format);
 			_localProperties.SetValue(TextProperties.LineCount, 0);
 			_localProperties.SetValue(TextProperties.RequiresBuffer, false);
 

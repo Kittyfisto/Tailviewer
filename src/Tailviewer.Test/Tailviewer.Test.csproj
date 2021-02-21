@@ -165,6 +165,7 @@
     <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryViewTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\EncodingDetectorTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\FileFingerprintTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\FileFormatDetectorTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\GenericTextLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\LineOffsetDetectorTest.cs" />
     <Compile Include="BusinessLogic\Sources\Text\GenericTextLogEntryParserTest.cs" />
@@ -319,6 +320,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\Encodings\windows_1252.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Formats\Serilog\Serilog.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\LevelCounts.txt">

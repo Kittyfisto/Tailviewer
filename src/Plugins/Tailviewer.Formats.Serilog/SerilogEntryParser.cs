@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Tailviewer.Core.Entries;
 using Tailviewer.Formats.Serilog.Matchers;
 using Tailviewer.Plugins;
 
@@ -122,7 +123,7 @@ namespace Tailviewer.Formats.Serilog
 				return false;
 			}
 
-			var parsedLogEntry = new SerilogEntry(rawContent);
+			var parsedLogEntry = new LogEntry{RawContent = rawContent};
 			foreach (var matcher in _matchers) matcher.MatchInto(match, parsedLogEntry);
 
 			logEntry = parsedLogEntry;

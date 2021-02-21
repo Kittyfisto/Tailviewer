@@ -67,7 +67,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 
 		private StreamingTextLogSource Create(string fileName, Encoding encoding)
 		{
-			return new StreamingTextLogSource(_taskScheduler, fileName, encoding);
+			return new StreamingTextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		private IReadOnlyLogEntry GetEntry(StreamingTextLogSource logSource, LogLineIndex index)

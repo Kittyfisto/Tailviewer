@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -33,24 +32,27 @@ namespace Tailviewer.BusinessLogic.Sources
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName,
-		                           Stream fileStream,
+		                           byte[] header,
 		                           Encoding encoding,
-		                           out ILogFileFormat format)
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
 			try
 			{
 				if (_inner == null)
 				{
 					format = null;
+					certainty = Certainty.Sure;
 					return false;
 				}
 
-				return _inner.TryMatchFormat(fileName, fileStream, encoding, out format);
+				return _inner.TryMatchFormat(fileName, header, encoding, out format, out certainty);
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				format = null;
+				certainty = Certainty.Uncertain;
 				return false;
 			}
 		}

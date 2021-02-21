@@ -6,6 +6,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
@@ -65,11 +66,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 		private TextLogSource Create(string fileName,
 		                           Encoding encoding)
 		{
-			return new TextLogSource(_taskScheduler, fileName, encoding);
+			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		[Test]
-		public void TestCtor()
+		public void TestConstruction()
 		{
 			_source.Columns.Should().Equal(new IColumnDescriptor[]
 			{
@@ -89,8 +90,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			var info = new FileInfo(_fname);
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(GeneralProperties.LastModified).Should().Be(info.LastWriteTime);
-			_source.GetProperty(GeneralProperties.Created).Should().Be(info.CreationTime);
+			_source.GetProperty(GeneralProperties.LastModified).Should().Be(info.LastWriteTimeUtc);
+			_source.GetProperty(GeneralProperties.Created).Should().Be(info.CreationTimeUtc);
 		}
 
 		[Test]

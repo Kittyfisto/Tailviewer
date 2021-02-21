@@ -21,25 +21,31 @@ namespace Tailviewer.Formats.Serilog
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName,
-		                           Stream stream,
+		                           byte[] header,
 		                           Encoding encoding,
-		                           out ILogFileFormat format)
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
 			var formats = _repository.Formats.OfType<SerilogFileFormat>();
 
 			foreach (var serilogFormat in formats)
 			{
 				var parser = serilogFormat.Parser;
-				using (var reader = CreateStreamReader(stream, serilogFormat.Encoding ?? encoding))
+				using (var memoryStream = new MemoryStream(header))
+				using(var reader = new StreamReader(memoryStream, serilogFormat.Encoding ?? encoding))
 				{
 					if (TryParseFormat(reader, parser))
 					{
 						format = serilogFormat;
+						certainty = Certainty.Sure;
 						return true;
 					}
 				}
 			}
 
+			certainty = header.Length >= 512
+				? Certainty.Sure
+				: Certainty.Uncertain;
 			format = null;
 			return false;
 		}
@@ -55,14 +61,6 @@ namespace Tailviewer.Formats.Serilog
 			}
 
 			return true;
-		}
-
-		private static StreamReader CreateStreamReader(Stream stream, Encoding encoding)
-		{
-			if (encoding != null)
-				return new StreamReader(stream, encoding);
-
-			return new StreamReader(stream);
 		}
 
 		#endregion

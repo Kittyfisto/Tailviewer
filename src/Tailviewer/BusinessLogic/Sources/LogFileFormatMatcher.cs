@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Tailviewer.Archiver.Plugins;
@@ -13,28 +12,32 @@ namespace Tailviewer.BusinessLogic.Sources
 	internal sealed class LogFileFormatMatcher
 		: ILogFileFormatMatcher
 	{
-		private readonly IReadOnlyList<ILogFileFormatMatcher> _matchers;
+		private readonly IServiceContainer _services;
 
 		public LogFileFormatMatcher(IServiceContainer services)
 		{
-			var pluginLoader = services.Retrieve<IPluginLoader>();
-			_matchers = pluginLoader.LoadAllOfType<ILogFileFormatMatcherPlugin>()
-			                        .Select(x => new NoThrowLogFileFormatMatcher(x, services))
-			                        .ToList();
+			_services = services;
 		}
 
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName,
-		                           Stream fileStream,
+		                           byte[] header,
 		                           Encoding encoding,
-		                           out ILogFileFormat format)
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
-			foreach (var matcher in _matchers)
-				if (matcher.TryMatchFormat(fileName, fileStream, encoding, out format))
+			var pluginLoader = _services.Retrieve<IPluginLoader>();
+			var matchers = pluginLoader.LoadAllOfType<ILogFileFormatMatcherPlugin>()
+			                        .Select(x => new NoThrowLogFileFormatMatcher(x, _services))
+			                        .ToList();
+
+			foreach (var matcher in matchers)
+				if (matcher.TryMatchFormat(fileName, header, encoding, out format, out certainty))
 					return true;
 
 			format = null;
+			certainty = Certainty.None;
 			return false;
 		}
 

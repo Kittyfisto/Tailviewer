@@ -5,6 +5,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Text;
@@ -44,7 +45,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 		private TextLogSource Create(string fileName)
 		{
-			return new TextLogSource(_scheduler, fileName, Encoding.Default);
+			return new TextLogSource(_scheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]

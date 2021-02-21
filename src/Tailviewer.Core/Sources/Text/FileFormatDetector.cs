@@ -54,20 +54,20 @@ namespace Tailviewer.Core.Sources.Text
 		                                       Encoding encoding,
 		                                       out Certainty certainty)
 		{
-			var pos = stream.Position;
+			stream.Position = 0;
 
 			const int maxHeaderLength = 512;
-			var length = Math.Min(maxHeaderLength, stream.Length - pos);
+			var length = Math.Min(maxHeaderLength, stream.Length);
 			var header = new byte[length];
 			stream.Read(header, offset: 0, header.Length);
-			certainty = length >= maxHeaderLength
-				? Certainty.Sure
-				: Certainty.Uncertain;
 
-			_formatMatcher.TryMatchFormat(fileName, stream, encoding, out var format);
+			_formatMatcher.TryMatchFormat(fileName, header, encoding, out var format, out certainty);
 			if (format != null)
 				return format;
 
+			certainty = header.Length >= maxHeaderLength
+				? Certainty.Sure
+				: Certainty.Uncertain;
 			return LogFileFormats.GenericText;
 		}
 	}

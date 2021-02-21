@@ -56,11 +56,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			_taskScheduler.Dispose();
 		}
 
-		protected abstract ILogSource Create(ITaskScheduler taskScheduler, string fileName, Encoding encoding);
+		protected abstract ILogSource Create(ITaskScheduler taskScheduler, string fileName, ILogFileFormat format, Encoding encoding);
+
+		protected ILogSource Create(string fileName, ILogFileFormat format, Encoding encoding)
+		{
+			return Create(_taskScheduler, fileName, format, encoding);
+		}
 
 		protected ILogSource Create(string fileName, Encoding encoding)
 		{
-			return Create(_taskScheduler, fileName, encoding);
+			return Create(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		protected ILogSource Create(string fileName)
@@ -76,6 +81,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 
 			TestContext.WriteLine("FileName: {0}", fileName);
 			return fileName;
+		}
+
+		[Test]
+		[Description("Verifies that the format property is immediately visible after construction")]
+		public void TestConstruction()
+		{
+			using (var logFile = Create("", LogFileFormats.Csv, Encoding.Default))
+			{
+				logFile.GetProperty(GeneralProperties.Format).Should().Be(LogFileFormats.Csv);
+			}
 		}
 
 		[Test]

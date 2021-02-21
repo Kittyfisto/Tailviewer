@@ -465,7 +465,8 @@ namespace Tailviewer.Core.Sources.Text
 			return textLogSource;
 		}
 
-		private static ILogSource TryCreateParser(IServiceContainer serviceContainer, ILogSource source)
+		private static ILogSource TryCreateParser(IServiceContainer serviceContainer,
+		                                          ILogSource source)
 		{
 			var logSourceParserPlugin = serviceContainer.Retrieve<ILogSourceParserPlugin>();
 			var parsingLogSource = logSourceParserPlugin.CreateParser(serviceContainer, source);

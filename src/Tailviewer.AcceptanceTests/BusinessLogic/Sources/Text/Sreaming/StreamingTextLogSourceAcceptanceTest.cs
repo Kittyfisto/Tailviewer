@@ -10,9 +10,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 	public sealed class StreamingTextLogSourceAcceptanceTest
 		: AbstractTextLogSourceAcceptanceTest
 	{
-		protected override ILogSource Create(ITaskScheduler taskScheduler, string fileName, Encoding encoding)
+		protected override ILogSource Create(ITaskScheduler taskScheduler, string fileName, ILogFileFormat format, Encoding encoding)
 		{
-			return new StreamingTextLogSource(taskScheduler, fileName, encoding);
+			return new StreamingTextLogSource(taskScheduler, fileName, format, encoding);
 		}
 	}
 }

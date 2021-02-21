@@ -24,16 +24,22 @@ namespace Tailviewer.Plugins
 		///     way that it blocks for long amounts of time, then Tailviewer's performance will suffer incredibly so just don't do that.
 		/// </remarks>
 		/// <param name="fileName">The complete file path of the log file.</param>
-		/// <param name="stream">The stream to access the file</param>
+		/// <param name="data">A **portion** of the file, usually up to the first 512 bytes</param>
 		/// <param name="encoding">
 		///     The encoding with which the file should be opened, in case it is a text file.
 		/// </param>
 		/// <param name="format">The format this matcher has decided the log file is in.</param>
+		/// <param name="certainty">
+		/// The certainty with which the matcher is sure of its response:
+		///  - <see cref="Certainty.None"/> and <see cref="Certainty.Uncertain"/> causes this matcher to be called again when something about the file changes so the matcher may once again attempt to interpret the content
+		///  - <see cref="Certainty.Sure"/> causes this matcher to never be bothered again. When the matcher returned a successful match, then this will be the final format the log file has determined to be
+		/// </param>
 		/// <returns>true in case this matcher is 100% certain that the given log file is of a particular format, false otherwise.</returns>
 		[ThreadSafe]
 		bool TryMatchFormat(string fileName,
-		                    Stream stream,
+		                    byte[] data,
 		                    Encoding encoding,
-		                    out ILogFileFormat format);
+		                    out ILogFileFormat format,
+		                    out Certainty certainty);
 	}
 }

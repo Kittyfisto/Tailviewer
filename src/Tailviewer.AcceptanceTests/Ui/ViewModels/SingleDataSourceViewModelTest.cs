@@ -37,7 +37,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		private TextLogSource Create(string fileName)
 		{
 			var serviceContainer = new ServiceContainer();
-			return new TextLogSource(_taskScheduler, fileName, Encoding.Default);
+			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]
