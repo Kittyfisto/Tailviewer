@@ -55,7 +55,7 @@ namespace Tailviewer.Formats.Serilog
 		{
 			// we're happy if we can match the first line
 			var line = reader.ReadLine();
-			if (!parser.TryParse(line, out _))
+			if (!parser.TryParse(0, line, out _))
 			{
 				return false;
 			}

@@ -488,8 +488,6 @@ namespace Tailviewer.Core.Sources.Text.Simple
 		{
 			_localProperties.SetValue(GeneralProperties.Created, null);
 			_localProperties.SetValue(GeneralProperties.Size, null);
-			_localProperties.SetValue(GeneralProperties.Format, null);
-			_localProperties.SetValue(GeneralProperties.FormatDetectionCertainty, Certainty.None);
 			_localProperties.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_localProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
 			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);

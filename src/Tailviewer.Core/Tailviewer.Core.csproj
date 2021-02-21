@@ -91,7 +91,7 @@
     <Compile Include="Sources\Buffer\Page.cs" />
     <Compile Include="Sources\Buffer\PagedLogBuffer.cs" />
     <Compile Include="Sources\Adorner\LogSourceColumnAdorner.cs" />
-    <Compile Include="Sources\Buffer\SimpleBufferedLogSource.cs" />
+    <Compile Include="Sources\Buffer\FullyBufferedLogSource.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />

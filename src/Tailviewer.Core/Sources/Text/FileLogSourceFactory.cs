@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Sources.Text.Simple;
+using Tailviewer.Core.Sources.Text.Streaming;
 
 namespace Tailviewer.Core.Sources.Text
 {
@@ -32,8 +32,8 @@ namespace Tailviewer.Core.Sources.Text
 		{
 			if (format.IsText)
 			{
-				return new TextLogSource(_taskScheduler, fileName, format, encoding);
-				//return new StreamingTextLogSource(_taskScheduler, fileName, format, encoding);
+				//return new TextLogSource(_taskScheduler, fileName, format, encoding);
+				return new StreamingTextLogSource(_taskScheduler, fileName, format, encoding);
 			}
 			else
 			{

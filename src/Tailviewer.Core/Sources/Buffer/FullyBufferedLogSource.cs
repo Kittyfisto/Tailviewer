@@ -7,18 +7,18 @@ using Tailviewer.Core.Buffers;
 namespace Tailviewer.Core.Sources.Buffer
 {
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
-	internal sealed class SimpleBufferedLogSource
+	internal sealed class FullyBufferedLogSource
 		: AbstractProxyLogSource
 	{
 		private readonly LogBufferList _buffer;
 		private readonly object _syncRoot;
 
-		public SimpleBufferedLogSource(ITaskScheduler taskScheduler,
+		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
 		                               ILogSource source)
 			: this(taskScheduler, source, source.Columns, TimeSpan.FromMilliseconds(100))
 		{ }
 
-		public SimpleBufferedLogSource(ITaskScheduler taskScheduler,
+		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
 		                               ILogSource source,
 		                               IReadOnlyList<IColumnDescriptor> bufferedColumns,
 		                               TimeSpan maximumWaitTime)

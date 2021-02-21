@@ -14,8 +14,9 @@ namespace Tailviewer.Serilog.Test
 		[Pure]
 		private static IReadOnlyLogEntry Parse(SerilogEntryParser parser, string rawContent)
 		{
-			var logEntry = new LogEntry(GeneralColumns.RawContent)
+			var logEntry = new LogEntry(GeneralColumns.Index, GeneralColumns.RawContent)
 			{
+				Index = 0,
 				RawContent = rawContent
 			};
 			return parser.Parse(logEntry);
