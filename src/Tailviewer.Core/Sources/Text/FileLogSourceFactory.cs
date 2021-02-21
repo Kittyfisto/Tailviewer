@@ -25,8 +25,8 @@ namespace Tailviewer.Core.Sources.Text
 		{
 			if (format.IsText)
 			{
-				//return new TextLogSource(_taskScheduler, fileName, encoding);
-				return new StreamingTextLogSource(_taskScheduler, fileName, encoding);
+				return new TextLogSource(_taskScheduler, fileName, encoding);
+				//return new StreamingTextLogSource(_taskScheduler, fileName, encoding);
 			}
 			else
 			{

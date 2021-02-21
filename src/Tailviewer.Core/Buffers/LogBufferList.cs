@@ -296,6 +296,21 @@ namespace Tailviewer.Core.Buffers
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="count"></param>
+		public void AddRange(IReadOnlyLogBuffer source, int count)
+		{
+			var start = _count;
+			Resize(_count + count);
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.CopyFrom(start, source, new Int32Range(0, count));
+			}
+		}
+
+		/// <summary>
+		///   
+		/// </summary>
 		/// <param name="count"></param>
 		public void AddRange(int count)
 		{

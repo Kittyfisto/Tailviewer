@@ -235,8 +235,8 @@ namespace Tailviewer.Core.Sources.Text.Simple
 				{
 					var info = new FileInfo(_fileName);
 					var fileSize = info.Length;
-					_localProperties.SetValue(GeneralProperties.LastModified, info.LastWriteTime);
-					_localProperties.SetValue(GeneralProperties.Created, info.CreationTime);
+					_localProperties.SetValue(GeneralProperties.LastModified, info.LastWriteTimeUtc);
+					_localProperties.SetValue(GeneralProperties.Created, info.CreationTimeUtc);
 					_localProperties.SetValue(GeneralProperties.Size, Size.FromBytes(fileSize));
 					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
 					SynchronizePropertiesWithUser();

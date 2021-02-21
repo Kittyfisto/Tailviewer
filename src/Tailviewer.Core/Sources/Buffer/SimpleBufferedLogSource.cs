@@ -8,21 +8,24 @@ namespace Tailviewer.Core.Sources.Buffer
 {
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class SimpleBufferedLogSource
-		: AbstractLogSource
+		: AbstractProxyLogSource
 	{
 		private readonly LogBufferList _buffer;
+		private readonly object _syncRoot;
 
 		public SimpleBufferedLogSource(ITaskScheduler taskScheduler,
 		                               ILogSource source)
-			: this(taskScheduler, source, source.Columns)
+			: this(taskScheduler, source, source.Columns, TimeSpan.FromMilliseconds(100))
 		{ }
 
 		public SimpleBufferedLogSource(ITaskScheduler taskScheduler,
 		                               ILogSource source,
-		                               IReadOnlyList<IColumnDescriptor> bufferedColumns)
-			: base(taskScheduler)
+		                               IReadOnlyList<IColumnDescriptor> bufferedColumns,
+		                               TimeSpan maximumWaitTime)
+			: base(taskScheduler, source, bufferedColumns, maximumWaitTime)
 		{
-			_buffer = new LogBufferList();
+			_buffer = new LogBufferList(bufferedColumns);
+			_syncRoot = new object();
 
 			StartTask();
 		}
@@ -81,9 +84,33 @@ namespace Tailviewer.Core.Sources.Buffer
 			throw new NotImplementedException();
 		}
 
-		protected override TimeSpan RunOnce(CancellationToken token)
+		protected override void OnReset()
 		{
-			throw new NotImplementedException();
+			lock (_syncRoot)
+			{
+				_buffer.Clear();
+			}
+		}
+
+		protected override void OnInvalidate(int totalCount)
+		{
+			lock (_syncRoot)
+			{
+				_buffer.RemoveRange(totalCount, _buffer.Count - totalCount);
+			}
+		}
+
+		protected override void OnAdd(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
+		{
+			lock (_syncRoot)
+			{
+				_buffer.AddRange(data, section.Count);
+			}
+		}
+
+		protected override void NothingToProcess()
+		{
+			
 		}
 
 		#endregion

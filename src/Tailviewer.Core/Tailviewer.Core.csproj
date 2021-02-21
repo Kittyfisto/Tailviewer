@@ -85,6 +85,7 @@
     <Compile Include="Int32Range.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
+    <Compile Include="Sources\AbstractProxyLogSource.cs" />
     <Compile Include="Sources\Buffer\PageBufferedLogSource.cs" />
     <Compile Include="Sources\Buffer\RetrievalState.cs" />
     <Compile Include="Sources\Buffer\Page.cs" />
