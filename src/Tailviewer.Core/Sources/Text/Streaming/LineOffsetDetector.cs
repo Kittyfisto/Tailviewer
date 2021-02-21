@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace Tailviewer.Core.Sources.Text
+namespace Tailviewer.Core.Sources.Text.Streaming
 {
 	/// <summary>
 	/// 

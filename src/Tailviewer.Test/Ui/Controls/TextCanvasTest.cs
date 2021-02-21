@@ -34,7 +34,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_mouse = new TestMouse();
 			_keyboard = new TestKeyboard();
-			_columns = GeneralColumns.Minimum.Concat(new[] {BufferedLogSource.RetrievalState}).ToList();
+			_columns = GeneralColumns.Minimum.Concat(new[] {PageBufferedLogSource.RetrievalState}).ToList();
 
 			_control = new TextCanvas(new ScrollBar(), new ScrollBar(), TextSettings.Default)
 			{

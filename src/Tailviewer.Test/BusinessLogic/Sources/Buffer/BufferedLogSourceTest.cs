@@ -23,13 +23,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		protected override ILogSource CreateEmpty()
 		{
 			var source = new InMemoryLogSource();
-			return new BufferedLogSource(_taskScheduler, source, TimeSpan.Zero);
+			return new PageBufferedLogSource(_taskScheduler, source, TimeSpan.Zero);
 		}
 
 		protected override ILogSource CreateFromContent(IReadOnlyLogBuffer content)
 		{
 			var source = new InMemoryLogSource(content);
-			return new BufferedLogSource(_taskScheduler, source, TimeSpan.Zero);
+			return new PageBufferedLogSource(_taskScheduler, source, TimeSpan.Zero);
 		}
 
 		[Ignore("This test doesn't make much sense")]

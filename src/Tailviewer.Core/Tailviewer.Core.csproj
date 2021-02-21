@@ -85,11 +85,12 @@
     <Compile Include="Int32Range.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
-    <Compile Include="Sources\Buffer\BufferedLogSource.cs" />
+    <Compile Include="Sources\Buffer\PageBufferedLogSource.cs" />
     <Compile Include="Sources\Buffer\RetrievalState.cs" />
     <Compile Include="Sources\Buffer\Page.cs" />
     <Compile Include="Sources\Buffer\PagedLogBuffer.cs" />
     <Compile Include="Sources\Adorner\LogSourceColumnAdorner.cs" />
+    <Compile Include="Sources\Buffer\SimpleBufferedLogSource.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
@@ -119,12 +120,11 @@
     <Compile Include="Sources\Text\FileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\GenericTextLogSource.cs" />
     <Compile Include="Sources\Text\IFileLogSourceFactory.cs" />
-    <Compile Include="Sources\Text\LineOffsetDetector.cs" />
+    <Compile Include="Sources\Text\Streaming\LineOffsetDetector.cs" />
     <Compile Include="Sources\ListenerProxy.cs" />
-    <Compile Include="Sources\Text\RawTextLogEntry.cs" />
     <Compile Include="Entries\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="Entries\ReadOnlyLogEntryView.cs" />
-    <Compile Include="Sources\Text\StreamingTextLogSource.cs" />
+    <Compile Include="Sources\Text\Streaming\StreamingTextLogSource.cs" />
     <Compile Include="Formats\TextLogFileFormat.cs" />
     <Compile Include="Properties\WellKnownProperty.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
@@ -195,7 +195,7 @@
     <Compile Include="Sources\MultiLineLogSource.cs" />
     <Compile Include="Sources\NoThrowLogSource.cs" />
     <Compile Include="Sources\NoThrowLogLineTranslator.cs" />
-    <Compile Include="Sources\Text\TextLogSource.cs" />
+    <Compile Include="Sources\Text\Simple\TextLogSource.cs" />
     <Compile Include="Properties\WellKnownReadOnlyProperty.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="NullToNotAvailableConverter.cs" />
@@ -216,7 +216,7 @@
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\TimeFilter.cs" />
     <Compile Include="Settings\TimeFilterMode.cs" />
-    <Compile Include="StreamReaderEx.cs" />
+    <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="Writer.cs" />

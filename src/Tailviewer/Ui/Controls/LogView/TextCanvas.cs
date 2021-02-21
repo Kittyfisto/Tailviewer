@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, BufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, PageBufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -337,7 +337,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					// then the entry is part of the source, but was not cached at the time of trying to access it.
 					// If that's the case, we will instruct this canvas to re-fetch the once more in a bit. This loop will terminate once the
 					// cache has managed to fetch the desired data which should happen some time...
-					if (_visibleBufferBuffer.ContainsAny(BufferedLogSource.RetrievalState,
+					if (_visibleBufferBuffer.ContainsAny(PageBufferedLogSource.RetrievalState,
 					                                     RetrievalState.NotCached,
 					                                     new Int32Range(offset: 0, _currentlyVisibleSection.Count)))
 					{

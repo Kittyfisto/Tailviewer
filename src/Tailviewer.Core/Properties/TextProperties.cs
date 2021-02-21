@@ -63,6 +63,11 @@ namespace Tailviewer.Core.Properties
 		/// </summary>
 		public static readonly IReadOnlyPropertyDescriptor<Encoding> Encoding;
 
+		/// <summary>
+		///    When set to true, then a buffer should be used to cache parts of the log file.
+		/// </summary>
+		internal static readonly IReadOnlyPropertyDescriptor<bool> RequiresBuffer;
+
 		static TextProperties()
 		{
 			var category = "text";
@@ -73,6 +78,7 @@ namespace Tailviewer.Core.Properties
 			AutoDetectedEncoding = new WellKnownReadOnlyProperty<Encoding>(new []{category, "auto_detected_encoding"});
 			OverwrittenEncoding = new WellKnownProperty<Encoding>(new []{category, "overwritten_encoding"});
 			Encoding = new WellKnownReadOnlyProperty<Encoding>(new []{category, "encoding"});
+			RequiresBuffer = new WellKnownReadOnlyProperty<bool>(new[] {category, "requires_buffer"});
 		}
 	}
 }

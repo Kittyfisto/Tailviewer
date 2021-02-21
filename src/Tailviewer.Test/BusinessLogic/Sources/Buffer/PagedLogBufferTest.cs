@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		{
 			var buffer = new PagedLogBuffer(1024, 10, GeneralColumns.RawContent);
 
-			var destination = new LogBufferArray(12, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(12, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			destination[0].RawContent = "Foo";
 			destination[1].RawContent = "Bar";
 			destination[10].RawContent = "Big Smoke";
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			                  "because only the data from the specified offset onward may have been overwritten");
 			for (int i = 1; i < 11; ++i)
 			{
-				destination[i].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+				destination[i].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
 				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue,
 			                                        "because when the region couldn't be read from the cache, then it should have been defaulted");
 			}
@@ -44,7 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			buffer.ResizeTo(12);
 
-			var destination = new LogBufferArray(12, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(12, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			destination[0].RawContent = "Foo";
 			destination[1].RawContent = "Bar";
 			destination[10].RawContent = "Big Smoke";
@@ -56,7 +56,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			                  "because only the data from the specified offset onward may have been overwritten");
 			for (int i = 1; i < 11; ++i)
 			{
-				destination[i].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+				destination[i].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
 				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue,
 			                                        "because when the region couldn't be read from the cache, then it should have been defaulted");
 			}
@@ -76,16 +76,16 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.TryAdd(new LogFileSection(0, 2), data, 0);
 
-			var destination = new LogBufferArray(7, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(7, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 7), destination, 0).Should().BeFalse("because the cache is only partially filled");
 
-			destination[0].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
-			destination[1].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
-			destination[2].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
-			destination[3].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
-			destination[4].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
-			destination[5].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
-			destination[6].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+			destination[0].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[1].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[2].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+			destination[3].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+			destination[4].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+			destination[5].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+			destination[6].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
 		}
 
 		[Test]
@@ -102,15 +102,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			buffer.TryAdd(new LogFileSection(0, 2), data, 0);
 			buffer.ResizeTo(4);
 
-			var destination = new LogBufferArray(6, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(6, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 6), destination, 0).Should().BeFalse("because the cache is only partially filled");
 
-			destination[0].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
-			destination[1].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
-			destination[2].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
-			destination[3].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
-			destination[4].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
-			destination[5].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+			destination[0].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[1].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[2].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+			destination[3].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+			destination[4].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+			destination[5].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
 		}
 
 		[Test]
@@ -397,7 +397,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.TryAdd(new LogFileSection(0, 8), data, 0);
 
-			var destination = new LogBufferArray(8, GeneralColumns.Index, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			buffer.TryGetEntries(new LogFileSection(0, 8), destination, 0).Should().BeFalse("because even though we've tried to add 8 elements to the buffer, only the first 4 are part of the entire log file section and thus the others should have been ignored");
 
 			destination[0].RawContent.Should().Be("A");
@@ -407,14 +407,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			for (int i = 0; i < 4; ++i)
 			{
-				destination[i].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+				destination[i].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 			}
 
 
 			for (int i = 4; i < 8; ++i)
 			{
 				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
-				destination[i].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
+				destination[i].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource);
 			}
 		}
 
@@ -438,7 +438,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.TryAdd(new LogFileSection(0, 8), data, 0);
 
-			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent, BufferedLogSource.RetrievalState);
+			var destination = new LogBufferArray(8, GeneralColumns.Index, GeneralColumns.RawContent, PageBufferedLogSource.RetrievalState);
 			buffer.TryGetEntries(new[] {new LogLineIndex(3)}, destination, 0).Should().BeTrue("because the data is still in the cache");
 			destination[0].RawContent.Should().Be("D");
 
@@ -461,7 +461,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			for (int i = 0; i < destination.Count; ++i)
 			{
 				destination[i].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
-				destination[i].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
+				destination[i].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached);
 			}
 		}
 
@@ -583,7 +583,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.TryAdd(new LogFileSection(0, 4), data, 0);
 
-			var destination = new LogBufferArray(4, GeneralColumns.Index, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(4, GeneralColumns.Index, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			for (int i = 0; i < destination.Count; ++i)
 				destination[i].RawContent = i.ToString();
 			buffer.TryGetEntries(new[] {new LogLineIndex(0), new LogLineIndex(3), LogLineIndex.Invalid, new LogLineIndex(1)},
@@ -591,16 +591,16 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			destination[0].Index.Should().Be(0);
 			destination[0].RawContent.Should().Be("A");
-			destination[0].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[0].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 			destination[1].Index.Should().Be(3);
 			destination[1].RawContent.Should().Be("D");
-			destination[1].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[1].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 			destination[2].Index.Should().Be(GeneralColumns.Index.DefaultValue, "because we specified an invalid index to be retrieved here");
 			destination[2].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because we specified an invalid index to be retrieved here");
-			destination[2].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource, "because we specified an invalid index to be retrieved here");
+			destination[2].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource, "because we specified an invalid index to be retrieved here");
 			destination[3].Index.Should().Be(1);
 			destination[3].RawContent.Should().Be("B");
-			destination[3].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[3].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 		}
 
 		[Test]
@@ -617,7 +617,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			};
 			buffer.TryAdd(new LogFileSection(0, 2), data, 0);
 
-			var destination = new LogBufferArray(5, GeneralColumns.Index, BufferedLogSource.RetrievalState, GeneralColumns.RawContent);
+			var destination = new LogBufferArray(5, GeneralColumns.Index, PageBufferedLogSource.RetrievalState, GeneralColumns.RawContent);
 			for (int i = 0; i < destination.Count; ++i)
 				destination[i].RawContent = i.ToString();
 			buffer.TryGetEntries(new[] {new LogLineIndex(0), new LogLineIndex(3), new LogLineIndex(1), new LogLineIndex(4), new LogLineIndex(5)},
@@ -625,23 +625,23 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 
 			destination[0].Index.Should().Be(0);
 			destination[0].RawContent.Should().Be("A");
-			destination[0].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[0].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 
 			destination[1].Index.Should().Be(GeneralColumns.Index.DefaultValue, "because we tried to retrieve data that isn't cached");
 			destination[1].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because we tried to retrieve data that isn't cached");
-			destination[1].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached, "because we tried to retrieve data that isn't cached");
+			destination[1].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached, "because we tried to retrieve data that isn't cached");
 
 			destination[2].Index.Should().Be(1);
 			destination[2].RawContent.Should().Be("B");
-			destination[2].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
+			destination[2].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.Retrieved);
 
 			destination[3].Index.Should().Be(GeneralColumns.Index.DefaultValue, "because we tried to retrieve data that isn't cached");
 			destination[3].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because we tried to retrieve data that isn't cached");
-			destination[3].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached, "because we tried to retrieve data that isn't cached");
+			destination[3].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotCached, "because we tried to retrieve data that isn't cached");
 
 			destination[4].Index.Should().Be(GeneralColumns.Index.DefaultValue, "because we tried to retrieve data from outside the source");
 			destination[4].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue, "because we tried to retrieve data from outside the source");
-			destination[4].GetValue(BufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource, "because we tried to retrieve data from outside the source");
+			destination[4].GetValue(PageBufferedLogSource.RetrievalState).Should().Be(RetrievalState.NotInSource, "because we tried to retrieve data from outside the source");
 		}
 	}
 }

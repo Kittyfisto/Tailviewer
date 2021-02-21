@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -17,6 +18,7 @@ namespace Tailviewer.Core.Sources.Adorner
 	/// <remarks>
 	///     This class can only adorn properties for which it knows how to calculate them.
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class LogSourcePropertyAdorner
 		: AbstractLogSource
 		, ILogSourceListener

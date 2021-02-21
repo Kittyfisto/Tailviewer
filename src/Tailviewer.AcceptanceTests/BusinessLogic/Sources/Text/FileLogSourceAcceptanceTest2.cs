@@ -47,6 +47,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher.Object);
 		}
 
+		[TearDown]
+		public void TearDown()
+		{
+			_taskScheduler.Dispose();
+		}
+
 		#region Overrides of AbstractLogFileTest
 
 		[Ignore("")]

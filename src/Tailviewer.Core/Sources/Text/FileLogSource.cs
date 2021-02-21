@@ -11,6 +11,7 @@ using log4net;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Adorner;
 using Tailviewer.Core.Sources.Buffer;
+using Tailviewer.Core.Sources.Text.Streaming;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
@@ -199,43 +200,45 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					if (!File.Exists(_fullFilename))
 					{
-						_propertiesBuffer.SetValue(GeneralProperties.Format, null);
-						_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
-						_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
-						_propertiesBuffer.SetValue(TextProperties.Encoding, null);
+						SetError(ErrorFlags.SourceDoesNotExist);
 					}
 					else
 					{
-						using (var stream = new FileStream(_fullFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+						using (var stream = TryOpenRead(_fullFilename, out var error))
 						{
-							var autoDetectedEncoding = _encodingDetector.TryFindEncoding(stream);
-							var defaultEncoding = _services.TryRetrieve<Encoding>() ?? Encoding.Default;
-							var format = _formatDetector.TryDetermineFormat(_fullFilename, stream, overwrittenEncoding ?? autoDetectedEncoding ?? defaultEncoding);
-							var encoding = PickEncoding(overwrittenEncoding, format, autoDetectedEncoding, defaultEncoding);
-							var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
-							_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, autoDetectedEncoding);
-							_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, autoDetectedEncoding != null);
-							var encodingChanged = _propertiesBuffer.SetValue(TextProperties.Encoding, encoding);
-							var currentLogSources = _logSources;
-
-							if (currentLogSources == null || currentLogSources.Count == 0 ||
-							    formatChanged || encodingChanged)
+							if (stream == null)
 							{
-								Dispose(currentLogSources);
+								SetError(error);
+							}
+							else
+							{
+								var autoDetectedEncoding = _encodingDetector.TryFindEncoding(stream);
+								var defaultEncoding = _services.TryRetrieve<Encoding>() ?? Encoding.Default;
+								var format = _formatDetector.TryDetermineFormat(_fullFilename, stream, overwrittenEncoding ?? autoDetectedEncoding ?? defaultEncoding);
+								var encoding = PickEncoding(overwrittenEncoding, format, autoDetectedEncoding, defaultEncoding);
+								var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
+								_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, autoDetectedEncoding);
+								_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, autoDetectedEncoding != null);
+								var encodingChanged = _propertiesBuffer.SetValue(TextProperties.Encoding, encoding);
+								var currentLogSources = _logSources;
 
-								// Depending on the log file we're actually opening, the plugins we have installed, the final log source
-								// that we expose here could be anything. It could be the raw log source which reads everything line by line,
-								// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
-								var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
-								if (!StartListenTo(newLogSources))
+								if (currentLogSources == null || currentLogSources.Count == 0 ||
+								    formatChanged || encodingChanged)
 								{
-									Dispose(newLogSources);
+									Dispose(currentLogSources);
+
+									// Depending on the log file we're actually opening, the plugins we have installed, the final log source
+									// that we expose here could be anything. It could be the raw log source which reads everything line by line,
+									// but it also could be a plugin's ILogSource implementation which does all kinds of magic.
+									var newLogSources = CreateAllLogSources(_services, _fullFilename, format, encoding, _maximumWaitTime);
+									if (!StartListenTo(newLogSources))
+									{
+										Dispose(newLogSources);
+									}
 								}
 							}
 						}
 					}
-
-					
 				}
 			}
 			catch (IOException e)
@@ -246,6 +249,49 @@ namespace Tailviewer.Core.Sources.Text
 			{
 				Log.DebugFormat("Caught unexpected exception while reading '{0}': {1}", _fullFilename, e);
 			}
+		}
+
+		private static Stream TryOpenRead(string fileName, out ErrorFlags error)
+		{
+			try
+			{
+				error = ErrorFlags.None;
+				return new FileStream(fileName, FileMode.Open, FileAccess.Read,
+				                      FileShare.ReadWrite | FileShare.Delete);
+			}
+			catch (FileNotFoundException e)
+			{
+				error = ErrorFlags.SourceDoesNotExist;
+				Log.Debug(e);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				error = ErrorFlags.SourceDoesNotExist;
+				Log.Debug(e);
+			}
+			catch (UnauthorizedAccessException e)
+			{
+				error = ErrorFlags.SourceCannotBeAccessed;
+				Log.Debug(e);
+			}
+			catch (IOException e)
+			{
+				error = ErrorFlags.SourceCannotBeAccessed;
+				Log.Debug(e);
+			}
+
+			return null;
+		}
+
+		private void SetError(ErrorFlags error)
+		{
+			_propertiesBuffer.SetValue(GeneralProperties.Format, null);
+			_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
+			_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
+			_propertiesBuffer.SetValue(TextProperties.Encoding, null);
+			_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
+			_propertiesBuffer.SetValue(GeneralProperties.Created, _lastFingerprint?.Created);
+			_propertiesBuffer.SetValue(GeneralProperties.LastModified, _lastFingerprint?.LastModified);
 		}
 
 		private bool DetectFileChange(out Encoding overwrittenEncoding)
@@ -393,8 +439,11 @@ namespace Tailviewer.Core.Sources.Text
 			if (parsingLogSource != null)
 				newLogSources.Add(parsingLogSource);
 
-			var bufferedLogSource = CreateBufferFor(serviceContainer, newLogSources.Last(), maximumWaitTime);
-			newLogSources.Add(bufferedLogSource);
+			if (streamingLogSource.GetProperty(TextProperties.RequiresBuffer))
+			{
+				var bufferedLogSource = CreateBufferFor(serviceContainer, newLogSources.Last(), maximumWaitTime);
+				newLogSources.Add(bufferedLogSource);
+			}
 
 			var propertyAdorner = new LogSourcePropertyAdorner(serviceContainer.Retrieve<ITaskScheduler>(), newLogSources.Last(), maximumWaitTime);
 			newLogSources.Add(propertyAdorner);
@@ -426,7 +475,7 @@ namespace Tailviewer.Core.Sources.Text
 		private ILogSource CreateBufferFor(IServiceContainer serviceContainer, ILogSource source, TimeSpan maximumWaitTime)
 		{
 			var nonCachedColumns = new[] {StreamingTextLogSource.LineOffsetInBytes};
-			return new BufferedLogSource(serviceContainer.Retrieve<ITaskScheduler>(),
+			return new PageBufferedLogSource(serviceContainer.Retrieve<ITaskScheduler>(),
 			                             source,
 			                             maximumWaitTime,
 			                             nonCachedColumns);

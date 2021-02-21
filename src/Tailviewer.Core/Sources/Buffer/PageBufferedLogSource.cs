@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -11,9 +12,10 @@ using Tailviewer.Core.Columns;
 namespace Tailviewer.Core.Sources.Buffer
 {
 	/// <summary>
-	/// 
+	///    Responsible for buffering entire log entries in memory so they may be retrieved later one a bit quicker.
 	/// </summary>
-	internal sealed class BufferedLogSource
+	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
+	internal sealed class PageBufferedLogSource
 		: ILogSource
 		, ILogSourceListener
 	{
@@ -39,19 +41,19 @@ namespace Tailviewer.Core.Sources.Buffer
 		private readonly IPeriodicTask _fetchTask;
 		private readonly LogBufferArray _fetchBuffer;
 
-		public const int DefaultPageSize = 50;
-		public const int DefaultMaxPageCount = 100;
+		public const int DefaultPageSize = 1000;
+		public const int DefaultMaxPageCount = 10;
 
-		static BufferedLogSource()
+		static PageBufferedLogSource()
 		{
 			RetrievalState = new WellKnownColumnDescriptor<RetrievalState>("retrieval_state", Buffer.RetrievalState.NotInSource);
 		}
 
-		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
+		public PageBufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
 			: this(taskScheduler, source, maximumWaitTime, new IColumnDescriptor[0], pageSize, maxNumPages)
 		{ }
 
-		public BufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, IReadOnlyList<IColumnDescriptor> nonCachedColumns, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
+		public PageBufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, IReadOnlyList<IColumnDescriptor> nonCachedColumns, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)
 		{
 			_syncRoot = new object();
 			_taskScheduler = taskScheduler;

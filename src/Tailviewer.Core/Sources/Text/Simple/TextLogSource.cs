@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Properties;
-using Tailviewer.Core.Settings;
 using Tailviewer.Core.Sources.Buffer;
-using Tailviewer.Plugins;
 
-namespace Tailviewer.Core.Sources.Text
+namespace Tailviewer.Core.Sources.Text.Simple
 {
 	/// <summary>
-	///     The bread-and-butter <see cref="ILogSource" /> implementation for Tailviewer.
-	///     Responsible for scanning and reading the content of a file on disk, forwarding
-	///     them to its <see cref="ILogSourceListener"/>s.
+	///     Reads the contents of an entire file into memory, line by line and exposes it via
+	///     the <see cref="ILogSource"/> interface.
 	/// </summary>
 	/// <remarks>
 	///     TODO: Delete once the new one is finished.
@@ -30,31 +28,18 @@ namespace Tailviewer.Core.Sources.Text
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		
-		private readonly IServiceContainer _serviceContainer;
 
 		#region Data
 
 		private readonly Encoding _encoding;
-		private readonly List<LogLine> _entries;
+		private readonly LogBufferList _entries;
 		private readonly object _syncRoot;
-		private readonly NoThrowLogLineTranslator _translator;
-
-		#endregion
-
-		#region Parsing
-		
-		private readonly ILogFileFormatMatcher _formatMatcher;
-		private readonly ILogEntryParserPlugin _parserPlugin;
-		private ILogEntryParser _parser;
-		private ILogFileFormat _parserFormat;
 
 		#endregion
 
 		#region Listeners
 
 		private readonly string _fileName;
-		private readonly string _fullFilename;
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
@@ -64,13 +49,7 @@ namespace Tailviewer.Core.Sources.Text
 		#endregion
 
 		#region Properties
-
-		private DateTime? _startTimestamp;
-		private DateTime? _endTimestamp;
-		private DateTime? _lastModified;
-		private TimeSpan? _duration;
-		private int _maxCharactersInLine;
-
+		
 		/// <summary>
 		///    This object exists to hold all properties we want to eventually forward to the user.
 		///    It is to be copied to <see cref="_properties"/> in *one* operation when we want the user to
@@ -87,6 +66,8 @@ namespace Tailviewer.Core.Sources.Text
 		/// </summary>
 		private readonly ConcurrentPropertiesList _properties;
 
+		private readonly IColumnDescriptor[] _columns;
+
 		#endregion
 
 		/// <summary>
@@ -96,41 +77,39 @@ namespace Tailviewer.Core.Sources.Text
 		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
 		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateTextLogFile"/>.
 		/// </remarks>
-		/// <param name="serviceContainer"></param>
+		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
-		internal TextLogSource(IServiceContainer serviceContainer,
-		                     string fileName)
-			: base(serviceContainer.TryRetrieve<ITaskScheduler>())
+		/// <param name="encoding"></param>
+		internal TextLogSource(ITaskScheduler taskScheduler,
+		                       string fileName,
+		                       Encoding encoding)
+			: base(taskScheduler)
 		{
-			_serviceContainer = serviceContainer;
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-			_fullFilename = fileName;
-			if (!Path.IsPathRooted(_fullFilename))
-				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+			_encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
-			var translator = serviceContainer.TryRetrieve<ILogLineTranslator>();
-			if (translator != null)
-				_translator = new NoThrowLogLineTranslator(translator);
-
-			_formatMatcher = serviceContainer.Retrieve<ILogFileFormatMatcher>();
-			_parserPlugin = serviceContainer.Retrieve<ILogEntryParserPlugin>();
-			_entries = new List<LogLine>();
+			_entries = new LogBufferList(GeneralColumns.RawContent);
+			_columns = new IColumnDescriptor[]
+			{
+				GeneralColumns.Index,
+				GeneralColumns.OriginalIndex,
+				GeneralColumns.LogEntryIndex,
+				GeneralColumns.LineNumber,
+				GeneralColumns.OriginalLineNumber,
+				GeneralColumns.OriginalDataSourceName,
+				GeneralColumns.RawContent,
+				PageBufferedLogSource.RetrievalState
+			};
 
 			_localProperties = new PropertiesBufferList(GeneralProperties.Minimum);
 			_localProperties.SetValue(GeneralProperties.Name, _fileName);
 			_localProperties.Add(TextProperties.LineCount);
-			_localProperties.Add(TextProperties.MaxCharactersInLine);
 			_localProperties.SetValue(TextProperties.LineCount, 0);
-			_localProperties.SetValue(TextProperties.MaxCharactersInLine, 0);
+			_localProperties.SetValue(TextProperties.RequiresBuffer, false);
 
 			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
 			SynchronizePropertiesWithUser();
 			_syncRoot = new object();
-
-			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
-			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
-			var encoding = overwrittenEncoding ?? defaultEncoding;
-			_encoding = encoding ?? Encoding.UTF8;
 			_properties.SetValue(TextProperties.AutoDetectedEncoding, encoding);
 
 			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
@@ -145,7 +124,7 @@ namespace Tailviewer.Core.Sources.Text
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<IColumnDescriptor> Columns => GeneralColumns.Minimum;
+		public override IReadOnlyList<IColumnDescriptor> Columns => _columns;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
@@ -213,22 +192,6 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, GeneralColumns.LogLevel))
-				{
-					GetLogLevel(sourceIndices, (LevelFlags[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, GeneralColumns.Timestamp))
-				{
-					GetTimestamp(sourceIndices, (DateTime?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, GeneralColumns.DeltaTime))
-				{
-					GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, GeneralColumns.ElapsedTime))
-				{
-					GetElapsedTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
-				}
 				else if (Equals(column, GeneralColumns.OriginalDataSourceName))
 				{
 					GetDataSourceName(sourceIndices, (string[]) (object) destination, destinationIndex);
@@ -237,7 +200,7 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, BufferedLogSource.RetrievalState))
+				else if (Equals(column, PageBufferedLogSource.RetrievalState))
 				{
 					GetRetrievalState(sourceIndices, (RetrievalState[])(object)destination, destinationIndex);
 				}
@@ -283,29 +246,7 @@ namespace Tailviewer.Core.Sources.Text
 						FileAccess.Read,
 						FileShare.ReadWrite))
 					{
-						var format = _localProperties.GetValue(GeneralProperties.Format);
-						var certainty = _localProperties.GetValue(GeneralProperties.FormatDetectionCertainty);
-						if (format == null || certainty != Certainty.Sure)
-						{
-							format = TryFindFormat(stream, out certainty);
-
-							if (format != null)
-							{
-								// We only need to create a new parser when we don't have one already or we've changed out minds
-								if (_parser == null || !Equals(format, _parserFormat))
-								{
-									_parser = _parserPlugin.CreateParser(_serviceContainer, format);
-									_parserFormat = format;
-								}
-							}
-
-							_localProperties.SetValue(GeneralProperties.Format, format);
-							_localProperties.SetValue(GeneralProperties.FormatDetectionCertainty, certainty);
-						}
-
-						var encoding = format?.Encoding ?? _encoding;
-						_localProperties.SetValue(TextProperties.AutoDetectedEncoding, encoding);
-						using (var reader = new StreamReaderEx(stream, encoding))
+						using (var reader = new StreamReaderEx(stream, _encoding))
 						{
 							// We change the error flag explicitly AFTER opening
 							// the stream because that operation might throw if we're
@@ -346,18 +287,8 @@ namespace Tailviewer.Core.Sources.Text
 									read = true;
 								}
 
-								IReadOnlyLogEntry logEntry = new RawTextLogEntry(_entries.Count, trimmedLine, _fullFilename);
-								if (_parser != null)
-								{
-									var parsedLogEntry = _parser.Parse(logEntry);
-									if (parsedLogEntry != null)
-										logEntry = parsedLogEntry;
-								}
-
-								Add(logEntry.RawContent,
-								    logEntry.LogLevel,
-								    _numberOfLinesRead,
-								    logEntry.Timestamp);
+								Add(trimmedLine,
+								    _numberOfLinesRead);
 
 								if (++numProcessed % 1000 == 0)
 								{
@@ -447,7 +378,6 @@ namespace Tailviewer.Core.Sources.Text
 			lock (_syncRoot)
 			{
 				_entries.Clear();
-				_entries.Capacity = 0;
 
 				_localProperties.Clear();
 				_properties.Clear();
@@ -464,52 +394,6 @@ namespace Tailviewer.Core.Sources.Text
 			if (processed >= Percentage.FromPercent(99) && !allow100Percent)
 				processed = Percentage.FromPercent(99);
 			_localProperties.SetValue(GeneralProperties.PercentageProcessed, processed);
-		}
-
-		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
-		{
-			var pos = stream.Position;
-
-			const int maxHeaderLength = 512;
-			var length = Math.Min(maxHeaderLength, stream.Length - pos);
-			var header = new byte[length];
-			stream.Read(header, 0, header.Length);
-			certainty = length >= maxHeaderLength
-				? Certainty.Sure
-				: Certainty.Uncertain;
-			var memoryStream = new MemoryStream(header);
-
-			_formatMatcher.TryMatchFormat(_fullFilename, memoryStream, _encoding, out var format);
-			if (format != null)
-				return format;
-
-			return LogFileFormats.GenericText;
-		}
-
-		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					buffer[destinationIndex + i] = GetLogLine(index)?.Timestamp;
-				}
-			}
-		}
-
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					var value = GetLogLine(index)?.Timestamp;
-					var previousValue = GetLogLine(index - 1)?.Timestamp;
-					buffer[destinationIndex + i] = value - previousValue;
-				}
-			}
 		}
 
 		private void GetIndex(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
@@ -550,18 +434,11 @@ namespace Tailviewer.Core.Sources.Text
 			}
 		}
 
-		private void GetRawContent(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
+		private void GetRawContent(IReadOnlyList<LogLineIndex> indices, string[] destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					var line = GetLogLine(index);
-					buffer[destinationIndex + i] = line != null
-						? line.Value.Message
-						: GeneralColumns.RawContent.DefaultValue;
-				}
+				_entries.CopyTo(GeneralColumns.RawContent, indices, destination, destinationIndex);
 			}
 		}
 
@@ -572,63 +449,16 @@ namespace Tailviewer.Core.Sources.Text
 				for (int i = 0; i < indices.Count; ++i)
 				{
 					var index = indices[i];
-					var line = GetLogLine(index);
-					destination[destinationIndex + i] = line != null
+					destination[destinationIndex + i] = index < _entries.Count
 						? RetrievalState.Retrieved
 						: RetrievalState.NotInSource;
 				}
 			}
 		}
 
-		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				var startTimestamp = _startTimestamp;
-				if (startTimestamp != null)
-				{
-					for (int i = 0; i < indices.Count; ++i)
-					{
-						var index = indices[i];
-						var line = GetLogLine(index);
-						buffer[destinationIndex + i] = line != null
-							? line.Value.Timestamp - startTimestamp
-							: GeneralColumns.ElapsedTime.DefaultValue;
-					}
-				}
-				else
-				{
-					for (int i = 0; i < indices.Count; ++i)
-					{
-						buffer[destinationIndex + i] = GeneralColumns.ElapsedTime.DefaultValue;
-					}
-				}
-
-				
-			}
-		}
-
 		private void GetDataSourceName(IReadOnlyList<LogLineIndex> sourceIndices, string[] buffer, int destinationIndex)
 		{
-			for (int i = 0; i < sourceIndices.Count; ++i)
-			{
-				buffer[destinationIndex + i] = _fileName;
-			}
-		}
-
-		private void GetLogLevel(IReadOnlyList<LogLineIndex> sourceIndices, LevelFlags[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < sourceIndices.Count; ++i)
-				{
-					var index = sourceIndices[i];
-					var line = GetLogLine(index);
-					buffer[destinationIndex + i] = line != null
-						? line.Value.Level
-						: GeneralColumns.LogLevel.DefaultValue;
-				}
-			}
+			buffer.Fill(_fileName, destinationIndex, sourceIndices.Count);
 		}
 
 		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
@@ -649,16 +479,6 @@ namespace Tailviewer.Core.Sources.Text
 					}
 				}
 			}
-		}
-
-		private LogLine? GetLogLine(LogLineIndex index)
-		{
-			if (index >= 0 && index < _entries.Count)
-			{
-				return _entries[(int) index];
-			}
-
-			return null;
 		}
 
 		private void SetDoesNotExist()
@@ -689,47 +509,34 @@ namespace Tailviewer.Core.Sources.Text
 				stream.Position = 0;
 
 			numberOfLinesRead = 0;
-			_startTimestamp = null;
-			_endTimestamp = null;
-			_duration = null;
-			_maxCharactersInLine = 0;
 			_entries.Clear();
 			SynchronizePropertiesWithUser();
 
 			Listeners.Reset();
 		}
 
-		private void Add(string line, LevelFlags level, int numberOfLinesRead, DateTime? timestamp)
+		private void Add(string line, int numberOfLinesRead)
 		{
 			lock (_syncRoot)
 			{
-				int lineIndex = _entries.Count;
-				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
-				var translated = Translate(logLine);
-				_entries.Add(translated);
-
-				// For huge log files, updating properties is somewhat expensive.
-				// We'll update our fields all the time, but only write back our properties
-				// when it's necessary.
-				_maxCharactersInLine = Math.Max(_maxCharactersInLine, translated.Message?.Length ?? 0);
-				if (timestamp != null)
+				_entries.Add(new LogEntry
 				{
-					if (_startTimestamp == null)
-						_startTimestamp = timestamp;
-					_endTimestamp = timestamp;
-					_duration = _endTimestamp - _startTimestamp;
-					if (TryGetLastBetterModified(timestamp.Value, out var newLastModified))
-						_lastModified = newLastModified;
-				}
-
+					RawContent = line
+				});
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
 		}
 
+		/// <summary>
+		///  TODO: Where to put this?
+		/// </summary>
+		/// <param name="timestamp"></param>
+		/// <param name="lastModified"></param>
+		/// <returns></returns>
 		private bool TryGetLastBetterModified(DateTime timestamp, out DateTime lastModified)
 		{
-			var currentLastModified = _lastModified;
+			var currentLastModified = DateTime.UtcNow;
 			var difference = timestamp - currentLastModified;
 			if (difference >= TimeSpan.FromSeconds(10))
 			{
@@ -761,33 +568,13 @@ namespace Tailviewer.Core.Sources.Text
 
 		private void SynchronizePropertiesWithUser()
 		{
-			_localProperties.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine);
 			_localProperties.SetValue(TextProperties.LineCount, _entries.Count);
 			_localProperties.SetValue(GeneralProperties.LogEntryCount, _entries.Count);
-			_localProperties.SetValue(GeneralProperties.StartTimestamp, _startTimestamp);
-			_localProperties.SetValue(GeneralProperties.EndTimestamp, _endTimestamp);
-			_localProperties.SetValue(GeneralProperties.Duration, _duration);
 			_localProperties.SetValue(GeneralProperties.LogEntryCount, _entries.Count);
 
 			// We want to update the user-facing properties in a single synchronized OP
 			// so that the properties as retrieved by the user are in sync
 			_properties.CopyFrom(_localProperties);
-		}
-
-		[Pure]
-		private LogLine Translate(LogLine logLine)
-		{
-			if (_translator == null)
-				return logLine;
-
-			var translated = _translator.Translate(this, logLine);
-
-			// With the introduction of LevelFlags.Other, we need to ensure that "old" plugins continue to work
-			// as expected (Now, Other shall be used where previously None had to be).
-			if (translated.Level == LevelFlags.None)
-				translated.Level = LevelFlags.Other;
-
-			return translated;
 		}
 
 		private void RemoveLast()

@@ -28,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		[Description("Verifies that the buffer retrieves the data from the source when it's not cached and we allowed it to do so")]
 		public void TestFetchFromSourceWhenNotCached()
 		{
-			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FromSource);
 			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		[Description("Verifies that the buffer retrieves the data from the source when we don't allow it to retrieve the data from the cache")]
 		public void TestFetchFromSourceWhenNotAllowedFromCache()
 		{
-			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromSource);
 			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		[Description("Verifies that the buffer does not retrieve the data from the source when this has been specified via the query mode")]
 		public void TestSkipSourceIfNotAllowed()
 		{
-			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
@@ -64,7 +64,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		[Description("Verifies that the buffer tries to prefetch the entire page that somebody tried to access")]
 		public void TestPrefetchAsync([Values(10, 100, 1000)] int pageSize)
 		{
-			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
+			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 		public void TestPrefetchAsyncBatch()
 		{
 			var pageSize = 100;
-			var buffer = new BufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
+			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 

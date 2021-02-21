@@ -1,11 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 {
@@ -39,11 +43,36 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher.Object);
 		}
 
-		private ILogSource CreateEmpty()
+		private ILogSource Create(string fileName)
 		{
-			var fileLogSource = new FileLogSource(_services, "", TimeSpan.Zero);
+			var fileLogSource = new FileLogSource(_services, fileName, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			return fileLogSource;
+		}
+
+		private string GetUniqueNonExistingFileName()
+		{
+			var fileName = PathEx.GetTempFileName();
+			if (File.Exists(fileName))
+				File.Delete(fileName);
+
+			TestContext.WriteLine("FileName: {0}", fileName);
+			return fileName;
+		}
+
+		[Test]
+		public void TestFileCannotBeAccessed()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+			{
+				var source = Create(fileName);
+				_taskScheduler.Run(5);
+
+				source.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				source.GetProperty(GeneralProperties.Created).Should().NotBe(DateTime.MinValue);
+				source.GetProperty(GeneralProperties.Created).Should().Be(new FileInfo(fileName).CreationTimeUtc);
+			}
 		}
 	}
 }

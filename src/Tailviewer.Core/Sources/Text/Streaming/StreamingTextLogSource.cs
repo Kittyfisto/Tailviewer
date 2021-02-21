@@ -17,7 +17,7 @@ using Tailviewer.Core.Entries;
 using Tailviewer.Core.Properties;
 using Exception = System.Exception;
 
-namespace Tailviewer.Core.Sources.Text
+namespace Tailviewer.Core.Sources.Text.Streaming
 {
 	/// <summary>
 	///     Represents a text file as a collection of log entries where every line is a single log entry.
@@ -56,6 +56,8 @@ namespace Tailviewer.Core.Sources.Text
 		private FileFingerprint _lastFingerprint;
 		private long _lastStreamPosition;
 
+		private const int BufferSize = 4096 * 4;
+
 		static StreamingTextLogSource()
 		{
 			LineOffsetInBytes = new WellKnownColumnDescriptor<long>("line_offset_in_bytes", -1);
@@ -84,6 +86,7 @@ namespace Tailviewer.Core.Sources.Text
 			_index = new LogBufferList(StreamingTextLogSource.LineOffsetInBytes);
 			_propertiesBuffer = new PropertiesBufferList();
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
+			_propertiesBuffer.SetValue(TextProperties.RequiresBuffer, true);
 
 			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
 			SynchronizeProperties();
@@ -300,6 +303,7 @@ namespace Tailviewer.Core.Sources.Text
 			                                   FileAccess.Read,
 			                                   FileShare.ReadWrite | FileShare.Delete))
 			{
+				_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
 				AddFirstLineIfNecessary(stream);
 
 				stream.Position = _lastStreamPosition;
@@ -607,7 +611,8 @@ namespace Tailviewer.Core.Sources.Text
 				var stream = new FileStream(_fileName,
 				                            FileMode.Open,
 				                            FileAccess.Read,
-				                            FileShare.ReadWrite | FileShare.Delete);
+				                            FileShare.ReadWrite | FileShare.Delete,
+				                            BufferSize);
 				var reader = new StreamReader(stream, _encoding, _encoding.GetPreamble().Length > 0);
 				return reader;
 			}

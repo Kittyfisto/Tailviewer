@@ -6,8 +6,10 @@ using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Text;
@@ -44,9 +46,31 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);
 		}
 
+		[TearDown]
+		public void TearDown()
+		{
+			_taskScheduler.Dispose();
+		}
+
 		private FileLogSource Create(string fileName)
 		{
 			return new FileLogSource(_services, fileName);
+		}
+
+		private string GetUniqueNonExistingFileName()
+		{
+			var fileName = PathEx.GetTempFileName();
+			if (File.Exists(fileName))
+				File.Delete(fileName);
+
+			TestContext.WriteLine("FileName: {0}", fileName);
+			return fileName;
+		}
+
+		private StreamWriter CreateStreamWriter(string fileName)
+		{
+			var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+			return new StreamWriter(stream);
 		}
 
 		[Test]
@@ -176,6 +200,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because there's still no BOM and thus Tailviewer may not have claimed to auto detect the encoding");
 				logSource.GetProperty(TextProperties.Encoding).Should().Be(overwrittenEncoding, "because we've overwritten the encoding for this source");
+
+				entries = logSource.GetEntries();
+				entries.Should().HaveCount(1);
+				entries[0].RawContent.Should().Be("42° North");
 			}
 		}
 
@@ -258,5 +286,301 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		}
 
 		#endregion
+
+		#region Timestamps
+
+		[Test]
+		public void TestTimestampFormat1()
+		{
+			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, 143, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat2()
+		{
+			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat3()
+		{
+			using (var file = Create( @"TestData\Timestamps\HH_mm_ss.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+
+				var entry = file.GetEntry(0);
+				var today = DateTime.Today;
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 21, 04, 33, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat4()
+		{
+			using (var file = Create(@"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat5()
+		{
+			using (var file = Create(@"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+
+				var entry = file.GetEntry(1);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat6()
+		{
+			using (var file = Create(@"TestData\Timestamps\HH_mm_ss;s.txt"))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+
+				var today = DateTime.Today;
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 51, 57, 135, DateTimeKind.Unspecified));
+				entry = file.GetEntry(1);
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 53, 06, 341, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestGetColumnTimestamp1()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (var writer = CreateStreamWriter(fileName))
+			using (var source = Create(fileName))
+			{
+				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+				writer.Flush();
+
+				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 11, 59, 30),
+					new DateTime(2017, 12, 3, 12, 00, 00)
+				});
+
+				source.GetColumn(new LogFileSection(1, 1), GeneralColumns.Timestamp)
+				      .Should().Equal(new DateTime(2017, 12, 3, 12, 00, 00));
+			}
+		}
+
+		[Test]
+		[Description("Verifies that columns can be retrieved by indices")]
+		public void TestGetColumnTimestamp2()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (var writer = CreateStreamWriter(fileName))
+			using (var source = Create(fileName))
+			{
+				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+				writer.Flush();
+				
+				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogLineIndex[] {0,  1}, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 11, 59, 30),
+					new DateTime(2017, 12, 3, 12, 00, 00)
+				});
+				source.GetColumn(new LogLineIndex[] { 1, 0 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 12, 00, 00),
+					new DateTime(2017, 12, 3, 11, 59, 30)
+				});
+				source.GetColumn(new LogLineIndex[] { 1 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 12, 00, 00),
+				});
+			}
+		}
+
+		[Test]
+		[Ignore("Doesn't work just yet")]
+		[Description("Verifies that indexing invalid rows is allowed and returns the default value for that particular index")]
+		public void TestGetColumnTimestamp3()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (var writer = CreateStreamWriter(fileName))
+			using (var source = Create(fileName))
+			{
+				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+				writer.Flush();
+
+				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogLineIndex[] { -1 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					null
+				});
+				source.GetColumn(new LogLineIndex[] { 1, 2 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 12, 00, 00),
+					null
+				});
+				source.GetColumn(new LogLineIndex[] { 1, 2, 0 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				{
+					new DateTime(2017, 12, 3, 12, 00, 00),
+					null,
+					new DateTime(2017, 12, 3, 11, 59, 30)
+				});
+			}
+		}
+
+		[Test]
+		public void TestGetColumnDeltaTime1()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (var writer = CreateStreamWriter(fileName))
+			using (var source = Create(fileName))
+			{
+				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+				writer.Flush();
+				
+				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				{
+					null,
+					TimeSpan.FromSeconds(30)
+				});
+
+				source.GetColumn(new LogFileSection(1, 1), GeneralColumns.DeltaTime)
+				       .Should().Equal(new object[] {TimeSpan.FromSeconds(30)});
+			}
+		}
+
+		[Test]
+		[Description("Verifies that out-of-bounds access is tolerated")]
+		public void TestGetColumnDeltaTime2()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+			using (var writer = CreateStreamWriter(fileName))
+			using (var source = Create(fileName))
+			{
+				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+				writer.Flush();
+
+				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(1);
+				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				{
+					null,
+					null
+				});
+				source.GetColumn(new LogFileSection(1, 5), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				{
+					null,
+					null,
+					null,
+					null,
+					null
+				});
+			}
+		}
+
+		#endregion
+
+		[Test]
+		public void TestGetEntries1()
+		{
+			using (var file = Create(AbstractTextLogSourceAcceptanceTest.File20Mb))
+			{
+				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent, "because we should be able to read the entire file in a few seconds");
+				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
+				file.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+
+				var buffer = file.GetEntries(new LogFileSection(0, 10));
+
+
+				buffer[0].Index.Should().Be(0);
+				buffer[0].RawContent.Should()
+				         .Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
+				buffer[0].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+
+				buffer[1].Index.Should().Be(1);
+				buffer[1].RawContent.Should()
+				         .Be("2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1");
+				buffer[1].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[1].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 998));
+
+				buffer[2].Index.Should().Be(2);
+				buffer[2].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'");
+				buffer[2].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[2].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 013));
+
+				buffer[3].Index.Should().Be(3);
+				buffer[3].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'");
+				buffer[3].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[3].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 062));
+
+				buffer[4].Index.Should().Be(4);
+				buffer[4].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'");
+				buffer[4].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[4].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 067));
+
+				buffer[5].Index.Should().Be(5);
+				buffer[5].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152");
+				buffer[5].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[5].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 081));
+
+				buffer[6].Index.Should().Be(6);
+				buffer[6].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...");
+				buffer[6].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[6].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 141));
+
+				buffer[7].Index.Should().Be(7);
+				buffer[7].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348");
+				buffer[7].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[7].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 171));
+
+				buffer[8].Index.Should().Be(8);
+				buffer[8].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat");
+				buffer[8].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[8].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 181));
+
+				buffer[9].Index.Should().Be(9);
+				buffer[9].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip");
+				buffer[9].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[9].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 182));
+			}
+		}
 	}
 }

@@ -10,25 +10,25 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 	[TestFixture]
 	public sealed class LogFileSearchProxyTest
 	{
-		private DefaultTaskScheduler _scheduler;
+		private DefaultTaskScheduler _taskScheduler;
 
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
+			_taskScheduler = new DefaultTaskScheduler();
 		}
 
 		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
-			_scheduler.Dispose();
+			_taskScheduler.Dispose();
 		}
 
 		[Test]
 		public void TestCtor1()
 		{
 			var source = new InMemoryLogSource();
-			using (var proxy = new LogSourceSearchProxy(_scheduler, source, TimeSpan.Zero))
+			using (var proxy = new LogSourceSearchProxy(_taskScheduler, source, TimeSpan.Zero))
 			{
 				proxy.SearchTerm.Should().BeNull();
 				proxy.Count.Should().Be(0);
@@ -43,7 +43,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 			source.AddEntry("Hello World!");
 			source.AddEntry("Foobar");
 
-			using (var proxy = new LogSourceSearchProxy(_scheduler, source, TimeSpan.Zero))
+			using (var proxy = new LogSourceSearchProxy(_taskScheduler, source, TimeSpan.Zero))
 			{
 				proxy.SearchTerm = "foobar";
 				proxy.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(20)).Be(1, "because we should be able to search through the file in a few seconds");
@@ -61,7 +61,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		public void TestSearch2()
 		{
 			var source = new InMemoryLogSource();
-			using (var proxy = new LogSourceSearchProxy(_scheduler, source, TimeSpan.Zero))
+			using (var proxy = new LogSourceSearchProxy(_taskScheduler, source, TimeSpan.Zero))
 			{
 				proxy.SearchTerm = "Foobar";
 

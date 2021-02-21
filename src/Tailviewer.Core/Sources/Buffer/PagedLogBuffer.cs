@@ -43,7 +43,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			_pageSize = pageSize;
 			_maxPageCount = maxPageCount;
 			// This buffer only makes sense when it offers the index and retrieval state column, as otherwise one just doesn't know which data is present
-			var calculatedColumns = new IColumnDescriptor[] {GeneralColumns.Index, BufferedLogSource.RetrievalState};
+			var calculatedColumns = new IColumnDescriptor[] {GeneralColumns.Index, PageBufferedLogSource.RetrievalState};
 			_allColumns = calculatedColumns.Concat(columns).Distinct().ToList();
 			// Since we calculate the retrieval state ourselves, we don't require log entries to have it..
 			_requiredColumns = _allColumns.Except(calculatedColumns).ToList();
@@ -196,8 +196,8 @@ namespace Tailviewer.Core.Sources.Buffer
 				else
 				{
 					destination.FillDefault(destinationIndex + numEntriesRead, count);
-					if (destination.Contains(BufferedLogSource.RetrievalState))
-						destination.Fill(BufferedLogSource.RetrievalState, RetrievalState.NotCached, destinationIndex + numEntriesRead, count);
+					if (destination.Contains(PageBufferedLogSource.RetrievalState))
+						destination.Fill(PageBufferedLogSource.RetrievalState, RetrievalState.NotCached, destinationIndex + numEntriesRead, count);
 					fullyRead = false;
 					tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));
 				}
@@ -238,12 +238,12 @@ namespace Tailviewer.Core.Sources.Buffer
 					else
 					{
 						destination.FillDefault(destinationIndex, 1);
-						if (destination.Contains(BufferedLogSource.RetrievalState))
+						if (destination.Contains(PageBufferedLogSource.RetrievalState))
 						{
 							var state = sourceIndex >= _sourceCount
 								? RetrievalState.NotInSource
 								: RetrievalState.NotCached;
-							destination.Fill(BufferedLogSource.RetrievalState, state, destinationIndex, 1);
+							destination.Fill(PageBufferedLogSource.RetrievalState, state, destinationIndex, 1);
 						}
 						fullyRead = false;
 						tmpAccessedPageBoundaries.Add(GetSectionForPage(pageIndex));

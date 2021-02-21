@@ -13,14 +13,15 @@ using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Text;
+using Tailviewer.Core.Sources.Text.Streaming;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.Sources.Text;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Sreaming
 {
 	[TestFixture]
-	public sealed class StreamingTextLogFileTest
+	public sealed class StreamingTextLogSourceTest
 	{
 		private ServiceContainer _serviceContainer;
 		private ManualTaskScheduler _taskScheduler;
@@ -59,6 +60,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			return fileName;
 		}
 
+		private StreamingTextLogSource Create(string fileName)
+		{
+			return Create(fileName, Encoding.Default);
+		}
+
 		private StreamingTextLogSource Create(string fileName, Encoding encoding)
 		{
 			return new StreamingTextLogSource(_taskScheduler, fileName, encoding);
@@ -93,6 +99,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		public void TestConstruction()
 		{
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
+			logFile.GetProperty(TextProperties.RequiresBuffer).Should().BeTrue();
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(GeneralProperties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");

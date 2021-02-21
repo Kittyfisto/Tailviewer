@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Tailviewer.Core.Buffers;
@@ -15,6 +16,7 @@ namespace Tailviewer.Core.Sources.Adorner
 	/// <remarks>
 	///     This class calculates the values of the adorned columns on the fly for only the region specified.
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class LogSourceColumnAdorner
 		: ILogSource
 	{

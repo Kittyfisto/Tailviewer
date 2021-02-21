@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.Sources;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
@@ -19,14 +20,14 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 	{
 		private Mock<IActionCenter> _actionCenter;
 		private ILogFileFactory _logFileFactory;
-		private DefaultTaskScheduler _scheduler;
+		private DefaultTaskScheduler _taskScheduler;
 		private ApplicationSettings _settings;
 
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_taskScheduler = new DefaultTaskScheduler();
+			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_settings = new ApplicationSettings(PathEx.GetTempFileName());
 		}
@@ -34,7 +35,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
-			_scheduler.Dispose();
+			_taskScheduler.Dispose();
 		}
 
 		[SetUp]
@@ -47,7 +48,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestSearch1()
 		{
 			using (
-				var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler,
 					new DataSource(TextLogSourceAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);

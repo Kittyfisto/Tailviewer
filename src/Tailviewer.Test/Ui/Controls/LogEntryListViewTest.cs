@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Ui.Controls
 			DispatcherExtensions.ExecuteAllEvents();
 
 
-			_logSource = new InMemoryLogSource(GeneralColumns.Minimum.Concat(new[]{BufferedLogSource.RetrievalState}));
+			_logSource = new InMemoryLogSource(GeneralColumns.Minimum.Concat(new[]{PageBufferedLogSource.RetrievalState}));
 
 			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}

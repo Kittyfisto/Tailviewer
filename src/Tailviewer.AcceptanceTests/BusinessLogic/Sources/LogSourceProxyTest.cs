@@ -11,7 +11,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 	[TestFixture]
 	public sealed class LogSourceProxyTest
 	{
-		private DefaultTaskScheduler _scheduler;
+		private DefaultTaskScheduler _taskScheduler;
 		private Mock<ILogSource> _logFile;
 		private LogSourceListenerCollection _listeners;
 		private Mock<ILogSourceListener> _listener;
@@ -20,13 +20,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
+			_taskScheduler = new DefaultTaskScheduler();
 		}
 
 		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
-			_scheduler.Dispose();
+			_taskScheduler.Dispose();
 		}
 
 		[SetUp]
@@ -49,7 +49,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 		[Description("Verifies that OnlogFileModified is eventually called when a non-zero maximum wait time is used (and the max limit is not reached)")]
 		public void TestListen1()
 		{
-			using (var proxy = new LogSourceProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
 				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
