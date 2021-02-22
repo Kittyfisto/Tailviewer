@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {
@@ -11,36 +14,36 @@ namespace Tailviewer.BusinessLogic.Exporter
 	public sealed class LogFileToStreamExporter
 		: ILogFileExporter
 	{
-		private readonly ILogFile _logFile;
+		private readonly ILogSource _logSource;
 		private readonly Stream _stream;
 		private bool _written;
 
 		/// <summary>
 		/// </summary>
 		/// <remarks>
-		///     Does NOT take ownership of the given <paramref name="logFile" />, nor
+		///     Does NOT take ownership of the given <paramref name="logSource" />, nor
 		///     of the given <paramref name="stream" />.
 		/// </remarks>
-		/// <param name="logFile"></param>
+		/// <param name="logSource"></param>
 		/// <param name="stream"></param>
-		public LogFileToStreamExporter(ILogFile logFile, Stream stream)
+		public LogFileToStreamExporter(ILogSource logSource, Stream stream)
 		{
-			if (logFile == null)
-				throw new ArgumentNullException(nameof(logFile));
+			if (logSource == null)
+				throw new ArgumentNullException(nameof(logSource));
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
 			if (!stream.CanWrite)
 				throw new ArgumentException("The given stream must be writable", nameof(stream));
 
-			_logFile = logFile;
+			_logSource = logSource;
 			_stream = stream;
 		}
 
 		public void Export(IProgress<Percentage> progressReporter = null)
 		{
 			const int bufferSize = 1000;
-			var buffer = new LogLine[bufferSize];
-			var count = _logFile.Count;
+			var buffer = new LogBufferArray(bufferSize, GeneralColumns.Index, GeneralColumns.RawContent);
+			var count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
 			var index = 0;
 
 			using (var writer = new StreamWriter(_stream, Encoding.UTF8, 1024, true))
@@ -60,19 +63,22 @@ namespace Tailviewer.BusinessLogic.Exporter
 			}
 		}
 
-		private bool ExportPortion(StreamWriter writer, LogLine[] buffer, int index, int count)
+		private bool ExportPortion(StreamWriter writer, LogBufferArray array, int index, int count)
 		{
 			try
 			{
-				_logFile.GetSection(new LogFileSection(index, count), buffer);
+				_logSource.GetEntries(new LogFileSection(index, count), array);
 
 				for (var i = 0; i < count; ++i)
 				{
 					if (_written)
 						writer.WriteLine();
 
-					var logLine = buffer[i];
-					writer.Write(logLine.Message);
+					var logLine = array[i];
+					if (logLine.Index == LogLineIndex.Invalid) //< EOF
+						break;
+
+					writer.Write(logLine.RawContent);
 					_written = true;
 				}
 

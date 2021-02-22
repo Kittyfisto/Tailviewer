@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 using Tailviewer.Test;
 
 namespace Tailviewer.Archiver.Test

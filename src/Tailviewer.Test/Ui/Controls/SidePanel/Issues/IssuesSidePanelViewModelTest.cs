@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Sources;
 using Tailviewer.Ui.Controls.SidePanel.Issues;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.Issues
@@ -43,7 +38,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Issues
 			var viewModel = new IssuesSidePanelViewModel(_services);
 
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new InMemoryLogFile());
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(new InMemoryLogSource());
 
 			viewModel.CurrentDataSource = dataSource.Object;
 			viewModel.CurrentDataSource.Should().Be(dataSource.Object);

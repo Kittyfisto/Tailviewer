@@ -7,7 +7,9 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.DataSources.Custom;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Plugins;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Settings.CustomFormats;
 
@@ -104,6 +106,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_bookmarks.RemoveBookmark(bookmark);
 		}
 
+		public IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources
+		{
+			get { return _logFileFactory.CustomDataSources; }
+		}
+
 		public bool Contains(DataSourceId id)
 		{
 			return _dataSourceIds.Contains(id);
@@ -155,7 +162,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 				}
 				else if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
+					dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
+				}
+				else if (settings.CustomDataSourceConfiguration != null)
+				{
+					dataSource = new CustomDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
 				else
 				{
@@ -190,15 +201,37 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return dataSource;
 		}
 
-		public SingleDataSource AddFile(string fileName)
+		public CustomDataSource AddCustom(CustomDataSourceId id)
+		{
+			CustomDataSource dataSource;
+
+			var plugin = _logFileFactory.CustomDataSources.First(x => x.Id == id);
+
+			lock (_syncRoot)
+			{
+				var settings = new DataSource
+				{
+					Id = DataSourceId.CreateNew(),
+					DisplayName = plugin.DisplayName,
+					CustomDataSourceId = plugin.Id,
+					CustomDataSourceConfiguration = plugin.CreateConfiguration(null)
+				};
+				_settings.Add(settings);
+				dataSource = (CustomDataSource) AddDataSource(settings);
+			}
+
+			return dataSource;
+		}
+
+		public FileDataSource AddFile(string fileName)
 		{
 			string key = GetKey(fileName, out var fullFileName);
-			SingleDataSource dataSource;
+			FileDataSource dataSource;
 
 			lock (_syncRoot)
 			{
 				dataSource =
-					(SingleDataSource)
+					(FileDataSource)
 					_dataSources.FirstOrDefault(x => string.Equals(x.FullFileName, key, StringComparison.InvariantCultureIgnoreCase));
 				if (dataSource == null)
 				{
@@ -207,12 +240,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 							Id = DataSourceId.CreateNew()
 						};
 					_settings.Add(settings);
-					dataSource = (SingleDataSource) AddDataSource(settings);
+					dataSource = (FileDataSource) AddDataSource(settings);
 				}
 			}
 
 			return dataSource;
 		}
+
+
 
 		public IFolderDataSource AddFolder(string folderPath)
 		{
@@ -250,18 +285,27 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public bool Remove(IDataSource dataSource)
 		{
+			bool removed;
 			lock (_syncRoot)
 			{
-				_settings.Remove(dataSource.Settings);
-				if (_dataSources.Remove(dataSource))
-				{
-					_bookmarks.RemoveDataSource(dataSource);
-					dataSource.Dispose();
-					return true;
-				}
-
-				return false;
+				removed = RemoveNoLock(dataSource);
 			}
+
+			GC.Collect(3, GCCollectionMode.Forced);
+			return removed;
+		}
+
+		private bool RemoveNoLock(IDataSource dataSource)
+		{
+			_settings.Remove(dataSource.Settings);
+			if (_dataSources.Remove(dataSource))
+			{
+				_bookmarks.RemoveDataSource(dataSource);
+				dataSource.Dispose();
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

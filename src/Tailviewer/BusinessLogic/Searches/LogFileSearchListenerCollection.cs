@@ -6,11 +6,11 @@ namespace Tailviewer.BusinessLogic.Searches
 {
 	public sealed class LogFileSearchListenerCollection
 	{
-		private readonly ILogFileSearch _sender;
+		private readonly ILogSourceSearch _sender;
 		private readonly List<ILogFileSearchListener> _listeners;
 		private List<LogMatch> _matches;
 
-		public LogFileSearchListenerCollection(ILogFileSearch sender)
+		public LogFileSearchListenerCollection(ILogSourceSearch sender)
 		{
 			if (sender == null)
 				throw new ArgumentNullException(nameof(sender));

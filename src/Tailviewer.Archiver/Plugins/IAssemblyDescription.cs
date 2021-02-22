@@ -36,7 +36,7 @@ namespace Tailviewer.Archiver.Plugins
 		string AssemblyInformationalVersion { get; }
 
 		/// <summary>
-		///     The referenced assemblies this assembly dependens on.
+		///     The referenced assemblies this assembly depends on.
 		/// </summary>
 		IReadOnlyList<IAssemblyReference> Dependencies { get; }
 	}

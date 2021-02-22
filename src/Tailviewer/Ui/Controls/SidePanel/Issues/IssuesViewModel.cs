@@ -6,25 +6,24 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
 	/// <summary>
 	///     Responsible for presenting a list of <see cref="IssueViewModel" />s based from the
-	///     issues reported by a <see cref="ILogFileIssueAnalyser" />.
+	///     issues reported by a <see cref="ILogSourceIssueAnalyser" />.
 	/// </summary>
 	internal sealed class IssuesViewModel
 		: ILogFileIssueListener
 		, INotifyPropertyChanged
 	{
-		private readonly ILogFileIssueAnalyser _analyser;
+		private readonly ILogSourceIssueAnalyser _analyser;
 		private readonly INavigationService _navigationService;
-		private readonly Dictionary<ILogFileIssue, IssueViewModel> _viewModelsByIssue;
+		private readonly Dictionary<ILogSourceIssue, IssueViewModel> _viewModelsByIssue;
 		private readonly List<IssueViewModel> _allIssues;
 
-		private IReadOnlyList<ILogFileIssue> _currentIssues;
+		private IReadOnlyList<ILogSourceIssue> _currentIssues;
 		private ObservableCollection<IssueViewModel> _filteredIssues;
 
 		private int _criticalCount;
@@ -34,12 +33,12 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		private bool _showMajor;
 		private bool _showMinor;
 
-		public IssuesViewModel(ILogFileIssueAnalyser analyser,
+		public IssuesViewModel(ILogSourceIssueAnalyser analyser,
 		                       INavigationService navigationService)
 		{
 			_allIssues = new List<IssueViewModel>();
 			_filteredIssues = new ObservableCollection<IssueViewModel>();
-			_viewModelsByIssue = new Dictionary<ILogFileIssue, IssueViewModel>();
+			_viewModelsByIssue = new Dictionary<ILogSourceIssue, IssueViewModel>();
 
 			_showCritical = true;
 			_showMajor = true;
@@ -153,7 +152,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 
 		#region Implementation of ILogFileIssueListener
 
-		public void OnIssuesChanged(IEnumerable<ILogFileIssue> issues)
+		public void OnIssuesChanged(IEnumerable<ILogSourceIssue> issues)
 		{
 			_currentIssues = issues.ToList();
 		}
@@ -200,7 +199,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			MinorCount = minor;
 		}
 
-		private void AddNewIssues(IReadOnlyList<ILogFileIssue> currentIssues)
+		private void AddNewIssues(IReadOnlyList<ILogSourceIssue> currentIssues)
 		{
 			foreach (var issue in currentIssues)
 				if (!_viewModelsByIssue.ContainsKey(issue))
@@ -220,7 +219,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			_navigationService.NavigateTo(line);
 		}
 
-		private void RemoveOldIssues(IReadOnlyList<ILogFileIssue> currentIssues)
+		private void RemoveOldIssues(IReadOnlyList<ILogSourceIssue> currentIssues)
 		{
 			for (var i = _allIssues.Count - 1; i >= 0; --i)
 			{

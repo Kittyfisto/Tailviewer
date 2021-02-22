@@ -4,7 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.QuickFilter;
@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_quickFilter = new QuickFilter(new Core.Settings.QuickFilter());
-			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _dataSourceSettings = new DataSource("nothing") {Id = DataSourceId.CreateNew()});
+			_dataSource = new FileDataSource(_logFileFactory, _scheduler, _dataSourceSettings = new DataSource("nothing") {Id = DataSourceId.CreateNew()});
 			_model = new QuickFilterViewModel(_quickFilter, x => { })
 				{
 					CurrentDataSource = _dataSource
@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		private QuickFilter _quickFilter;
-		private SingleDataSource _dataSource;
+		private FileDataSource _dataSource;
 		private QuickFilterViewModel _model;
 		private DataSource _dataSourceSettings;
 		private List<string> _changes;

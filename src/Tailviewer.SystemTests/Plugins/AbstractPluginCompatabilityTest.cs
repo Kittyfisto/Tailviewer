@@ -6,6 +6,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.SystemTests.Plugins
 {

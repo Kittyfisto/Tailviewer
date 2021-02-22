@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -24,19 +28,31 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 					MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode
 				};
 			_merged = new MergedDataSource(_taskScheduler, _settings, TimeSpan.Zero) {IsSingleLine = true};
+			_unfilteredLogSource = _merged.UnfilteredLogSource;
 		}
 
 		private MergedDataSource _merged;
 		private DataSource _settings;
 		private ManualTaskScheduler _taskScheduler;
 		private PluginLogFileFactory _logFileFactory;
+		private ILogSource _unfilteredLogSource;
+
+		[Pure]
+		private MergedLogSource GetMergedLogFile()
+		{
+			var proxy = (LogSourceProxy)_merged.UnfilteredLogSource;
+			// See https://github.com/Kittyfisto/Tailviewer/issues/269
+			proxy.Should().BeSameAs(_unfilteredLogSource,
+			                        "because the UnfilteredLogFile property may not change over the lifetime of a MergedDataSource and instead must point to the same object as during its construction");
+			return (MergedLogSource)proxy.InnerLogSource;
+		}
 
 		[Test]
 		[Description("Verifies that adding a data source to a group sets the parent id of the settings object")]
 		public void TestAdd1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
 			        .Be(_settings.Id, "Because the parent-child relationship should've been declared via ParentId");
@@ -47,11 +63,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd2()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
-			_merged.UnfilteredLogFile.Should().NotBeNull();
-			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource.OriginalLogFile});
+			var mergedLogFile = GetMergedLogFile();
+			mergedLogFile.Sources.Should().Equal(new object[] {dataSource.OriginalLogSource});
 		}
 
 		[Test]
@@ -59,43 +74,43 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd3()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
-			ILogFile logFile1 = _merged.UnfilteredLogFile;
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
-			ILogFile logFile2 = _merged.UnfilteredLogFile;
+			var logFile2 = GetMergedLogFile();
 
 			logFile2.Should().NotBeSameAs(logFile1);
-			((AbstractLogFile) logFile1).IsDisposed.Should().BeTrue();
+			logFile1.IsDisposed.Should().BeTrue();
 		}
 
 		[Test]
 		public void TestMultiline()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
-			ILogFile logFile1 = _merged.UnfilteredLogFile;
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
-			ILogFile logFile2 = _merged.UnfilteredLogFile;
+			var logFile2 = GetMergedLogFile();
 
 			logFile2.Should().NotBeSameAs(logFile1);
-			((AbstractLogFile)logFile1).IsDisposed.Should().BeTrue();
+			logFile1.IsDisposed.Should().BeTrue();
 		}
 
 		[Test]
 		[Description("Verifies that the data source disposed of the merged log file")]
 		public void TestChangeFilter1()
 		{
-			ILogFile logFile1 = _merged.UnfilteredLogFile;
+			var logFile1 = GetMergedLogFile();
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
-			ILogFile logFile2 = _merged.UnfilteredLogFile;
+			var logFile2 = GetMergedLogFile();
 
 			logFile2.Should().NotBeSameAs(logFile1);
-			((AbstractLogFile) logFile1).IsDisposed.Should().BeTrue();
+			logFile1.IsDisposed.Should().BeTrue();
 		}
 
 		[Test]
@@ -119,15 +134,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the log-file of a newly created group is empty")]
 		public void TestCtor3()
 		{
-			_merged.UnfilteredLogFile.Should().NotBeNull("Because a log file should be present at all times");
-			_merged.UnfilteredLogFile.Count.Should().Be(0);
+			_merged.UnfilteredLogSource.Should().NotBeNull("Because a log file should be present at all times");
+			_merged.UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
 		}
 
 		[Test]
 		[Description("Verifies that the log-file of a newly created group is actually a MergedLogFile")]
 		public void TestCtor4()
 		{
-			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
+			var logFile1 = GetMergedLogFile();
+			logFile1.Should().NotBeNull();
 		}
 
 		[Test]
@@ -147,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose2()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Dispose();
@@ -162,7 +178,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Settings.ParentId.Should().Be(DataSourceId.Empty);
@@ -173,17 +189,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove2()
 		{
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 
 			var settings2 = new DataSource("bar") {Id = DataSourceId.CreateNew()};
-			var dataSource2 = new SingleDataSource(_logFileFactory, _taskScheduler, settings2);
+			var dataSource2 = new FileDataSource(_logFileFactory, _taskScheduler, settings2);
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);
-			_merged.UnfilteredLogFile.Should().NotBeNull();
-			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource1.OriginalLogFile});
+			var mergedLogFile = GetMergedLogFile();
+			mergedLogFile.Sources.Should().Equal(new object[] {dataSource1.OriginalLogSource});
 		}
 
 		[Test]
@@ -200,16 +215,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that MergedDataSource and SingleDataSource can work in conjunction to provide a merged view of multi line log files")]
 		public void TestMergeMultiline1()
 		{
-			var logFile1 = new InMemoryLogFile();
+			var logFile1 = new InMemoryLogSource();
 			var source1Id = new LogLineSourceId(0);
-			var source1 = new SingleDataSource(_taskScheduler,
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
-			var logFile2 = new InMemoryLogFile();
+			var logFile2 = new InMemoryLogSource();
 			var source2Id = new LogLineSourceId(1);
-			var source2 = new SingleDataSource(_taskScheduler,
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -229,11 +244,31 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			logFile1.AddEntry("Houston, we have a problem", LevelFlags.Warning, t3);
 
 			_taskScheduler.Run(4); //< There's a few proxies involved and thus one round won't do it
-			_merged.FilteredLogFile.Count.Should().Be(4, "because there are four lines in total, each of which has a timestamp");
-			_merged.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Hello, World!", LevelFlags.Info, t1));
-			_merged.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "foo", LevelFlags.Trace, t2));
-			_merged.FilteredLogFile.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "bar", LevelFlags.Trace, t2));
-			_merged.FilteredLogFile.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "Houston, we have a problem", LevelFlags.Warning, t3));
+			var entries = _merged.FilteredLogSource.GetEntries(new LogFileSection(0, 4));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(source1Id);
+			entries[0].RawContent.Should().Be("Hello, World!");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(t1);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(source2Id);
+			entries[1].RawContent.Should().Be("foo");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace);
+			entries[1].Timestamp.Should().Be(t2);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].GetValue(GeneralColumns.SourceId).Should().Be(source2Id);
+			entries[2].RawContent.Should().Be("bar");
+			entries[2].LogLevel.Should().Be(LevelFlags.Trace);
+			entries[2].Timestamp.Should().Be(t2);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(2);
+			entries[3].GetValue(GeneralColumns.SourceId).Should().Be(source1Id);
+			entries[3].RawContent.Should().Be("Houston, we have a problem");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Timestamp.Should().Be(t3);
 		}
 
 		[Test]
@@ -247,8 +282,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSetDataSourcesOneSource()
 		{
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
@@ -261,16 +296,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSetDataSourcesOneNewSource()
 		{
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			_merged.SetDataSources(new []{source1});
 
-			var logFile2 = new InMemoryLogFile();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var logFile2 = new InMemoryLogSource();
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -285,14 +320,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSetDataSourcesOneLessSource()
 		{
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
-			var logFile2 = new InMemoryLogFile();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var logFile2 = new InMemoryLogSource();
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
@@ -311,73 +346,72 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestDataSourceOrder()
 		{
-			var logFile2 = new InMemoryLogFile();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var logFile2 = new InMemoryLogSource();
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
 
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
-			var logFile3 = new InMemoryLogFile();
-			var source3 = new SingleDataSource(_taskScheduler,
+			var logFile3 = new InMemoryLogSource();
+			var source3 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile3,
 			                                   TimeSpan.Zero);
 
 			_merged.SetDataSources(new []{source1, source2, source3});
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2, logFile3);
+			var mergedLogFile = GetMergedLogFile();
+			mergedLogFile.Sources.Should().Equal(logFile1, logFile2, logFile3);
 		}
 
 		[Test]
 		[Description("Verifies that the log files of excluded data sources are no longer part of the merged view")]
 		public void TestExcludeDataSource1()
 		{
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
-			var logFile2 = new InMemoryLogFile();
-			var source2 = new SingleDataSource(_taskScheduler,
+			var logFile2 = new InMemoryLogSource();
+			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,
 			                                   TimeSpan.Zero);
 
 			_merged.SetDataSources(new []{source1, source2});
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2);
+			GetMergedLogFile().Sources.Should().Equal(logFile1, logFile2);
 
 			_merged.SetExcluded(source1, true);
-			((IMergedLogFile) _merged.UnfilteredLogFile)
-				.Sources.Should().NotContain(logFile1, "because we've just excluded the first source");
+			GetMergedLogFile().Sources.Should().NotContain(logFile1, "because we've just excluded the first source");
 
 			_merged.SetExcluded(source1, false);
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2);
+			GetMergedLogFile().Sources.Should().Equal(logFile1, logFile2);
 		}
 
 		[Test]
 		[Description("Verifies that the 'Excluded' property of a data source removed as soon as the data source is no longer part of the merged data source")]
 		public void TestExcludeDataSource2()
 		{
-			var logFile1 = new InMemoryLogFile();
-			var source1 = new SingleDataSource(_taskScheduler,
+			var logFile1 = new InMemoryLogSource();
+			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			_merged.SetDataSources(new []{source1});
 			_merged.SetExcluded(source1, true);
-			((IMergedLogFile) _merged.UnfilteredLogFile)
-				.Sources.Should().NotContain(logFile1, "because we've just excluded the first source");
+			GetMergedLogFile().Sources.Should().NotContain(logFile1, "because we've just excluded the first source");
 
 			_merged.Remove(source1);
 			_merged.Add(source1);
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(new[]{logFile1}, "because the merged data source shouldn't remember the 'excluded' property of a data source after it's been removed");
+			GetMergedLogFile().Sources.Should().Equal(new[]{logFile1}, "because the merged data source shouldn't remember the 'excluded' property of a data source after it's been removed");
 		}
 	}
 }

@@ -5,12 +5,11 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -21,19 +20,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
-		private readonly LogFileProxy _logFile;
-		private readonly LogFileSearchProxy _search;
+		private readonly LogSourceProxy _logSource;
+		private readonly LogSourceSearchProxy _search;
 
-		private readonly LogFileProxy _findAllLogFile;
-		private readonly LogFileSearchProxy _findAllSearch;
+		private readonly LogSourceProxy _findAllLogSource;
+		private readonly LogSourceSearchProxy _findAllSearch;
 
-		private ILogFile _filteredLogFile;
+		private ILogSource _filteredLogSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
-		private ILogFile _previousUnfilteredLogFile;
+		private ILogSource _previousUnfilteredLogSource;
 		private string _findAllFilter;
 		private int? _hideLogLineCount;
 
@@ -47,13 +45,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_taskScheduler = taskScheduler;
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
-			_counter = new LogFileCounter();
 
-			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
+			_logSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
+			_search = new LogSourceSearchProxy(taskScheduler, _logSource, maximumWaitTime);
 
-			_findAllLogFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_findAllSearch = new LogFileSearchProxy(taskScheduler, _findAllLogFile, maximumWaitTime);
+			_findAllLogSource = new LogSourceProxy(taskScheduler, maximumWaitTime);
+			_findAllSearch = new LogSourceSearchProxy(taskScheduler, _findAllLogSource, maximumWaitTime);
 
 			UpdateSearch();
 			UpdateFindAllSearch();
@@ -63,13 +60,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		protected TimeSpan MaximumWaitTime => _maximumWaitTime;
 
-		public ILogFile FilteredLogFile => _logFile;
+		public ILogSource FilteredLogSource => _logSource;
 
-		public ILogFile FindAllLogFile => _findAllLogFile;
+		public ILogSource FindAllLogSource => _findAllLogSource;
 
-		public ILogFileSearch FindAllSearch => _findAllSearch;
+		public ILogSourceSearch FindAllSearch => _findAllSearch;
 
-		public ILogFileSearch Search => _search;
+		public ILogSourceSearch Search => _search;
 
 		public abstract IPluginDescription TranslationPlugin { get; }
 
@@ -126,7 +123,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime? LastModified => UnfilteredLogFile.GetValue(LogFileProperties.LastModified);
+		public DateTime? LastModified => UnfilteredLogSource.GetProperty(GeneralProperties.LastModified);
 
 		public DateTime LastViewed
 		{
@@ -141,7 +138,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void ClearScreen()
 		{
-			_hideLogLineCount = UnfilteredLogFile?.Count ?? 0;
+			_hideLogLineCount = UnfilteredLogSource?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
 			CreateFilteredLogFile();
 		}
 
@@ -171,25 +168,25 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}
 
-		public abstract ILogFile OriginalLogFile { get; }
+		public abstract ILogSource OriginalLogSource { get; }
 
-		public abstract ILogFile UnfilteredLogFile { get; }
+		public abstract ILogSource UnfilteredLogSource { get; }
 
-		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
+		public int NoLevelCount => UnfilteredLogSource.GetProperty(GeneralProperties.OtherLogEntryCount);
 
-		public int TraceCount => _counter.Trace.LogEntryCount;
+		public int TraceCount => UnfilteredLogSource.GetProperty(GeneralProperties.TraceLogEntryCount);
 
-		public int DebugCount => _counter.Debugs.LogEntryCount;
+		public int DebugCount => UnfilteredLogSource.GetProperty(GeneralProperties.DebugLogEntryCount);
 
-		public int InfoCount => _counter.Infos.LogEntryCount;
+		public int InfoCount => UnfilteredLogSource.GetProperty(GeneralProperties.InfoLogEntryCount);
 
-		public int WarningCount => _counter.Warnings.LogEntryCount;
+		public int WarningCount => UnfilteredLogSource.GetProperty(GeneralProperties.WarningLogEntryCount);
 
-		public int ErrorCount => _counter.Errors.LogEntryCount;
+		public int ErrorCount => UnfilteredLogSource.GetProperty(GeneralProperties.ErrorLogEntryCount);
 
-		public int FatalCount => _counter.Fatals.LogEntryCount;
+		public int FatalCount => UnfilteredLogSource.GetProperty(GeneralProperties.FatalLogEntryCount);
 
-		public int NoTimestampCount => _counter.NoTimestamp.LogEntryCount;
+		public int NoTimestampCount => 0;
 
 		public string FullFileName => _settings.File;
 
@@ -244,9 +241,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DataSource Settings => _settings;
 
-		public int TotalCount => _counter.Total.LogLineCount;
+		public int TotalCount => UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount);
 
-		public Size? FileSize => UnfilteredLogFile.GetValue(LogFileProperties.Size);
+		public Size? FileSize => UnfilteredLogSource.GetProperty(GeneralProperties.Size);
 
 		public bool ColorByLevel
 		{
@@ -282,13 +279,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		
 		public void Dispose()
 		{
-			_logFile.Dispose();
+			_logSource.Dispose();
 			_search.Dispose();
 
-			_findAllLogFile.Dispose();
+			_findAllLogSource.Dispose();
 			_findAllSearch.Dispose();
 
-			_logFile?.Dispose();
+			_logSource?.Dispose();
 
 			try
 			{
@@ -316,14 +313,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		/// <summary>
-		/// Must be called by suclasses when the <see cref="UnfilteredLogFile"/> property changes
+		/// Must be called by suclasses when the <see cref="UnfilteredLogSource"/> property changes
 		/// (i.e. returns a different object).
 		/// </summary>
 		protected void OnUnfilteredLogFileChanged()
 		{
-			_previousUnfilteredLogFile?.RemoveListener(_counter);
-			UnfilteredLogFile.AddListener(_counter, TimeSpan.Zero, 1000);
-			_previousUnfilteredLogFile = UnfilteredLogFile;
+			_previousUnfilteredLogSource = UnfilteredLogSource;
 
 			CreateFilteredLogFile();
 		}
@@ -332,20 +327,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void CreateFilteredLogFile()
 		{
-			_filteredLogFile?.Dispose();
+			_filteredLogSource?.Dispose();
 
 			LevelFlags levelFilter = LevelFilter;
 			ILogLineFilter logLineFilter = CreateLogLineFilter();
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (Filter.IsFilter(logEntryFilter) || Filter.IsFilter(logLineFilter))
 			{
-				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
-				_logFile.InnerLogFile = _filteredLogFile;
+				_filteredLogSource = UnfilteredLogSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
+				_logSource.InnerLogSource = _filteredLogSource;
 			}
 			else
 			{
-				_filteredLogFile = null;
-				_logFile.InnerLogFile = UnfilteredLogFile;
+				_filteredLogSource = null;
+				_logSource.InnerLogSource = UnfilteredLogSource;
 			}
 		}
 
@@ -371,274 +366,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateFindAllLogFile()
 		{
-			var previous = _findAllLogFile.InnerLogFile;
+			var previous = _findAllLogSource.InnerLogSource;
 			previous?.Dispose();
 
 			if (!string.IsNullOrEmpty(_findAllFilter))
 			{
-				_findAllLogFile.InnerLogFile = new FilteredLogFile(_taskScheduler,
+				_findAllLogSource.InnerLogSource = new FilteredLogSource(_taskScheduler,
 				                                                   MaximumWaitTime,
-				                                                   this.UnfilteredLogFile,
+				                                                   this.UnfilteredLogSource,
 				                                                   null,
 				                                                   new SubstringFilter(_findAllFilter, ignoreCase: true));
 			}
 			else
 			{
-				_findAllLogFile.InnerLogFile = null;
-			}
-		}
-
-		private sealed class Counter
-			: ICount
-		{
-			public int LogLineCount { get; set; }
-			public int LogEntryCount { get; set; }
-
-			public void Reset()
-			{
-				LogLineCount = 0;
-				LogEntryCount = 0;
-			}
-		}
-
-		/// <summary>
-		///     Responsible for providing the amount of occurences of certain classes of log lines and -entries.
-		/// </summary>
-		private sealed class LogFileCounter
-			: ILogFileListener
-		{
-			#region Counts
-
-			public readonly Counter Trace;
-			public readonly Counter Debugs;
-			public readonly Counter Errors;
-			public readonly Counter Fatals;
-			public readonly Counter Infos;
-			public readonly Counter NoLevel;
-			public readonly Counter NoTimestamp;
-			public readonly Counter Total;
-			public readonly Counter Warnings;
-
-			#endregion
-
-			private readonly List<LogLine> _lines;
-
-			public LogFileCounter()
-			{
-				Fatals = new Counter();
-				Errors = new Counter();
-				Warnings = new Counter();
-				Infos = new Counter();
-				Debugs = new Counter();
-				Trace = new Counter();
-				NoLevel = new Counter();
-				NoTimestamp = new Counter();
-				Total = new Counter();
-
-				_lines = new List<LogLine>();
-			}
-
-			public void OnLogFileModified(ILogFile logFile, LogFileSection section)
-			{
-				if (section.IsReset)
-				{
-					Clear();
-				}
-				else if (section.IsInvalidate)
-				{
-					RemoveRange(section);
-				}
-				else
-				{
-					AddRange(logFile, section);
-				}
-			}
-
-			private void AddRange(ILogFile logFile, LogFileSection section)
-			{
-				var previousLine = _lines.Count > 0
-					? _lines[_lines.Count - 1]
-					: new LogLine(-1, -1, null, LevelFlags.None);
-
-				LogLine[] lines = logFile.GetSection(section);
-				for (int i = 0; i < section.Count; ++i)
-				{
-					LogLine line = lines[i];
-					IncrementCount(line, previousLine);
-					previousLine = line;
-				}
-				_lines.AddRange(lines);
-			}
-
-			private void RemoveRange(LogFileSection section)
-			{
-				var previousLine = section.Index > 0
-					? _lines[(int) section.Index]
-					: new LogLine(-1, -1, null, LevelFlags.None);
-
-				for (int i = 0; i < section.Count; ++i)
-				{
-					LogLineIndex index = section.Index + i;
-					LogLine line = _lines[(int) index];
-					DecrementCount(line, previousLine);
-					previousLine = line;
-				}
-
-				_lines.RemoveRange((int) section.Index, section.Count);
-			}
-
-			private void DecrementCount(LogLine currentLogLine, LogLine previousLogLine)
-			{
-				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
-				{
-					switch (currentLogLine.Level)
-					{
-						case LevelFlags.Fatal:
-							--Fatals.LogEntryCount;
-							break;
-						case LevelFlags.Error:
-							--Errors.LogEntryCount;
-							break;
-						case LevelFlags.Warning:
-							--Warnings.LogEntryCount;
-							break;
-						case LevelFlags.Info:
-							--Infos.LogEntryCount;
-							break;
-						case LevelFlags.Debug:
-							--Debugs.LogEntryCount;
-							break;
-						case LevelFlags.Trace:
-							--Trace.LogEntryCount;
-							break;
-						default:
-							--NoLevel.LogEntryCount;
-							break;
-					}
-
-					if (currentLogLine.Timestamp == null)
-					{
-						--NoTimestamp.LogEntryCount;
-					}
-
-					--Total.LogEntryCount;
-				}
-
-				switch (currentLogLine.Level)
-				{
-					case LevelFlags.Fatal:
-						--Fatals.LogLineCount;
-						break;
-					case LevelFlags.Error:
-						--Errors.LogLineCount;
-						break;
-					case LevelFlags.Warning:
-						--Warnings.LogLineCount;
-						break;
-					case LevelFlags.Info:
-						--Infos.LogLineCount;
-						break;
-					case LevelFlags.Debug:
-						--Debugs.LogLineCount;
-						break;
-					case LevelFlags.Trace:
-						--Trace.LogLineCount;
-						break;
-					default:
-						--NoLevel.LogLineCount;
-						break;
-				}
-
-				if (currentLogLine.Timestamp == null)
-				{
-					--NoTimestamp.LogLineCount;
-				}
-
-				--Total.LogLineCount;
-			}
-
-			private void IncrementCount(LogLine currentLogLine, LogLine previousLogLine)
-			{
-				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
-				{
-					switch (currentLogLine.Level)
-					{
-						case LevelFlags.Fatal:
-							++Fatals.LogEntryCount;
-							break;
-						case LevelFlags.Error:
-							++Errors.LogEntryCount;
-							break;
-						case LevelFlags.Warning:
-							++Warnings.LogEntryCount;
-							break;
-						case LevelFlags.Info:
-							++Infos.LogEntryCount;
-							break;
-						case LevelFlags.Debug:
-							++Debugs.LogEntryCount;
-							break;
-						case LevelFlags.Trace:
-							++Trace.LogEntryCount;
-							break;
-						default:
-							++NoLevel.LogEntryCount;
-							break;
-					}
-
-					if (currentLogLine.Timestamp == null)
-					{
-						++NoTimestamp.LogEntryCount;
-					}
-
-					++Total.LogEntryCount;
-				}
-
-				switch (currentLogLine.Level)
-				{
-					case LevelFlags.Fatal:
-						++Fatals.LogLineCount;
-						break;
-					case LevelFlags.Error:
-						++Errors.LogLineCount;
-						break;
-					case LevelFlags.Warning:
-						++Warnings.LogLineCount;
-						break;
-					case LevelFlags.Info:
-						++Infos.LogLineCount;
-						break;
-					case LevelFlags.Debug:
-						++Debugs.LogLineCount;
-						break;
-					case LevelFlags.Trace:
-						++Trace.LogLineCount;
-						break;
-					default:
-						++NoLevel.LogLineCount;
-						break;
-				}
-
-				if (currentLogLine.Timestamp == null)
-				{
-					++NoTimestamp.LogLineCount;
-				}
-
-				++Total.LogLineCount;
-			}
-
-			private void Clear()
-			{
-				_lines.Clear();
-				Fatals.Reset();
-				Errors.Reset();
-				Warnings.Reset();
-				Infos.Reset();
-				Debugs.Reset();
-				Trace.Reset();
-				NoLevel.Reset();
-				NoTimestamp.Reset();
-				Total.Reset();
+				_findAllLogSource.InnerLogSource = null;
 			}
 		}
 	}

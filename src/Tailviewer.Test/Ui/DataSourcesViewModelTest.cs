@@ -8,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -206,7 +206,7 @@ namespace Tailviewer.Test.Ui
 
 			viewModel = _model.Observable[1];
 			viewModel.Should().NotBeNull();
-			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+			viewModel.Should().BeOfType<FileDataSourceViewModel>();
 			viewModel.DataSource.Id.Should().Be(source3.Id);
 		}
 
@@ -231,7 +231,7 @@ namespace Tailviewer.Test.Ui
 
 			viewModel = _model.Observable[1];
 			viewModel.Should().NotBeNull();
-			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+			viewModel.Should().BeOfType<FileDataSourceViewModel>();
 		}
 
 		[Test]

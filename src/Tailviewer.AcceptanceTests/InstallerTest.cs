@@ -30,6 +30,7 @@ namespace Tailviewer.AcceptanceTests
 
 		[Test]
 		[LocalTest("Doesn't work on AppVeyor yet")]
+		[RequiresElevation("Requires elevated rights")]
 		[Description("Verifies that the graphical installer can start and doesn't exit on its own - also verifies that the log doesn't contain any errors")]
 		public void TestRunGraphicalInstaller()
 		{
@@ -58,6 +59,7 @@ namespace Tailviewer.AcceptanceTests
 
 		[Test]
 		[LocalTest("Doesn't work on AppVeyor yet")]
+		[RequiresElevation("Requires elevated rights")]
 		[Description(
 			"Verifies that a fresh install into a completely empty directory yields a runnable tailviewer application")]
 		public void TestFreshInstall()
@@ -68,6 +70,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[RequiresElevation("Requires elevated rights")]
 		[LocalTest("Doesn't work on AppVeyor yet")]
 		public void TestOverwriteInstall()
 		{
@@ -78,6 +81,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[RequiresElevation("Requires elevated rights")]
 		[LocalTest("Doesn't work on AppVeyor yet")]
 		public void TestInstallWhileApplicationIsRunning()
 		{

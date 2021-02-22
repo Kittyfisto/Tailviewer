@@ -9,11 +9,7 @@ using System.Windows;
 
 [assembly: AssemblyTitle("Application to view log files - live and offline")]
 [assembly: AssemblyDescription("Application to view log files - live and offline")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

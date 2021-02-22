@@ -4,7 +4,6 @@
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.CompilerServices;
-	using Tailviewer.BusinessLogic.Filters;
 	using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter

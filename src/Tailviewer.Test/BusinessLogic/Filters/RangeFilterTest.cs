@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
@@ -20,9 +21,9 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 			filter.PassesFilter(CreateLine(143)).Should().BeTrue();
 		}
 
-		private static LogLine CreateLine(LogLineIndex lineIndex)
+		private static IReadOnlyLogEntry CreateLine(LogLineIndex lineIndex)
 		{
-			return new LogLine(lineIndex, 0, "", LevelFlags.Other, null);
+			return new LogEntry(GeneralColumns.Minimum) {Index = lineIndex};
 		}
 	}
 }

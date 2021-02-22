@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Formats.Serilog
 {
 	public sealed class SerilogEntry
 		: IReadOnlyLogEntry
 	{
+		private readonly string _rawContent;
 		public LevelFlags LogLevel;
 		public DateTime Timestamp;
-		public string Message;
+
+		public SerilogEntry(string rawContent)
+		{
+			_rawContent = rawContent;
+		}
 
 		#region Implementation of IReadOnlyLogEntry
 
 		public string RawContent
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				return _rawContent;
+			}
 		}
 
 		public LogLineIndex Index
@@ -45,6 +51,16 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
+		public string OriginalDataSourceName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public LogLineSourceId SourceId
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		LevelFlags IReadOnlyLogEntry.LogLevel
 		{
 			get { return LogLevel; }
@@ -65,9 +81,20 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
-		public T GetValue<T>(ILogFileColumn<T> column)
+		public string Message
 		{
-			if (Equals(column, LogFileColumns.Message))
+			get;
+			set;
+		}
+
+		public T GetValue<T>(IColumnDescriptor<T> column)
+		{
+			if (Equals(column, GeneralColumns.RawContent))
+			{
+				return (T) (object) _rawContent;
+			}
+
+			if (Equals(column, GeneralColumns.Message))
 			{
 				return (T)(object)Message;
 			}
@@ -75,24 +102,29 @@ namespace Tailviewer.Formats.Serilog
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+		public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public object GetValue(ILogFileColumn column)
+		public object GetValue(IColumnDescriptor column)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue(ILogFileColumn column, out object value)
+		public bool TryGetValue(IColumnDescriptor column, out object value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { throw new NotImplementedException(); }
+		}
+
+		public bool Contains(IColumnDescriptor column)
+		{
+			throw new NotImplementedException();
 		}
 
 		#endregion

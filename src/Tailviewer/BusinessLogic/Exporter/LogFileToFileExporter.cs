@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {
@@ -9,18 +8,18 @@ namespace Tailviewer.BusinessLogic.Exporter
 		: ILogFileToFileExporter
 	{
 		private readonly string _exportDirectory;
-		private readonly ILogFile _logFile;
+		private readonly ILogSource _logSource;
 		private readonly string _dataSourceName;
 		private string _fullExportFilename;
 
-		public LogFileToFileExporter(ILogFile logFile,
+		public LogFileToFileExporter(ILogSource logSource,
 			string exportDirectory,
 			string dataSourceName)
 		{
-			if (logFile == null)
-				throw new ArgumentNullException(nameof(logFile));
+			if (logSource == null)
+				throw new ArgumentNullException(nameof(logSource));
 
-			_logFile = logFile;
+			_logSource = logSource;
 			_exportDirectory = exportDirectory;
 			_dataSourceName = dataSourceName;
 		}
@@ -29,7 +28,7 @@ namespace Tailviewer.BusinessLogic.Exporter
 		{
 			using (var stream = OpenStream())
 			{
-				var exporter = new LogFileToStreamExporter(_logFile, stream);
+				var exporter = new LogFileToStreamExporter(_logSource, stream);
 				exporter.Export(progressReporter);
 			}
 		}

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -25,13 +25,13 @@ namespace Tailviewer.Formats.Serilog
 		/// <summary>
 		///     The Tailviewer column into which values of this matcher are to be transformed into.
 		/// </summary>
-		ILogFileColumn Column { get; }
+		IColumnDescriptor Column { get; }
 
 		/// <summary>
 		///     TODO: Change signature to TryMatchInto to allow for failure without throwing exceptions.
 		/// </summary>
 		/// <param name="match"></param>
 		/// <param name="logEntry"></param>
-		void MatchInto(Match match, SerilogEntry logEntry);
+		void MatchInto(Match match, LogEntry logEntry);
 	}
 }

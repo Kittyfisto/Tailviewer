@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestAddFile()
 		{
-			SingleDataSource source = _dataSources.AddFile(@"E:\Code\test.log");
+			FileDataSource source = _dataSources.AddFile(@"E:\Code\test.log");
 			source.Should().NotBeNull();
 			source.FullFileName.Should().Be(@"E:\Code\test.log");
 			source.FollowTail.Should().BeFalse();
@@ -263,8 +263,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestRemove()
 		{
-			SingleDataSource source1 = _dataSources.AddFile(@"E:\Code\test1.log");
-			SingleDataSource source2 = _dataSources.AddFile(@"E:\Code\test2.log");
+			FileDataSource source1 = _dataSources.AddFile(@"E:\Code\test1.log");
+			FileDataSource source2 = _dataSources.AddFile(@"E:\Code\test2.log");
 
 			_dataSources.Remove(source1);
 			_settings.Count.Should().Be(1);

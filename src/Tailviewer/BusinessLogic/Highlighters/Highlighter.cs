@@ -1,5 +1,4 @@
-﻿using Tailviewer.Core;
-using Tailviewer.Core.Settings;
+﻿using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Highlighters
 {

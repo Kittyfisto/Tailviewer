@@ -26,6 +26,7 @@ namespace Tailviewer.AcceptanceTests
 
 		[Test]
 		[LocalTest("Doesn't work on AppVeyor yet")]
+		[RequiresElevation("Requires elevated rights")]
 		[Description("Verifies that Tailviewer only allows one instance to be executed at the same time")]
 		public void TestOnlyOneApplication1()
 		{

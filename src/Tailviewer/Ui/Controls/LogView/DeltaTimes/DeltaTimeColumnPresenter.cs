@@ -1,6 +1,5 @@
 ﻿using System;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
@@ -13,12 +12,12 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 		: AbstractLogColumnPresenter<TimeSpan?>
 	{
 		public DeltaTimeColumnPresenter(TextSettings textSettings)
-			: base(LogFileColumns.DeltaTime, textSettings)
+			: base(GeneralColumns.DeltaTime, textSettings)
 		{
 			Width = 50;
 		}
 
-		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
+		protected override void UpdateWidth(ILogSource logSource, TextSettings textSettings)
 		{}
 
 		protected override AbstractLogEntryValueFormatter CreateFormatter(TimeSpan? value)

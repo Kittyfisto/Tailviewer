@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -15,17 +14,17 @@ namespace Tailviewer.Formats.Serilog
 		private readonly Encoding _encoding;
 		private readonly string _format;
 		private readonly string _name;
-		private readonly SerilogFileParser _parser;
+		private readonly SerilogEntryParser _parser;
 
 		public SerilogFileFormat(string name, string format, Encoding encoding)
 		{
 			_name = name;
 			_format = format;
 			_encoding = encoding;
-			_parser = new SerilogFileParser(format);
+			_parser = new SerilogEntryParser(format);
 		}
 
-		public SerilogFileParser Parser
+		public SerilogEntryParser Parser
 		{
 			get { return _parser; }
 		}

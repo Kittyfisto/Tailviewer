@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.Plugins
 {

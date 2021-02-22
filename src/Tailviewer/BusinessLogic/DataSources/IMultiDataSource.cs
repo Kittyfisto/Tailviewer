@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
 	/// <summary>
 	///     The interface for a data source which is constructed from one or more child-<see cref="IDataSource" />s:
-	///     It provides access to a merged <see cref="ILogFile" /> which contains log entries from each of its
+	///     It provides access to a merged <see cref="ILogSource" /> which contains log entries from each of its
 	///     child sources in chronological order.
 	/// </summary>
 	/// <remarks>

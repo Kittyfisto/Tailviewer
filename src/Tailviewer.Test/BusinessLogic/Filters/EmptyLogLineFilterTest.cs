@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Columns;
+using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
@@ -13,17 +14,17 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 		public void TestPassesFilter1()
 		{
 			var filter = new EmptyLogLineFilter();
-			filter.PassesFilter(new LogLine()).Should().BeFalse("because the given logline is completely empty");
-			filter.PassesFilter(new LogLine(0, "", LevelFlags.All))
+			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum)).Should().BeFalse("because the given logline is completely empty");
+			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum){Index=0, RawContent ="", LogLevel = LevelFlags.All})
 				.Should()
 				.BeFalse("because the given line contains only an empty message");
-			filter.PassesFilter(new LogLine(0, " ", LevelFlags.All))
+			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum){Index=0, RawContent = " ", LogLevel = LevelFlags.All})
 				.Should()
 				.BeFalse("because the given line contains only spaces");
-			filter.PassesFilter(new LogLine(0, " \t \r\n", LevelFlags.All))
+			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum){Index=0, RawContent = " \t \r\n", LogLevel = LevelFlags.All})
 				.Should()
 				.BeFalse("because the given line contains only whitespace");
-			filter.PassesFilter(new LogLine(0, " s    \t", LevelFlags.All))
+			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum){Index=0, RawContent = " s    \t", LogLevel = LevelFlags.All})
 				.Should()
 				.BeTrue("because the given line contains a non-whitespace character");
 		}

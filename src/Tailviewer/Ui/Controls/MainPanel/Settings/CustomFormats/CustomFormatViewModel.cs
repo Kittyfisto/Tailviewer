@@ -8,8 +8,7 @@ using System.Windows.Input;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFileFormats;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 
@@ -111,6 +110,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats
 		}
 
 		public ICommand RemoveCommand { get; set; }
+
+		public CustomLogFileFormat CustomFormat => _customFormat;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

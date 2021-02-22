@@ -70,18 +70,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
@@ -94,12 +86,17 @@
   <ItemGroup>
     <Compile Include="AbstractIdTest.cs" />
     <Compile Include="Appender.cs" />
+    <Compile Include="ArrayExtensionsTest.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderActionTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\AbstractLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\CombinedLogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\SingleColumnLogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\ConcurrentQueueExtensionsTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
@@ -116,53 +113,71 @@
     <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\OrFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\RangeFilterTest.cs" />
+    <Compile Include="BusinessLogic\FixedSizeListTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterTest.cs" />
     <Compile Include="BusinessLogic\LevelFlagsTest.cs" />
-    <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
-    <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\EmptyLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Properties\AbstractPropertiesBufferTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractAggregatedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Entries\AbstractReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Sources\AbstractTaskSchedulerLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Properties\ConcurrentPropertiesListTest.cs" />
+    <Compile Include="BusinessLogic\Columns\CustomColumnDescriptorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Adorner\LogSourceColumnAdornerTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Adorner\LogSourcePropertyAdornerTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\BufferedLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PagedLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Buffer\PageTest.cs" />
+    <Compile Include="BusinessLogic\Sources\EmptyLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntryListTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileFormatsTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFilePropertiesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileChangesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFilePendingModificationTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Filtered\FilteredLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\InMemoryLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferViewTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryTest2.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogEntryBufferAccessorTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferArrayTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogEntryListAccessorTest.cs" />
+    <Compile Include="BusinessLogic\Buffers\LogBufferListTest.cs" />
+    <Compile Include="BusinessLogic\Entries\LogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogEntryParserFactoryTest.cs" />
+    <Compile Include="BusinessLogic\Columns\GeneralColumnsTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogFileFormatsTest.cs" />
+    <Compile Include="BusinessLogic\Properties\GeneralPropertiesTest.cs" />
+    <Compile Include="BusinessLogic\Properties\PropertiesBufferListTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileChangesTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileIndexTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogFilePendingModificationTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest2.cs" />
+    <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest3.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\PluginLogFileFactoryTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest2.cs" />
+    <Compile Include="BusinessLogic\Buffers\AbstractReadOnlyLogBufferTest.cs" />
+    <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\Entries\ReadOnlyLogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\EncodingDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\FileFingerprintTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\FileFormatDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\GenericTextLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\LineOffsetDetectorTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Text\GenericTextLogEntryParserTest.cs" />
+    <Compile Include="BusinessLogic\Columns\WellKnownColumnDescriptorTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\InMemoryLogTableTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableListenerCollectionTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableSectionTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParserTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Entries\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileIssuesPluginTest.cs" />
@@ -171,12 +186,11 @@
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersionTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogSourceSearchTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
+    <Compile Include="BusinessLogic\Sources\Parsers\TimestampParserTest.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="DataSourceIdTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterIdTest.cs" />
@@ -186,9 +200,11 @@
     <Compile Include="EnhancementAttribute.cs" />
     <Compile Include="FileExTest.cs" />
     <Compile Include="LocalTest.cs" />
+    <Compile Include="PercentageTest.cs" />
     <Compile Include="QuickFilterIdTest.cs" />
     <Compile Include="ReaderWriterTest.cs" />
     <Compile Include="RectangleTest.cs" />
+    <Compile Include="RequiresElevation.cs" />
     <Compile Include="ServiceContainerTest.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
@@ -200,13 +216,14 @@
     <Compile Include="Settings\LogLevelSettingsTest.cs" />
     <Compile Include="Settings\LogViewerSettingsTest.cs" />
     <Compile Include="Settings\MainWindowSettingsTest.cs" />
+    <Compile Include="PathEx.cs" />
     <Compile Include="Settings\QuickFiltersTest.cs" />
     <Compile Include="Settings\QuickFilterTest.cs" />
     <Compile Include="Settings\TextSettingsTest.cs" />
     <Compile Include="Settings\TimeFilterTest.cs" />
     <Compile Include="SimpleLogFileFormatMatcher.cs" />
     <Compile Include="SimplePluginLogFileFactory.cs" />
-    <Compile Include="SimpleTextLogFileParserPlugin.cs" />
+    <Compile Include="SimpleLogEntryParserPlugin.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
@@ -222,16 +239,19 @@
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenterTest.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFileTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormatPluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
-    <Compile Include="Ui\Controls\SidePanel\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyConverterTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModelTest.cs" />
     <Compile Include="Ui\Controls\TextCanvasTest.cs" />
@@ -243,7 +263,7 @@
     <Compile Include="Ui\FolderDataSourceViewModelTest.cs" />
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
-    <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\FileDataSourceViewModelTest.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
@@ -261,6 +281,21 @@
     <Content Include="Settings\settings_no_file_guid.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\1Line.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\1Line_WithNewline.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\1Mb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\1Mb_1Line.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\1Mb_2Lines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\2Lines.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -271,6 +306,24 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\DifferentLevels.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Empty.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\utf16_be_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\utf16_le_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\utf8_w_bom.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Encodings\windows_1252.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Formats\Serilog\Serilog.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\LevelCounts.txt">

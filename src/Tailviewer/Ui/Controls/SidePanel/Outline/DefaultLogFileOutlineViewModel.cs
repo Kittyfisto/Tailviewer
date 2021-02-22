@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -14,21 +14,50 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ILogFile _logFile;
-		private readonly IReadOnlyList<ILogFilePropertyViewModel> _properties;
+		private readonly ILogSource _logSource;
+		private readonly PropertiesBufferList _propertyValues;
+		private readonly Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter> _presentersByProperty;
+		private readonly ObservableCollection<IPropertyPresenter> _presenters;
+		private readonly IPropertyPresenterPlugin _registry;
 
-		public DefaultLogFileOutlineViewModel(ILogFile logFile)
+		public DefaultLogFileOutlineViewModel(IServiceContainer serviceContainer, ILogSource logSource)
 		{
-			_logFile = logFile;
-			var properties = logFile.Properties ?? Enumerable.Empty<ILogFilePropertyDescriptor>();
-			_properties = properties.Select(TryCreateViewModel)
-			                     .Where(x => x != null)
-			                     .ToList();
+			_logSource = logSource;
+			_propertyValues = new PropertiesBufferList();
+			_presentersByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter>();
+			_presenters = new ObservableCollection<IPropertyPresenter>();
+			_registry = serviceContainer.TryRetrieve<IPropertyPresenterPlugin>();
+			if (_registry == null)
+			{
+				Log.WarnFormat("Registry is missing: No properties will be displayed...");
+			}
 		}
 
-		public IReadOnlyList<ILogFilePropertyViewModel> Properties
+		public IReadOnlyList<IPropertyPresenter> Properties
 		{
-			get { return _properties; }
+			get { return _presenters; }
+		}
+
+		public void Update()
+		{
+			_logSource.GetAllProperties(_propertyValues);
+			foreach (var property in _propertyValues.Properties)
+			{
+				if (!_presentersByProperty.TryGetValue(property, out var presenter
+				                                      ))
+				{
+					presenter = TryCreateViewModel(property);
+					_presentersByProperty.Add(property, presenter
+					                         );
+
+					if (presenter != null)
+						_presenters.Add(presenter);
+				}
+
+				// Some properties just don't have presenters and we want to avoid trying to create one over and over,
+				// so we simply remember those that don't have one
+				presenter?.Update(_propertyValues.GetValue(property));
+			}
 		}
 
 		#region Implementation of INotifyPropertyChanged
@@ -39,34 +68,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		#endregion
 
-		private ILogFilePropertyViewModel TryCreateViewModel(ILogFilePropertyDescriptor x)
-		{
-			try
-			{
-				return (ILogFilePropertyViewModel) CreateViewModel((dynamic) x);
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-				return null;
-			}
-		}
-
-		private LogFilePropertyViewModel<T> CreateViewModel<T>(ILogFilePropertyDescriptor<T> descriptor)
-		{
-			return new LogFilePropertyViewModel<T>(descriptor);
-		}
-
 		#region Implementation of IDisposable
 
 		public void Dispose()
 		{
-		}
-
-		public void Update()
-		{
-			foreach (var property in _properties)
-				property.Update(_logFile);
 		}
 
 		public FrameworkElement TryCreateContent()
@@ -78,5 +83,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		}
 
 		#endregion
+
+		private IPropertyPresenter TryCreateViewModel(IReadOnlyPropertyDescriptor property)
+		{
+			try
+			{
+				return _registry?.TryCreatePresenterFor(property);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+				return null;
+			}
+		}
 	}
 }

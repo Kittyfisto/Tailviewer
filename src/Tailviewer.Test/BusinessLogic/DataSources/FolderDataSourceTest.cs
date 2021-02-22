@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -189,16 +189,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var unfiltered = dataSource.UnfilteredLogFile;
-			var filtered = dataSource.FilteredLogFile;
+			var unfiltered = dataSource.UnfilteredLogSource;
+			var filtered = dataSource.FilteredLogSource;
 
 			dataSource.QuickFilterChain = new List<ILogEntryFilter>();
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 
 			dataSource.QuickFilterChain = null;
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 		}
 
 		[Test]
@@ -211,16 +211,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var unfiltered = dataSource.UnfilteredLogFile;
-			var filtered = dataSource.FilteredLogFile;
+			var unfiltered = dataSource.UnfilteredLogSource;
+			var filtered = dataSource.FilteredLogSource;
 
 			dataSource.IsSingleLine = !dataSource.IsSingleLine;
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 
 			dataSource.IsSingleLine = !dataSource.IsSingleLine;
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 		}
 
 		[Test]
@@ -233,16 +233,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var unfiltered = dataSource.UnfilteredLogFile;
-			var filtered = dataSource.FilteredLogFile;
+			var unfiltered = dataSource.UnfilteredLogSource;
+			var filtered = dataSource.FilteredLogSource;
 
 			dataSource.LevelFilter = LevelFlags.Error;
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 
 			dataSource.LevelFilter = LevelFlags.All;
-			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
-			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+			dataSource.UnfilteredLogSource.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogSource.Should().BeSameAs(filtered);
 		}
 
 		[Test]

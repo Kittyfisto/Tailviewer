@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -21,47 +20,47 @@ namespace Tailviewer.Formats.Serilog
 
 		#region Implementation of ILogFileFormatMatcher
 
-		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+		public bool TryMatchFormat(string fileName,
+		                           byte[] header,
+		                           Encoding encoding,
+		                           out ILogFileFormat format,
+		                           out Certainty certainty)
 		{
 			var formats = _repository.Formats.OfType<SerilogFileFormat>();
 
 			foreach (var serilogFormat in formats)
 			{
 				var parser = serilogFormat.Parser;
-				using (var reader = CreateStreamReader(initialContent, serilogFormat.Encoding))
+				using (var memoryStream = new MemoryStream(header))
+				using(var reader = new StreamReader(memoryStream, serilogFormat.Encoding ?? encoding))
 				{
 					if (TryParseFormat(reader, parser))
 					{
 						format = serilogFormat;
+						certainty = Certainty.Sure;
 						return true;
 					}
 				}
 			}
 
+			certainty = header.Length >= 512
+				? Certainty.Sure
+				: Certainty.Uncertain;
 			format = null;
 			return false;
 		}
 
 		private static bool TryParseFormat(StreamReader reader,
-		                                   SerilogFileParser parser)
+		                                   SerilogEntryParser parser)
 		{
 			// we're happy if we can match the first line
 			var line = reader.ReadLine();
-			if (!parser.TryParse(line, out _))
+			if (!parser.TryParse(0, line, out _))
 			{
 				return false;
 			}
 
 			return true;
-		}
-
-		private static StreamReader CreateStreamReader(byte[] initialContent, Encoding encoding)
-		{
-			var stream = new MemoryStream(initialContent);
-			if (encoding != null)
-				return new StreamReader(stream, encoding);
-
-			return new StreamReader(stream);
 		}
 
 		#endregion

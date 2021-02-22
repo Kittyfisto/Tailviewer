@@ -1,5 +1,5 @@
 using System;
-using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins.Description
 {
@@ -13,7 +13,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		string FullTypeName { get; }
 
 		/// <summary>
-		///     The version of the inteface being implemented.
+		///     The version of the interface being implemented.
 		/// </summary>
 		PluginInterfaceVersion Version { get; }
 

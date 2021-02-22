@@ -10,6 +10,7 @@ using SharpRemote;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Archiver.Repository;
+using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {

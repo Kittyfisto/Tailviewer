@@ -1,13 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
@@ -19,22 +20,22 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 	{
 		private Mock<IActionCenter> _actionCenter;
 		private ILogFileFactory _logFileFactory;
-		private DefaultTaskScheduler _scheduler;
+		private DefaultTaskScheduler _taskScheduler;
 		private ApplicationSettings _settings;
 
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_taskScheduler = new DefaultTaskScheduler();
+			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
 			_actionCenter = new Mock<IActionCenter>();
-			_settings = new ApplicationSettings(Path.GetTempFileName());
+			_settings = new ApplicationSettings(PathEx.GetTempFileName());
 		}
 
 		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
-			_scheduler.Dispose();
+			_taskScheduler.Dispose();
 		}
 
 		[SetUp]
@@ -47,14 +48,14 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestSearch1()
 		{
 			using (
-				var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
-					new DataSource(TextLogFileAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
+				var dataSource = new FileDataSource(_logFileFactory, _taskScheduler,
+					new DataSource(TextLogSourceAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
 			{
-				var dataSourceModel = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
+				var dataSourceModel = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";
-				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
+				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
@@ -63,7 +64,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				dataSourceModel.SearchTerm = "info";
 
 				// Now we wait for the very last filter operation to complete
-				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
+				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// And then dispatch ALL events at ONCE.
 				// We expect the view model to completely ignore the old changes!
 				model.Update();

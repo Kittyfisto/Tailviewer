@@ -5,7 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
@@ -58,21 +58,21 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter3()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>();
+			var sources = new ObservableCollection<FileDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
@@ -80,17 +80,17 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter4()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>();
+			var sources = new ObservableCollection<FileDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 
 			sources.RemoveAt(1);
@@ -106,13 +106,13 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter5()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.StringFilter = "2";
@@ -123,9 +123,9 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter6()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.StringFilter = "2";
@@ -133,10 +133,10 @@ namespace Tailviewer.Test.Ui
 			_control.FilteredItemsSource.Should().BeEmpty();
 
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			sources.Add(
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources[1]);
 		}
@@ -144,13 +144,13 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter7()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
@@ -168,13 +168,13 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestFilter8()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
@@ -193,14 +193,14 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that inserting an item at the first position WITHOUT a filter works")]
 		public void TestInsertAt1()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(0,
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
@@ -209,14 +209,14 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that inserting an item at the last position WITHOUT a filter works")]
 		public void TestInsertAt2()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(1,
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
@@ -225,16 +225,16 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that inserting an item in the middle WITHOUT a filter works")]
 		public void TestInsertAt3()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test1.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(1,
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
@@ -243,18 +243,18 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that inserting an item in the middle WITH a filter works")]
 		public void TestInsertAt4()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("foo.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
 			sources.Insert(1,
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(new object[] {sources[1], sources[2]});
 		}
@@ -263,20 +263,20 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that inserting an item in the middle WITH a filter works")]
 		public void TestInsertAt5()
 		{
-			var sources = new ObservableCollection<SingleDataSourceViewModel>
+			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test1.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("foo.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
 			};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
 			sources.Insert(2,
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
 			_control.FilteredItemsSource.Should().Equal(new object[] {sources[0], sources[2], sources[3]});
 

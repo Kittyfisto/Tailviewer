@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
@@ -30,29 +28,29 @@ namespace Tailviewer.BusinessLogic.DataSources
 		///     WITHOUT any of the settings of this source applied
 		///     (such as multiline, filters, etc...).
 		/// </summary>
-		ILogFile OriginalLogFile { get; }
+		ILogSource OriginalLogSource { get; }
 
 		/// <summary>
 		///     A log file which has the <see cref="IsSingleLine" /> modification
 		///     applied, but is still unfiltered.
 		/// </summary>
-		ILogFile UnfilteredLogFile { get; }
+		ILogSource UnfilteredLogSource { get; }
 
 		/// <summary>
 		///     The final log file with all the modifications of this data source
 		///     applied to it.
 		/// </summary>
-		ILogFile FilteredLogFile { get; }
+		ILogSource FilteredLogSource { get; }
 
 		/// <summary>
 		///     The log file filtered to display only those entries matching
 		///     <see cref="FindAllFilter"/>.
 		/// </summary>
-		ILogFile FindAllLogFile { get; }
+		ILogSource FindAllLogSource { get; }
 
-		ILogFileSearch FindAllSearch { get; }
+		ILogSourceSearch FindAllSearch { get; }
 
-		ILogFileSearch Search { get; }
+		ILogSourceSearch Search { get; }
 
 		DateTime? LastModified { get; }
 		DateTime LastViewed { get; set; }

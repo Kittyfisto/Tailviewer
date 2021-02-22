@@ -52,6 +52,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public static readonly DependencyProperty AddDataSourceFromFolderCommandProperty = DependencyProperty.Register(
 		                                                "AddDataSourceFromFolderCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
 
+		public static readonly DependencyProperty AddCustomDataSourceCommandProperty = DependencyProperty.Register(
+		 "AddCustomDataSourceCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
+
+		public static readonly DependencyProperty CustomDataSourcesProperty = DependencyProperty.Register(
+		 "CustomDataSources", typeof(IEnumerable<AddCustomDataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(default(IEnumerable<AddCustomDataSourceViewModel>)));
+
 		public static DataSourcesControl Instance;
 
 		private FilterTextBox _partDataSourceSearch;
@@ -79,6 +85,18 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			get { return (ICommand) GetValue(AddDataSourceFromFolderCommandProperty); }
 			set { SetValue(AddDataSourceFromFolderCommandProperty, value); }
+		}
+
+		public ICommand AddCustomDataSourceCommand
+		{
+			get { return (ICommand) GetValue(AddCustomDataSourceCommandProperty); }
+			set { SetValue(AddCustomDataSourceCommandProperty, value); }
+		}
+
+		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources
+		{
+			get { return (IEnumerable<AddCustomDataSourceViewModel>) GetValue(CustomDataSourcesProperty); }
+			set { SetValue(CustomDataSourcesProperty, value); }
 		}
 
 		public string StringFilter
@@ -198,7 +216,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
 			dropInfo = null;
-			IDataSourceViewModel viewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel ??
+			IDataSourceViewModel viewModel = e.Data.GetData(typeof (FileDataSourceViewModel)) as IDataSourceViewModel ??
 			                                 e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
 			var source = new TreeItem
 				{
@@ -242,7 +260,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 			var dropType = DataSourceDropType.None;
 			double height = destination.TreeViewItem.ActualHeight;
-			if (source is SingleDataSourceViewModel)
+			if (source is FileDataSourceViewModel)
 			{
 				// Let's distribute it as follows:
 				// 20% top => arrange
