@@ -30,6 +30,7 @@
             <converters1:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
             <converters1:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
             <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+            <converters1:InvertBoolConverter x:Key="InvertBoolConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
             <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
             <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
@@ -62,7 +63,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- Data Source Selector -->
+            <!-- Data Source Selector, Top Left -->
             <Border Background="{StaticResource SecondaryBrush}"
                     Width="300">
                 <controls:FlatToggleButton x:Name="DataSourceToggleButton"
@@ -72,6 +73,7 @@
                                            VerticalContentAlignment="Center"
                                            HorizontalContentAlignment="Left"
                                            ToolTip="{Binding Tooltip}"
+                                           IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}"
                                            FocusVisualStyle="{x:Null}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -86,7 +88,6 @@
                                        FontSize="14"
                                        Foreground="White" />
                         </StackPanel>
-                        <!-- TODO: Icon to symbolize expand / shrink -->
                     </Grid>
                 </controls:FlatToggleButton>
             </Border>
@@ -343,13 +344,26 @@
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
+            <!-- This grid is toggled between collapsed/visible in order to reserve the same amount of space that the
+                 data sources panel does, so that the LogEntryListView moves to the right as soon we pin the data sources panel. 
+                 The spacer is deliberately 1px wider than the content above it so we may draw a little spacer between the
+                 data sources and log viewer panel -->
+            <Border Grid.Column="0"
+                    x:Name="PART_DataSourcesPanelSpacer"
+                    SnapsToDevicePixels="True"
+                    Width="302"
+                    Visibility="{Binding DataSources.IsPinned, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                    BorderThickness="0,0,1,0"
+                    Background="{StaticResource SeparatorBrush}" />
+
             <logView:LogEntryListView
                 x:Name="PART_ListView"
-                Grid.Column="0"
+                Grid.Column="1"
                 DataSource="{Binding DataSource.DataSource, ElementName=This}"
                 LogSource="{Binding LogSource, ElementName=This}"
                 Search="{Binding Search, ElementName=This}"
@@ -363,7 +377,7 @@
                 SnapsToDevicePixels="True" />
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
-            <Grid Grid.Column="1"
+            <Grid Grid.Column="2"
                   Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}">
                 <ContentPresenter Width="300"
                                   VerticalAlignment="Stretch"
@@ -372,11 +386,13 @@
             </Grid>
         </Grid>
 
-        <!-- Overlay to hide current data source -->
-        <Rectangle Grid.Row="2"
-                   Fill="#55000000"
-                   MouseDown="OverlayOnMouseDown"
-                   Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
+        <!-- Overlay to visualize that a flyout has been opened, but we only show it when the flyout is opened AND NOT pinned -->
+        <Grid Grid.Row="2"
+              Visibility="{Binding DataSources.IsPinned, Converter={StaticResource BoolTrueToCollapsedConverter}}">
+            <Rectangle Fill="#55000000"
+                       MouseDown="OverlayOnMouseDown"
+                       Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
+        </Grid>
 
         <!-- Data Sources -->
         <dataSourceTree:DataSourcesControl Grid.Row="2"
@@ -389,7 +405,8 @@
                                            AddDataSourceFromFileCommand="{Binding AddDataSourceFromFileCommand}"
                                            AddDataSourceFromFolderCommand="{Binding AddDataSourceFromFolderCommand}"
                                            CustomDataSources="{Binding CustomDataSources}"
-                                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+                                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                           IsPinned="{Binding IsPinned, Mode=TwoWay}" />
 
         <!-- Error Message (File missing, access error, etc...) -->
         <StackPanel Grid.Row="2" VerticalAlignment="Center">

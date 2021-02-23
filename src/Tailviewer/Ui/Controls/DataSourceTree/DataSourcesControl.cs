@@ -58,6 +58,9 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public static readonly DependencyProperty CustomDataSourcesProperty = DependencyProperty.Register(
 		 "CustomDataSources", typeof(IEnumerable<AddCustomDataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(default(IEnumerable<AddCustomDataSourceViewModel>)));
 
+		public static readonly DependencyProperty IsPinnedProperty = DependencyProperty.Register(
+		                                                "IsPinned", typeof(bool), typeof(DataSourcesControl), new PropertyMetadata(default(bool)));
+
 		public static DataSourcesControl Instance;
 
 		private FilterTextBox _partDataSourceSearch;
@@ -97,6 +100,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			get { return (IEnumerable<AddCustomDataSourceViewModel>) GetValue(CustomDataSourcesProperty); }
 			set { SetValue(CustomDataSourcesProperty, value); }
+		}
+
+		public bool IsPinned
+		{
+			get { return (bool) GetValue(IsPinnedProperty); }
+			set { SetValue(IsPinnedProperty, value); }
 		}
 
 		public string StringFilter

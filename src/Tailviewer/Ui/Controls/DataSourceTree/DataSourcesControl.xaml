@@ -43,6 +43,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Data sources"
                                            Foreground="DarkGray"
@@ -50,8 +51,18 @@
                                            VerticalAlignment="Center"
                                            Margin="8,0,0,0" />
 
+                                <controls2:PinToggleButton Grid.Column="2"
+                                                           Width="26"
+                                                           Height="26"
+                                                           Margin="4"
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Right"
+                                                           RotateWhenUnchecked="True"
+                                                           ToolTip="Pin/Unpin this panel"
+                                                           IsChecked="{Binding IsPinned, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+
                                 <controls2:FileAddButton
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Width="26"
                                     Height="26"
                                     VerticalAlignment="Center"
@@ -59,7 +70,7 @@
                                     ToolTip="Add new data source from file"
                                     Command="{TemplateBinding AddDataSourceFromFileCommand}" />
                                 <controls2:FolderAddButton
-                                    Grid.Column="3"
+                                    Grid.Column="4"
                                     Width="26"
                                     Height="26"
                                     VerticalAlignment="Center"
@@ -67,7 +78,7 @@
                                     ToolTip="Add new data source from folder"
                                     Command="{TemplateBinding AddDataSourceFromFolderCommand}" />
                                 <controls2:AddButton
-                                    Grid.Column="4"
+                                    Grid.Column="5"
                                     Width="26"
                                     Height="26"
                                     VerticalAlignment="Center"

@@ -43,7 +43,8 @@ namespace Tailviewer.Test.Settings
 
 		[Test]
 		public void TestClone([Values(true, false)] bool recursive,
-							 [ValueSource(nameof(Patterns))] string pattern)
+							  [ValueSource(nameof(Patterns))] string pattern,
+		                      [Values(true, false)] bool isPinned)
 		{
 			var id = DataSourceId.CreateNew();
 			var dataSources = new DataSourceSettings
@@ -53,6 +54,7 @@ namespace Tailviewer.Test.Settings
 			dataSources.FolderDataSourceRecursive = recursive;
 			dataSources.SelectedItem = id;
 			dataSources.FolderDataSourcePattern = pattern;
+			dataSources.IsPinned = isPinned;
 
 			var cloned = dataSources.Clone();
 			cloned.Should().NotBeNull();
@@ -60,6 +62,7 @@ namespace Tailviewer.Test.Settings
 			cloned.SelectedItem.Should().Be(id);
 			cloned.FolderDataSourceRecursive.Should().Be(recursive);
 			cloned.FolderDataSourcePattern.Should().Be(pattern);
+			cloned.IsPinned.Should().Be(isPinned);
 			cloned.Count.Should().Be(1);
 			cloned[0].Should().NotBeNull();
 			cloned[0].Should().NotBeSameAs(dataSources[0]);
@@ -135,16 +138,19 @@ namespace Tailviewer.Test.Settings
 
 		[Test]
 		public void TestRoundtrip([Values(true, false)] bool recursive,
-						[ValueSource(nameof(Patterns))] string pattern)
+						          [ValueSource(nameof(Patterns))] string pattern,
+		                          [Values(true, false)] bool isPinned)
 		{
 			var settings = new DataSourceSettings
 			{
 				FolderDataSourceRecursive = recursive,
-				FolderDataSourcePattern = pattern
+				FolderDataSourcePattern = pattern,
+				IsPinned = isPinned
 			};
 			var actual = Roundtrip(settings);
 			actual.FolderDataSourceRecursive.Should().Be(recursive);
 			actual.FolderDataSourcePattern.Should().Be(pattern);
+			actual.IsPinned.Should().Be(isPinned);
 		}
 
 		[Pure]

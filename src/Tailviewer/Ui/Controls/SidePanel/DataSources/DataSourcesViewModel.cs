@@ -32,7 +32,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		private readonly ICommand _addDataSourceFromFolderCommand;
 		private readonly IReadOnlyList<AddCustomDataSourceViewModel> _customDataSources;
 		private IDataSourceViewModel _selectedItem;
-
+		private bool _isPinned;
 
 		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources, IActionCenter actionCenter)
 		{
@@ -98,6 +98,19 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		public ICommand AddDataSourceFromFolderCommand => _addDataSourceFromFolderCommand;
 
 		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources => _customDataSources;
+
+		public bool IsPinned
+		{
+			get { return _isPinned; }
+			set
+			{
+				if (value == _isPinned)
+					return;
+				_isPinned = value;
+				_settings.DataSources.IsPinned = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public IDataSourceViewModel SelectedItem
 		{
