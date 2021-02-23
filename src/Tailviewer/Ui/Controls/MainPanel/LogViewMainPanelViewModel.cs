@@ -390,6 +390,9 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 				_currentDataSourceLogView = value;
 				EmitPropertyChanged();
+
+				FileMenuItems = value?.DataSource.FileMenuItems;
+				ViewMenuItems = value?.DataSource.ViewMenuItems;
 			}
 		}
 

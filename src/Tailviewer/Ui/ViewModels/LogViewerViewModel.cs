@@ -42,14 +42,10 @@ namespace Tailviewer.Ui.ViewModels
 			IApplicationSettings applicationSettings,
 			TimeSpan maximumWaitTime)
 		{
-			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
-			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
-			if (applicationSettings == null) throw new ArgumentNullException(nameof(applicationSettings));
-
-			_actionCenter = actionCenter;
-			_applicationSettings = applicationSettings;
+			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
+			_applicationSettings = applicationSettings ?? throw new ArgumentNullException(nameof(applicationSettings));
 			_maximumWaitTime = maximumWaitTime;
-			_dataSource = dataSource;
+			_dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
 			_pendingSections = new List<KeyValuePair<ILogSource, LogFileSection>>();
 

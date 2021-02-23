@@ -583,8 +583,24 @@ namespace Tailviewer.Ui.Controls.LogView
 			var dataSource = (IDataSourceViewModel) sender;
 			switch (args.PropertyName)
 			{
-				case "FollowTail":
+				case nameof(IDataSourceViewModel.FollowTail):
 					PART_ListView.FollowTail = dataSource.FollowTail;
+					break;
+
+				case nameof(IDataSourceViewModel.ShowLineNumbers):
+					PART_ListView.ShowLineNumbers = dataSource.ShowLineNumbers;
+					break;
+
+				case nameof(IDataSourceViewModel.ShowElapsedTime):
+					PART_ListView.ShowElapsedTime = dataSource.ShowElapsedTime;
+					break;
+
+				case nameof(IDataSourceViewModel.ShowDeltaTimes):
+					PART_ListView.ShowDeltaTimes = dataSource.ShowDeltaTimes;
+					break;
+
+				case nameof(IDataSourceViewModel.ColorByLevel):
+					PART_ListView.ColorByLevel = dataSource.ColorByLevel;
 					break;
 
 				case "LevelsFilter":

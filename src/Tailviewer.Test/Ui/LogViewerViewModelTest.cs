@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -26,6 +27,18 @@ namespace Tailviewer.Test.Ui
 			_settings = new Mock<IApplicationSettings>();
 		}
 
+		[Pure]
+		private FolderDataSourceViewModel CreateFolderViewModel(IFolderDataSource dataSource)
+		{
+			return new FolderDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
+		}
+
+		[Pure]
+		private FileDataSourceViewModel CreateFileViewModel(IFileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
+		}
+
 		[Test]
 		public void TestDataSourceDoesntExist1()
 		{
@@ -38,7 +51,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
@@ -62,7 +75,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
@@ -89,7 +102,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Unable to access \"somefile.log\"");
@@ -108,7 +121,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("The data source is empty");
@@ -151,7 +164,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.LevelFilter).Returns(flags);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 
 			model.LogEntryCount.Should().Be(0);
@@ -175,7 +188,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the activated quick filters");
@@ -197,7 +210,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
-			var dataSourceModel = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the log file filter");
@@ -216,7 +229,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>());
 			dataSource.Setup(x => x.FullFileName).Returns(@"F:\logs\today");
 
-			var dataSourceModel = new FolderDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFolderViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("The folder \"today\" does not contain any file");
@@ -236,7 +249,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FullFileName).Returns(@"C:\logs\yesterday");
 			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.foo");
 
-			var dataSourceModel = new FolderDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var dataSourceModel = CreateFolderViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("The folder \"yesterday\" does not contain any file matching \"*.foo\"");

@@ -3,11 +3,12 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;
+using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -21,26 +22,32 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IActionCenter _actionCenter;
 		private readonly IFileDataSource _dataSource;
 		private readonly string _fileName;
-		private readonly ICommand _openInExplorerCommand;
 		private bool _canBeRemoved;
 		private bool _displayNoTimestampCount;
 		private bool _excludeFromParent;
 		private string _folder;
 
 		public FileDataSourceViewModel(IFileDataSource dataSource,
-		                               IActionCenter actionCenter)
-			: base(dataSource)
+		                               IActionCenter actionCenter,
+		                               IApplicationSettings applicationSettings)
+			: base(dataSource, actionCenter, applicationSettings)
 		{
-			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
-
-			_actionCenter = actionCenter;
+			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
 			_dataSource = dataSource;
 			_fileName = Path.GetFileName(dataSource.FullFileName);
-			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 			_canBeRemoved = true;
 
 			Update();
 			UpdateFolder();
+
+			AddFileMenuItems(new []
+			{
+				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
+				{
+					Header = "Open Containing Folder",
+					ToolTip = "Opens Folder the current Data Source is contained in"
+				}
+			});
 
 			UpdateDisplayNoTimestampCount();
 			PropertyChanged += OnPropertyChanged;
@@ -67,11 +74,6 @@ namespace Tailviewer.Ui.ViewModels
 		public string FullName
 		{
 			get { return _dataSource.FullFileName; }
-		}
-
-		public override ICommand OpenInExplorerCommand
-		{
-			get { return _openInExplorerCommand; }
 		}
 
 		public override string DisplayName
@@ -184,7 +186,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (Parent?.DataSource is IMultiDataSource parentDataSource)
 				SetContextMenuItems(new[] {new ToggleExcludeFromGroupViewModel(this)});
 			else
-				SetContextMenuItems(Enumerable.Empty<IContextMenuViewModel>());
+				SetContextMenuItems(Enumerable.Empty<IMenuViewModel>());
 		}
 
 		[Pure]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -12,6 +13,7 @@ using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Test.Ui
 {
@@ -21,6 +23,7 @@ namespace Tailviewer.Test.Ui
 		private ILogFileFactory _logFileFactory;
 		private ManualTaskScheduler _scheduler;
 		private Mock<IActionCenter> _actionCenter;
+		private Mock<IApplicationSettings> _settings;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -28,6 +31,19 @@ namespace Tailviewer.Test.Ui
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
+			_settings = new Mock<IApplicationSettings>();
+		}
+
+		[Pure]
+		private FileDataSourceViewModel CreateFileViewModel(IFileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
+		}
+
+		[Pure]
+		private FolderDataSourceViewModel CreateFolderViewModel(IFolderDataSource dataSource)
+		{
+			return new FolderDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
 		}
 
 		[Test]
@@ -39,7 +55,7 @@ namespace Tailviewer.Test.Ui
 			};
 			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 				model.Id.Should().Be(settings.Id);
 
@@ -58,7 +74,7 @@ namespace Tailviewer.Test.Ui
 			{
 				source.SearchTerm.Should().Be("foobar");
 
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				model.SearchTerm.Should().Be("foobar");
 			}
 		}
@@ -73,7 +89,7 @@ namespace Tailviewer.Test.Ui
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
 			}
 		}
@@ -88,7 +104,7 @@ namespace Tailviewer.Test.Ui
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				model.ShowElapsedTime.Should().Be(showElapsedTime);
 			}
 		}
@@ -103,7 +119,7 @@ namespace Tailviewer.Test.Ui
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -129,7 +145,7 @@ namespace Tailviewer.Test.Ui
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogSource>().Object, TimeSpan.Zero))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -150,7 +166,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 
 			model.DisplayName.Should().Be("foo");
 			new Action(() => model.DisplayName = "bar").Should().Throw<InvalidOperationException>();
@@ -165,7 +181,7 @@ namespace Tailviewer.Test.Ui
 					new FileDataSource(_logFileFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				model.RemoveCommand.Should().NotBeNull();
 				model.RemoveCommand.CanExecute(null).Should().BeTrue();
 				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
@@ -180,7 +196,7 @@ namespace Tailviewer.Test.Ui
 					new FileDataSource(_logFileFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
+				var model = CreateFileViewModel(source);
 				var calls = new List<IDataSourceViewModel>();
 				model.Remove += calls.Add;
 				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
@@ -198,7 +214,7 @@ namespace Tailviewer.Test.Ui
 			};
 			using (var dataSource = new FileDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+				var model = CreateFileViewModel(dataSource);
 				var chain = new[] {new SubstringFilter("foobar", true)};
 				model.QuickFilterChain = chain;
 				model.QuickFilterChain.Should().BeSameAs(chain);
@@ -212,7 +228,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.SetupAllProperties();
 
-			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 			model.CharacterCode = "ZZ";
 			model.CharacterCode.Should().Be("ZZ");
 			dataSource.Object.CharacterCode.Should().Be("ZZ");
@@ -233,7 +249,7 @@ namespace Tailviewer.Test.Ui
 			var single = new Mock<IFileDataSource>();
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			single.Setup(x => x.FullFileName).Returns(@"C:\Users\Simon\AppData\Local\Tailviewer\Installation.log");
-			var singleViewModel = new FileDataSourceViewModel(single.Object, _actionCenter.Object);
+			var singleViewModel = CreateFileViewModel(single.Object);
 			using (var monitor = singleViewModel.Monitor())
 			{
 				singleViewModel.DisplayName.Should().Be("Installation.log");
@@ -242,7 +258,7 @@ namespace Tailviewer.Test.Ui
 				var folder = new Mock<IFolderDataSource>();
 				folder.Setup(x => x.OriginalSources).Returns(new List<IDataSource>());
 				folder.Setup(x => x.LogFileFolderPath).Returns(@"C:\Users\Simon\AppData\Local\");
-				var folderViewModel = new FolderDataSourceViewModel(folder.Object, _actionCenter.Object);
+				var folderViewModel = CreateFolderViewModel(folder.Object);
 
 				singleViewModel.Parent = folderViewModel;
 				singleViewModel.DisplayName.Should().Be("Installation.log");
@@ -264,7 +280,7 @@ namespace Tailviewer.Test.Ui
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			var pluginDescription = new PluginDescription();
 			single.Setup(x => x.TranslationPlugin).Returns(pluginDescription);
-			var singleViewModel = new FileDataSourceViewModel(single.Object, _actionCenter.Object);
+			var singleViewModel = CreateFileViewModel(single.Object);
 			singleViewModel.TranslationPlugin.Should().NotBeNull();
 			singleViewModel.TranslationPlugin.Should().BeSameAs(pluginDescription);
 		}
@@ -276,7 +292,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 			var parent = new Mock<IMergedDataSourceViewModel>();
 			var parentDataSource = new Mock<IMultiDataSource>();
 			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
@@ -301,7 +317,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 			var parent = new Mock<IMergedDataSourceViewModel>();
 			var parentDataSource = new Mock<IMultiDataSource>();
 			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());

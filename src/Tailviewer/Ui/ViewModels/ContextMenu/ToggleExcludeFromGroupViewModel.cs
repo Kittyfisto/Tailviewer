@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Shapes;
 using Metrolib;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.ViewModels.ContextMenu
 {
 	public sealed class ToggleExcludeFromGroupViewModel
-		: IContextMenuViewModel
+		: IMenuViewModel
 		, INotifyPropertyChanged
 	{
 		private readonly ISingleDataSourceViewModel _dataSource;
@@ -35,12 +36,24 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public string ToolTip => null;
+
+		public Path Icon => null;
+
 		public ICommand Command
 		{
 			get
 			{
 				return _command;
 			}
+		}
+
+		public bool IsCheckable => false;
+
+		public bool IsChecked
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
 		}
 
 		#endregion

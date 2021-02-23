@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -20,6 +21,7 @@ namespace Tailviewer.Test.Ui
 		private DataSourcesControl _control;
 		private ILogFileFactory _logFileFactory;
 		private ManualTaskScheduler _scheduler;
+		private Mock<IApplicationSettings> _applicationSettings;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -27,12 +29,19 @@ namespace Tailviewer.Test.Ui
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
+			_applicationSettings = new Mock<IApplicationSettings>();
 		}
 
 		[SetUp]
 		public void SetUp()
 		{
 			_control = new DataSourcesControl();
+		}
+
+		[Pure]
+		private FileDataSourceViewModel CreateFileViewModel(IFileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
 		}
 
 		[Test]
@@ -48,8 +57,8 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -62,18 +71,18 @@ namespace Tailviewer.Test.Ui
 			_control.ItemsSource = sources;
 
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test2.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -84,14 +93,14 @@ namespace Tailviewer.Test.Ui
 			_control.ItemsSource = sources;
 
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test.log") {Id = DataSourceId.CreateNew()})));
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test2.log") {Id = DataSourceId.CreateNew()})));
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 
 			sources.RemoveAt(1);
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -108,12 +117,12 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test3.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
@@ -125,19 +134,19 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().BeEmpty();
 
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test2.log") {Id = DataSourceId.CreateNew()})));
 			sources.Add(
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			            CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                   new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources[1]);
 		}
 
@@ -146,12 +155,12 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test3.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 
@@ -170,12 +179,12 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test3.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 
@@ -195,13 +204,13 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(0,
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			               CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                      new DataSource("test2.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -211,13 +220,13 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(1,
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			               CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                      new DataSource("test2.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -227,15 +236,15 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test1.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test1.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			sources.Insert(1,
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			               CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                      new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -245,17 +254,17 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("foo.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("foo.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
 			sources.Insert(1,
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			               CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                      new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(new object[] {sources[1], sources[2]});
 		}
 
@@ -265,19 +274,19 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<FileDataSourceViewModel>
 			{
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test1.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("foo.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object),
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test2.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test1.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("foo.log") {Id = DataSourceId.CreateNew()})),
+				CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+				                                       new DataSource("test2.log") {Id = DataSourceId.CreateNew()}))
 			};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
 			sources.Insert(2,
-				new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("test3.log") {Id = DataSourceId.CreateNew()}), _actionCenter.Object));
+			               CreateFileViewModel(new FileDataSource(_logFileFactory, _scheduler,
+			                                                      new DataSource("test3.log") {Id = DataSourceId.CreateNew()})));
 			_control.FilteredItemsSource.Should().Equal(new object[] {sources[0], sources[2], sources[3]});
 
 			_control.StringFilter = null;

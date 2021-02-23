@@ -3,22 +3,32 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
+using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	public abstract class AbstractDataSourceViewModel
 		: IDataSourceViewModel
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly IDataSource _dataSource;
+		private readonly IActionCenter _actionCenter;
 		private readonly ICommand _removeCommand;
+		private readonly IApplicationSettings _applicationSettings;
 
 		private int _traceCount;
 		private int _debugCount;
@@ -52,13 +62,17 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
-		private readonly ObservableCollection<IContextMenuViewModel> _contextMenuItems;
+		private readonly ObservableCollection<IMenuViewModel> _fileMenuItems;
+		private readonly ObservableCollection<IMenuViewModel> _viewMenuItems;
+		private readonly ObservableCollection<IMenuViewModel> _contextMenuItems;
 
-		protected AbstractDataSourceViewModel(IDataSource dataSource)
+		protected AbstractDataSourceViewModel(IDataSource dataSource,
+		                                      IActionCenter actionCenter,
+		                                      IApplicationSettings applicationSettings)
 		{
-			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
-
-			_dataSource = dataSource;
+			_dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
+			_applicationSettings = applicationSettings;
 			_searchTerm = dataSource.SearchTerm;
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
@@ -71,7 +85,68 @@ namespace Tailviewer.Ui.ViewModels
 				CanBeExecuted = false
 			};
 
-			_contextMenuItems = new ObservableCollection<IContextMenuViewModel>();
+			_fileMenuItems = new ObservableCollection<IMenuViewModel>
+			{
+				new CommandMenuViewModel(new DelegateCommand2(ExportToFile))
+				{
+					Header = "Export To File",
+					ToolTip = "Export the current Data Source to a text file (with the current filters)"
+				}
+			};
+
+			_viewMenuItems = new ObservableCollection<IMenuViewModel>
+			{
+				new ToggleMenuViewModel(FollowTail, newValue => { FollowTail = newValue; })
+				{
+					Header = "Follow Tail",
+					ToolTip = "Follow/Unfollow the last log entry"
+				},
+				null,
+				new ToggleMenuViewModel(ShowLineNumbers, newValue => { ShowLineNumbers = newValue;})
+				{
+					Header = "Show Line Numbers",
+					ToolTip = "Show/hide line numbers",
+				},
+				new ToggleMenuViewModel(ShowDeltaTimes, newValue => { ShowDeltaTimes = newValue;})
+				{
+					Header = "Show Delta Times",
+					ToolTip = "Show the amount of time elapsed since the previous entry"
+				},
+				new ToggleMenuViewModel(ShowElapsedTime, newValue => { ShowElapsedTime = newValue;})
+				{
+					Header = "Show Elapsed Times",
+					ToolTip = "Show the amount of time elapsed since the first entry"
+				},
+				null,
+				new ToggleMenuViewModel(ColorByLevel, newValue => { ColorByLevel = newValue;})
+				{
+					Header = "Color by Level",
+					ToolTip = "Color log messages by their log level"
+				},
+				new ToggleMenuViewModel(HideEmptyLines, newValue => { HideEmptyLines = newValue;})
+				{
+					Header = "Hide Empty Lines",
+					ToolTip = "Hide lines which are completely empty"
+				},
+				new ToggleMenuViewModel(IsSingleLine, newValue => { IsSingleLine = newValue;})
+				{
+					Header = "Single Line",
+					ToolTip = "Treat every single line as a separate log entry"
+				},
+				null,
+				new CommandMenuViewModel(ClearScreenCommand)
+				{
+					Header = "Clear Screen",
+					ToolTip = "Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."
+				},
+				new CommandMenuViewModel(ShowAllCommand)
+				{
+					Header = "ShowAll",
+					ToolTip = "Shows all log entries that were previously cleared again"
+				},
+			};
+
+			_contextMenuItems = new ObservableCollection<IMenuViewModel>();
 		}
 
 		public int NewLogLineCount
@@ -117,9 +192,11 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public abstract ICommand OpenInExplorerCommand { get; }
-
 		public IPluginDescription TranslationPlugin => _dataSource.TranslationPlugin;
+
+		public IEnumerable<IMenuViewModel> FileMenuItems => _fileMenuItems;
+
+		public IEnumerable<IMenuViewModel> ViewMenuItems => _viewMenuItems;
 
 		public abstract string DisplayName { get; set; }
 		public abstract bool CanBeRenamed { get; }
@@ -648,7 +725,7 @@ namespace Tailviewer.Ui.ViewModels
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 
-		public IEnumerable<IContextMenuViewModel> ContextMenuItems => _contextMenuItems;
+		public IEnumerable<IMenuViewModel> ContextMenuItems => _contextMenuItems;
 
 		public virtual void Update()
 		{
@@ -683,7 +760,13 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		protected void SetContextMenuItems(IEnumerable<IContextMenuViewModel> contextMenuItems)
+		protected void AddFileMenuItems(IEnumerable<IMenuViewModel> viewModels)
+		{
+			foreach (var item in viewModels)
+				_fileMenuItems.Add(item);
+		}
+
+		protected void SetContextMenuItems(IEnumerable<IMenuViewModel> contextMenuItems)
 		{
 			_contextMenuItems.Clear();
 			foreach(var item in contextMenuItems)
@@ -725,5 +808,27 @@ namespace Tailviewer.Ui.ViewModels
 			EmitPropertyChanged(nameof(ScreenCleared));
 			_showAllCommand.CanBeExecuted = false;
 		}
+		private void ExportToFile()
+		{
+			var dataSource = DataSource;
+			var logFile = dataSource?.FilteredLogSource;
+			if (logFile == null)
+			{
+				Log.Warn("DataSource is null, cancelling export...");
+				return;
+			}
+
+			var exportDirectory = _applicationSettings.Export.ExportFolder;
+			var exporter = new LogFileToFileExporter(logFile,
+			                                         exportDirectory,
+			                                         dataSource.FullFileName
+			                                        );
+
+			var action = new ExportAction(exporter,
+			                              DisplayName,
+			                              exportDirectory);
+			_actionCenter.Add(action);
+		}
+
 	}
 }

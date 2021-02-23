@@ -82,7 +82,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="12,4,4,4">
-                            <TextBlock Text="Selected Data Source" Foreground="White" />
+                            <TextBlock Text="Current Data Source" Foreground="White" />
                             <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
                                        FontWeight="SemiBold"
                                        FontSize="14"
@@ -96,132 +96,6 @@
             <WrapPanel Grid.Column="1"
                        Orientation="Horizontal"
                        Margin="8">
-                <controls:FolderOpenButton Margin="0,0,0,4"
-                                           Padding="0"
-                                           Width="26"
-                                           Height="26"
-                                           VerticalContentAlignment="Center"
-                                           ToolTip="Open file in explorer"
-                                           Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}" />
-
-                <controls:ExportButton Margin="0,0,0,4"
-                                       Padding="0"
-                                       x:Name="PART_Export"
-                                       Command="{Binding LogView.ExportToFileCommand, ElementName=This}"
-                                       ToolTip="Export to file"
-                                       Width="26"
-                                       Height="26" />
-
-                <controls:FlatToggleButton
-                    Margin="0,0,8,8"
-                    Padding="4"
-                    x:Name="PART_FollowTail"
-                    Content="Follow Tail"
-                    VerticalAlignment="Stretch"
-                    ToolTip="(Un)Follow the latest changes"
-                    IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, ElementName=This}" />
-
-                <controls:FlatToggleButton
-                    Margin="0,0,8,8"
-                    Padding="4"
-                    x:Name="PART_View"
-                    VerticalAlignment="Stretch"
-                    ToolTip="Change the way the log file is displayed"
-                    Content="View"
-                    DataContext="{Binding Path=., ElementName=This}">
-                    <controls:FlatToggleButton.ContextMenu>
-                        <controls:FlatContextMenu AnchorAlignment="Center"
-                                                  HorizontalOffset="-60"
-                                                  Placement="Bottom"
-                                                  IsFirstItemHovered="True"
-                                                  VerticalOffset="-2">
-                            <controls:MenuItemContentControl Padding="0">
-                                <StackPanel Margin="8">
-
-                                    <controls:FlatToggleButton
-                                        Margin="0,0,0,8"
-                                        Padding="4"
-                                        x:Name="PART_ShowLineNumbers"
-                                        VerticalAlignment="Stretch"
-                                        ToolTip="Show/hide line numbers"
-                                        IsChecked="{Binding ShowLineNumbers, Mode=TwoWay}"
-                                        Content="Line Numbers" />
-
-                                    <controls:FlatToggleButton
-                                        Margin="0,0,0,8"
-                                        Padding="4"
-                                        x:Name="PART_ShowDeltaTime"
-                                        VerticalAlignment="Stretch"
-                                        IsChecked="{Binding DataSource.ShowDeltaTimes, Mode=TwoWay}"
-                                        ToolTip="Show the amount of time elapsed since the previous entry"
-                                        Content="Time delta" />
-
-                                    <controls:FlatToggleButton
-                                        Margin="0,0,0,8"
-                                        Padding="4"
-                                        x:Name="PART_ShowElapsedTime"
-                                        VerticalAlignment="Stretch"
-                                        IsChecked="{Binding DataSource.ShowElapsedTime, Mode=TwoWay}"
-                                        ToolTip="Show the amount of time elapsed since the first entry"
-                                        Content="Elapsed time" />
-
-                                    <logView:DataSourceDisplayModeToggleButton
-                                        x:Name="PART_MergedDataSourceDisplayMode"
-                                        DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay}"
-                                        Visibility="{Binding DataSource, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
-                                        VerticalAlignment="Stretch"
-                                        Margin="0,0,0,8"
-                                        Padding="4" />
-
-                                    <controls:FlatToggleButton
-                                        Margin="0,0,0,8"
-                                        Padding="4"
-                                        x:Name="PART_ColorByLevel"
-                                        VerticalAlignment="Stretch"
-                                        IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay}"
-                                        ToolTip="Color log messages by their log level"
-                                        Content="Color by level" />
-
-                                    <controls:FlatToggleButton
-                                        Margin="0,0,0,8"
-                                        Padding="4"
-                                        x:Name="PART_HideEmptyLines"
-                                        VerticalAlignment="Stretch"
-                                        IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay}"
-                                        ToolTip="Hide lines which are completely empty"
-                                        Content="Hide empty lines" />
-
-                                    <controls:FlatToggleButton
-                                        Margin="0"
-                                        Padding="4"
-                                        x:Name="PART_SingleLine"
-                                        VerticalAlignment="Stretch"
-                                        IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay}"
-                                        ToolTip="Treat every single line as a separate log entry"
-                                        Content="Single line" />
-                                    
-                                    <controls:FlatButton 
-                                    Margin="0"
-                                    Padding="4"
-                                    x:Name="PART_CLS"
-                                    Command="{Binding DataSource.ClearScreenCommand}"
-                                    Content="Clear Screen"
-                                    ToolTip="Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."/>
-
-                                <controls:FlatButton 
-                                    Margin="0"
-                                    Padding="4"
-                                    x:Name="PART_ShowAll"
-                                    Command="{Binding DataSource.ShowAllCommand}"
-                                    IsEnabled="{Binding DataSource.ScreenCleared}"
-                                    Content="Show All"
-                                    ToolTip="Shows all log entries that were previously cleared again"/>
-
-                                </StackPanel>
-                            </controls:MenuItemContentControl>
-                        </controls:FlatContextMenu>
-                    </controls:FlatToggleButton.ContextMenu>
-                </controls:FlatToggleButton>
 
                 <controls:FlatToggleButton
                     Margin="0,0,0,8"

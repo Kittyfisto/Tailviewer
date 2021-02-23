@@ -265,19 +265,19 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			IDataSourceViewModel viewModel;
 			if (dataSource is IFileDataSource single)
 			{
-				viewModel = new FileDataSourceViewModel(single, _actionCenter);
+				viewModel = new FileDataSourceViewModel(single, _actionCenter, _settings);
 			}
 			else if (dataSource is IMergedDataSource merged)
 			{
-				viewModel = new MergedDataSourceViewModel(merged, _actionCenter);
+				viewModel = new MergedDataSourceViewModel(merged, _actionCenter, _settings);
 			}
 			else if (dataSource is IFolderDataSource folder)
 			{
-				viewModel = new FolderDataSourceViewModel(folder, _actionCenter);
+				viewModel = new FolderDataSourceViewModel(folder, _actionCenter, _settings);
 			}
 			else if (dataSource is ICustomDataSource custom)
 			{
-				viewModel = new CustomDataSourceViewModel(custom);
+				viewModel = new CustomDataSourceViewModel(custom, _actionCenter, _settings);
 			}
 			else
 			{
@@ -550,7 +550,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 						_observable.Remove(dest);
 
 						MergedDataSource mergedDataSource = _dataSources.AddGroup();
-						merged = new MergedDataSourceViewModel(mergedDataSource, _actionCenter);
+						merged = new MergedDataSourceViewModel(mergedDataSource, _actionCenter, _settings);
 						merged.Remove += OnRemove;
 						merged.AddChild(source);
 						merged.AddChild(dest);

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
@@ -39,9 +39,8 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_settings = new Mock<IApplicationSettings>();
 			_dataSource =
-				new FileDataSourceViewModel(
-					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
-					_actionCenter.Object);
+				CreateViewModel(
+				                new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			_control = new LogViewerControl
 			{
 				DataSource = _dataSource,
@@ -50,6 +49,12 @@ namespace Tailviewer.Test.Ui.Controls
 			};
 
 			DispatcherExtensions.ExecuteAllEvents();
+		}
+
+		[Pure]
+		private FileDataSourceViewModel CreateViewModel(FileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
 		}
 
 		[Test]
@@ -367,9 +372,8 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestCtor()
 		{
 			var source =
-				new FileDataSourceViewModel(
-					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
-					_actionCenter.Object);
+				CreateViewModel(
+					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl

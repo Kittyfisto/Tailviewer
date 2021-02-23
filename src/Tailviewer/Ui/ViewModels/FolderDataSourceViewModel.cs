@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;
 using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -20,6 +21,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly IFolderDataSource _dataSource;
 		private readonly IActionCenter _actionCenter;
+		private readonly IApplicationSettings _settings;
 		private readonly Dictionary<IDataSource, IDataSourceViewModel> _dataSourceViewModelsByDataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _dataSourceViewModels;
 		private readonly string _displayName;
@@ -30,8 +32,10 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isEditing;
 		private bool _isDirty;
 
-		public FolderDataSourceViewModel(IFolderDataSource folder, IActionCenter actionCenter)
-			: base(folder)
+		public FolderDataSourceViewModel(IFolderDataSource folder,
+		                                 IActionCenter actionCenter,
+		                                 IApplicationSettings applicationSettings)
+			: base(folder, actionCenter, applicationSettings)
 		{
 			_dataSource = folder;
 			var path = folder.LogFileFolderPath;
@@ -42,16 +46,24 @@ namespace Tailviewer.Ui.ViewModels
 			_recursive = folder.Recursive;
 
 			_actionCenter = actionCenter;
+			_settings = applicationSettings;
 			_dataSourceViewModelsByDataSource = new Dictionary<IDataSource, IDataSourceViewModel>();
 			_dataSourceViewModels = new ObservableCollection<IDataSourceViewModel>();
 
-			SetContextMenuItems(new IContextMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
+			AddFileMenuItems(new []
+			{
+				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
+				{
+					Header = "Open Containing Folder",
+					ToolTip = "Opens the Folder being watched in Windows Explorer"
+				}
+			});
+			SetContextMenuItems(new IMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
+
 			UpdateFileReport();
 		}
 
 		#region Overrides of AbstractDataSourceViewModel
-
-		public override ICommand OpenInExplorerCommand => new DelegateCommand2(OpenInExplorer);
 
 		private void OpenInExplorer()
 		{
@@ -199,7 +211,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				if (!_dataSourceViewModelsByDataSource.TryGetValue(dataSource, out var viewModel))
 				{
-					viewModel = new FileDataSourceViewModel((IFileDataSource) dataSource, _actionCenter)
+					viewModel = new FileDataSourceViewModel((IFileDataSource) dataSource, _actionCenter, _settings)
 					{
 						Parent = this
 					};

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Properties;
@@ -30,7 +29,10 @@ namespace Tailviewer.Test.Ui
 			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 			_dataSource.SetupProperty(x => x.VisibleLogLine);
 
-			_viewModel = new DataSourceViewModel(_dataSource.Object);
+			var actionCenter = new Mock<IActionCenter>();
+			var applicationSettings = new Mock<IApplicationSettings>();
+
+			_viewModel = new DataSourceViewModel(_dataSource.Object, actionCenter.Object, applicationSettings.Object);
 		}
 
 		private Mock<IDataSource> _dataSource;
@@ -41,15 +43,10 @@ namespace Tailviewer.Test.Ui
 		private sealed class DataSourceViewModel
 			: AbstractDataSourceViewModel
 		{
-			public DataSourceViewModel(IDataSource dataSource)
-				: base(dataSource)
+			public DataSourceViewModel(IDataSource dataSource, IActionCenter actionCenter, IApplicationSettings applicationSettings)
+				: base(dataSource, actionCenter, applicationSettings)
 			{
 				Update();
-			}
-
-			public override ICommand OpenInExplorerCommand
-			{
-				get { throw new NotImplementedException(); }
 			}
 
 			public override string DisplayName

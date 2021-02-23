@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
@@ -13,6 +14,22 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class FolderDataSourceViewModelTest
 	{
+		private Mock<IActionCenter> _actionCenter;
+		private Mock<IApplicationSettings> _applicationSettings;
+
+		[SetUp]
+		public void Setup()
+		{
+			_actionCenter = new Mock<IActionCenter>();
+			_applicationSettings = new Mock<IApplicationSettings>();
+		}
+
+		[Pure]
+		private FolderDataSourceViewModel CreateFolderViewModel(IFolderDataSource dataSource)
+		{
+			return new FolderDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
+		}
+
 		[Test]
 		public void TestConstruction1([Values(true, false)] bool recursive)
 		{
@@ -22,9 +39,8 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Recursive).Returns(recursive);
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.CanBeRenamed.Should().BeFalse();
 			viewModel.DisplayName.Should().Be("today");
 			viewModel.DataSourceOrigin.Should().Be(@"F:\logs\today");
@@ -44,9 +60,8 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
 			dataSource.Setup(x => x.FilteredFileCount).Returns(0);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(0);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.Update();
 			viewModel.FileReport.Should().Be("Monitoring 0 files");
 		}
@@ -64,9 +79,8 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
 			dataSource.Setup(x => x.FilteredFileCount).Returns(() => sources.Count);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(() => sources.Count);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.Observable.Should().BeEmpty();
 
 			viewModel.Update();
@@ -90,9 +104,8 @@ namespace Tailviewer.Test.Ui
 			childDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(childDataSource.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.Update();
 			viewModel.Observable.Should().HaveCount(1);
 
@@ -112,9 +125,8 @@ namespace Tailviewer.Test.Ui
 			childDataSource.Setup(x => x.Settings).Returns(new DataSource());
 			sources.Add(childDataSource.Object);
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.Update();
 			viewModel.Observable.Should().HaveCount(1);
@@ -135,9 +147,8 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(sources);
 			dataSource.Setup(x => x.FilteredFileCount).Returns(() => sources.Count);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(() => sources.Count);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.Observable.Should().BeEmpty();
 
 			var child1 = new Mock<IFileDataSource>();
@@ -164,9 +175,8 @@ namespace Tailviewer.Test.Ui
 
 			dataSource.Setup(x => x.FilteredFileCount).Returns(1);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(4);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.FileReport.Should().Be("Monitoring 1 file (3 not matching filter)");
 		}
 
@@ -185,9 +195,8 @@ namespace Tailviewer.Test.Ui
 
 			dataSource.Setup(x => x.FilteredFileCount).Returns(257);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(257);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.FileReport.Should().Be("Monitoring 256 files\r\nSkipping 1 file (due to internal limitation)");
 		}
 
@@ -206,9 +215,8 @@ namespace Tailviewer.Test.Ui
 
 			dataSource.Setup(x => x.FilteredFileCount).Returns(260);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(300);
-			var actionCenter = new Mock<IActionCenter>();
 
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 			viewModel.FileReport.Should().Be("Monitoring 256 files (40 not matching filter)\r\nSkipping 4 files (due to internal limitation)");
 		}
 
@@ -218,8 +226,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.FolderPath = @"C:\bla";
@@ -235,8 +242,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.SearchPattern = "*.txt;*.log";
@@ -252,8 +258,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.Recursive = recursive;
@@ -270,8 +275,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
 			dataSource.Setup(x => x.Recursive).Returns(recursive);
 
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.Recursive = !recursive;
@@ -288,8 +292,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
 			dataSource.Setup(x => x.LogFileFolderPath).Returns(@"F:\logs");
 
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.FolderPath = @"E:\logs";
@@ -306,8 +309,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
 			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.bin");
 
-			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var viewModel = CreateFolderViewModel(dataSource.Object);
 
 			viewModel.IsEditing = true;
 			viewModel.SearchPattern = "*.txt";

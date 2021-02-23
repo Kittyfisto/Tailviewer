@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
@@ -13,6 +12,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;
 using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -25,23 +25,31 @@ namespace Tailviewer.Ui.ViewModels
 
 		private readonly IMergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
-		private readonly DelegateCommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
 		private int _noTimestampSum;
 		private bool _isSelected;
 		private readonly IActionCenter _actionCenter;
 
-		public MergedDataSourceViewModel(IMergedDataSource dataSource, IActionCenter actionCenter)
-			: base(dataSource)
+		public MergedDataSourceViewModel(IMergedDataSource dataSource,
+		                                 IActionCenter actionCenter,
+		                                 IApplicationSettings applicationSettings)
+			: base(dataSource, actionCenter, applicationSettings)
 		{
 			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
 
 			_actionCenter = actionCenter;
 			_dataSource = dataSource;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
-			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 
-			SetContextMenuItems(new IContextMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
+			AddFileMenuItems(new []
+			{
+				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
+				{
+					Header = "Open Containing Folder(s)",
+					ToolTip = "Opens the Folder(s) of the Child Data sources"
+				}
+			});
+			SetContextMenuItems(new IMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
 			Update();
 		}
 
@@ -65,8 +73,6 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public IReadOnlyList<IDataSourceViewModel> Observable => _observable;
-
-		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
 		public override string DisplayName
 		{

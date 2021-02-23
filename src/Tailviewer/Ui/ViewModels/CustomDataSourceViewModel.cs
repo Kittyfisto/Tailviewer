@@ -1,5 +1,7 @@
 ﻿using System.Windows.Input;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -7,16 +9,13 @@ namespace Tailviewer.Ui.ViewModels
 		: AbstractDataSourceViewModel
 		, ISingleDataSourceViewModel
 	{
-		public CustomDataSourceViewModel(IDataSource dataSource) : base(dataSource)
+		public CustomDataSourceViewModel(IDataSource dataSource,
+		                                 IActionCenter actionCenter,
+		                                 IApplicationSettings applicationSettings) : base(dataSource, actionCenter, applicationSettings)
 		{
 		}
 
 		#region Overrides of AbstractDataSourceViewModel
-
-		public override ICommand OpenInExplorerCommand
-		{
-			get { throw new System.NotImplementedException(); }
-		}
 
 		public override string DisplayName
 		{

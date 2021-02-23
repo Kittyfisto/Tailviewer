@@ -1,10 +1,11 @@
 ﻿using System.Windows.Input;
+using System.Windows.Shapes;
 using Metrolib;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.ViewModels.ContextMenu
 {
 	public sealed class IncludeAllInGroupViewModel
-		: IContextMenuViewModel
+		: IMenuViewModel
 	{
 		private readonly IMergedDataSourceViewModel _viewModel;
 		private readonly DelegateCommand2 _command;
@@ -31,7 +32,19 @@ namespace Tailviewer.Ui.ViewModels
 			get { return "Include all"; }
 		}
 
+		public string ToolTip => null;
+
+		public Path Icon => null;
+
 		public ICommand Command => _command;
+
+		public bool IsCheckable => false;
+
+		public bool IsChecked
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
+		}
 
 		#endregion
 	}

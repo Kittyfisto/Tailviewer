@@ -54,6 +54,27 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <ControlTemplate x:Key="MenuSeparatorTemplate">
+                <Separator>
+                    <Separator.Style>
+                        <Style TargetType="{x:Type Separator}" BasedOn="{StaticResource ResourceKey={x:Static MenuItem.SeparatorStyleKey}}"/>
+                    </Separator.Style>
+                </Separator>
+            </ControlTemplate>
+
+            <Style x:Key="MainMenuItemStyle"  TargetType="{x:Type MenuItem}">
+                <Setter Property="Header" Value="{Binding Header}" />
+                <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                <Setter Property="Command" Value="{Binding Command}" />
+                <Setter Property="IsCheckable" Value="{Binding IsCheckable}" />
+                <Setter Property="IsChecked" Value="{Binding IsChecked}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                        <Setter Property="Template" Value="{StaticResource MenuSeparatorTemplate}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -89,26 +110,14 @@
             <Menu Grid.Column="1">
                 <MenuItem Header="_File"
                           VerticalAlignment="Center"
-                          Height="32">
-                    <MenuItem Header="_New" />
-                    <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
-                    <Separator />
-                    <MenuItem Header="_Settings">
-                        <MenuItem.Icon>
-                            <Canvas Width="24" Height="24">
-                                <Path Data="{x:Static metrolib1:Icons.Settings}" Fill="#E81123" />
-                            </Canvas>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator />
-                    <MenuItem Header="_Exit" />
-                </MenuItem>
+                          Height="32"
+                          ItemsSource="{Binding SelectedMainPanel.FileMenuItems}"
+                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
                 <MenuItem Header="_View"
                           VerticalAlignment="Center"
-                          Height="32">
-                    <MenuItem Header="Press F to pay your respects" />
-                </MenuItem>
+                          Height="32"
+                          ItemsSource="{Binding SelectedMainPanel.ViewMenuItems}"
+                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
                 <MenuItem Header="Filters"
                           VerticalAlignment="Center"
                           Height="32">

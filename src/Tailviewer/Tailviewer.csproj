@@ -325,8 +325,10 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\AddCustomDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\AbstractMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\CommandMenuViewModel.cs" />
     <Compile Include="Ui\ViewModels\CustomDataSourceViewModel.cs" />
-    <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\ExcludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
@@ -371,13 +373,13 @@
     <Compile Include="Ui\Controls\ActionCenter\ChangeViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\NotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
-    <Compile Include="Ui\ViewModels\IContextMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\IMenuViewModel.cs" />
     <Compile Include="Ui\ViewModels\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\IFileDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
-    <Compile Include="Ui\ViewModels\IncludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\IncludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelViewModel.cs" />
@@ -393,7 +395,8 @@
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\FileDataSourceViewModel.cs" />
-    <Compile Include="Ui\ViewModels\ToggleExcludeFromGroupViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\ToggleMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\ToggleExcludeFromGroupViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

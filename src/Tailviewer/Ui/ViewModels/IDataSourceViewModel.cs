@@ -5,15 +5,24 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	public interface IDataSourceViewModel
 		: INotifyPropertyChanged
 	{
-		ICommand OpenInExplorerCommand { get; }
-
 		IPluginDescription TranslationPlugin { get; }
+
+		/// <summary>
+		///     The list of menu items which are displayed in the "File" menu of the main window.
+		/// </summary>
+		IEnumerable<IMenuViewModel> FileMenuItems { get; }
+
+		/// <summary>
+		///     The list of menu items which are displayed in the "View" menu of the main window.
+		/// </summary>
+		IEnumerable<IMenuViewModel> ViewMenuItems { get; }
 
 		/// <summary>
 		///     The name of this data source as presented to the user.
@@ -113,7 +122,7 @@ namespace Tailviewer.Ui.ViewModels
 		/// <summary>
 		/// 
 		/// </summary>
-		IEnumerable<IContextMenuViewModel> ContextMenuItems { get; }
+		IEnumerable<IMenuViewModel> ContextMenuItems { get; }
 
 		void RequestBringIntoView(LogLineIndex index);
 

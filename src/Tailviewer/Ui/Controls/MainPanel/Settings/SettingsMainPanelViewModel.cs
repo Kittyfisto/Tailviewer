@@ -11,6 +11,7 @@ using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Settings
 {
