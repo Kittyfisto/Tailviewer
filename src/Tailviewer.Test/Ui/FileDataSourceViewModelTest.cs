@@ -75,7 +75,7 @@ namespace Tailviewer.Test.Ui
 				source.SearchTerm.Should().Be("foobar");
 
 				var model = CreateFileViewModel(source);
-				model.SearchTerm.Should().Be("foobar");
+				model.Search.Term.Should().Be("foobar");
 			}
 		}
 

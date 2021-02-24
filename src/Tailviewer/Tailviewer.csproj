@@ -380,6 +380,7 @@
     <Compile Include="Ui\ViewModels\IFileDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ContextMenu\IncludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ISearchViewModel.cs" />
     <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelViewModel.cs" />

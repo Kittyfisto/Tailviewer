@@ -129,8 +129,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(MergedDataSourceDisplayModeProperty, value); }
 		}
 
-		public SearchTextBox SearchBox => PART_SearchBox;
-
 		public LogViewerViewModel LogView
 		{
 			get { return (LogViewerViewModel) GetValue(LogViewProperty); }
@@ -342,17 +340,18 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				oldValue.OnRequestBringIntoView -= DataSourceOnRequestBringIntoView;
 				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
+				oldValue.Search.PropertyChanged -= SearchOnPropertyChanged;
 			}
 			if (newValue != null)
 			{
 				newValue.OnRequestBringIntoView += DataSourceOnRequestBringIntoView;
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
+				newValue.Search.PropertyChanged += SearchOnPropertyChanged;
 				PART_ListView.FollowTail = newValue.FollowTail;
-				PART_ListView.SelectedSearchResultIndex = newValue.CurrentSearchResultIndex;
+				PART_ListView.SelectedSearchResultIndex = newValue.Search.CurrentResultIndex;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
-				var merged = newValue as IMergedDataSourceViewModel;
-				if (merged != null)
+				if (newValue is IMergedDataSourceViewModel merged)
 					MergedDataSourceDisplayMode = merged.DisplayMode;
 			}
 			OnLevelsChanged();
@@ -614,9 +613,16 @@ namespace Tailviewer.Ui.Controls.LogView
 				case "SelectedLogLines":
 					PART_ListView.SelectedIndices = dataSource.SelectedLogLines;
 					break;
+			}
+		}
 
-				case "CurrentSearchResultIndex":
-					PART_ListView.SelectedSearchResultIndex = dataSource.CurrentSearchResultIndex;
+		private void SearchOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			var search = (ISearchViewModel) sender;
+			switch (args.PropertyName)
+			{
+				case nameof(ISearchViewModel.CurrentResultIndex):
+					PART_ListView.SelectedSearchResultIndex = search.CurrentResultIndex;
 					break;
 			}
 		}
@@ -633,12 +639,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			var dataSource = DataSource;
 			if (dataSource != null && !_changingLogView)
 				dataSource.HorizontalOffset = args.NewValue;
-		}
-
-		public void FocusStringFilter()
-		{
-			var element = PART_SearchBox;
-			element?.Focus();
 		}
 
 		private void OverlayOnMouseDown(object sender, MouseButtonEventArgs e)

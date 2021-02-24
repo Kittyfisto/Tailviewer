@@ -87,6 +87,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="30" />
@@ -140,7 +141,20 @@
                 </MenuItem>
             </Menu>
 
-            <TextBlock Grid.Column="2"
+			<metrolib:SearchTextBox x:Name="PART_SearchBox"
+			                        Grid.Column="2"
+                                    Margin="8,2,8,2"
+                                    Padding="2"
+                                    VerticalAlignment="Center"
+                                    Width="200"
+                                    RequiresExplicitSearchStart="False"
+                                    AcceptsTab="True"
+                                    Text="{Binding SelectedMainPanel.Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    OccurenceCount="{Binding SelectedMainPanel.Search.ResultCount}"
+                                    CurrentOccurenceIndex="{Binding SelectedMainPanel.Search.CurrentResultIndex, Mode=TwoWay}"
+                                    Watermark="Search log file (Ctrl+F)" />
+
+            <TextBlock Grid.Column="3"
                        Margin="8,0,0,0"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
@@ -149,7 +163,7 @@
                        Foreground="Black"
                        Text="{Binding WindowTitleSuffix}" />
 
-            <metrolib:EmailToggleButton Grid.Column="3"
+            <metrolib:EmailToggleButton Grid.Column="4"
                                         VerticalContentAlignment="Top"
                                         HorizontalContentAlignment="Right"
                                         IsChecked="{Binding ActionCenter.IsOpen}"
@@ -174,7 +188,7 @@
                 </metrolib:NotificationBadge>
             </metrolib:EmailToggleButton>
 
-            <metrolib:MoreButton Grid.Column="4"
+            <metrolib:MoreButton Grid.Column="5"
                                  Orientation="Vertical"
                                  TextBlock.FontSize="14">
                 <metrolib:MoreButton.ContextMenu>

@@ -46,9 +46,7 @@ namespace Tailviewer.Ui.ViewModels
 		private IDataSourceViewModel _parent;
 		private int _totalCount;
 		private int _warningCount;
-		private string _searchTerm;
-		private int _currentSearchResultIndex;
-		private int _searchResultCount;
+		private readonly SearchViewModel _search;
 		private double _progress;
 		private readonly DelegateCommand2 _clearScreenCommand;
 		private readonly DelegateCommand2 _showAllCommand;
@@ -73,10 +71,9 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
 			_applicationSettings = applicationSettings;
-			_searchTerm = dataSource.SearchTerm;
+			_search = new SearchViewModel(dataSource);
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
-			_currentSearchResultIndex = -1;
 
 			_clearScreenCommand = new DelegateCommand2(ClearScreen);
 
@@ -538,66 +535,96 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public string SearchTerm
+		public ISearchViewModel Search => _search;
+
+		sealed class SearchViewModel
+			: ISearchViewModel
 		{
-			get { return _searchTerm; }
-			set
+			private readonly IDataSource _dataSource;
+			private string _searchTerm;
+			private int _resultCount;
+			private int _currentResultIndex;
+
+			public SearchViewModel(IDataSource dataSource)
 			{
-				if (value == _searchTerm)
-					return;
-
-				_searchTerm = value;
-
-				if (string.IsNullOrEmpty(value))
-				{
-					SearchResultCount = 0;
-					CurrentSearchResultIndex = -1;
-					_dataSource.SearchTerm = null;
-				}
-				else
-				{
-					_dataSource.SearchTerm = value;
-				}
-
-				EmitPropertyChanged();
+				_dataSource = dataSource;
+				_searchTerm = dataSource.SearchTerm;
+				_currentResultIndex = -1;
 			}
-		}
 
-		public int SearchResultCount
-		{
-			get { return _searchResultCount; }
-			private set
+			public void Update()
 			{
-				if (value == _searchResultCount)
-					return;
+				ResultCount = (_dataSource.Search?.Count) ?? 0;
+			}
 
-				_searchResultCount = value;
-				EmitPropertyChanged();
-
-				if (SearchResultCount > 0)
+			public string Term
+			{
+				get { return _searchTerm; }
+				set
 				{
-					if (CurrentSearchResultIndex < 1 || CurrentSearchResultIndex >= SearchResultCount)
+					if (value == _searchTerm)
+						return;
+
+					_searchTerm = value;
+
+					if (string.IsNullOrEmpty(value))
 					{
-						CurrentSearchResultIndex = 0;
+						ResultCount = 0;
+						CurrentResultIndex = -1;
+						_dataSource.SearchTerm = null;
+					}
+					else
+					{
+						_dataSource.SearchTerm = value;
+					}
+
+					EmitPropertyChanged();
+				}
+			}
+
+			public int ResultCount
+			{
+				get { return _resultCount; }
+				private set
+				{
+					if (value == _resultCount)
+						return;
+
+					_resultCount = value;
+					EmitPropertyChanged();
+
+					if (ResultCount > 0)
+					{
+						if (CurrentResultIndex < 1 || CurrentResultIndex >= ResultCount)
+						{
+							CurrentResultIndex = 0;
+						}
+					}
+					else
+					{
+						CurrentResultIndex = -1;
 					}
 				}
-				else
+			}
+
+			public int CurrentResultIndex
+			{
+				get { return _currentResultIndex; }
+				set
 				{
-					CurrentSearchResultIndex = -1;
+					if (value == _currentResultIndex)
+						return;
+
+					_currentResultIndex = value;
+					EmitPropertyChanged();
 				}
 			}
-		}
 
-		public int CurrentSearchResultIndex
-		{
-			get { return _currentSearchResultIndex; }
-			set
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 			{
-				if (value == _currentSearchResultIndex)
-					return;
-
-				_currentSearchResultIndex = value;
-				EmitPropertyChanged();
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 
@@ -744,7 +771,7 @@ namespace Tailviewer.Ui.ViewModels
 			         == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
-			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
+			_search.Update();
 			Progress = _dataSource.FilteredLogSource?.GetProperty(GeneralProperties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)

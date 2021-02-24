@@ -60,14 +60,14 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				var dataSourceModel = CreateViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
-				dataSourceModel.SearchTerm = "i";
+				dataSourceModel.Search.Term = "i";
 				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
-				dataSourceModel.SearchTerm = "in";
-				dataSourceModel.SearchTerm = "inf";
-				dataSourceModel.SearchTerm = "info";
+				dataSourceModel.Search.Term = "in";
+				dataSourceModel.Search.Term = "inf";
+				dataSourceModel.Search.Term = "info";
 
 				// Now we wait for the very last filter operation to complete
 				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);

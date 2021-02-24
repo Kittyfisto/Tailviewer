@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.ViewModels;
 using Tailviewer.Ui.ViewModels.ContextMenu;
 
 namespace Tailviewer.Ui.Controls.MainPanel
@@ -15,6 +16,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private ISidePanelViewModel _selectedSidePanel;
 		private IEnumerable<IMenuViewModel> _fileMenuItems;
 		private IEnumerable<IMenuViewModel> _viewMenuItems;
+		private ISearchViewModel _search;
 
 		protected AbstractMainPanelViewModel(IApplicationSettings applicationSettings)
 		{
@@ -45,6 +47,18 @@ namespace Tailviewer.Ui.Controls.MainPanel
 					return;
 
 				_viewMenuItems = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public ISearchViewModel Search
+		{
+			get { return _search; }
+			set
+			{
+				if (value == _search)
+					return;
+				_search = value;
 				EmitPropertyChanged();
 			}
 		}

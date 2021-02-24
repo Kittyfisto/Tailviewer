@@ -170,6 +170,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_bookmarks.CurrentDataSource = value?.DataSource;
 			_outline.CurrentDataSource = value?.DataSource;
 			_issues.CurrentDataSource = value?.DataSource;
+			Search = value?.Search;
 			OpenFile(value);
 		}
 

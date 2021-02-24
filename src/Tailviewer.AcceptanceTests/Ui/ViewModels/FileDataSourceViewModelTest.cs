@@ -84,13 +84,13 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				//model.Update();
 				//model.TotalCount.Should().Be(16114);
 
-				model.SearchTerm = "RPC #12";
+				model.Search.Term = "RPC #12";
 				var search = dataSource.Search;
 				search.Property(x => x.Count).ShouldEventually().Be(334);
 
 				model.Update();
-				model.SearchResultCount.Should().Be(334);
-				model.CurrentSearchResultIndex.Should().Be(0);
+				model.Search.ResultCount.Should().Be(334);
+				model.Search.CurrentResultIndex.Should().Be(0);
 			}
 		}
 

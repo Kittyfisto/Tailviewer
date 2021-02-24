@@ -57,13 +57,29 @@ namespace Tailviewer.Test.Ui.Controls
 			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _settings.Object);
 		}
 
+		private Mock<IDataSourceViewModel> CreateDataSourceViewModel()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			var search = new Mock<ISearchViewModel>();
+			dataSource.Setup(x => x.Search).Returns(search.Object);
+			return dataSource;
+		}
+
+		private Mock<IMergedDataSourceViewModel> CreateMergedDataSourceViewModel()
+		{
+			var dataSource = new Mock<IMergedDataSourceViewModel>();
+			var search = new Mock<ISearchViewModel>();
+			dataSource.Setup(x => x.Search).Returns(search.Object);
+			return dataSource;
+		}
+		
 		[Test]
 		[Ignore("Doesn't work yet")]
 		[Description(
 			"Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
 		public void TestChangeDataSource1()
 		{
-			var dataSource = new Mock<IDataSourceViewModel>();
+			var dataSource = CreateDataSourceViewModel();
 			dataSource.Setup(x => x.FollowTail).Returns(true);
 
 			_control.DataSource = dataSource.Object;
@@ -74,7 +90,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource2()
 		{
-			var dataSource = new Mock<IDataSourceViewModel>();
+			var dataSource = CreateDataSourceViewModel();
 			dataSource.Setup(x => x.ShowLineNumbers).Returns(false);
 
 			_control.ShowLineNumbers = true;
@@ -86,7 +102,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource3()
 		{
-			var dataSource = new Mock<IDataSourceViewModel>();
+			var dataSource = CreateDataSourceViewModel();
 			dataSource.Setup(x => x.ShowLineNumbers).Returns(true);
 
 			_control.ShowLineNumbers = false;
@@ -184,7 +200,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			// TODO: This test requires that the template be fully loaded (or the control changed to a user control)
 
-			var oldLog = new Mock<IDataSourceViewModel>();
+			var oldLog = CreateDataSourceViewModel();
 			var oldDataSource = new Mock<IDataSource>();
 			var oldLogFile = new Mock<ILogSource>();
 			oldLogFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(10000);
@@ -198,7 +214,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogView = oldLogView;
 
 
-			var newLog = new Mock<IDataSourceViewModel>();
+			var newLog = CreateDataSourceViewModel();
 			var newDataSource = new Mock<IDataSource>();
 			newDataSource.Setup(x => x.FilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			newDataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
@@ -225,7 +241,7 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			var dataSourceViewModel = CreateDataSourceViewModel();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.VisibleLogLine).Returns(new LogLineIndex(42));
 			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object);
@@ -247,7 +263,7 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			var dataSourceViewModel = CreateDataSourceViewModel();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
 			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object);
@@ -269,17 +285,16 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			var dataSourceViewModel = CreateDataSourceViewModel();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
-			dataSourceViewModel.Setup(x => x.SearchTerm).Returns("Foobar");
+			var searchViewModel = new Mock<ISearchViewModel>();
+			searchViewModel.Setup(x => x.Term).Returns("Foobar");
+			dataSourceViewModel.Setup(x => x.Search).Returns(searchViewModel.Object);
 			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object);
-
-			_control.SearchBox.Text.Should().Be(string.Empty);
 
 			_control.LogView = logView;
 			_control.SelectedIndices.Should().Equal(new LogLineIndex(42));
-			_control.SearchBox.Text.Should().Be("Foobar");
 		}
 
 		[Test]
@@ -515,7 +530,7 @@ namespace Tailviewer.Test.Ui.Controls
 			"Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
 		public void TestChangeMergedDataSourceDisplayMode1()
 		{
-			var dataSource = new Mock<IMergedDataSourceViewModel>();
+			var dataSource = CreateMergedDataSourceViewModel();
 			dataSource.SetupProperty(x => x.DisplayMode);
 
 			_control.DataSource = dataSource.Object;
@@ -533,7 +548,7 @@ namespace Tailviewer.Test.Ui.Controls
 		]
 		public void TestChangeMergedDataSourceDisplayMode2()
 		{
-			var dataSource = new Mock<IDataSourceViewModel>();
+			var dataSource = CreateMergedDataSourceViewModel();
 
 			_control.DataSource = dataSource.Object;
 
@@ -548,6 +563,8 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			var dataSource = new Mock<IMergedDataSourceViewModel>();
 			dataSource.SetupProperty(x => x.DisplayMode);
+			var search = new Mock<ISearchViewModel>();
+			dataSource.Setup(x => x.Search).Returns(search.Object);
 			dataSource.Object.DisplayMode = displayMode;
 
 			_control.DataSource = dataSource.Object;

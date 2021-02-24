@@ -133,9 +133,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		#region Search
 
-		string SearchTerm { get; set; }
-		int SearchResultCount { get; }
-		int CurrentSearchResultIndex { get; set; }
+		ISearchViewModel Search { get; }
 
 		#endregion
 

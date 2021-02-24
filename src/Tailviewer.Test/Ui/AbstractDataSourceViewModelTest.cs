@@ -69,8 +69,8 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor()
 		{
-			_viewModel.SearchResultCount.Should().Be(0);
-			_viewModel.CurrentSearchResultIndex.Should().Be(-1);
+			_viewModel.Search.ResultCount.Should().Be(0);
+			_viewModel.Search.CurrentResultIndex.Should().Be(-1);
 		}
 
 		[Test]

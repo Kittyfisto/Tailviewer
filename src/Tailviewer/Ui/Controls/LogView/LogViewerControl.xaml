@@ -161,17 +161,6 @@
                 IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
                 ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
                 Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
-                <controls:SearchTextBox
-                    x:Name="PART_SearchBox"
-                    Margin="0,0,8,8"
-                    Padding="4"
-                    Width="200"
-                    RequiresExplicitSearchStart="False"
-                    AcceptsTab="True"
-                    Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                    OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
-                    CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
-                    Watermark="Search log file (Ctrl+F)" />
 
                 <controls:FilterTextBox
                     x:Name="PART_FindAllBox"
