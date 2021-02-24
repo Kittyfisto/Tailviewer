@@ -45,11 +45,6 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Data sources"
-                                           Foreground="DarkGray"
-                                           FontSize="14"
-                                           VerticalAlignment="Center"
-                                           Margin="8,0,0,0" />
 
                                 <controls2:PinToggleButton Grid.Column="2"
                                                            Width="26"

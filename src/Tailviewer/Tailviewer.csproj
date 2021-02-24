@@ -75,8 +75,8 @@
     <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.146, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.146\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.151, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.151\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -231,6 +231,7 @@
     <Compile Include="Ui\Controls\FlatImage.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\DoubleOneToHiddenConverter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
@@ -419,6 +420,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\FlatImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\LogView\DataSourcesToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

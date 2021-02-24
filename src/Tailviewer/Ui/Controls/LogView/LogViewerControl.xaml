@@ -64,36 +64,52 @@
             </Grid.ColumnDefinitions>
 
             <!-- Data Source Selector, Top Left -->
-            <Border Width="300">
-                <controls:FlatToggleButton x:Name="DataSourceToggleButton"
-                                           HoveredBackground="{StaticResource SecondaryLightBrush}"
-                                           CheckedBackground="{StaticResource SecondaryLighterBrush}"
-                                           HoveredAndCheckedForeground="{StaticResource SecondaryLighterBrush}"
-                                           VerticalContentAlignment="Center"
-                                           HorizontalContentAlignment="Left"
-                                           ToolTip="{Binding Tooltip}"
-                                           IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}"
-                                           FocusVisualStyle="{x:Null}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+            <controls:FlatToggleButton x:Name="DataSourceToggleButton"
+                                       HoveredBackground="{StaticResource SecondaryLightBrush}"
+                                       CheckedBackground="{StaticResource PrimaryForegroundBrush}"
+                                       HoveredAndCheckedForeground="{StaticResource SecondaryLighterBrush}"
+                                       DisabledOverlayBrush="Transparent"
+                                       VerticalContentAlignment="Center"
+                                       HorizontalContentAlignment="Left"
+                                       Width="300"
+                                       ToolTip="{Binding Tooltip}"
+                                       IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}"
+                                       FocusVisualStyle="{x:Null}"
+                                       BorderBrush="{StaticResource PrimarySeparatorBrush}">
+                <controls:FlatToggleButton.Style>
+                    <Style TargetType="controls:FlatToggleButton">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Foreground" Value="Black" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:FlatToggleButton.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                        <StackPanel Margin="12,4,4,4">
-                            <TextBlock Text="Current Data Source" Foreground="White" />
-                            <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
-                                       FontWeight="SemiBold"
-                                       FontSize="14"
-                                       Foreground="White" />
-                        </StackPanel>
-                    </Grid>
-                </controls:FlatToggleButton>
-            </Border>
+                    <StackPanel Margin="12,4,4,4">
+                        <TextBlock Text="Current Data Source" />
+                        <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
+                                   FontWeight="SemiBold"
+                                   FontSize="14" />
+                    </StackPanel>
+                </Grid>
+            </controls:FlatToggleButton>
 
             <!-- Central Toolbar -->
             <Border Grid.Column="1"
-                    BorderThickness="1,0,0,0"
+                    BorderThickness="1,0,0,1"
                     BorderBrush="{StaticResource PrimarySeparatorBrush}">
                 <WrapPanel Orientation="Horizontal"
                            VerticalAlignment="Center"
@@ -225,24 +241,20 @@
                     BorderThickness="0,0,1,0"
                     Background="{StaticResource SeparatorBrush}" />
 
-            <Border BorderThickness="0,1,0,0"
-                    BorderBrush="{StaticResource PrimarySeparatorBrush}"
-                    Grid.Column="1">
-                <logView:LogEntryListView
-                    x:Name="PART_ListView"
-                    Grid.Column="1"
-                    DataSource="{Binding DataSource.DataSource, ElementName=This}"
-                    LogSource="{Binding LogSource, ElementName=This}"
-                    Search="{Binding Search, ElementName=This}"
-                    CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
-                    ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                    ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                    ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                    ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-                    MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-                    Settings="{Binding Settings, ElementName=This}"
-                    SnapsToDevicePixels="True" />
-            </Border>
+            <logView:LogEntryListView
+                x:Name="PART_ListView"
+                Grid.Column="1"
+                DataSource="{Binding DataSource.DataSource, ElementName=This}"
+                LogSource="{Binding LogSource, ElementName=This}"
+                Search="{Binding Search, ElementName=This}"
+                CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+                ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+                ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+                ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+                ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+                MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                Settings="{Binding Settings, ElementName=This}"
+                SnapsToDevicePixels="True" />
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
             <Border BorderThickness="1,0,0,0"
