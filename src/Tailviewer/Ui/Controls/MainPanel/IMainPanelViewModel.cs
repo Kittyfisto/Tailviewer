@@ -14,7 +14,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		IEnumerable<IMenuViewModel> FileMenuItems { get; }
 
 		IEnumerable<IMenuViewModel> ViewMenuItems { get; }
-
+		
 		#endregion
 
 		ISearchViewModel Search { get; }

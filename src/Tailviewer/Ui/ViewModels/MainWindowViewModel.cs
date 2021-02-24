@@ -19,6 +19,7 @@ using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.MainPanel.About;
 using Tailviewer.Ui.Controls.MainPanel.Plugins;
 using Tailviewer.Ui.Controls.MainPanel.Settings;
+using Tailviewer.Ui.ViewModels.ContextMenu;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -63,6 +64,9 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _goToNextDataSourceCommand;
 		private bool _isLeftSidePanelVisible;
 
+		private string _leftSidePanelExpanderTooltip;
+		private readonly IEnumerable<IMenuViewModel> _helpMenuItems;
+
 		public MainWindowViewModel(IServiceContainer services,
 		                           IApplicationSettings settings,
 		                           DataSources dataSources,
@@ -97,7 +101,7 @@ namespace Tailviewer.Ui.ViewModels
 			};
 			timer.Tick += TimerOnTick;
 			timer.Start();
-
+			
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
 			_showLogCommand = new DelegateCommand(ShowLog);
 			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
@@ -109,6 +113,18 @@ namespace Tailviewer.Ui.ViewModels
 			_topEntries = new IMainPanelEntry[]
 			{
 				_rawEntry
+			};
+
+			_helpMenuItems = new[]
+			{
+				new CommandMenuViewModel(AutoUpdater.CheckForUpdatesCommand)
+				{
+					Header = "Check For Updates"
+				},
+				new CommandMenuViewModel(ShowLogCommand)
+				{
+					Header = "Show Log"
+				}
 			};
 
 			_settingsEntry = new SettingsMainPanelEntry();
@@ -190,7 +206,7 @@ namespace Tailviewer.Ui.ViewModels
 		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
 		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
-
+		public IEnumerable<IMenuViewModel> HelpMenuItems => _helpMenuItems;
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			switch (args.PropertyName)
@@ -248,8 +264,6 @@ namespace Tailviewer.Ui.ViewModels
 				? "Hide icons"
 				: "Show hidden icons";
 		}
-
-		private string _leftSidePanelExpanderTooltip;
 
 		public string LeftSidePanelExpanderTooltip
 		{

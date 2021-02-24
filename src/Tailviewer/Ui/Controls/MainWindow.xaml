@@ -90,7 +90,6 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="30" />
-                <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal"
@@ -136,9 +135,9 @@
                 </MenuItem>
                 <MenuItem Header="_Help"
                           VerticalAlignment="Center"
-                          Height="32">
-                    <MenuItem Header="_About" />
-                </MenuItem>
+                          Height="32"
+                          ItemsSource="{Binding HelpMenuItems}"
+                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
             </Menu>
 
 			<metrolib:SearchTextBox x:Name="PART_SearchBox"
@@ -187,22 +186,6 @@
                     <TextBlock Text="{Binding ActionCenter.UnreadCount}" FontSize="8" />
                 </metrolib:NotificationBadge>
             </metrolib:EmailToggleButton>
-
-            <metrolib:MoreButton Grid.Column="5"
-                                 Orientation="Vertical"
-                                 TextBlock.FontSize="14">
-                <metrolib:MoreButton.ContextMenu>
-                    <metrolib:FlatContextMenu HorizontalOffset="-118"
-                                              AnchorAlignment="Right"
-                                              Placement="Bottom"
-                                              VerticalOffset="-10">
-                        <metrolib:FlatMenuItem Header="Check for Updates..."
-                                               Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
-                        <metrolib:FlatMenuItem Header="Show log..."
-                                               Command="{Binding ShowLogCommand}" />
-                    </metrolib:FlatContextMenu>
-                </metrolib:MoreButton.ContextMenu>
-            </metrolib:MoreButton>
         </Grid>
     </metrolib:ChromelessWindow.Header>
 
