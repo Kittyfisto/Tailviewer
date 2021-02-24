@@ -22,6 +22,7 @@
     <Color x:Key="PrimaryLighter">#89D2FF</Color>
     <Color x:Key="PrimaryDark">#0069c0</Color>
     <Color x:Key="PrimaryForeground">#FFFFFF</Color>
+    <Color x:Key="PrimarySeparator">#000000</Color>
 
     <Color x:Key="Secondary">#2196f3</Color>
     <Color x:Key="SecondaryLight">#6ec6ff</Color>
@@ -37,6 +38,7 @@
     <SolidColorBrush x:Key="PrimaryLighterBrush" Color="{StaticResource PrimaryLighter}" />
     <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}" />
     <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{StaticResource PrimaryForeground}" />
+    <SolidColorBrush x:Key="PrimarySeparatorBrush" Color="{StaticResource PrimarySeparator}" />
 
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
     <SolidColorBrush x:Key="SecondaryLightBrush" Color="{StaticResource SecondaryLight}" />

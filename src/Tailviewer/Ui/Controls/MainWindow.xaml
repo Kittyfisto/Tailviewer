@@ -63,7 +63,12 @@
                 </Separator>
             </ControlTemplate>
 
-            <Style x:Key="MainMenuItemStyle"  TargetType="{x:Type MenuItem}">
+            <Style x:Key="MainMenuItemStyle"  TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Height" Value="32" />
+            </Style>
+            <Style x:Key="MainSubMenuItemStyle"  TargetType="{x:Type MenuItem}">
                 <Setter Property="Header" Value="{Binding Header}" />
                 <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                 <Setter Property="Command" Value="{Binding Command}" />
@@ -79,7 +84,8 @@
     </Window.Resources>
 
     <Window.Background>
-        <StaticResource ResourceKey="TitleBarBrush" />
+        <!--<StaticResource ResourceKey="TitleBarBrush" />-->
+        <StaticResource ResourceKey="SecondaryBrush" />
     </Window.Background>
 
     <metrolib:ChromelessWindow.Header>
@@ -101,26 +107,24 @@
                        VerticalAlignment="Center" />
                 <TextBlock Text="Tailviewer"
                            Margin="0,0,0,2"
-                           Foreground="Black"
+                           Foreground="{StaticResource PrimaryForegroundBrush}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            FontSize="16" />
             </StackPanel>
 
-            <Menu Grid.Column="1">
+            <Menu Grid.Column="1"
+                  Background="Transparent">
                 <MenuItem Header="_File"
-                          VerticalAlignment="Center"
-                          Height="32"
+                          Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding SelectedMainPanel.FileMenuItems}"
-                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
+                          ItemContainerStyle="{StaticResource MainSubMenuItemStyle}"/>
                 <MenuItem Header="_View"
-                          VerticalAlignment="Center"
-                          Height="32"
+                          Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding SelectedMainPanel.ViewMenuItems}"
-                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
+                          ItemContainerStyle="{StaticResource MainSubMenuItemStyle}"/>
                 <MenuItem Header="Filters"
-                          VerticalAlignment="Center"
-                          Height="32">
+                          Style="{StaticResource MainMenuItemStyle}">
                     <MenuItem Header="Deselect all" />
                     <Separator />
                     <MenuItem Header="Load Preset">
@@ -129,19 +133,17 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Plugins"
-                          VerticalAlignment="Center"
-                          Height="32">
+                          Style="{StaticResource MainMenuItemStyle}">
                     <MenuItem Header="Press F to pay your respects" />
                 </MenuItem>
                 <MenuItem Header="_Help"
-                          VerticalAlignment="Center"
-                          Height="32"
+                          Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding HelpMenuItems}"
-                          ItemContainerStyle="{StaticResource MainMenuItemStyle}"/>
+                          ItemContainerStyle="{StaticResource MainSubMenuItemStyle}"/>
             </Menu>
 
-			<metrolib:SearchTextBox x:Name="PART_SearchBox"
-			                        Grid.Column="2"
+            <metrolib:SearchTextBox x:Name="PART_SearchBox"
+                                    Grid.Column="2"
                                     Margin="8,2,8,2"
                                     Padding="2"
                                     VerticalAlignment="Center"
@@ -159,7 +161,7 @@
                        HorizontalAlignment="Left"
                        IsHitTestVisible="False"
                        FontSize="12"
-                       Foreground="Black"
+                       Foreground="{StaticResource PrimaryForegroundBrush}"
                        Text="{Binding WindowTitleSuffix}" />
 
             <metrolib:EmailToggleButton Grid.Column="4"
@@ -195,13 +197,19 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <controls:AutoUpdateControl DataContext="{Binding AutoUpdater}"
+                <Grid Grid.Row="0"
+                      Height="1"
+                      Background="{StaticResource PrimarySeparatorBrush}" />
+
+                <controls:AutoUpdateControl Grid.Row="1"
+                                            DataContext="{Binding AutoUpdater}"
                                             Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
 
-                <ContentPresenter Grid.Row="1"
+                <ContentPresenter Grid.Row="2"
                                   Content="{Binding SelectedMainPanel}"
                                   x:Name="PART_Content"/>
             </Grid>

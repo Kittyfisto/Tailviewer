@@ -3,8 +3,12 @@
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:dashboard="clr-namespace:Tailviewer.Ui.Controls.SidePanel">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../../../Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <Style TargetType="{x:Type dashboard:SidePanelControl}">
-        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}" />
+        <Setter Property="Background" Value="{StaticResource SecondaryBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -15,33 +19,36 @@
                                           FocusVisualStyle="{x:Null}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"/>
+                                        <StackPanel Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
-                                        <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                                   HoveredBackground="{DynamicResource SecondaryLightBrush}"
-                                                                   CheckedBackground="{DynamicResource SecondaryLighterBrush}"
-                                                                   HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}"
-                                                                   ToolTip="{Binding Tooltip}"
-                                                                   FocusVisualStyle="{x:Null}">
-                                            <Grid>
-                                                <Viewbox Margin="12">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path
-                                                            Data="{Binding Icon}"
-                                                            Fill="{DynamicResource PrimaryForegroundBrush}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="{Binding QuickInfo}"
-                                                           FontSize="10"
-                                                           TextWrapping="NoWrap"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           VerticalAlignment="Bottom"
-                                                           Foreground="{DynamicResource PrimaryForegroundBrush}" />
-                                            </Grid>
-                                        </controls:FlatToggleButton>
+                                        <Border BorderThickness="0,0,1,0"
+                                                BorderBrush="{StaticResource PrimarySeparatorBrush}">
+                                            <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                       HoveredBackground="{DynamicResource SecondaryLightBrush}"
+                                                                       CheckedBackground="{DynamicResource SecondaryLighterBrush}"
+                                                                       HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}"
+                                                                       ToolTip="{Binding Tooltip}"
+                                                                       FocusVisualStyle="{x:Null}">
+                                                <Grid>
+                                                    <Viewbox Margin="12">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path
+                                                                Data="{Binding Icon}"
+                                                                Fill="{StaticResource PrimaryForegroundBrush}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="{Binding QuickInfo}"
+                                                               FontSize="10"
+                                                               TextWrapping="NoWrap"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               VerticalAlignment="Bottom"
+                                                               Foreground="{StaticResource PrimaryForegroundBrush}" />
+                                                </Grid>
+                                            </controls:FlatToggleButton>
+                                        </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
