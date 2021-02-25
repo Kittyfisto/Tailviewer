@@ -8,7 +8,8 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/CustomDataSourceTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/CustomDataSourceTemplate.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/FileDataSourceTemplate.xaml" />
         <ResourceDictionary
@@ -46,16 +47,6 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <controls2:PinToggleButton Grid.Column="2"
-                                                           Width="26"
-                                                           Height="26"
-                                                           Margin="4"
-                                                           VerticalAlignment="Center"
-                                                           HorizontalAlignment="Right"
-                                                           RotateWhenUnchecked="True"
-                                                           ToolTip="Pin/Unpin this panel"
-                                                           IsChecked="{Binding IsPinned, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
-
                                 <controls2:FileAddButton
                                     Grid.Column="3"
                                     Width="26"
@@ -92,13 +83,29 @@
                                 </controls2:AddButton>
                             </Grid>
 
-                            <controls2:FilterTextBox
-                                x:Name="PART_DataSourceSearch"
-                                Grid.Row="1"
-                                Margin="8,8,8,0"
-                                Height="26"
-                                FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Filter data sources (Ctrl+E)" />
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <controls2:FilterTextBox
+                                    x:Name="PART_DataSourceSearch"
+                                    Margin="8,8,8,0"
+                                    Height="26"
+                                    FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Watermark="Filter data sources (Ctrl+E)" />
+
+                                <controls2:PinToggleButton Grid.Column="1"
+                                                           Width="26"
+                                                           Height="22"
+                                                           Margin="4"
+                                                           VerticalAlignment="Bottom"
+                                                           HorizontalAlignment="Right"
+                                                           RotateWhenUnchecked="True"
+                                                           ToolTip="Pin/Unpin this panel"
+                                                           IsChecked="{Binding IsPinned, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                            </Grid>
 
                             <controls2:FlatTreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
                                                     x:Name="PART_DataSources"

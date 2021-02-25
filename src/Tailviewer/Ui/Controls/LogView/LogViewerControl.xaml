@@ -7,6 +7,7 @@
              xmlns:converters1="clr-namespace:Metrolib.Converters;assembly=Metrolib"
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
              xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
+             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -70,7 +71,7 @@
                                        HoveredAndCheckedForeground="{StaticResource SecondaryLighterBrush}"
                                        DisabledOverlayBrush="Transparent"
                                        VerticalContentAlignment="Center"
-                                       HorizontalContentAlignment="Left"
+                                       HorizontalContentAlignment="Stretch"
                                        Width="300"
                                        ToolTip="{Binding Tooltip}"
                                        IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}"
@@ -104,6 +105,23 @@
                                    FontWeight="SemiBold"
                                    FontSize="14" />
                     </StackPanel>
+
+                    <Grid Grid.Column="1" Visibility="{Binding IsEnabled, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}">
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path x:Name="PART_Chevron_Down" Data="{x:Static metrolib:Icons.ChevronDown}"
+                                      Fill="White"
+                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolTrueToHiddenConverter}}"/>
+                            </Canvas>
+                        </Viewbox>
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path x:Name="PART_Chevron_Up" Data="{x:Static metrolib:Icons.ChevronUp}"
+                                      Fill="Black"
+                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
                 </Grid>
             </controls:FlatToggleButton>
 
