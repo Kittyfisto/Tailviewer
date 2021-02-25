@@ -38,7 +38,6 @@
                 </Grid>
 
                 <logView:LogViewerControl
-                    Visibility="{Binding CurrentDataSourceLogView, Converter={StaticResource NullToCollapsedConverter}}"
                     x:Name="PART_LogFileView"
                     Settings="{Binding Settings}"
                     LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"

@@ -140,12 +140,12 @@
                         Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
 
                     <controls:FlatToggleButton
-                    Margin="0,0,8,8"
-                    Padding="4"
-                    VerticalAlignment="Stretch"
-                    IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
-                    ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
-                    Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
+                        Margin="0,0,8,8"
+                        Padding="4"
+                        VerticalAlignment="Stretch"
+                        IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
+                        ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
+                        Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
                     <controls:FilterTextBox
                         x:Name="PART_FindAllBox"
@@ -271,7 +271,7 @@
         <Border Grid.Row="3"
                 Background="{StaticResource TitleBarBrush}">
             <Grid
-                Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
+                Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}, FallbackValue=Hidden}">
                 <Grid.ColumnDefinitions>
                     <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
                     <ColumnDefinition Width="25" />
@@ -305,11 +305,11 @@
                     <TextBlock Text="Working"
                                VerticalAlignment="Center"
                                Margin="0,0,4,0"
-                               Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}}"/>
+                               Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}, FallbackValue=Hidden}"/>
                     <controls:CircularProgressBar Grid.Column="1"
                                                   Height="14"
                                                   Width="14"
-                                                  Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}}"
+                                                  Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}, FallbackValue=Hidden}"
                                                   IsIndeterminate="True" />
                 </Grid>
 
@@ -318,7 +318,7 @@
 
         <!-- Find all result display -->
         <Grid Grid.Row="4"
-              Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+              Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}, FallbackValue=Collapsed}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Microsoft.Win32;
@@ -84,6 +85,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			_fileMenu = new FileMenu(new DelegateCommand2(AddDataSourceFromFile),
 			                         new DelegateCommand2(AddDataSourceFromFolder),
+			                         _dataSources.RemoveCurrentDataSourceCommand,
+			                         _dataSources.RemoveAllDataSourcesCommand,
 			                         new DelegateCommand2(Exit));
 			FileMenuItems = _fileMenu.Items;
 

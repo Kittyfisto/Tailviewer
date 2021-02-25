@@ -26,7 +26,8 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _settings;
-		private readonly IReadOnlyList<AddCustomDataSourceViewModel> _customDataSources;
+		private readonly DelegateCommand2 _removeCurrentDataSourceCommand;
+		private readonly DelegateCommand2 _removeAllDataSourcesCommand;
 		private IDataSourceViewModel _selectedItem;
 		private bool _isPinned;
 		private bool _isChecked;
@@ -38,6 +39,9 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
 			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
+			_removeCurrentDataSourceCommand = new DelegateCommand2(CloseSelectedDataSource);
+			_removeAllDataSourcesCommand = new DelegateCommand2(CloseAllDataSources);
+
 			foreach (IDataSource dataSource in dataSources.Sources)
 			{
 				if (dataSource.ParentId == DataSourceId.Empty)
@@ -58,8 +62,8 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 				}
 			}
 
-			_customDataSources =
-				_dataSources.CustomDataSources.Select(x => new AddCustomDataSourceViewModel(x.DisplayName, () => AddCustomDataSource(x.Id))).ToList();
+			//_customDataSources =
+			//	_dataSources.CustomDataSources.Select(x => new AddCustomDataSourceViewModel(x.DisplayName, () => AddCustomDataSource(x.Id))).ToList();
 
 			// We need to make sure that if we construct this view model *and* the data sources panel is supposed
 			// to be pinned, then we also need to make sure the toggle button is checked as otherwise nothing
@@ -69,8 +73,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 				IsChecked = true;
 
 			UpdateTooltip();
+			UpdateRemoveCommands();
+
 			PropertyChanged += OnPropertyChanged;
 		}
+
+		public ICommand RemoveCurrentDataSourceCommand => _removeCurrentDataSourceCommand;
+		public ICommand RemoveAllDataSourcesCommand => _removeAllDataSourcesCommand;
 
 		private void UpdateTooltip()
 		{
@@ -85,6 +94,27 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			Add(dataSource);
 		}
 
+		private void CloseSelectedDataSource()
+		{
+			var selected = SelectedItem;
+			if (selected == null)
+				return;
+
+			OnRemove(selected);
+		}
+
+		private void CloseAllDataSources()
+		{
+			var all = _allDataSourceViewModels.ToList();
+			_allDataSourceViewModels.Clear();
+			_observable.Clear();
+			_dataSources.Clear();
+
+			UpdateRemoveCommands();
+
+			_settings.SaveAsync();
+		}
+
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			switch (args.PropertyName)
@@ -94,8 +124,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 					break;
 			}
 		}
-
-		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources => _customDataSources;
 
 		public bool IsChecked
 		{
@@ -229,7 +257,15 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		{
 			IDataSourceViewModel viewModel = CreateViewModel(dataSource);
 			_observable.Add(viewModel);
+			UpdateRemoveCommands();
 			return viewModel;
+		}
+
+		private void UpdateRemoveCommands()
+		{
+			var canRemove = _allDataSourceViewModels.Count > 0;
+			_removeCurrentDataSourceCommand.CanBeExecuted = canRemove;
+			_removeAllDataSourcesCommand.CanBeExecuted = canRemove;
 		}
 
 		private IDataSourceViewModel CreateViewModel(IDataSource dataSource)
@@ -296,6 +332,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 
 			_allDataSourceViewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);
+			UpdateRemoveCommands();
 			_settings.SaveAsync();
 
 			if (_selectedItem == null || _selectedItem == viewModel)

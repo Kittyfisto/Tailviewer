@@ -15,13 +15,14 @@
         </Separator>
     </ControlTemplate>
 
-    <SolidColorBrush x:Key="MenuBackground" Color="White" />
-    <SolidColorBrush x:Key="MenuForeground" Color="Black" />
-    <SolidColorBrush x:Key="MenuSeparator" Color="Gray" />
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="Black" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="Gray" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="Gray" />
 
     <Style x:Key="MainSubMenuItemStyle" TargetType="{x:Type MenuItem}">
-        <Setter Property="Foreground" Value="{StaticResource MenuForeground}" />
-        <Setter Property="Background" Value="{StaticResource MenuBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource MenuForegroundBrush}" />
+        <Setter Property="Background" Value="{StaticResource MenuBackgroundBrush}" />
         <Setter Property="Icon" Value="{Binding Icon}" />
         <Setter Property="Header" Value="{Binding Header}" />
         <Setter Property="ToolTip" Value="{Binding ToolTip}" />
@@ -52,7 +53,7 @@
                                      Height="12">
                                 <Canvas Width="24" Height="24">
                                     <Path Data="{TemplateBinding Icon}"
-                                          Fill="{StaticResource MenuForeground}" />
+                                          Fill="{StaticResource MenuForegroundBrush}" />
                                 </Canvas>
                             </Viewbox>
                             <ContentPresenter x:Name="content"
@@ -74,7 +75,7 @@
                                         <RotateTransform Angle="-90" />
                                     </Canvas.RenderTransform>
                                     <Path x:Name="PART_Chevron_Down" Data="{x:Static metrolib:Icons.ChevronDown}"
-                                          Fill="{StaticResource MenuForeground}" />
+                                          Fill="{StaticResource MenuForegroundBrush}" />
                                 </Canvas>
                             </Viewbox>
                         </Grid>
@@ -83,7 +84,7 @@
                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                Placement="Right" VerticalOffset="-1">
 
-                            <Border BorderThickness="1,1,1,1" BorderBrush="{StaticResource MenuSeparator}" Background="{StaticResource MenuBackground}"
+                            <Border BorderThickness="1,1,1,1" BorderBrush="{StaticResource MenuSeparatorBrush}" Background="{StaticResource MenuBackgroundBrush}"
                                     Visibility="{Binding ItemsSource, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
                                 <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true"
                                               Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
@@ -149,7 +150,7 @@
                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                Placement="Bottom" VerticalOffset="-1">
 
-                            <Border BorderThickness="1,0,1,1" BorderBrush="Gray" Background="{StaticResource MenuBackground}">
+                            <Border BorderThickness="1,0,1,1" BorderBrush="Gray" Background="{StaticResource MenuBackgroundBrush}">
                                 <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true"
                                               Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
                                     <Grid RenderOptions.ClearTypeHint="Enabled">
@@ -172,13 +173,21 @@
                             <Setter Property="Background" Value="{StaticResource ForegroundBrushHovered}" />
                         </MultiTrigger>
                         <Trigger Property="IsSubmenuOpen" Value="True">
-                            <Setter Property="Background" Value="{StaticResource MenuBackground}" />
-                            <Setter Property="TextBlock.Foreground" Value="{StaticResource MenuForeground}" />
+                            <Setter Property="Background" Value="{StaticResource MenuBackgroundBrush}" />
+                            <Setter Property="TextBlock.Foreground" Value="{StaticResource MenuForegroundBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="FlatContextMenu" TargetType="{x:Type ContextMenu}">
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MainSubMenuItemStyle}" />
+        <Setter Property="Background" Value="{StaticResource MenuBackgroundBrush}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource MenuBorderBrush}" />
     </Style>
 
 </ResourceDictionary>

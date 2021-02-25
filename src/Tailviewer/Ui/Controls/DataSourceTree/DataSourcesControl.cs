@@ -9,72 +9,99 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Metrolib.Controls;
-using Tailviewer.Ui.ViewModels;
 using log4net;
+using Metrolib.Controls;
+using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	/// <summary>
-	///   Allows the user to inspect and interact with the currently opened data sources, each represented by a <see cref="IDataSourceViewModel"/>.
+	///     Allows the user to inspect and interact with the currently opened data sources, each represented by a
+	///     <see cref="IDataSourceViewModel" />.
 	/// </summary>
-	[TemplatePart(Name = PART_DataSources, Type = typeof (TreeView))]
-	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof (FilterTextBox))]
+	[TemplatePart(Name = PART_DataSources, Type = typeof(TreeView))]
+	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof(FilterTextBox))]
 	public class DataSourcesControl : Control
 	{
-		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
 		public const string PART_DataSources = "PART_DataSources";
 		public const string PART_DataSourceSearch = "PART_DataSourceSearch";
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<IDataSourceViewModel>), typeof (DataSourcesControl),
-			                            new PropertyMetadata(null, OnDataSourcesChanged));
+			DependencyProperty.Register("ItemsSource", typeof(IEnumerable<IDataSourceViewModel>),
+			                            typeof(DataSourcesControl),
+			                            new PropertyMetadata(defaultValue: null, OnDataSourcesChanged));
 
 		public static readonly DependencyProperty SelectedItemProperty =
-			DependencyProperty.Register("SelectedItem", typeof (IDataSourceViewModel), typeof (DataSourcesControl),
-			                            new PropertyMetadata(null, OnSelectedItemChanged));
+			DependencyProperty.Register("SelectedItem", typeof(IDataSourceViewModel), typeof(DataSourcesControl),
+			                            new PropertyMetadata(defaultValue: null, OnSelectedItemChanged));
 
 		private static readonly DependencyPropertyKey FilteredItemsSourcePropertyKey
-			= DependencyProperty.RegisterReadOnly("FilteredItemsSource", typeof (ObservableCollection<IDataSourceViewModel>),
-			                                      typeof (DataSourcesControl),
-			                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.None));
+			= DependencyProperty.RegisterReadOnly("FilteredItemsSource",
+			                                      typeof(ObservableCollection<IDataSourceViewModel>),
+			                                      typeof(DataSourcesControl),
+			                                      new FrameworkPropertyMetadata(defaultValue: null,
+				                                                                    FrameworkPropertyMetadataOptions
+					                                                                    .None));
 
 		public static readonly DependencyProperty FilteredItemsSourceProperty =
 			FilteredItemsSourcePropertyKey.DependencyProperty;
 
 		public static readonly DependencyProperty StringFilterProperty =
-			DependencyProperty.Register("SearchTerm", typeof (string), typeof (LogView.LogViewerControl),
-			                            new PropertyMetadata(null, OnStringFilterChanged));
-
-		public static readonly DependencyProperty CustomDataSourcesProperty = DependencyProperty.Register(
-		 "CustomDataSources", typeof(IEnumerable<AddCustomDataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(default(IEnumerable<AddCustomDataSourceViewModel>)));
+			DependencyProperty.Register("SearchTerm", typeof(string), typeof(LogViewerControl),
+			                            new PropertyMetadata(defaultValue: null, OnStringFilterChanged));
 
 		public static readonly DependencyProperty IsPinnedProperty = DependencyProperty.Register(
-		                                                "IsPinned", typeof(bool), typeof(DataSourcesControl), new PropertyMetadata(default(bool)));
+		 "IsPinned", typeof(bool), typeof(DataSourcesControl), new PropertyMetadata(default(bool)));
+
+		private static readonly DependencyPropertyKey NoDataSourcesReasonPropertyKey
+			= DependencyProperty.RegisterReadOnly("NoDataSourcesReason", typeof(string), typeof(DataSourcesControl),
+			                                      new FrameworkPropertyMetadata(default(string),
+				                                                                    FrameworkPropertyMetadataOptions
+					                                                                    .None));
+
+		private static readonly DependencyPropertyKey NoDataSourcesActionsPropertyKey
+			= DependencyProperty.RegisterReadOnly("NoDataSourcesActions", typeof(string), typeof(DataSourcesControl),
+			                                      new FrameworkPropertyMetadata(default(string),
+				                                                                    FrameworkPropertyMetadataOptions
+					                                                                    .None));
+
+		public static readonly DependencyProperty NoDataSourcesActionsProperty
+			= NoDataSourcesActionsPropertyKey.DependencyProperty;
+
+		public static readonly DependencyProperty NoDataSourcesReasonProperty
+			= NoDataSourcesReasonPropertyKey.DependencyProperty;
 
 		public static DataSourcesControl Instance;
+		private TreeView _partDataSources;
 
 		private FilterTextBox _partDataSourceSearch;
-		private TreeView _partDataSources;
 
 		static DataSourcesControl()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof (DataSourcesControl),
-			                                         new FrameworkPropertyMetadata(typeof (DataSourcesControl)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(DataSourcesControl),
+			                                         new FrameworkPropertyMetadata(typeof(DataSourcesControl)));
 		}
 
 		public DataSourcesControl()
 		{
 			FilteredItemsSource = new ObservableCollection<IDataSourceViewModel>();
 			Instance = this;
+			UpdateNoDataSourcesMessage();
 		}
 
-		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources
+		public string NoDataSourcesActions
 		{
-			get { return (IEnumerable<AddCustomDataSourceViewModel>) GetValue(CustomDataSourcesProperty); }
-			set { SetValue(CustomDataSourcesProperty, value); }
+			get { return (string) GetValue(NoDataSourcesActionsProperty); }
+			protected set { SetValue(NoDataSourcesActionsPropertyKey, value); }
+		}
+
+		public string NoDataSourcesReason
+		{
+			get { return (string) GetValue(NoDataSourcesReasonProperty); }
+			protected set { SetValue(NoDataSourcesReasonPropertyKey, value); }
 		}
 
 		public bool IsPinned
@@ -88,7 +115,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			get { return (string) GetValue(StringFilterProperty); }
 			set
 			{
-				string old = StringFilter;
+				var old = StringFilter;
 				SetValue(StringFilterProperty, value);
 				OnStringFilterChanged(old, value);
 			}
@@ -114,29 +141,23 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private TreeViewItem SelectedTreeViewItem { get; set; }
 
-		private static void OnSelectedItemChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		private static void OnSelectedItemChanged(DependencyObject dependencyObject,
+		                                          DependencyPropertyChangedEventArgs e)
 		{
 			((DataSourcesControl) dependencyObject).OnSelectedItemChanged((IDataSourceViewModel) e.NewValue);
 		}
 
 		private void OnSelectedItemChanged(IDataSourceViewModel selectedViewModel)
 		{
-			TreeViewItem treeViewItem = GetTreeViewItem(selectedViewModel);
+			var treeViewItem = GetTreeViewItem(selectedViewModel);
 			if (treeViewItem != null)
-			{
 				SelectItem(treeViewItem);
-			}
 			else
-			{
 				Dispatcher.BeginInvoke(new Action(() =>
-					{
-						TreeViewItem item = GetTreeViewItem(selectedViewModel);
-						if (item != null)
-						{
-							SelectItem(item);
-						}
-					}));
-			}
+				{
+					var item = GetTreeViewItem(selectedViewModel);
+					if (item != null) SelectItem(item);
+				}));
 		}
 
 		private void SelectItem(TreeViewItem treeViewItem)
@@ -145,7 +166,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			treeViewItem.BringIntoView();
 		}
 
-		private static void OnStringFilterChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		private static void OnStringFilterChanged(DependencyObject dependencyObject,
+		                                          DependencyPropertyChangedEventArgs e)
 		{
 			((DataSourcesControl) dependencyObject).OnStringFilterChanged((string) e.OldValue, (string) e.NewValue);
 		}
@@ -154,19 +176,16 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			if (ItemsSource != null)
 			{
-				int sourceIndex = 0;
-				int filterIndex = 0;
-				foreach (IDataSourceViewModel model in ItemsSource)
+				var sourceIndex = 0;
+				var filterIndex = 0;
+				foreach (var model in ItemsSource)
 				{
-					bool passedOld = PassesFilter(model, oldValue);
-					bool passesNew = PassesFilter(model, newValue);
+					var passedOld = PassesFilter(model, oldValue);
+					var passesNew = PassesFilter(model, newValue);
 
 					if (!passedOld)
 					{
-						if (passesNew)
-						{
-							FilteredItemsSource.Insert(filterIndex++, model);
-						}
+						if (passesNew) FilteredItemsSource.Insert(filterIndex++, model);
 					}
 					else if (!passesNew)
 					{
@@ -179,6 +198,27 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 					++sourceIndex;
 				}
+			}
+
+			UpdateNoDataSourcesMessage();
+		}
+
+		private void UpdateNoDataSourcesMessage()
+		{
+			if (FilteredItemsSource.Any())
+			{
+				NoDataSourcesReason = null;
+				NoDataSourcesActions = null;
+			}
+			else if (!string.IsNullOrEmpty(StringFilter))
+			{
+				NoDataSourcesReason = $"No data source matches '{StringFilter}'";
+				NoDataSourcesActions = "Try changing the filter or add the desired data source";
+			}
+			else
+			{
+				NoDataSourcesReason = "No data sources opened";
+				NoDataSourcesActions = "Try opening a log file, an entire folder or create a new (non-file) based data source.";
 			}
 		}
 
@@ -200,36 +240,36 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
 			dropInfo = null;
-			IDataSourceViewModel viewModel = e.Data.GetData(typeof (FileDataSourceViewModel)) as IDataSourceViewModel ??
-			                                 e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
+			var viewModel = e.Data.GetData(typeof(FileDataSourceViewModel)) as IDataSourceViewModel ??
+			                e.Data.GetData(typeof(MergedDataSourceViewModel)) as IDataSourceViewModel;
 			var source = new TreeItem
-				{
-					ViewModel = viewModel
-				};
+			{
+				ViewModel = viewModel
+			};
 			if (source.ViewModel == null)
 				return false;
 
-			TreeItem dropTarget = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
+			var dropTarget = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
 			if (dropTarget == null)
 				return false;
 
-			DataSourceDropType dropType = GetDropType(e, dropTarget, viewModel);
+			var dropType = GetDropType(e, dropTarget, viewModel);
 			var model = (DataSourcesViewModel) DataContext;
 			IDataSourceViewModel group;
 			if (!model.CanBeDropped(source.ViewModel, dropTarget.ViewModel, dropType, out group))
 				return false;
 
 			dropInfo = new DropInfo
+			{
+				Source = source,
+				Type = dropType,
+				Target = dropTarget,
+				TargetGroup = new TreeItem
 				{
-					Source = source,
-					Type = dropType,
-					Target = dropTarget,
-					TargetGroup = new TreeItem
-						{
-							ViewModel = group,
-							TreeViewItem = GetTreeViewItem(group)
-						}
-				};
+					ViewModel = group,
+					TreeViewItem = GetTreeViewItem(group)
+				}
+			};
 			return true;
 		}
 
@@ -240,10 +280,10 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (destination == null)
 				return DataSourceDropType.None;
 
-			Point pos = e.GetPosition(destination.TreeViewItem);
+			var pos = e.GetPosition(destination.TreeViewItem);
 
 			var dropType = DataSourceDropType.None;
-			double height = destination.TreeViewItem.ActualHeight;
+			var height = destination.TreeViewItem.ActualHeight;
 			if (source is FileDataSourceViewModel)
 			{
 				// Let's distribute it as follows:
@@ -252,9 +292,9 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				// 20% bottom => arrange
 				//
 				// This way 60% of the height is used for grouping and 40% is used for arranging.
-				if (pos.Y < height*0.2)
+				if (pos.Y < height * 0.2)
 					dropType |= DataSourceDropType.ArrangeTop;
-				else if (pos.Y < height*0.8)
+				else if (pos.Y < height * 0.8)
 					dropType |= DataSourceDropType.Group;
 				else
 					dropType |= DataSourceDropType.ArrangeBottom;
@@ -267,7 +307,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				// Groups can't be grouped any further, thus we
 				// simply arrange it above or beneath the drop source
 				// at a 50/50 split.
-				if (pos.Y < height*0.5)
+				if (pos.Y < height * 0.5)
 					dropType |= DataSourceDropType.ArrangeTop;
 				else
 					dropType |= DataSourceDropType.ArrangeBottom;
@@ -283,11 +323,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			{
 				var vm = DataContext as DataSourcesViewModel;
 				vm?.OnDropped(dropInfo.Source.ViewModel,
-					dropInfo.Target.ViewModel,
-					dropInfo.Type);
+				              dropInfo.Target.ViewModel,
+				              dropInfo.Type);
 
 				e.Handled = true;
 			}
+
 			DragLayer.RemoveArrangeAdorner();
 			DragLayer.RemoveDropAdorner();
 		}
@@ -322,7 +363,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private TreeItem GetDataSourceFromPosition(Point position)
 		{
-			TreeViewItem treeViewItem = GetTreeViewItemFromPosition(position);
+			var treeViewItem = GetTreeViewItemFromPosition(position);
 			if (treeViewItem == null)
 			{
 				// I call bullshit, for whatever reason you can find that perfect position
@@ -335,10 +376,10 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 			var model = treeViewItem.DataContext as IDataSourceViewModel;
 			return new TreeItem
-				{
-					ViewModel = model,
-					TreeViewItem = treeViewItem
-				};
+			{
+				ViewModel = model,
+				TreeViewItem = treeViewItem
+			};
 		}
 
 		private TreeViewItem GetTreeViewItemFromPosition(Point position)
@@ -368,13 +409,11 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			if (DragLayer.ShouldStartDrag(e))
 			{
-				IDataSourceViewModel source = SelectedItem;
-				TreeViewItem treeViewItem = SelectedTreeViewItem;
+				var source = SelectedItem;
+				var treeViewItem = SelectedTreeViewItem;
 
 				if (treeViewItem.IsMouseOver && ((DataSourcesViewModel) DataContext).CanBeDragged(source))
-				{
 					DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
-				}
 			}
 		}
 
@@ -398,7 +437,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				return null;
 			}
 
-			ItemContainerGenerator containerGenerator = partDataSources.ItemContainerGenerator;
+			var containerGenerator = partDataSources.ItemContainerGenerator;
 			return GetTreeViewItem(containerGenerator, item);
 		}
 
@@ -408,7 +447,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (container != null)
 				return container;
 
-			foreach (object childItem in containerGenerator.Items)
+			foreach (var childItem in containerGenerator.Items)
 			{
 				var parent = containerGenerator.ContainerFromItem(childItem) as TreeViewItem;
 				if (parent == null)
@@ -422,6 +461,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				if (container != null)
 					return container;
 			}
+
 			return null;
 		}
 
@@ -435,29 +475,21 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		                                  IEnumerable<IDataSourceViewModel> newValue)
 		{
 			var old = oldValue as INotifyCollectionChanged;
-			if (old != null)
-			{
-				old.CollectionChanged -= ItemsSourceOnCollectionChanged;
-			}
+			if (old != null) old.CollectionChanged -= ItemsSourceOnCollectionChanged;
 
 			FilteredItemsSource.Clear();
 
 			if (newValue != null)
 			{
-				foreach (IDataSourceViewModel model in newValue)
-				{
+				foreach (var model in newValue)
 					if (PassesFilter(model))
-					{
 						FilteredItemsSource.Add(model);
-					}
-				}
 
 				var @new = newValue as INotifyCollectionChanged;
-				if (@new != null)
-				{
-					@new.CollectionChanged += ItemsSourceOnCollectionChanged;
-				}
+				if (@new != null) @new.CollectionChanged += ItemsSourceOnCollectionChanged;
 			}
+
+			UpdateNoDataSourcesMessage();
 		}
 
 		private void ItemsSourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -465,50 +497,45 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					for (int i = 0; i < e.NewItems.Count; ++i)
+					for (var i = 0; i < e.NewItems.Count; ++i)
 					{
 						var model = (IDataSourceViewModel) e.NewItems[i];
 						if (PassesFilter(model))
 						{
-							int sourceIndex = e.NewStartingIndex + i;
-							int filteredIndex = FindFilteredIndex(sourceIndex);
+							var sourceIndex = e.NewStartingIndex + i;
+							var filteredIndex = FindFilteredIndex(sourceIndex);
 							FilteredItemsSource.Insert(filteredIndex, model);
 						}
 					}
+
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					foreach (IDataSourceViewModel model in e.OldItems)
-					{
-						FilteredItemsSource.Remove(model);
-					}
+					foreach (IDataSourceViewModel model in e.OldItems) FilteredItemsSource.Remove(model);
 					break;
 
-					/*case NotifyCollectionChangedAction.Reset:
-					foreach (IDataSourceViewModel model in _dataSourceCopy)
-					{
-						model.PropertyChanged -= DataSourceOnPropertyChanged;
-					}
-					_dataSourceCopy.Clear();
+				case NotifyCollectionChangedAction.Reset:
 					FilteredItemsSource.Clear();
-					break;*/
+					break;
 
 				default:
 					throw new NotImplementedException();
 			}
+
+			UpdateNoDataSourcesMessage();
 		}
 
 		private int FindFilteredIndex(int sourceIndex)
 		{
-			for (int i = sourceIndex - 1; i >= 0; --i)
+			for (var i = sourceIndex - 1; i >= 0; --i)
 			{
-				IDataSourceViewModel previousModel = ItemsSource.ElementAt(i);
+				var previousModel = ItemsSource.ElementAt(i);
 				if (PassesFilter(previousModel))
 				{
 					// We found the next predecessor to the given source index that should be
 					// before "sourceIndex"
-					int filteredIndex = FilteredItemsSource.IndexOf(previousModel);
-					int desiredIndex = filteredIndex + 1;
+					var filteredIndex = FilteredItemsSource.IndexOf(previousModel);
+					var desiredIndex = filteredIndex + 1;
 					return desiredIndex;
 				}
 			}
@@ -519,7 +546,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (e.IsDown)
-			{
 				switch (e.Key)
 				{
 					case Key.Down:
@@ -527,7 +553,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 					case Key.Up:
 						break;
 				}
-			}
 		}
 
 		private void SelectNextDataSource()
@@ -538,8 +563,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			}
 			else
 			{
-				int index = ItemsSource.IndexOf(SelectedItem);
-				int nextIndex = (index + 1) % ItemsSource.Count();
+				var index = ItemsSource.IndexOf(SelectedItem);
+				var nextIndex = (index + 1) % ItemsSource.Count();
 				SelectedItem = ItemsSource.ElementAt(nextIndex);
 			}
 		}
@@ -552,8 +577,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			}
 			else
 			{
-				int index = ItemsSource.IndexOf(SelectedItem);
-				int nextIndex = index - 1;
+				var index = ItemsSource.IndexOf(SelectedItem);
+				var nextIndex = index - 1;
 				if (nextIndex < 0)
 					nextIndex = ItemsSource.Count() - 1;
 				SelectedItem = ItemsSource.ElementAt(nextIndex);
@@ -572,7 +597,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (filter == null)
 				return true;
 
-			int idx = model.DisplayName.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
+			var idx = model.DisplayName.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
 			if (idx != -1)
 				return true;
 
@@ -581,7 +606,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		public void FocusSearch()
 		{
-			FilterTextBox element = _partDataSourceSearch;
+			var element = _partDataSourceSearch;
 			element?.Focus();
 		}
 
@@ -589,13 +614,9 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			UIElement container;
 			if (itemsControl != null && itemsControl.Items.Count > 0)
-			{
-				container = itemsControl.ItemContainerGenerator.ContainerFromIndex(0) as UIElement;
-			}
+				container = itemsControl.ItemContainerGenerator.ContainerFromIndex(index: 0) as UIElement;
 			else
-			{
 				container = itemsControl;
-			}
 			return container;
 		}
 	}

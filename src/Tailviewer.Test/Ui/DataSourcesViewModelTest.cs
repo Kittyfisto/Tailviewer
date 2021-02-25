@@ -67,6 +67,9 @@ namespace Tailviewer.Test.Ui
 			var model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			model.IsPinned.Should().BeFalse();
 			model.IsChecked.Should().BeFalse();
+			model.DataSources.Should().BeEmpty();
+			model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
 		}
 
 		[Test]
@@ -76,6 +79,50 @@ namespace Tailviewer.Test.Ui
 			var model = _model.GetOrAddFile("foo");
 			_model.SelectedItem.Should().BeSameAs(model);
 			model.IsVisible.Should().BeTrue();
+		}
+
+		[Test]
+		[Description("Verifies that it's possible to remove the current data source when it exists")]
+		public void TestRemoveCurrentDataSource()
+		{
+			var model1 = _model.GetOrAddFile("foo");
+			_model.SelectedItem.Should().BeSameAs(model1);
+			model1.IsVisible.Should().BeTrue();
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			var model2 = _model.GetOrAddFile("bar");
+			_model.SelectedItem = model2;
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's two data sources to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's two data sources to remove");
+
+			_model.RemoveCurrentDataSourceCommand.Execute(null);
+			_model.DataSources.Should().Equal(new object[]{model1}, "because we've just removed the selected data source, leaving one behind");
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			_model.RemoveCurrentDataSourceCommand.Execute(null);
+			_model.DataSources.Should().BeEmpty("because we've just removed the last data source");
+			_dataSources.Sources.Should().BeEmpty("because we've just removed the last data source");
+
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+		}
+
+		[Test]
+		[Description("Verifies that it's possible to remove the current data source when it exists")]
+		public void TestRemoveAllDataSources()
+		{
+			_model.GetOrAddFile("foo");
+			_model.GetOrAddFile("bar");
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			_model.RemoveAllDataSourcesCommand.Execute(null);
+			_model.DataSources.Should().BeEmpty("because we've just removed the last data source");
+			_dataSources.Sources.Should().BeEmpty("because we've just removed the last data source");
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
 		}
 
 		[Test]

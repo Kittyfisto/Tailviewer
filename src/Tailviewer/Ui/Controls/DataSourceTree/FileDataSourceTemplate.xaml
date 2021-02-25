@@ -31,11 +31,7 @@
 
             <Grid.ContextMenu>
                 <ContextMenu ItemsSource="{Binding ContextMenuItems}"
-                             ItemContainerStyle="{StaticResource MainSubMenuItemStyle}"
-                             Background="{StaticResource MenuBackground}"
-                             Padding="0"
-                             BorderThickness="1"
-                             BorderBrush="Black">
+                             Style="{StaticResource FlatContextMenu}">
                 </ContextMenu>
             </Grid.ContextMenu>
 
