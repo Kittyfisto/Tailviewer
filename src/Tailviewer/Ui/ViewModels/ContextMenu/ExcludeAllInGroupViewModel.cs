@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using Metrolib;
 
 namespace Tailviewer.Ui.ViewModels.ContextMenu
@@ -42,11 +41,7 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 
 		public bool IsCheckable => false;
 
-		public bool IsChecked
-		{
-			get { throw new System.NotImplementedException(); }
-			set { throw new System.NotImplementedException(); }
-		}
+		public bool IsChecked { get; set; }
 
 		public IEnumerable<IMenuViewModel> Children => null;
 

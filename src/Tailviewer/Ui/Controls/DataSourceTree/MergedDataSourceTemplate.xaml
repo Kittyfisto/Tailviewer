@@ -8,6 +8,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MenuItemTemplates.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters2:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
@@ -26,13 +27,12 @@
             </Grid.ColumnDefinitions>
 
             <Grid.ContextMenu>
-                <ContextMenu ItemsSource="{Binding ContextMenuItems}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Header" Value="{Binding Header}" />
-                            <Setter Property="Command" Value="{Binding Command}" />
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
+                <ContextMenu ItemsSource="{Binding ContextMenuItems}"
+                             ItemContainerStyle="{StaticResource MainSubMenuItemStyle}"
+                             Background="{StaticResource MenuBackground}"
+                             Padding="0"
+                             BorderThickness="1"
+                             BorderBrush="Black">
                 </ContextMenu>
             </Grid.ContextMenu>
 

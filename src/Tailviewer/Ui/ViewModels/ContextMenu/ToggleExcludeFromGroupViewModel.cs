@@ -3,17 +3,16 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using Metrolib;
 
 namespace Tailviewer.Ui.ViewModels.ContextMenu
 {
 	public sealed class ToggleExcludeFromGroupViewModel
 		: IMenuViewModel
-		, INotifyPropertyChanged
+			, INotifyPropertyChanged
 	{
-		private readonly ISingleDataSourceViewModel _dataSource;
 		private readonly DelegateCommand2 _command;
+		private readonly ISingleDataSourceViewModel _dataSource;
 		private string _header;
 
 		public ToggleExcludeFromGroupViewModel(ISingleDataSourceViewModel dataSource)
@@ -21,6 +20,23 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 			_dataSource = dataSource;
 			_command = new DelegateCommand2(ToggleFilterAll);
 			UpdateHeader();
+		}
+
+		private void ToggleFilterAll()
+		{
+			_dataSource.ExcludeFromParent = !_dataSource.ExcludeFromParent;
+
+			UpdateHeader();
+		}
+
+		public void UpdateHeader()
+		{
+			// The text describes what Command() does, and thus if we're currently excluding the file,
+			// then executing the command will include it (and vice versa).
+			if (_dataSource.ExcludeFromParent)
+				Header = "Include in group";
+			else
+				Header = "Exclude from group";
 		}
 
 		#region Implementation of IContextMenuViewModel
@@ -38,27 +54,32 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 			}
 		}
 
-		public string ToolTip => null;
+		public string ToolTip
+		{
+			get { return null; }
+		}
 
-		public Geometry Icon => null;
+		public Geometry Icon
+		{
+			get { return null; }
+		}
 
 		public ICommand Command
 		{
-			get
-			{
-				return _command;
-			}
+			get { return _command; }
 		}
 
-		public bool IsCheckable => false;
-
-		public bool IsChecked
+		public bool IsCheckable
 		{
-			get { throw new System.NotImplementedException(); }
-			set { throw new System.NotImplementedException(); }
+			get { return false; }
 		}
 
-		public IEnumerable<IMenuViewModel> Children => null;
+		public bool IsChecked { get; set; }
+
+		public IEnumerable<IMenuViewModel> Children
+		{
+			get { return null; }
+		}
 
 		#endregion
 
@@ -72,26 +93,5 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 		}
 
 		#endregion
-
-		private void ToggleFilterAll()
-		{
-			_dataSource.ExcludeFromParent = !_dataSource.ExcludeFromParent;
-			
-			UpdateHeader();
-		}
-
-		public void UpdateHeader()
-		{
-			// The text describes what Command() does, and thus if we're currently excluding the file,
-			// then executing the command will include it (and vice versa).
-			if (_dataSource.ExcludeFromParent)
-			{
-				Header = "Include in group";
-			}
-			else
-			{
-				Header = "Exclude from group";
-			}
-		}
 	}
 }
