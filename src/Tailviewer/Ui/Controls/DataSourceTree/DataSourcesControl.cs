@@ -48,16 +48,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DependencyProperty.Register("SearchTerm", typeof (string), typeof (LogView.LogViewerControl),
 			                            new PropertyMetadata(null, OnStringFilterChanged));
 
-		public static readonly DependencyProperty AddDataSourceFromFileCommandProperty =
-			DependencyProperty.Register("AddDataSourceFromFileCommand", typeof (ICommand), typeof (DataSourcesControl),
-			                            new PropertyMetadata(default(ICommand)));
-
-		public static readonly DependencyProperty AddDataSourceFromFolderCommandProperty = DependencyProperty.Register(
-		                                                "AddDataSourceFromFolderCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
-
-		public static readonly DependencyProperty AddCustomDataSourceCommandProperty = DependencyProperty.Register(
-		 "AddCustomDataSourceCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
-
 		public static readonly DependencyProperty CustomDataSourcesProperty = DependencyProperty.Register(
 		 "CustomDataSources", typeof(IEnumerable<AddCustomDataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(default(IEnumerable<AddCustomDataSourceViewModel>)));
 
@@ -79,24 +69,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			FilteredItemsSource = new ObservableCollection<IDataSourceViewModel>();
 			Instance = this;
-		}
-
-		public ICommand AddDataSourceFromFileCommand
-		{
-			get { return (ICommand) GetValue(AddDataSourceFromFileCommandProperty); }
-			set { SetValue(AddDataSourceFromFileCommandProperty, value); }
-		}
-
-		public ICommand AddDataSourceFromFolderCommand
-		{
-			get { return (ICommand) GetValue(AddDataSourceFromFolderCommandProperty); }
-			set { SetValue(AddDataSourceFromFolderCommandProperty, value); }
-		}
-
-		public ICommand AddCustomDataSourceCommand
-		{
-			get { return (ICommand) GetValue(AddCustomDataSourceCommandProperty); }
-			set { SetValue(AddCustomDataSourceCommandProperty, value); }
 		}
 
 		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources

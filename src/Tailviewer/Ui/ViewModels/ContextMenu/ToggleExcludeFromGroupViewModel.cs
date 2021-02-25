@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using Metrolib;
 
@@ -38,7 +40,7 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 
 		public string ToolTip => null;
 
-		public Path Icon => null;
+		public Geometry Icon => null;
 
 		public ICommand Command
 		{
@@ -55,6 +57,8 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 			get { throw new System.NotImplementedException(); }
 			set { throw new System.NotImplementedException(); }
 		}
+
+		public IEnumerable<IMenuViewModel> Children => null;
 
 		#endregion
 

@@ -33,57 +33,10 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <controls2:FileAddButton
-                                    Grid.Column="3"
-                                    Width="26"
-                                    Height="26"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    ToolTip="Add new data source from file"
-                                    Command="{TemplateBinding AddDataSourceFromFileCommand}" />
-                                <controls2:FolderAddButton
-                                    Grid.Column="4"
-                                    Width="26"
-                                    Height="26"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    ToolTip="Add new data source from folder"
-                                    Command="{TemplateBinding AddDataSourceFromFolderCommand}" />
-                                <controls2:AddButton
-                                    Grid.Column="5"
-                                    Width="26"
-                                    Height="26"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    ToolTip="Add new custom data source">
-                                    <controls2:AddButton.ContextMenu>
-                                        <ContextMenu ItemsSource="{Binding CustomDataSources}">
-                                            <ContextMenu.ItemContainerStyle>
-                                                <Style TargetType="MenuItem">
-                                                    <Setter Property="Header" Value="{Binding Name}" />
-                                                    <Setter Property="Command" Value="{Binding AddCommand}" />
-                                                </Style>
-                                            </ContextMenu.ItemContainerStyle>
-                                        </ContextMenu>
-                                    </controls2:AddButton.ContextMenu>
-                                </controls2:AddButton>
-                            </Grid>
-
-                            <Grid Grid.Row="1">
+                            <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
@@ -115,7 +68,7 @@
                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                     ScrollViewer.VerticalScrollBarVisibility="Visible"
                                                     ItemContainerStyle="{StaticResource DataSourceTreeViewItemStyle}"
-                                                    Grid.Row="2" />
+                                                    Grid.Row="1" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

@@ -1,5 +1,6 @@
-﻿using System.Windows.Input;
-using System.Windows.Shapes;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Tailviewer.Ui.ViewModels.ContextMenu
 {
@@ -12,7 +13,7 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 		/// <summary>
 		///     The icon to display, if any.
 		/// </summary>
-		Path Icon { get; }
+		Geometry Icon { get; }
 
 		ICommand Command { get; }
 
@@ -26,5 +27,10 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 		///     When <see cref="IsCheckable" />, then this value may be toggled by the user.
 		/// </summary>
 		bool IsChecked { get; set; }
+
+		/// <summary>
+		///     The child menu items of this one, if any.
+		/// </summary>
+		IEnumerable<IMenuViewModel> Children { get; }
 	}
 }

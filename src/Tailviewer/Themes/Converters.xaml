@@ -6,5 +6,6 @@
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolTrueToHiddenConverter x:Key="BoolTrueToHiddenConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
 </ResourceDictionary>

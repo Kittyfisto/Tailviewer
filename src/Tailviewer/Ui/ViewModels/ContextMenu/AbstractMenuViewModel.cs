@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace Tailviewer.Ui.ViewModels.ContextMenu
@@ -16,8 +18,9 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 		private ICommand _command;
 		private string _header;
 		private bool _isChecked;
-		private Path _icon;
+		private Geometry _icon;
 		private string _toolTip;
+		private IEnumerable<IMenuViewModel> _children;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -55,7 +58,7 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 			}
 		}
 
-		public Path Icon
+		public Geometry Icon
 		{
 			get { return _icon; }
 			set
@@ -93,6 +96,18 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 
 				EmitPropertyChanged();
 				EmitIsCheckedChanged(value);
+			}
+		}
+
+		public IEnumerable<IMenuViewModel> Children
+		{
+			get { return _children; }
+			set
+			{
+				if (value == _children)
+					return;
+				_children = value;
+				EmitPropertyChanged();
 			}
 		}
 

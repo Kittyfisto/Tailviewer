@@ -8,8 +8,6 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
-using Microsoft.Win32;
-using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.DataSources.Custom;
@@ -28,8 +26,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _settings;
-		private readonly ICommand _addDataSourceFromFileCommand;
-		private readonly ICommand _addDataSourceFromFolderCommand;
 		private readonly IReadOnlyList<AddCustomDataSourceViewModel> _customDataSources;
 		private IDataSourceViewModel _selectedItem;
 		private bool _isPinned;
@@ -41,8 +37,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
-			_addDataSourceFromFileCommand = new DelegateCommand(AddDataSourceFromFile);
-			_addDataSourceFromFolderCommand = new DelegateCommand(AddDataSourceFromFolder);
 			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
 			foreach (IDataSource dataSource in dataSources.Sources)
 			{
@@ -100,10 +94,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 					break;
 			}
 		}
-
-		public ICommand AddDataSourceFromFileCommand => _addDataSourceFromFileCommand;
-
-		public ICommand AddDataSourceFromFolderCommand => _addDataSourceFromFolderCommand;
 
 		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources => _customDataSources;
 
@@ -224,41 +214,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		{
 			var viewModel = _observable.FirstOrDefault(x => x.DataSource.Id == id);
 			return viewModel;
-		}
-
-		private void AddDataSourceFromFile()
-		{
-			var dlg = new OpenFileDialog
-			{
-				Title = "Select log file to open",
-				DefaultExt = ".log",
-				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
-				Multiselect = true
-			};
-
-			if (dlg.ShowDialog() == true)
-			{
-				string[] selectedFiles = dlg.FileNames;
-				foreach (string fileName in selectedFiles)
-				{
-					GetOrAddFile(fileName);
-				}
-			}
-		}
-
-		private void AddDataSourceFromFolder()
-		{
-			var dlg = new VistaFolderBrowserDialog
-			{
-				Description = "Select folder to open",
-				UseDescriptionForTitle = true
-			};
-
-			if (dlg.ShowDialog() == true)
-			{
-				var folder = dlg.SelectedPath;
-				GetOrAddFolder(folder);
-			}
 		}
 
 		private bool Represents(IDataSourceViewModel dataSourceViewModel, string fullName)

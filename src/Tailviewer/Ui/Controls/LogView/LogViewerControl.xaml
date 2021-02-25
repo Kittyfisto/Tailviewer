@@ -252,9 +252,6 @@
                                            Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                            DataContext="{Binding DataSources}"
                                            ItemsSource="{Binding Observable}"
-                                           AddDataSourceFromFileCommand="{Binding AddDataSourceFromFileCommand}"
-                                           AddDataSourceFromFolderCommand="{Binding AddDataSourceFromFolderCommand}"
-                                           CustomDataSources="{Binding CustomDataSources}"
                                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                            IsPinned="{Binding IsPinned, Mode=TwoWay}" />
 

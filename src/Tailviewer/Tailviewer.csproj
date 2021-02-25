@@ -149,6 +149,7 @@
     <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
+    <Compile Include="CompoundObservableCollection.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
@@ -328,8 +329,10 @@
     <Compile Include="Ui\ViewModels\AddCustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ContextMenu\AbstractMenuViewModel.cs" />
     <Compile Include="Ui\ViewModels\ContextMenu\CommandMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ContextMenu\ParentMenuViewModel.cs" />
     <Compile Include="Ui\ViewModels\CustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ContextMenu\ExcludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\ViewModels\FileMenu.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
@@ -440,6 +443,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatsSettingsDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MenuItemTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

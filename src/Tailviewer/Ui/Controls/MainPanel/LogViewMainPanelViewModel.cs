@@ -5,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Metrolib;
+using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
@@ -30,6 +33,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		: AbstractMainPanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly FileMenu _fileMenu;
 
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly BookmarksViewModel _bookmarks;
@@ -77,6 +82,11 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickNavigation = new QuickNavigationViewModel(dataSources);
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
+			_fileMenu = new FileMenu(new DelegateCommand2(AddDataSourceFromFile),
+			                         new DelegateCommand2(AddDataSourceFromFolder),
+			                         new DelegateCommand2(Exit));
+			FileMenuItems = _fileMenu.Items;
+
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 			_outline = new OutlineSidePanelViewModel(services);
 			_issues = new IssuesSidePanelViewModel(services);
@@ -94,6 +104,56 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			PropertyChanged += OnPropertyChanged;
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void AddDataSourceFromFile()
+		{
+			var dlg = new OpenFileDialog
+			{
+				Title = "Select log file to open",
+				DefaultExt = ".log",
+				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+				Multiselect = true
+			};
+
+			if (dlg.ShowDialog() == true)
+			{
+				string[] selectedFiles = dlg.FileNames;
+				foreach (string fileName in selectedFiles)
+				{
+					GetOrAddFile(fileName);
+				}
+			}
+		}
+
+		private void AddDataSourceFromFolder()
+		{
+			var dlg = new VistaFolderBrowserDialog
+			{
+				Description = "Select folder to open",
+				UseDescriptionForTitle = true
+			};
+
+			if (dlg.ShowDialog() == true)
+			{
+				var folder = dlg.SelectedPath;
+				GetOrAddFolder(folder);
+			}
+		}
+
+		private void Exit()
+		{
+			System.Windows.Application.Current.Shutdown();
+		}
+
+		private void GetOrAddFile(string fileName)
+		{
+			CurrentDataSource = _dataSources.GetOrAddFile(fileName);
+		}
+
+		private void GetOrAddFolder(string folder)
+		{
+			CurrentDataSource = _dataSources.GetOrAddFolder(folder);
 		}
 
 		private void GoToLineOnLineNumberChosen(LogLineIndex logLineIndex)
@@ -366,6 +426,9 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private void OpenFile(IDataSourceViewModel dataSource)
 		{
+			if (CurrentDataSourceLogView?.DataSource == dataSource)
+				return;
+
 			if (dataSource != null)
 			{
 				CurrentDataSource = dataSource;
@@ -392,7 +455,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 				_currentDataSourceLogView = value;
 				EmitPropertyChanged();
 
-				FileMenuItems = value?.DataSource.FileMenuItems;
+				_fileMenu.CurrentDataSource = value?.DataSource;
 				ViewMenuItems = value?.DataSource.ViewMenuItems;
 			}
 		}
