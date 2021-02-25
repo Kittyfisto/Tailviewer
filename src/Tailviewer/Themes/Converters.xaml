@@ -4,5 +4,7 @@
 
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:BoolTrueToHiddenConverter x:Key="BoolTrueToHiddenConverter" />
 
 </ResourceDictionary>

@@ -17,6 +17,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/DataSourcesToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
@@ -65,65 +67,11 @@
             </Grid.ColumnDefinitions>
 
             <!-- Data Source Selector, Top Left -->
-            <controls:FlatToggleButton x:Name="DataSourceToggleButton"
-                                       HoveredBackground="{StaticResource SecondaryLightBrush}"
-                                       CheckedBackground="{StaticResource PrimaryForegroundBrush}"
-                                       HoveredAndCheckedForeground="{StaticResource SecondaryLighterBrush}"
-                                       DisabledOverlayBrush="Transparent"
-                                       VerticalContentAlignment="Center"
-                                       HorizontalContentAlignment="Stretch"
-                                       Width="300"
-                                       ToolTip="{Binding Tooltip}"
-                                       IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}"
-                                       FocusVisualStyle="{x:Null}"
-                                       BorderBrush="{StaticResource PrimarySeparatorBrush}">
-                <controls:FlatToggleButton.Style>
-                    <Style TargetType="controls:FlatToggleButton">
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter Property="BorderThickness" Value="0,0,0,1" />
-                                <Setter Property="Foreground" Value="White" />
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Foreground" Value="Black" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="White" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </controls:FlatToggleButton.Style>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Margin="12,4,4,4">
-                        <TextBlock Text="Current Data Source" />
-                        <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
-                                   FontWeight="SemiBold"
-                                   FontSize="14" />
-                    </StackPanel>
-
-                    <Grid Grid.Column="1" Visibility="{Binding IsEnabled, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}">
-                        <Viewbox>
-                            <Canvas Width="24" Height="24">
-                                <Path x:Name="PART_Chevron_Down" Data="{x:Static metrolib:Icons.ChevronDown}"
-                                      Fill="White"
-                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolTrueToHiddenConverter}}"/>
-                            </Canvas>
-                        </Viewbox>
-                        <Viewbox>
-                            <Canvas Width="24" Height="24">
-                                <Path x:Name="PART_Chevron_Up" Data="{x:Static metrolib:Icons.ChevronUp}"
-                                      Fill="Black"
-                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}"/>
-                            </Canvas>
-                        </Viewbox>
-                    </Grid>
-                </Grid>
-            </controls:FlatToggleButton>
+            <dataSourceTree:DataSourcesToggleButton Grid.Column="0"
+                                                    x:Name="DataSourceToggleButton"
+                                                    Width="300"
+                                                    ToolTip="{Binding Tooltip}"
+                                                    IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}" />
 
             <!-- Central Toolbar -->
             <Border Grid.Column="1"

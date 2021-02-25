@@ -228,10 +228,10 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\Controls\FlatImage.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
-    <Compile Include="Ui\Controls\LogView\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\DoubleOneToHiddenConverter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
@@ -415,15 +415,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\DataSourceTree\DataSourcesToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\DataSourceTree\FolderDataSourceTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\FlatImage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\LogView\DataSourcesToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -16,6 +16,9 @@ using Tailviewer.Ui.Controls.SidePanel.DataSources;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
+	/// <summary>
+	///   Allows the user to inspect and interact with the currently opened data sources, each represented by a <see cref="IDataSourceViewModel"/>.
+	/// </summary>
 	[TemplatePart(Name = PART_DataSources, Type = typeof (TreeView))]
 	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof (FilterTextBox))]
 	public class DataSourcesControl : Control

@@ -1,0 +1,72 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../../../Themes/Constants.xaml" />
+        <ResourceDictionary Source="../../../Themes/Converters.xaml" />
+        <ResourceDictionary />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type local:DataSourcesToggleButton}"
+           BasedOn="{StaticResource {x:Type controls:FlatToggleButton}}">
+        <Setter Property="HoveredBackground" Value="{StaticResource SecondaryLightBrush}" />
+        <Setter Property="CheckedBackground" Value="{StaticResource PrimaryForegroundBrush}" />
+        <Setter Property="HoveredAndCheckedForeground" Value="{StaticResource SecondaryLighterBrush}" />
+        <Setter Property="DisabledOverlayBrush" Value="Transparent" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="BorderBrush" Value="{StaticResource PrimarySeparatorBrush}" />
+        <Setter Property="Content">
+            <Setter.Value>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Margin="12,4,4,4">
+                        <TextBlock Text="Current Data Source" />
+                        <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
+                                   FontWeight="SemiBold"
+                                   FontSize="14" />
+                    </StackPanel>
+
+                    <Grid Grid.Column="1"
+                          Visibility="{Binding IsEnabled, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}">
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path x:Name="PART_Chevron_Down" Data="{x:Static metrolib:Icons.ChevronDown}"
+                                      Fill="White"
+                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolTrueToHiddenConverter}}" />
+                            </Canvas>
+                        </Viewbox>
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path x:Name="PART_Chevron_Up" Data="{x:Static metrolib:Icons.ChevronUp}"
+                                      Fill="Black"
+                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
+                </Grid>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
