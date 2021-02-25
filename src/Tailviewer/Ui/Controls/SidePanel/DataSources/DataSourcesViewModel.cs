@@ -33,6 +33,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		private readonly IReadOnlyList<AddCustomDataSourceViewModel> _customDataSources;
 		private IDataSourceViewModel _selectedItem;
 		private bool _isPinned;
+		private bool _isChecked;
 
 		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources, IActionCenter actionCenter)
 		{
@@ -66,6 +67,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			_customDataSources =
 				_dataSources.CustomDataSources.Select(x => new AddCustomDataSourceViewModel(x.DisplayName, () => AddCustomDataSource(x.Id))).ToList();
 
+			// We need to make sure that if we construct this view model *and* the data sources panel is supposed
+			// to be pinned, then we also need to make sure the toggle button is checked as otherwise nothing
+			// is showing up.
+			IsPinned = _settings.DataSources.IsPinned;
+			if (IsPinned)
+				IsChecked = true;
+
 			UpdateTooltip();
 			PropertyChanged += OnPropertyChanged;
 		}
@@ -98,6 +106,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		public ICommand AddDataSourceFromFolderCommand => _addDataSourceFromFolderCommand;
 
 		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources => _customDataSources;
+
+		public bool IsChecked
+		{
+			get { return _isChecked; }
+			set
+			{
+				if (value == _isChecked)
+					return;
+				_isChecked = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public bool IsPinned
 		{
@@ -322,6 +342,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			_allDataSourceViewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);
 			_settings.SaveAsync();
+
+			if (_selectedItem == null || _selectedItem == viewModel)
+			{
+				SelectedItem = _observable.FirstOrDefault();
+			}
 		}
 
 		public bool CanBeDragged(IDataSourceViewModel source)

@@ -6,7 +6,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
@@ -49,6 +48,25 @@ namespace Tailviewer.Test.Ui
 			_bookmarks = new Mock<IBookmarks>();
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
+		}
+
+		[Test]
+		[Description("Verifies that when the data source view model is created with the data sources pinned, then the correct properties are set")]
+		public void TestConstructionPinned()
+		{
+			_settings.DataSources.IsPinned = true;
+			var model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
+			model.IsPinned.Should().BeTrue();
+			model.IsChecked.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			_settings.DataSources.IsPinned = false;
+			var model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
+			model.IsPinned.Should().BeFalse();
+			model.IsChecked.Should().BeFalse();
 		}
 
 		[Test]
@@ -688,6 +706,8 @@ namespace Tailviewer.Test.Ui
 			_model.Observable.Should().Equal(a, merged, d);
 			merged.RemoveCommand.Execute(null);
 			_model.Observable.Should().Equal(a, b, c, d);
+			_model.SelectedItem.Should().NotBeNull("becuse the view model should still make sure that a data source is selected, when possible");
+			_model.SelectedItem.Should().NotBe(merged);
 		}
 
 		[Test]

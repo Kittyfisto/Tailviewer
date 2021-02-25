@@ -71,6 +71,7 @@
                                                     x:Name="DataSourceToggleButton"
                                                     Width="300"
                                                     ToolTip="{Binding Tooltip}"
+                                                    IsChecked="{Binding DataSources.IsChecked, Mode=TwoWay}"
                                                     IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}" />
 
             <!-- Central Toolbar -->
