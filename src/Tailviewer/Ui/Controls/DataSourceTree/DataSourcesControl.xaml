@@ -81,29 +81,16 @@
                                   VerticalAlignment="Center"
                                   Margin="20">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Ellipse  Grid.Row="0"
-                                          Fill="#D8D8D8"
-                                         VerticalAlignment="Stretch"
-                                         HorizontalAlignment="Stretch"
-                                         Margin="10"/>
-                                <Viewbox Grid.Row="0"
-                                         Margin="20">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Data="{x:Static metrolib:Icons.FileDocumentOutline}"
-                                              Fill="White" />
-                                    </Canvas>
-                                </Viewbox>
-                                <TextBlock Grid.Row="1"
+                                <TextBlock Grid.Row="0"
                                            HorizontalAlignment="Center"
                                            FontWeight="Bold"
                                            FontSize="18"
                                            Foreground="#A0A0A0"
                                            Text="{TemplateBinding NoDataSourcesReason}"/>
-                                <TextBlock Grid.Row="2"
+                                <TextBlock Grid.Row="1"
                                            Foreground="#A0A0A0"
                                            Text="{TemplateBinding NoDataSourcesActions}"
                                            TextWrapping="Wrap" />

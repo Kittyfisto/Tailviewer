@@ -759,6 +759,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			else
 			{
 				_maxLineWidth = 0;
+				TextCanvasOnVisibleLinesChanged();
+				UpdateScrollViewerRegions();
 			}
 
 			MatchScrollbarValueToCurrentLine();
@@ -777,6 +779,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			if (LogSource == null)
 			{
+				_verticalScrollBar.Visibility = Visibility.Collapsed;
 			}
 			else
 			{
@@ -812,7 +815,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void UpdateVerticalScrollbar()
 		{
-			var count = LogSource.GetProperty(GeneralProperties.LogEntryCount);
+			var count = LogSource?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
 			var totalHeight = count * _textSettings.LineHeight;
 			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)

@@ -28,12 +28,18 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Margin="12,4,4,4">
-                        <TextBlock Text="Current Data Source" />
-                        <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
+                    <Grid Margin="12,4,4,4">
+                        <StackPanel Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
+                            <TextBlock Text="Current Data Source" />
+                            <TextBlock Text="{Binding CurrentDataSource.DisplayName}"
+                                       FontWeight="SemiBold"
+                                       FontSize="14" />
+                        </StackPanel>
+                        <TextBlock Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToVisibleConverter}}"
+                                   FontSize="18"
                                    FontWeight="SemiBold"
-                                   FontSize="14" />
-                    </StackPanel>
+                                   Text="Data Sources" />
+                    </Grid>
 
                     <Grid Grid.Column="1"
                           Visibility="{Binding IsEnabled, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}">

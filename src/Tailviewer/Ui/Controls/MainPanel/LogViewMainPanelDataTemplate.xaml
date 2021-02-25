@@ -7,8 +7,6 @@
                     xmlns:quickNavigation1="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation"
                     xmlns:goToLine="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine">
 
-    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
-
     <DataTemplate DataType="{x:Type mainPanel:LogViewMainPanelViewModel}">
 
         <Grid>
@@ -18,25 +16,6 @@
             </Grid.ColumnDefinitions>
 
             <Grid>
-                <Grid Width="200"
-                      Height="150"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Center">
-                    <TextBlock
-                        Text="Drag n' drop or select one or more files from the left in order to view them"
-                        TextWrapping="Wrap"
-                        FontSize="16"
-                        Margin="10"
-                        Foreground="DodgerBlue"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center" />
-                    <Rectangle StrokeDashArray="4 4"
-                               Stroke="DodgerBlue"
-                               StrokeThickness="2"
-                               RadiusX="10"
-                               RadiusY="10" />
-                </Grid>
-
                 <logView:LogViewerControl
                     x:Name="PART_LogFileView"
                     Settings="{Binding Settings}"
@@ -45,6 +24,7 @@
                     ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                     DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
                     LogView="{Binding CurrentDataSourceLogView}" />
+
 
                 <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
                                         Placement="Center"

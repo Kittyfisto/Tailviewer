@@ -46,6 +46,7 @@
                 x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
             <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
             <logView:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
+            <converters1:NullToVisibleConverter x:Key="NullToVisibleConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -70,7 +71,6 @@
             <dataSourceTree:DataSourcesToggleButton Grid.Column="0"
                                                     x:Name="DataSourceToggleButton"
                                                     Width="300"
-                                                    ToolTip="{Binding Tooltip}"
                                                     IsChecked="{Binding DataSources.IsChecked, Mode=TwoWay}"
                                                     IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}" />
 
@@ -222,6 +222,42 @@
                 MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
                 Settings="{Binding Settings, ElementName=This}"
                 SnapsToDevicePixels="True" />
+
+            <!-- Is displayed to the user when there are no data sources -->
+            <Grid Grid.Column="1"
+                  Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NullToVisibleConverter}}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Width="300"
+                  Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Ellipse  Grid.Row="0"
+                          Fill="#D8D8D8"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          Margin="10"/>
+                <Viewbox Grid.Row="0"
+                         Margin="20">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="{x:Static metrolib:Icons.FileFind}"
+                              Fill="White" />
+                    </Canvas>
+                </Viewbox>
+                <TextBlock Grid.Row="1"
+                           HorizontalAlignment="Center"
+                           FontWeight="Bold"
+                           FontSize="18"
+                           Foreground="#A0A0A0"
+                           Text="No data source opened"/>
+                <TextBlock Grid.Row="2"
+                           Foreground="#A0A0A0"
+                           Text="Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window."
+                           TextWrapping="Wrap" />
+            </Grid>
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
             <Border BorderThickness="1,0,0,0"

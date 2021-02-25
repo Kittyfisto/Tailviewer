@@ -217,8 +217,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			}
 			else
 			{
-				NoDataSourcesReason = "No data sources opened";
-				NoDataSourcesActions = "Try opening a log file, an entire folder or create a new (non-file) based data source.";
+				NoDataSourcesReason = "No data source opened";
+				NoDataSourcesActions = "Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.";
 			}
 		}
 

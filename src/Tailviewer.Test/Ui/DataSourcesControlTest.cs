@@ -35,16 +35,16 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>();
 			_control.ItemsSource = sources;
-			_control.NoDataSourcesReason.Should().Be("No data sources opened");
-			_control.NoDataSourcesActions.Should().Be("Try opening a log file, an entire folder or create a new (non-file) based data source.");
+			_control.NoDataSourcesReason.Should().Be("No data source opened");
+			_control.NoDataSourcesActions.Should().Be("Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.");
 
 			sources.Add(new Mock<IDataSourceViewModel>().Object);
 			_control.NoDataSourcesReason.Should().BeNull("because we just added a data source");
 			_control.NoDataSourcesActions.Should().BeNull("because we just added a data source");
 
 			sources.Clear();
-			_control.NoDataSourcesReason.Should().Be("No data sources opened");
-			_control.NoDataSourcesActions.Should().Be("Try opening a log file, an entire folder or create a new (non-file) based data source.");
+			_control.NoDataSourcesReason.Should().Be("No data source opened");
+			_control.NoDataSourcesActions.Should().Be("Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.");
 		}
 
 		[Test]
@@ -56,8 +56,8 @@ namespace Tailviewer.Test.Ui
 			_control.NoDataSourcesActions.Should().BeNull("because we just added a data source");
 
 			_control.ItemsSource = new List<IDataSourceViewModel>();
-			_control.NoDataSourcesReason.Should().Be("No data sources opened");
-			_control.NoDataSourcesActions.Should().Be("Try opening a log file, an entire folder or create a new (non-file) based data source.");
+			_control.NoDataSourcesReason.Should().Be("No data source opened");
+			_control.NoDataSourcesActions.Should().Be("Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.");
 		}
 
 		[Test]

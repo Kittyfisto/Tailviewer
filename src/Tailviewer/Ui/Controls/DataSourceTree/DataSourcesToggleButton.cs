@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Metrolib.Controls;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
@@ -9,6 +10,15 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 	public sealed class DataSourcesToggleButton
 		: FlatToggleButton
 	{
+		public static readonly DependencyProperty SelectedDataSourceProperty = DependencyProperty.Register(
+		                                                "SelectedDataSource", typeof(IDataSourceViewModel), typeof(DataSourcesToggleButton), new PropertyMetadata(default(IDataSourceViewModel)));
+
+		public IDataSourceViewModel SelectedDataSource
+		{
+			get { return (IDataSourceViewModel) GetValue(SelectedDataSourceProperty); }
+			set { SetValue(SelectedDataSourceProperty, value); }
+		}
+
 		static DataSourcesToggleButton()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(DataSourcesToggleButton),
