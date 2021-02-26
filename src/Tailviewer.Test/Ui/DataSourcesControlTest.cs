@@ -5,8 +5,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Test.Ui
 {

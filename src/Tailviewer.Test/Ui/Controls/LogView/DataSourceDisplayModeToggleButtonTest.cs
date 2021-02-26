@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Test.Ui.Controls.LogView
 {

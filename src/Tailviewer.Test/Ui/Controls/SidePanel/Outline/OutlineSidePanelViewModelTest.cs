@@ -10,7 +10,7 @@ using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Plugins;
 using Tailviewer.Ui;
-using Tailviewer.Ui.Controls.SidePanel.Outline;
+using Tailviewer.Ui.SidePanel.Outline;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 {

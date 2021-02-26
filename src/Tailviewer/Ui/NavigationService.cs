@@ -1,5 +1,5 @@
-﻿using Tailviewer.Ui.Controls.MainPanel;
-using Tailviewer.Ui.ViewModels;
+﻿using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.MainPanel;
 
 namespace Tailviewer.Ui
 {

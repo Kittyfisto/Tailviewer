@@ -7,7 +7,7 @@ using System.Linq;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Test.Ui
 {

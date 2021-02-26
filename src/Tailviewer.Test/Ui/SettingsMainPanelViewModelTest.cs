@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.MainPanel.Settings;
+using Tailviewer.Ui.Settings;
 
 namespace Tailviewer.Test.Ui
 {

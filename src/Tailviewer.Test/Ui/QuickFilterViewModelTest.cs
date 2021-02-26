@@ -7,7 +7,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.QuickFilter;
+using Tailviewer.Ui.QuickFilter;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Test.Ui

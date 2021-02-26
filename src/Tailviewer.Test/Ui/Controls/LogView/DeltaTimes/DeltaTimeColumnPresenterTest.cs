@@ -4,7 +4,7 @@ using System.Windows;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.LogView.DeltaTimes;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 {

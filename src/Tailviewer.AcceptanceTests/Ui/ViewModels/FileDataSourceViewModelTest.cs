@@ -13,7 +13,7 @@ using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Settings;
 using Tailviewer.Test;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {

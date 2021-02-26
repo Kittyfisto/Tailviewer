@@ -20,10 +20,9 @@ using Tailviewer.Core.Sources;
 using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
-using Tailviewer.Ui.Controls.MainPanel;
-using Tailviewer.Ui.Controls.SidePanel.DataSources;
-using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.MainPanel;
+using Tailviewer.Ui.SidePanel.QuickFilters;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Test.Ui.Controls.MainPanel

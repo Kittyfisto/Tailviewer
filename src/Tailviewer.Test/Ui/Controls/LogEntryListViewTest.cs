@@ -12,8 +12,8 @@ using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView;
-using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.LogView.DeltaTimes;
 using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls

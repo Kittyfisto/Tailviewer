@@ -2,7 +2,7 @@
 using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Ui.Controls.LogView.ElapsedTime;
+using Tailviewer.Ui.LogView.ElapsedTime;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.ElapsedTime
 {

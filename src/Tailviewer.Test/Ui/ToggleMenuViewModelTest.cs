@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Ui.ViewModels.ContextMenu;
+using Tailviewer.Ui.ContextMenu;
 
 namespace Tailviewer.Test.Ui
 {

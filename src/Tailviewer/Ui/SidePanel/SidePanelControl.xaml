@@ -1,0 +1,63 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:dashboard="clr-namespace:Tailviewer.Ui.SidePanel">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../../Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type dashboard:SidePanelControl}">
+        <Setter Property="Background" Value="{StaticResource SecondaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type dashboard:SidePanelControl}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Grid>
+                            <ItemsControl ItemsSource="{TemplateBinding SidePanels}"
+                                          FocusVisualStyle="{x:Null}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Right" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
+                                        <Border BorderThickness="1,0,0,0"
+                                                BorderBrush="{StaticResource PrimarySeparatorBrush}">
+                                            <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                       HoveredBackground="{DynamicResource SecondaryLightBrush}"
+                                                                       CheckedBackground="{DynamicResource SecondaryLighterBrush}"
+                                                                       HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}"
+                                                                       ToolTip="{Binding Tooltip}"
+                                                                       FocusVisualStyle="{x:Null}">
+                                                <Grid>
+                                                    <Viewbox Margin="12">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path
+                                                                Data="{Binding Icon}"
+                                                                Fill="{StaticResource PrimaryForegroundBrush}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="{Binding QuickInfo}"
+                                                               FontSize="10"
+                                                               TextWrapping="NoWrap"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               VerticalAlignment="Bottom"
+                                                               Foreground="{StaticResource PrimaryForegroundBrush}" />
+                                                </Grid>
+                                            </controls:FlatToggleButton>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

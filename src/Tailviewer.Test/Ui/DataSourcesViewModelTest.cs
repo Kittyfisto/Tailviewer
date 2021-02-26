@@ -10,9 +10,8 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
-using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.Controls.SidePanel.DataSources;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.SidePanel.DataSources;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Test.Ui

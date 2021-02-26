@@ -5,7 +5,7 @@ using System.Windows.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.LogView;
 using WpfUnit;
 
 namespace Tailviewer.AcceptanceTests.Ui.Controls.LogView

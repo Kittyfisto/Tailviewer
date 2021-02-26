@@ -10,9 +10,9 @@ using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
-using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.SidePanel.QuickFilters;
+using Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui

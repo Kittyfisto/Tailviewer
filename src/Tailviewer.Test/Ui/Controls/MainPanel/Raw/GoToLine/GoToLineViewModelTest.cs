@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine;
+using Tailviewer.Ui.GoToLine;
 
 namespace Tailviewer.Test.Ui.Controls.MainPanel.Raw.GoToLine
 {

@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation;
+using Tailviewer.Ui.QuickNavigation;
 
 namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 {

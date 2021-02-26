@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Ui
 {

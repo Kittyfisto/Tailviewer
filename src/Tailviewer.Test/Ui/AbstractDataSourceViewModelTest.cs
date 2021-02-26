@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Test.Ui
 {

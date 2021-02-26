@@ -11,8 +11,8 @@ using Tailviewer.Core;
 using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
-using Tailviewer.Ui.Controls.MainPanel.Settings;
-using Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats;
+using Tailviewer.Ui.Settings;
+using Tailviewer.Ui.Settings.CustomFormats;
 
 namespace Tailviewer.Test.Ui.Controls.MainPanel.Settings
 {

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {

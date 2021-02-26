@@ -1,0 +1,99 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls1="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
+                    xmlns:mainPanel="clr-namespace:Tailviewer.Ui.MainPanel"
+                    xmlns:logView="clr-namespace:Tailviewer.Ui.LogView"
+                    xmlns:goToLine="clr-namespace:Tailviewer.Ui.GoToLine"
+                    xmlns:quickNavigation="clr-namespace:Tailviewer.Ui.QuickNavigation">
+
+    <DataTemplate DataType="{x:Type mainPanel:LogViewMainPanelViewModel}">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <logView:LogViewerControl
+                    x:Name="PART_LogFileView"
+                    Settings="{Binding Settings}"
+                    LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                    TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                    ErrorIcon="{Binding CurrentDataSourceLogView.NoEntriesIcon, FallbackValue={x:Static metrolib:Icons.File}}"
+                    ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation, FallbackValue='No data source opened'}"
+                    ErrorMessageAction="{Binding CurrentDataSourceLogView.NoEntriesAction, FallbackValue='Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.'}"
+                    LogView="{Binding CurrentDataSourceLogView}" />
+
+                <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
+                                        Placement="Center"
+                                        IsOpen="{Binding Show, Mode=TwoWay}">
+                    <Border Padding="2"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            BorderBrush="Gray"
+                            Background="LightGray">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Go to line:"
+                                       Margin="0,0,0,2" />
+                            <controls1:EditorTextBox Grid.Row="1"
+                                                     Width="150"
+                                                     Text="{Binding LineNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Watermark="Enter line number" />
+                        </Grid>
+                    </Border>
+                </goToLine:GoToLinePopup>
+
+                <quickNavigation:QuickNavigationPopup x:Name="PART_FindDataSourcePopup"
+                                                       Placement="Center"
+                                                       IsOpen="{Binding ShowQuickNavigation, Mode=TwoWay}">
+                    <Border Padding="2"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            BorderBrush="Gray"
+                            Background="LightGray">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Search data sources:"
+                                       Margin="0,0,0,2" />
+                            <controls1:SuggestionInputControl x:Name="PART_FindDataSource"
+                                                              Grid.Row="1"
+                                                              DataContext="{Binding QuickNavigation}"
+                                                              Text="{Binding SearchTerm}"
+                                                              Watermark="Enter data source name or path"
+                                                              Suggestions="{Binding Suggestions}"
+                                                              SelectedSuggestion="{Binding SelectedSuggestion}"
+                                                              SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
+                                                              Width="300">
+                                <controls1:SuggestionInputControl.SuggestionTemplate>
+                                    <DataTemplate DataType="{x:Type quickNavigation:DataSourceSuggestionViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Prefix, Mode=OneWay}" />
+                                            <TextBlock Text="{Binding Midfix, Mode=OneWay}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Postfix, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </controls1:SuggestionInputControl.SuggestionTemplate>
+                            </controls1:SuggestionInputControl>
+                        </Grid>
+                    </Border>
+                </quickNavigation:QuickNavigationPopup>
+            </Grid>
+
+            <ContentPresenter x:Name="SidePanelContent"
+                              Content="{x:Null}"
+                              Grid.Column="1"
+                              MaxWidth="600" />
+        </Grid>
+
+    </DataTemplate>
+
+</ResourceDictionary>

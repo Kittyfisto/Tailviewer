@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Settings;
-using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
+using Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 {

@@ -12,8 +12,8 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
-using Tailviewer.Ui.ViewModels.ContextMenu;
+using Tailviewer.Ui.ContextMenu;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Test.Ui
 {

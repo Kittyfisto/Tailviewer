@@ -11,7 +11,8 @@ using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Test;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Ui.Controls.MainPanel.About;
+using Tailviewer.Ui.About;
 
 namespace Tailviewer.Test.Ui.Controls.About
 {

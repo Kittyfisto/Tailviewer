@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.Ui.Controls.MainPanel.Plugins;
+using Tailviewer.Ui.Plugins;
 
 namespace Tailviewer.Test.Ui.Controls.MainPanel.Plugins
 {

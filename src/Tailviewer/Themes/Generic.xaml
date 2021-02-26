@@ -1,11 +1,11 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/SidePanelControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/DataSourcesControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/ImageLabel.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/FlatImage.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterMatchTypeToggleButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/SidePanelControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/DataSourcesControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/ImageLabel.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/FlatImage.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/QuickFilterMatchTypeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 
