@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrolib;
 
 namespace Tailviewer.Ui.ViewModels.ContextMenu
 {
@@ -11,7 +12,14 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 		public ToggleMenuViewModel(bool isChecked, Action<bool> onIsCheckedChanged)
 		{
 			IsChecked = isChecked;
+			OnIsCheckedChanged(isChecked);
 			IsCheckedChanged += onIsCheckedChanged;
+			IsCheckedChanged += OnIsCheckedChanged;
+		}
+
+		private void OnIsCheckedChanged(bool value)
+		{
+			Icon = value ? Icons.Check : null;
 		}
 
 		public override bool IsCheckable

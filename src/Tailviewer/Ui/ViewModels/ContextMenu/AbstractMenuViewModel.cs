@@ -92,8 +92,8 @@ namespace Tailviewer.Ui.ViewModels.ContextMenu
 			{
 				if (value == _isChecked)
 					return;
-				_isChecked = value;
 
+				_isChecked = value;
 				EmitPropertyChanged();
 				EmitIsCheckedChanged(value);
 			}

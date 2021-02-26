@@ -46,6 +46,8 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="26" />
                             </Grid.ColumnDefinitions>
+
+                            <!-- Icon, if any -->
                             <Viewbox Grid.Column="0"
                                      HorizontalAlignment="Center"
                                      Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}"
@@ -56,6 +58,8 @@
                                           Fill="{StaticResource MenuForegroundBrush}" />
                                 </Canvas>
                             </Viewbox>
+
+                            <!-- Content -->
                             <ContentPresenter x:Name="content"
                                               Grid.Column="1"
                                               ContentSource="Header"
@@ -64,6 +68,8 @@
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+
+                            <!-- Expander chevron, if sub menu available -->
                             <Viewbox Grid.Column="2"
                                      HorizontalAlignment="Center"
                                      Visibility="{Binding ItemsSource, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}"
@@ -106,6 +112,9 @@
             <DataTrigger Binding="{Binding }" Value="{x:Null}">
                 <Setter Property="Template" Value="{StaticResource MenuSeparatorTemplate}" />
             </DataTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource MenuSeparatorBrush}" />
+            </Trigger>
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter Property="IsSubmenuOpen" Value="True" />
                 <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
