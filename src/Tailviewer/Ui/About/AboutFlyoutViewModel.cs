@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using log4net;
 using Metrolib.Controls;
 using MMQ;
 using Ookii.Dialogs.Wpf;
-using Tailviewer.Settings;
-using Tailviewer.Ui.MainPanel;
-using Tailviewer.Ui.SidePanel;
 using Xceed.Wpf.Toolkit;
 
 namespace Tailviewer.Ui.About
 {
-	public sealed class AboutMainPanelViewModel
-		: AbstractMainPanelViewModel
+	public sealed class AboutFlyoutViewModel
+		: IFlyoutViewModel
 	{
 		private readonly List<Dependency> _dependencies;
 		private Dependency _selectedDependency;
 		private string _selectedLicense;
 		
-		public AboutMainPanelViewModel(IApplicationSettings applicationSettings) : base(applicationSettings)
+		public AboutFlyoutViewModel()
 		{
 			_dependencies = new List<Dependency>
 			{
@@ -68,9 +66,16 @@ namespace Tailviewer.Ui.About
 			}
 		}
 
-		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
-
-		public override void Update()
+		public void Update()
 		{ }
+
+		public string Name => "About";
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }

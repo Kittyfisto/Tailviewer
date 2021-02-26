@@ -21,7 +21,7 @@ using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 using Tailviewer.Ui.DataSourceTree;
-using Tailviewer.Ui.MainPanel;
+using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.QuickFilters;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 

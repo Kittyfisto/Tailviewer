@@ -2,12 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls1="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
-                    xmlns:mainPanel="clr-namespace:Tailviewer.Ui.MainPanel"
                     xmlns:logView="clr-namespace:Tailviewer.Ui.LogView"
                     xmlns:goToLine="clr-namespace:Tailviewer.Ui.GoToLine"
                     xmlns:quickNavigation="clr-namespace:Tailviewer.Ui.QuickNavigation">
 
-    <DataTemplate DataType="{x:Type mainPanel:LogViewMainPanelViewModel}">
+    <DataTemplate DataType="{x:Type logView:LogViewMainPanelViewModel}">
 
         <Grid>
             <Grid.ColumnDefinitions>

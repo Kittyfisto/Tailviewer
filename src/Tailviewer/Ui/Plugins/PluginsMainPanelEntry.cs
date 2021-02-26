@@ -1,6 +1,5 @@
 ﻿using System.Windows.Media;
 using Metrolib;
-using Tailviewer.Ui.MainPanel;
 
 namespace Tailviewer.Ui.Plugins
 {

@@ -10,7 +10,6 @@ using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
-using Tailviewer.Ui.MainPanel;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 
 namespace Tailviewer.Ui
@@ -262,6 +261,16 @@ namespace Tailviewer.Ui
 			else
 				DataSourcesControl.Instance?.HandleDrag(e);
 			e.Handled = true;
+		}
+
+		private void OnClickOverlay(object sender, MouseButtonEventArgs e)
+		{
+			((MainWindowViewModel) DataContext).CurrentFlyout = null;
+		}
+
+		private void OnCloseFlyout(object sender, RoutedEventArgs e)
+		{
+			((MainWindowViewModel) DataContext).CurrentFlyout = null;
 		}
 	}
 }

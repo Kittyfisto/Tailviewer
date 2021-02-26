@@ -1,5 +1,4 @@
 ﻿using Tailviewer.Ui.LogView;
-using Tailviewer.Ui.MainPanel;
 
 namespace Tailviewer.Ui
 {

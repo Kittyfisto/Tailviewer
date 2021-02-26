@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.Ui.LogView
+namespace Tailviewer.Ui.Converters
 {
 	/// <summary>
 	///     Converts values which implement the <see cref="IMergedDataSourceViewModel" /> interface to

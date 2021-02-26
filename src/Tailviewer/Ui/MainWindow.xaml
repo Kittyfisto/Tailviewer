@@ -6,9 +6,8 @@
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ActionCenter"
                            xmlns:ui="clr-namespace:Tailviewer.Ui"
-                           xmlns:logView="clr-namespace:Tailviewer.Ui.LogView"
                            mc:Ignorable="d"
-                           d:DataContext="{d:DesignInstance logView:MainWindowViewModel}"
+                           d:DataContext="{d:DesignInstance ui:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
                            x:Name="This"
                            AllowDrop="True"
@@ -24,17 +23,17 @@
         <KeyBinding Modifiers="Control" Key="E"
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+N"
-                    Command="{Binding NewQuickFilterCommand, ElementName=This}"/>
+                    Command="{Binding NewQuickFilterCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+B"
-                    Command="{Binding NewBookmarkCommand, ElementName=This}"/>
+                    Command="{Binding NewBookmarkCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+T"
-                    Command="{Binding ShowQuickNavigationCommand}"/>
+                    Command="{Binding ShowQuickNavigationCommand}" />
         <KeyBinding Gesture="Ctrl+Tab"
-                    Command="{Binding GoToNextDataSourceCommand}"/>
+                    Command="{Binding GoToNextDataSourceCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+Tab"
-                    Command="{Binding GoToPreviousDataSourceCommand}"/>
+                    Command="{Binding GoToPreviousDataSourceCommand}" />
         <KeyBinding Gesture="Ctrl+G"
-                    Command="{Binding ShowGoToLineCommand}"/>
+                    Command="{Binding ShowGoToLineCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -44,15 +43,24 @@
 
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/MenuItemTemplates.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/MainPanel/LogViewMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Settings/SettingsMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Plugins/PluginsMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/About/AboutMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Highlighters/HighlightersSidePanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Outline/OutlineSidePanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogViewMainPanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Settings/SettingsMainPanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Plugins/PluginsMainPanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/About/AboutMainPanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Highlighters/HighlightersSidePanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Outline/OutlineSidePanelDataTemplate.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -89,19 +97,6 @@
                 <MenuItem Header="_View"
                           Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding SelectedMainPanel.ViewMenuItems}" />
-                <!--<MenuItem Header="Filters"
-                          Style="{StaticResource MainMenuItemStyle}">
-                    <MenuItem Header="Deselect all" />
-                    <Separator />
-                    <MenuItem Header="Load Preset">
-                        <MenuItem Header="A" />
-                        <MenuItem Header="B" />
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="_Plugins"
-                          Style="{StaticResource MainMenuItemStyle}">
-                    <MenuItem Header="Press F to pay your respects" />
-                </MenuItem>-->
                 <MenuItem Header="_Help"
                           Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding HelpMenuItems}" />
@@ -189,12 +184,58 @@
                       Background="{StaticResource PrimarySeparatorBrush}" />
 
                 <ui:AutoUpdateControl Grid.Row="1"
-                                            DataContext="{Binding AutoUpdater}"
-                                            Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
+                                      DataContext="{Binding AutoUpdater}"
+                                      Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
 
                 <ContentPresenter Grid.Row="2"
                                   Content="{Binding SelectedMainPanel}"
-                                  x:Name="PART_Content"/>
+                                  x:Name="PART_Content" />
+
+                <!-- Overlay to darken the main window content to show that a flyout (a popup) is laid over the window-->
+                <Grid Grid.Row="2"
+                      Visibility="{Binding CurrentFlyout, Converter={StaticResource NullToCollapsedConverter}}">
+                    <Rectangle Fill="{StaticResource OverlayBackgroundBrush}"
+                               MouseDown="OnClickOverlay"
+                               Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
+                </Grid>
+
+                <!-- Application wide flyout (popup) which shows content which is not regularly needed (settings, plugins, about, etc...) -->
+                <Grid Grid.Row="2"
+                      Visibility="{Binding CurrentFlyout, Converter={StaticResource NullToCollapsedConverter}}"
+                      Background="{StaticResource PrimaryForegroundBrush}"
+                      Margin="200, 100, 200, 100">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Text="{Binding CurrentFlyout.Name}"
+                                   FontSize="32" />
+
+                        <metrolib:CloseButton Grid.Column="1"
+                                              Click="OnCloseFlyout"/>
+                    </Grid>
+
+                    <Rectangle Grid.Row="1"
+                               Fill="Gray"
+                               Height="1"
+                               Margin="8" />
+
+                    <ContentPresenter Grid.Row="2"
+                                      Content="{Binding CurrentFlyout}"
+                                      Margin="16"
+                                      x:Name="PART_Flyout" />
+                </Grid>
+
             </Grid>
         </Grid>
     </AdornerDecorator>

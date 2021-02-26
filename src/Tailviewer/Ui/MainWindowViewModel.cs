@@ -6,24 +6,20 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
-using Tailviewer.Archiver.Plugins;
-using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.About;
 using Tailviewer.Ui.ActionCenter;
 using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
-using Tailviewer.Ui.MainPanel;
-using Tailviewer.Ui.Plugins;
+using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
-namespace Tailviewer.Ui.LogView
+namespace Tailviewer.Ui
 {
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
@@ -43,21 +39,15 @@ namespace Tailviewer.Ui.LogView
 		#region Main Panel
 
 		private readonly LogViewMainPanelEntry _rawEntry;
-		private readonly IMainPanelEntry _pluginsEntry;
-		private readonly IMainPanelEntry _settingsEntry;
-		private readonly IMainPanelEntry _aboutEntry;
 		private readonly LogViewMainPanelViewModel _logViewPanel;
 		private readonly IMainPanelEntry[] _topEntries;
 		private IMainPanelEntry _selectedTopEntry;
-		private readonly IMainPanelEntry[] _bottomEntries;
-		private IMainPanelEntry _selectedBottomEntry;
 		private IMainPanelViewModel _selectedMainPanel;
 
 		#endregion
 
 		private string _windowTitle;
 		private string _windowTitleSuffix;
-		private readonly IEnumerable<IPluginDescription> _plugins;
 		private readonly DelegateCommand2 _showQuickNavigationCommand;
 		private readonly DelegateCommand2 _showGoToLineCommand;
 		private readonly ICommand _goToPreviousDataSourceCommand;
@@ -66,6 +56,7 @@ namespace Tailviewer.Ui.LogView
 
 		private string _leftSidePanelExpanderTooltip;
 		private readonly IEnumerable<IMenuViewModel> _helpMenuItems;
+		private IFlyoutViewModel _currentFlyout;
 
 		public MainWindowViewModel(IServiceContainer services,
 		                           IApplicationSettings settings,
@@ -81,7 +72,6 @@ namespace Tailviewer.Ui.LogView
 			_services = services;
 			_applicationSettings = settings;
 
-			_plugins = services.Retrieve<IPluginLoader>().Plugins;
 			_settings = new SettingsMainPanelViewModel(settings, services);
 			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
 
@@ -124,29 +114,19 @@ namespace Tailviewer.Ui.LogView
 				new CommandMenuViewModel(ShowLogCommand)
 				{
 					Header = "Show Log"
+				},
+				null,
+				new CommandMenuViewModel(new DelegateCommand2(ShowAboutFlyout))
+				{
+					Header = "About"
 				}
 			};
 
-			_settingsEntry = new SettingsMainPanelEntry();
-			_pluginsEntry = new PluginsMainPanelEntry();
-			_aboutEntry = new AboutMainPanelEntry();
-			_bottomEntries = new[]
-			{
-				_settingsEntry,
-				_pluginsEntry,
-				_aboutEntry
-			};
-
 			var selectedTopEntry = _topEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel);
-			var selectedBottomEntry = _bottomEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel);
 
 			if (selectedTopEntry != null)
 			{
 				SelectedTopEntry = selectedTopEntry;
-			}
-			else if (selectedBottomEntry != null)
-			{
-				SelectedBottomEntry = selectedBottomEntry;
 			}
 			else
 			{
@@ -155,6 +135,19 @@ namespace Tailviewer.Ui.LogView
 
 			_isLeftSidePanelVisible = settings.MainWindow.IsLeftSidePanelVisible;
 			UpdateLeftSidePanelExpanderTooltip();
+		}
+
+		public IFlyoutViewModel CurrentFlyout
+		{
+			get { return _currentFlyout;}
+			set
+			{
+				if (value == _currentFlyout)
+					return;
+
+				_currentFlyout = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public LogViewMainPanelViewModel SelectRawEntry()
@@ -307,7 +300,6 @@ namespace Tailviewer.Ui.LogView
 		}
 
 		public IEnumerable<IMainPanelEntry> TopEntries => _topEntries;
-		public IEnumerable<IMainPanelEntry> BottomEntries => _bottomEntries;
 
 		public IMainPanelEntry SelectedTopEntry
 		{
@@ -330,48 +322,6 @@ namespace Tailviewer.Ui.LogView
 				if (value != null)
 				{
 					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
-					SelectedBottomEntry = null;
-				}
-			}
-		}
-
-		public IMainPanelEntry SelectedBottomEntry
-		{
-			get { return _selectedBottomEntry; }
-			set
-			{
-				if (value == _selectedBottomEntry)
-					return;
-
-				_selectedBottomEntry = value;
-				EmitPropertyChanged();
-
-				if (value == _settingsEntry)
-				{
-					SelectedMainPanel = _settings;
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "Settings";
-				}
-				else if (value == _pluginsEntry)
-				{
-					SelectedMainPanel = new PluginsMainPanelViewModel(_applicationSettings,
-					                                                  _services.Retrieve<IDispatcher>(),
-					                                                  _services.Retrieve<IPluginUpdater>(),
-					                                                  _plugins);
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "Plugins";
-				}
-				else if (value == _aboutEntry)
-				{
-					SelectedMainPanel = new AboutMainPanelViewModel(_applicationSettings);
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "About";
-				}
-
-				if (value != null)
-				{
-					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
-					SelectedTopEntry = null;
 				}
 			}
 		}
@@ -435,6 +385,11 @@ namespace Tailviewer.Ui.LogView
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private void ShowAboutFlyout()
+		{
+			CurrentFlyout = new AboutFlyoutViewModel();
 		}
 	}
 }

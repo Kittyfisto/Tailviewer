@@ -234,6 +234,7 @@
     <Compile Include="Ui\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\LogView\Any\AnyFormatter.cs" />
     <Compile Include="Ui\Converters\DoubleOneToHiddenConverter.cs" />
+    <Compile Include="Ui\IFlyoutViewModel.cs" />
     <Compile Include="Ui\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\LogView\LogLevels\LevelFormatter.cs" />
@@ -271,7 +272,7 @@
     <Compile Include="Ui\LogView\DataSource\DataSourceCanvas.cs" />
     <Compile Include="Settings\DataSourceDisplayMode.cs" />
     <Compile Include="Ui\LogView\DataSourceDisplayModeToggleButton.cs" />
-    <Compile Include="Ui\LogView\NonMergedDataSourceToVisibilityCollapsedConverter.cs" />
+    <Compile Include="Ui\Converters\NonMergedDataSourceToVisibilityCollapsedConverter.cs" />
     <Compile Include="Ui\About\ChangelogControl.xaml.cs">
       <DependentUpon>ChangelogControl.xaml</DependentUpon>
     </Compile>
@@ -292,10 +293,9 @@
     <Compile Include="Ui\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Ui\About\AboutMainPanelEntry.cs" />
-    <Compile Include="Ui\About\AboutMainPanelViewModel.cs" />
-    <Compile Include="Ui\MainPanel\AbstractMainPanelViewModel.cs" />
-    <Compile Include="Ui\MainPanel\IMainPanelEntry.cs" />
+    <Compile Include="Ui\About\AboutFlyoutViewModel.cs" />
+    <Compile Include="Ui\AbstractMainPanelViewModel.cs" />
+    <Compile Include="Ui\IMainPanelEntry.cs" />
     <Compile Include="Ui\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Plugins\PluginsMainPanelViewModel.cs" />
     <Compile Include="Ui\Settings\SettingsMainPanelEntry.cs" />
@@ -336,8 +336,8 @@
     <Compile Include="Ui\ContextMenu\FileMenu.cs" />
     <Compile Include="Ui\DataSourceTree\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\SidePanel\HyperlinkRun.cs" />
-    <Compile Include="Ui\MainPanel\LogViewMainPanelEntry.cs" />
-    <Compile Include="Ui\MainPanel\LogViewMainPanelViewModel.cs" />
+    <Compile Include="Ui\LogView\LogViewMainPanelEntry.cs" />
+    <Compile Include="Ui\LogView\LogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -345,7 +345,7 @@
     <Compile Include="Ui\DataSourceTree\DropInfo.cs" />
     <Compile Include="Ui\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\ImageLabel.cs" />
-    <Compile Include="Ui\MainPanel\IMainPanelViewModel.cs" />
+    <Compile Include="Ui\IMainPanelViewModel.cs" />
     <Compile Include="Ui\LogView\LineNumbers\LineNumberFormatter.cs" />
     <Compile Include="Ui\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\LogView\SelectMode.cs" />
@@ -400,7 +400,7 @@
     <Compile Include="Ui\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\DataSources\FileDataSource.cs" />
     <Compile Include="Ui\LogView\LogViewerViewModel.cs" />
-    <Compile Include="Ui\LogView\MainWindowViewModel.cs" />
+    <Compile Include="Ui\MainWindowViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\FileDataSourceViewModel.cs" />
     <Compile Include="Ui\ContextMenu\ToggleMenuViewModel.cs" />
     <Compile Include="Ui\ContextMenu\ToggleExcludeFromGroupViewModel.cs" />
@@ -512,7 +512,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\MainPanel\LogViewMainPanelDataTemplate.xaml">
+    <Page Include="Ui\LogView\LogViewMainPanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

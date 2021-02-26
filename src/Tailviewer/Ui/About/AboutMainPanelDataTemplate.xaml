@@ -4,7 +4,7 @@
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:mainPanel="clr-namespace:Tailviewer.Ui.About">
 
-    <DataTemplate DataType="{x:Type mainPanel:AboutMainPanelViewModel}">
+    <DataTemplate DataType="{x:Type mainPanel:AboutFlyoutViewModel}">
         <tab:FlatTabControl Padding="0" Foreground="#333333"
                             HorizontalContentAlignment="Center">
             <controls:FlatTabItem Header="Tailviewer"

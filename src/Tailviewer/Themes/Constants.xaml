@@ -30,6 +30,8 @@
     <Color x:Key="SecondaryDark">#0069c0</Color>
     <Color x:Key="SecondaryForeground">#000000</Color>
 
+    <Color x:Key="OverlayBackground">#55000000</Color>
+
     <SolidColorBrush x:Key="UnfocusedOverlayBrush" Color="{StaticResource UnfocusedOverlay}" />
     <SolidColorBrush x:Key="TitleBarBrush" Color="{StaticResource TitleBar}" />
 
@@ -45,5 +47,7 @@
     <SolidColorBrush x:Key="SecondaryLighterBrush" Color="{StaticResource SecondaryLighter}" />
     <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{StaticResource SecondaryDark}" />
     <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="{StaticResource SecondaryForeground}" />
+
+    <SolidColorBrush x:Key="OverlayBackgroundBrush" Color="{StaticResource OverlayBackground}" />
 
 </ResourceDictionary>

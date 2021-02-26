@@ -7,7 +7,7 @@ using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel;
 
-namespace Tailviewer.Ui.MainPanel
+namespace Tailviewer.Ui
 {
 	public abstract class AbstractMainPanelViewModel
 		: IMainPanelViewModel

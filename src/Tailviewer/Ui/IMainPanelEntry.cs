@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace Tailviewer.Ui.MainPanel
+namespace Tailviewer.Ui
 {
 	public interface IMainPanelEntry
 	{

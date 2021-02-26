@@ -17,7 +17,6 @@ using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
-using Tailviewer.Ui.MainPanel;
 using Tailviewer.Ui.QuickFilter;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;

@@ -10,7 +10,6 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Archiver.Repository;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
-using Tailviewer.Ui.MainPanel;
 using Tailviewer.Ui.SidePanel;
 
 namespace Tailviewer.Ui.Plugins

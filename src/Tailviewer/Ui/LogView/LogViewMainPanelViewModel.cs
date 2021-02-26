@@ -17,7 +17,6 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.GoToLine;
-using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.QuickFilter;
 using Tailviewer.Ui.QuickNavigation;
 using Tailviewer.Ui.SidePanel;
@@ -28,7 +27,7 @@ using Tailviewer.Ui.SidePanel.Issues;
 using Tailviewer.Ui.SidePanel.Outline;
 using Tailviewer.Ui.SidePanel.QuickFilters;
 
-namespace Tailviewer.Ui.MainPanel
+namespace Tailviewer.Ui.LogView
 {
 	public sealed class LogViewMainPanelViewModel
 		: AbstractMainPanelViewModel

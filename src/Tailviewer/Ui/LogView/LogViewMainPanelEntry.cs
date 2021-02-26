@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using Metrolib;
 
-namespace Tailviewer.Ui.MainPanel
+namespace Tailviewer.Ui.LogView
 {
 	public sealed class LogViewMainPanelEntry
 		: IMainPanelEntry

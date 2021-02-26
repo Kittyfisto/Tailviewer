@@ -9,7 +9,6 @@ using log4net;
 using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
-using Tailviewer.Ui.MainPanel;
 using Tailviewer.Ui.Settings.CustomFormats;
 using Tailviewer.Ui.SidePanel;
 

@@ -319,7 +319,7 @@
         <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the fly-out is opened AND NOT pinned -->
         <Grid Grid.Row="2"
               Visibility="{Binding DataSources.IsPinned, Converter={StaticResource BoolTrueToCollapsedConverter}}">
-            <Rectangle Fill="#55000000"
+            <Rectangle Fill="{StaticResource OverlayBackgroundBrush}"
                        MouseDown="OverlayOnMouseDown"
                        Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
         </Grid>
