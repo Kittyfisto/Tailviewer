@@ -12,7 +12,7 @@
                            Title="{Binding WindowTitle}"
                            x:Name="This"
                            AllowDrop="True"
-                           MinWidth="800"
+                           MinWidth="1024"
                            MinHeight="600"
                            HideTitle="True">
 

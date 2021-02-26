@@ -17,6 +17,8 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
                 <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/LogLevelToggleButtonTemplate.xaml" />
+                <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/DataSourcesToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -33,12 +35,12 @@
             <converters1:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
             <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
             <converters1:InvertBoolConverter x:Key="InvertBoolConverter" />
-            <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
-            <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
-            <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
-            <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
-            <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
-            <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
+            <converters:CountConverter x:Key="FatalCountConverter" />
+            <converters:CountConverter x:Key="ErrorCountConverter" />
+            <converters:CountConverter x:Key="WarningCountConverter" />
+            <converters:CountConverter x:Key="InfoCountConverter" />
+            <converters:CountConverter x:Key="DebugCountConverter" />
+            <converters:CountConverter x:Key="TraceCountConverter" />
             <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <logView:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
@@ -90,69 +92,67 @@
                            VerticalAlignment="Center"
                            Margin="8">
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        Width="41"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,8,8"
+                        Width="40"
+                        LogLevel="All"
                         IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide all log messages, regardless of their log level"
+                        ToolTip="Toggle display of all log entries"
                         Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,4,8"
+                        LogLevel="Fatal"
+                        IconBackgroundBrush="DarkRed"
                         IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide fatal log messages"
+                        ToolTip="Toggle display of fatal log entries"
                         Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,4,8"
+                        LogLevel="Error"
+                        IconBackgroundBrush="Red"
                         IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide errors"
+                        ToolTip="Toggle display of error log entries"
                         Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,4,8"
+                        LogLevel="Warning"
+                        IconBackgroundBrush="Orange"
                         IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide warnings"
+                        ToolTip="Toggle display of warning log entries"
                         Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,4,8"
+                        LogLevel="Info"
+                        IconBackgroundBrush="White"
                         IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide infos"
+                        ToolTip="Toggle display of info log entries"
                         Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
-                        Margin="0,0,0,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                    <logView:LogLevelToggleButton
+                        Margin="0,0,4,8"
+                        LogLevel="Debug"
+                        IconBackgroundBrush="LightGray"
                         IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide debug log messages"
+                        ToolTip="Toggle display of debug log entries"
                         Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
+                    <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                        LogLevel="Trace"
+                        IconBackgroundBrush="LightSlateGray"
                         IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide trace log messages"
+                        ToolTip="Toggle display of trace log entries"
                         Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
 
-                    <controls:FlatToggleButton
+                    <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
-                        Padding="4"
-                        VerticalAlignment="Stretch"
+                        LogLevel="Other"
                         IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
+                        ToolTip="Show/hide other log entries (i.e. those who's log level cannot be identified by Tailviewer)"
                         Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
                     <controls:PluginToggleButton
