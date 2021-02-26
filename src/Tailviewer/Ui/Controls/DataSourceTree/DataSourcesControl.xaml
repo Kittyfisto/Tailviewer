@@ -40,29 +40,12 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <controls2:FilterTextBox
-                                    x:Name="PART_DataSourceSearch"
-                                    Margin="8,8,8,0"
-                                    Height="26"
-                                    FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Watermark="Filter data sources (Ctrl+E)" />
-
-                                <controls2:PinToggleButton Grid.Column="1"
-                                                           Width="26"
-                                                           Height="22"
-                                                           Margin="4"
-                                                           VerticalAlignment="Bottom"
-                                                           HorizontalAlignment="Right"
-                                                           RotateWhenUnchecked="True"
-                                                           ToolTip="Pin/Unpin this panel"
-                                                           IsChecked="{Binding IsPinned, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
-                            </Grid>
+                            <controls2:FilterTextBox Grid.Row="0"
+                                                     x:Name="PART_DataSourceSearch"
+                                                     Margin="8,8,8,0"
+                                                     Height="26"
+                                                     FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                     Watermark="Filter data sources (Ctrl+E)" />
 
                             <controls2:FlatTreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
                                                     x:Name="PART_DataSources"

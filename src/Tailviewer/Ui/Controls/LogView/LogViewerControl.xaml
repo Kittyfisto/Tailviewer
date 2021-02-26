@@ -74,6 +74,17 @@
                                                     IsChecked="{Binding DataSources.IsChecked, Mode=TwoWay}"
                                                     IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}" />
 
+            <controls:PinToggleButton Grid.Column="0"
+                                      Width="26"
+                                      Height="22"
+                                      Margin="4,4,14,4"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Right"
+                                      RotateWhenUnchecked="True"
+                                      ToolTip="Pin/Unpin this panel"
+                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}"
+                                      IsChecked="{Binding DataSources.IsPinned, Mode=TwoWay}" />
+
             <!-- Central Toolbar -->
             <Border Grid.Column="1"
                     BorderThickness="1,0,0,1"

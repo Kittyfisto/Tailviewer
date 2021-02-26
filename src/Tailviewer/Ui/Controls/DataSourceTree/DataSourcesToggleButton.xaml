@@ -51,13 +51,6 @@
                                       Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolTrueToHiddenConverter}}" />
                             </Canvas>
                         </Viewbox>
-                        <Viewbox>
-                            <Canvas Width="24" Height="24">
-                                <Path x:Name="PART_Chevron_Up" Data="{x:Static metrolib:Icons.ChevronUp}"
-                                      Fill="Black"
-                                      Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToHiddenConverter}}" />
-                            </Canvas>
-                        </Viewbox>
                     </Grid>
                 </Grid>
             </Setter.Value>
