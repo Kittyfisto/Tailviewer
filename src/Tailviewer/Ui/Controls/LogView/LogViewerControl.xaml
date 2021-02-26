@@ -53,7 +53,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="3*" />
             <RowDefinition Height="Auto" />
@@ -180,9 +180,7 @@
             </Border>
 
             <!-- Filters, Bookmarks, Outline and Issues Selector -->
-            <Border Grid.Column="2"
-                    BorderThickness="1,0,0,0"
-                    BorderBrush="{StaticResource PrimarySeparatorBrush}">
+            <Border Grid.Column="2">
                 <sidePanel:SidePanelControl Width="300"
                                             SidePanels="{Binding SidePanels}"
                                             SelectedPanel="{Binding SelectedSidePanel, Mode=TwoWay}" />
@@ -261,9 +259,10 @@
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
             <Border BorderThickness="1,0,0,0"
-                    BorderBrush="{StaticResource PrimarySeparatorBrush}"
+                    BorderBrush="{StaticResource SeparatorBrush}"
+                    Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}"
                     Grid.Column="2">
-                <Grid Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}">
+                <Grid>
                     <ContentPresenter Width="300"
                                       VerticalAlignment="Stretch"
                                       HorizontalAlignment="Right"
@@ -272,7 +271,7 @@
             </Border>
         </Grid>
 
-        <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the flyout is opened AND NOT pinned -->
+        <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the fly-out is opened AND NOT pinned -->
         <Grid Grid.Row="2"
               Visibility="{Binding DataSources.IsPinned, Converter={StaticResource BoolTrueToCollapsedConverter}}">
             <Rectangle Fill="#55000000"

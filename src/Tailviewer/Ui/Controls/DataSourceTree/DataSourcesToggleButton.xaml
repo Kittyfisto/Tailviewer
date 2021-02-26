@@ -20,6 +20,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="BorderBrush" Value="{StaticResource PrimarySeparatorBrush}" />
+        <Setter Property="Padding" Value="4,4,4,2" />
         <Setter Property="Content">
             <Setter.Value>
                 <Grid>
