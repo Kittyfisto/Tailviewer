@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
@@ -75,8 +76,8 @@ namespace Tailviewer.Test.Ui.Controls
 		
 		[Test]
 		[Ignore("Doesn't work yet")]
-		[Description(
-			"Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
+		[NUnit.Framework.Description(
+			                            "Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
 		public void TestChangeDataSource1()
 		{
 			var dataSource = CreateDataSourceViewModel();
@@ -87,7 +88,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		[NUnit.Framework.Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource2()
 		{
 			var dataSource = CreateDataSourceViewModel();
@@ -99,7 +100,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		[NUnit.Framework.Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource3()
 		{
 			var dataSource = CreateDataSourceViewModel();
@@ -195,7 +196,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
+		[NUnit.Framework.Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
 		public void TestChangeLogView1()
 		{
 			// TODO: This test requires that the template be fully loaded (or the control changed to a user control)
@@ -231,9 +232,9 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that the VisibleLogLine of a data source is properly propagated through all controls when the data source is changed"
-			)]
+		[NUnit.Framework.Description(
+			                            "Verifies that the VisibleLogLine of a data source is properly propagated through all controls when the data source is changed"
+		                            )]
 		public void TestChangeLogView2()
 		{
 			var dataSource = new Mock<IDataSource>();
@@ -253,7 +254,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that when a new data source is attached, its Selection is used")]
+		[NUnit.Framework.Description("Verifies that when a new data source is attached, its Selection is used")]
 		public void TestChangeLogView3()
 		{
 			_control.DataSource = null;
@@ -273,9 +274,9 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting"
-			)]
+		[NUnit.Framework.Description(
+			                            "Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting"
+		                            )]
 		public void TestChangeLogView4()
 		{
 			_control.DataSource = null;
@@ -499,8 +500,8 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
+		[NUnit.Framework.Description(
+			                            "Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
 		public void TestChangeSelectedLogLines()
 		{
 			_dataSource.SelectedLogLines = new HashSet<LogLineIndex>
@@ -516,8 +517,8 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
+		[NUnit.Framework.Description(
+			                            "Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
 		public void TestChangeVisibleLogLine()
 		{
 			_dataSource.VisibleLogLine = new LogLineIndex(9001);
@@ -526,8 +527,8 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
+		[NUnit.Framework.Description(
+			                            "Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
 		public void TestChangeMergedDataSourceDisplayMode1()
 		{
 			var dataSource = CreateMergedDataSourceViewModel();
@@ -543,8 +544,8 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description(
-			"Verifies that changes to the MergedDataSourceDisplayMode property are ignored if the view model isn't a merged one")
+		[NUnit.Framework.Description(
+			                            "Verifies that changes to the MergedDataSourceDisplayMode property are ignored if the view model isn't a merged one")
 		]
 		public void TestChangeMergedDataSourceDisplayMode2()
 		{
@@ -557,7 +558,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that the display mode of the new data source is used")]
+		[NUnit.Framework.Description("Verifies that the display mode of the new data source is used")]
 		public void TestChangeDataSource(
 			[Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
 		{
@@ -576,7 +577,23 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that the settings are simply forwarded to the LogEntryListView")]
+		public void TestChangeMergedDisplayMode()
+		{
+			var dataSource = new Mock<IMergedDataSourceViewModel>();
+			dataSource.Setup(x => x.Search).Returns(new Mock<ISearchViewModel>().Object);
+			dataSource.SetupProperty(x => x.DisplayMode);
+			dataSource.Object.DisplayMode = DataSourceDisplayMode.Filename;
+
+			_control.DataSource = dataSource.Object;
+			_control.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.Filename);
+
+			dataSource.Object.DisplayMode = DataSourceDisplayMode.CharacterCode;
+			dataSource.Raise(x => x.PropertyChanged += null, dataSource.Object, new PropertyChangedEventArgs(nameof(IMergedDataSourceViewModel.DisplayMode)));
+			_control.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.CharacterCode);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that the settings are simply forwarded to the LogEntryListView")]
 		public void TestChangeSettings()
 		{
 			var settings = new LogViewerSettings();

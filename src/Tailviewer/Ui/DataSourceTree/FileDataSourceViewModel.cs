@@ -14,11 +14,11 @@ using Tailviewer.Ui.LogView;
 namespace Tailviewer.Ui.DataSourceTree
 {
 	/// <summary>
-	///     Represents a data source and is capable of opening the source folder in explorer
+	///     The view model which represents an <see cref="IFileDataSource" /> in the data source tree.
 	/// </summary>
 	public sealed class FileDataSourceViewModel
 		: AbstractDataSourceViewModel
-			, IFileDataSourceViewModel
+		, IFileDataSourceViewModel
 	{
 		private readonly IActionCenter _actionCenter;
 		private readonly IFileDataSource _dataSource;

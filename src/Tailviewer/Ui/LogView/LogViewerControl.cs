@@ -592,6 +592,11 @@ namespace Tailviewer.Ui.LogView
 					PART_ListView.ColorByLevel = dataSource.ColorByLevel;
 					break;
 
+				case nameof(IMergedDataSourceViewModel.DisplayMode):
+					if (dataSource is IMergedDataSourceViewModel mergedDataSource)
+						MergedDataSourceDisplayMode = mergedDataSource.DisplayMode;
+					break;
+
 				case "LevelsFilter":
 					OnLevelsChanged();
 					break;

@@ -17,6 +17,9 @@ using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Ui.DataSourceTree
 {
+	/// <summary>
+	///     The view model which represents an <see cref="IMergedDataSource" /> in the data source tree.
+	/// </summary>
 	public sealed class MergedDataSourceViewModel
 		: AbstractDataSourceViewModel
 		, ITreeViewItemViewModel
@@ -50,8 +53,21 @@ namespace Tailviewer.Ui.DataSourceTree
 					ToolTip = "Opens the Folder(s) of the Child Data sources"
 				}
 			});
+			AddViewMenuItems(new[]
+			{
+				new ToggleMenuViewModel(DisplayMode == DataSourceDisplayMode.Filename, OnToggleShowFileNames)
+				{
+					Header = "Show source name",
+					ToolTip = "Toggles between showing the full name of the data source or a character code representing the original data source"
+				}
+			});
 			SetContextMenuItems(new IMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
 			Update();
+		}
+
+		private void OnToggleShowFileNames(bool showFileName)
+		{
+			DisplayMode = showFileName ? DataSourceDisplayMode.Filename : DataSourceDisplayMode.CharacterCode;
 		}
 
 		private void OpenInExplorer()
