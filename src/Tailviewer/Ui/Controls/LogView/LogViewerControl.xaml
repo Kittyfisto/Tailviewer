@@ -94,7 +94,7 @@
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
-                        Width="40"
+                        Width="42"
                         LogLevel="All"
                         IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of all log entries"

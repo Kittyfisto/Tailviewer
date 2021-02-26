@@ -16,6 +16,7 @@
         <Setter Property="Padding" Value="4" />
         <Setter Property="MaxWidth" Value="60" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Template">
@@ -64,12 +65,15 @@
         <Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="IsChecked" Value="False" />
                     <Condition Property="IsMouseOver" Value="True" />
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
             </MultiTrigger>
-            <MultiTrigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryForegroundBrush}" />
+            </Trigger>
+
+            <!--<MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="True" />
                     <Condition Property="IsMouseOver" Value="True" />
@@ -84,7 +88,7 @@
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{StaticResource PrimaryForegroundBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource SecondaryForegroundBrush}" />
-            </MultiTrigger>
+            </MultiTrigger>-->
         </Style.Triggers>
     </Style>
 
