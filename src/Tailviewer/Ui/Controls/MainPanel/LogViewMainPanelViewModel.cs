@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Microsoft.Win32;
@@ -234,6 +233,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_outline.CurrentDataSource = value?.DataSource;
 			_issues.CurrentDataSource = value?.DataSource;
 			Search = value?.Search;
+			FindAll = value?.FindAll;
 			OpenFile(value);
 		}
 

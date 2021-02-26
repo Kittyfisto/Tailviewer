@@ -147,15 +147,6 @@
                         ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
                         Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
-                    <controls:FilterTextBox
-                        x:Name="PART_FindAllBox"
-                        Margin="0,0,8,8"
-                        Padding="4"
-                        Width="200"
-                        AcceptsTab="True"
-                        FilterText="{Binding DataSource.FindAllSearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                        Watermark="Find all in log file (Ctrl+Shift+F)" />
-
                     <controls:PluginToggleButton
                         Margin="0,0,8,8"
                         Padding="4"
@@ -342,7 +333,7 @@
 
         <!-- Find all result display -->
         <Grid Grid.Row="4"
-              Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}, FallbackValue=Collapsed}">
+              Visibility="{Binding DataSource.FindAll.Show, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}, FallbackValue=Collapsed}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -357,15 +348,15 @@
                            Margin="8,4,8,4" />
                 <controls:CloseButton Grid.Column="1"
                                       Height="26"
-                                      Command="{Binding DataSource.CloseFindAllCommand, ElementName=This}" />
+                                      Command="{Binding DataSource.FindAll.CloseCommand, ElementName=This}" />
             </Grid>
             <logView:LogEntryListView
                 x:Name="PART_FindAllView"
                 Height="300"
                 Grid.Row="1"
-                LogSource="{Binding FindAllLogSource, ElementName=This}"
-                Search="{Binding FindAllSearch, ElementName=This}"
-                SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
+                LogSource="{Binding DataSource.FindAll.LogSource, ElementName=This}"
+                Search="{Binding DataSource.FindAll.Search, ElementName=This}"
+                SelectedIndices="{Binding DataSource.FindAll.SelectedLogLines, ElementName=This, Mode=TwoWay}"
                 ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
                 ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
                 ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"

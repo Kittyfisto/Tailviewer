@@ -12,6 +12,7 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
@@ -47,18 +48,10 @@ namespace Tailviewer.Ui.ViewModels
 		private int _totalCount;
 		private int _warningCount;
 		private readonly SearchViewModel _search;
+		private readonly FindAllViewModel _findAll;
 		private double _progress;
 		private readonly DelegateCommand2 _clearScreenCommand;
 		private readonly DelegateCommand2 _showAllCommand;
-
-		#region Find all
-
-		private bool _showFindAll;
-		private bool _isFindAllEmpty;
-		private string _findAllErrorMessage;
-		private IEnumerable<LogLineIndex> _selectedFindAllLogLines;
-
-		#endregion
 
 		private readonly ObservableCollection<IMenuViewModel> _fileMenuItems;
 		private readonly ObservableCollection<IMenuViewModel> _viewMenuItems;
@@ -72,6 +65,7 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
 			_applicationSettings = applicationSettings;
 			_search = new SearchViewModel(dataSource);
+			_findAll = new FindAllViewModel(this, dataSource);
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 
@@ -374,31 +368,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IEnumerable<LogLineIndex> SelectedFindAllLogLines
-		{
-			get { return _selectedFindAllLogLines; }
-			set
-			{
-				if (ReferenceEquals(value, _selectedFindAllLogLines))
-					return;
-
-				_selectedFindAllLogLines = value;
-				EmitPropertyChanged();
-
-				var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
-				if (index.IsValid)
-				{
-					var entry = _dataSource.FindAllLogSource.GetEntries(new[] {index}, new[]{GeneralColumns.OriginalIndex});
-					var originalIndex = entry[0].OriginalIndex;
-					if (originalIndex.IsValid)
-					{
-						VisibleLogLine = Math.Max(originalIndex - 5, 0);
-						SelectedLogLines = new HashSet<LogLineIndex> {originalIndex};
-					}
-				}
-			}
-		}
-
 		public TimeSpan? LastWrittenAge
 		{
 			get { return _lastWrittenAge; }
@@ -537,6 +506,123 @@ namespace Tailviewer.Ui.ViewModels
 
 		public ISearchViewModel Search => _search;
 
+		public IFindAllViewModel FindAll => _findAll;
+
+		sealed class FindAllViewModel
+			: IFindAllViewModel
+		{
+			private readonly AbstractDataSourceViewModel _dataSourceViewModel;
+			private readonly IDataSource _dataSource;
+			private bool _show;
+			private bool _isEmpty;
+			private string _errorMessage;
+			private IEnumerable<LogLineIndex> _selectedFindAllLogLines;
+
+			public FindAllViewModel(AbstractDataSourceViewModel dataSourceViewModel, IDataSource dataSource)
+			{
+				_dataSourceViewModel = dataSourceViewModel;
+				_dataSource = dataSource;
+			}
+
+			public ICommand CloseCommand => new DelegateCommand2(CloseFindAll);
+
+			public IEnumerable<LogLineIndex> SelectedLogLines
+			{
+				get { return _selectedFindAllLogLines; }
+				set
+				{
+					if (ReferenceEquals(value, _selectedFindAllLogLines))
+						return;
+
+					_selectedFindAllLogLines = value;
+					EmitPropertyChanged();
+
+					var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
+					if (index.IsValid)
+					{
+						var entry = _dataSource.FindAllLogSource.GetEntries(new[] {index}, new[]{GeneralColumns.OriginalIndex});
+						var originalIndex = entry[0].OriginalIndex;
+						if (originalIndex.IsValid)
+						{
+							_dataSourceViewModel.VisibleLogLine = Math.Max(originalIndex - 5, 0);
+							_dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> {originalIndex};
+						}
+					}
+				}
+			}
+
+			public ILogSource LogSource => _dataSource.FindAllLogSource;
+
+			public ILogSourceSearch Search => _dataSource.FindAllSearch;
+
+			public string SearchTerm
+			{
+				get { return _dataSource.FindAllFilter; }
+				set
+				{
+					if (value == _dataSource.FindAllFilter)
+						return;
+
+					_dataSource.FindAllFilter = value;
+					EmitPropertyChanged();
+
+					Show = !string.IsNullOrEmpty(value);
+				}
+			}
+
+			public bool Show
+			{
+				get { return _show; }
+				private set
+				{
+					if (value == _show)
+						return;
+
+					_show = value;
+					EmitPropertyChanged();
+				}
+			}
+
+			public bool IsEmpty
+			{
+				get { return _isEmpty; }
+				private set
+				{
+					if (value == _isEmpty)
+						return;
+
+					_isEmpty = value;
+					EmitPropertyChanged();
+				}
+			}
+
+			public string ErrorMessage
+			{
+				get { return _errorMessage; }
+				private set
+				{
+					if (value == _errorMessage)
+						return;
+
+					_errorMessage = value;
+					EmitPropertyChanged();
+				}
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			private void CloseFindAll()
+			{
+				SearchTerm = null;
+				Show = false;
+			}
+
+			private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
 		sealed class SearchViewModel
 			: ISearchViewModel
 		{
@@ -626,72 +712,6 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-
-		#endregion
-
-		#region Find all
-
-		public string FindAllSearchTerm
-		{
-			get { return _dataSource.FindAllFilter; }
-			set
-			{
-				if (value == _dataSource.FindAllFilter)
-					return;
-
-				_dataSource.FindAllFilter = value;
-				EmitPropertyChanged();
-
-				ShowFindAll = !string.IsNullOrEmpty(value);
-			}
-		}
-
-		public bool ShowFindAll
-		{
-			get { return _showFindAll; }
-			private set
-			{
-				if (value == _showFindAll)
-					return;
-
-				_showFindAll = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public bool IsFindAllEmpty
-		{
-			get { return _isFindAllEmpty; }
-			private set
-			{
-				if (value == _isFindAllEmpty)
-					return;
-
-				_isFindAllEmpty = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public string FindAllErrorMessage
-		{
-			get { return _findAllErrorMessage; }
-			private set
-			{
-				if (value == _findAllErrorMessage)
-					return;
-
-				_findAllErrorMessage = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public ICommand CloseFindAllCommand => new DelegateCommand2(CloseFindAll);
-
-		private void CloseFindAll()
-		{
-			FindAllSearchTerm = null;
-			ShowFindAll = false;
 		}
 
 		#endregion

@@ -178,12 +178,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void FocusLogFileSearchAll()
 		{
-			var grid = VisualTreeHelper.GetChild(PART_Content, childIndex: 0) as Grid;
-			if (grid != null)
-			{
-				var logViewerControl = VisualTreeHelper.GetChild(grid, childIndex: 1) as LogViewerControl;
-				logViewerControl?.PART_FindAllBox.Focus();
-			}
+			PART_FindAllBox.Focus();
 		}
 
 		private void FocusDataSourceSearch()

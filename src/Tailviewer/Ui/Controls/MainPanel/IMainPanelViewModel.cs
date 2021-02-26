@@ -18,6 +18,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		#endregion
 
 		ISearchViewModel Search { get; }
+
+		IFindAllViewModel FindAll { get; }
 		
 		IEnumerable<ISidePanelViewModel> SidePanels { get; }
 		ISidePanelViewModel SelectedSidePanel { get; set; }

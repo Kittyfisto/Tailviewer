@@ -8,5 +8,6 @@
     <converters:BoolTrueToHiddenConverter x:Key="BoolTrueToHiddenConverter" />
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
     <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
+    <converters:NullToFalseConverter x:Key="NullToFalseConverter" />
 
 </ResourceDictionary>

@@ -69,6 +69,7 @@
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
@@ -111,6 +112,7 @@
                                     Margin="8,2,8,2"
                                     Padding="2"
                                     VerticalAlignment="Center"
+                                    Height="24"
                                     Width="200"
                                     RequiresExplicitSearchStart="False"
                                     AcceptsTab="True"
@@ -119,7 +121,19 @@
                                     CurrentOccurenceIndex="{Binding SelectedMainPanel.Search.CurrentResultIndex, Mode=TwoWay}"
                                     Watermark="Search log file (Ctrl+F)" />
 
-            <TextBlock Grid.Column="3"
+            <metrolib:FilterTextBox x:Name="PART_FindAllBox"
+                                    Grid.Column="3"
+                                    Margin="0,2,8,2"
+                                    Padding="2"
+                                    VerticalAlignment="Center"
+                                    Height="24"
+                                    Width="200"
+                                    AcceptsTab="True"
+                                    IsEnabled="{Binding SelectedMainPanel.FindAll, Converter={StaticResource NullToFalseConverter}}"
+                                    FilterText="{Binding SelectedMainPanel.FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Watermark="Find all in log file (Ctrl+Shift+F)" />
+
+            <TextBlock Grid.Column="4"
                        Margin="8,0,0,0"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
@@ -128,7 +142,7 @@
                        Foreground="{StaticResource PrimaryForegroundBrush}"
                        Text="{Binding WindowTitleSuffix}" />
 
-            <metrolib:EmailToggleButton Grid.Column="4"
+            <metrolib:EmailToggleButton Grid.Column="5"
                                         VerticalContentAlignment="Top"
                                         HorizontalContentAlignment="Right"
                                         IsChecked="{Binding ActionCenter.IsOpen}"

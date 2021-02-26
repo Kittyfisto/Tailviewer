@@ -17,6 +17,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private IEnumerable<IMenuViewModel> _fileMenuItems;
 		private IEnumerable<IMenuViewModel> _viewMenuItems;
 		private ISearchViewModel _search;
+		private IFindAllViewModel _findAll;
 
 		protected AbstractMainPanelViewModel(IApplicationSettings applicationSettings)
 		{
@@ -54,11 +55,25 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		public ISearchViewModel Search
 		{
 			get { return _search; }
-			set
+			protected set
 			{
 				if (value == _search)
 					return;
+
 				_search = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public IFindAllViewModel FindAll
+		{
+			get { return _findAll; }
+			protected set
+			{
+				if (value == _findAll)
+					return;
+
+				_findAll = value;
 				EmitPropertyChanged();
 			}
 		}

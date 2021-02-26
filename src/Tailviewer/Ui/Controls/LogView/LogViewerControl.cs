@@ -19,14 +19,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("LogSource", typeof(ILogSource), typeof(LogViewerControl),
 				new PropertyMetadata(default(ILogSource)));
 
-		public static readonly DependencyProperty FindAllLogFileProperty = DependencyProperty.Register(
-		                                                "FindAllLogFile", typeof(ILogSource), typeof(LogViewerControl), new PropertyMetadata(default(ILogSource)));
-
-		public static readonly DependencyProperty FindAllSearchProperty = DependencyProperty.Register(
-		                                                "FindAllSearch", typeof(ILogSourceSearch), typeof(LogViewerControl), new PropertyMetadata(default(ILogSourceSearch)));
-
-		public static readonly DependencyProperty ShowFindAllProperty = DependencyProperty.Register(
-		                                                "ShowFindAll", typeof(bool), typeof(LogViewerControl), new PropertyMetadata(default(bool)));
+		public static readonly DependencyProperty FindAllProperty = DependencyProperty.Register(
+		                                                "FindAll", typeof(IFindAllViewModel), typeof(LogViewerControl), new PropertyMetadata(default(IFindAllViewModel)));
 
 		public static readonly DependencyProperty SearchProperty =
 			DependencyProperty.Register("Search", typeof(ILogSourceSearch), typeof(LogViewerControl),
@@ -157,22 +151,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(LogSourceProperty, value); }
 		}
 
-		public ILogSource FindAllLogSource
+		public IFindAllViewModel FindAll
 		{
-			get { return (ILogSource) GetValue(FindAllLogFileProperty); }
-			set { SetValue(FindAllLogFileProperty, value); }
-		}
-
-		public ILogSourceSearch FindAllSearch
-		{
-			get { return (ILogSourceSearch) GetValue(FindAllSearchProperty); }
-			set { SetValue(FindAllSearchProperty, value); }
-		}
-
-		public bool ShowFindAll
-		{
-			get { return (bool) GetValue(ShowFindAllProperty); }
-			set { SetValue(ShowFindAllProperty, value); }
+			get { return (IFindAllViewModel) GetValue(FindAllProperty); }
+			set { SetValue(FindAllProperty, value); }
 		}
 
 		public ILogSourceSearch Search
@@ -322,11 +304,10 @@ namespace Tailviewer.Ui.Controls.LogView
 					newView.PropertyChanged += LogViewOnPropertyChanged;
 					DataSource = newView.DataSource;
 					LogSource = newView.LogSource;
-					FindAllLogSource = newView.DataSource.DataSource.FindAllLogSource;
-					FindAllSearch = newView.DataSource.DataSource.FindAllSearch;
-					ShowFindAll = newView.DataSource.ShowFindAll;
+					FindAll = newView.DataSource.FindAll;
 					Search = newView.Search;
 					CurrentLogLine = newView.DataSource.VisibleLogLine;
+
 					Select(newView.DataSource.SelectedLogLines);
 					SetHorizontalOffset(newView.DataSource.HorizontalOffset);
 				}
@@ -334,8 +315,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					DataSource = null;
 					LogSource = null;
-					FindAllLogSource = null;
-					ShowFindAll = false;
+					FindAll = null;
 				}
 			}
 			finally

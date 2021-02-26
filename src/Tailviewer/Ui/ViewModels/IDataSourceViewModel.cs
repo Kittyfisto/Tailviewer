@@ -71,8 +71,6 @@ namespace Tailviewer.Ui.ViewModels
 
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 
-		IEnumerable<LogLineIndex> SelectedFindAllLogLines { get; set; }
-
 		TimeSpan? LastWrittenAge { get; }
 
 		ICommand RemoveCommand { get; }
@@ -135,34 +133,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		ISearchViewModel Search { get; }
 
-		#endregion
-
-		#region Find all
-
-		/// <summary>
-		/// 
-		/// </summary>
-		string FindAllSearchTerm { get; set; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		bool ShowFindAll { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		bool IsFindAllEmpty { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		string FindAllErrorMessage { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		ICommand CloseFindAllCommand { get; }
+		IFindAllViewModel FindAll { get; }
 
 		#endregion
 	}
