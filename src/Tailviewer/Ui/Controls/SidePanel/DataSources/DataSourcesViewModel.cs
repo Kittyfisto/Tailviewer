@@ -109,6 +109,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			_allDataSourceViewModels.Clear();
 			_observable.Clear();
 			_dataSources.Clear();
+			SelectedItem = null;
 
 			UpdateRemoveCommands();
 

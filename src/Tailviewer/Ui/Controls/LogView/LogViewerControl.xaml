@@ -221,9 +221,9 @@
                 Settings="{Binding Settings, ElementName=This}"
                 SnapsToDevicePixels="True" />
 
-            <!-- Is displayed to the user when there are no data sources -->
+            <!-- Is displayed to the user when there's an error: no data sources, file not found -->
             <Grid Grid.Column="1"
-                  Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NullToVisibleConverter}}"
+                  Visibility="{Binding ErrorMessage, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   Width="300"
@@ -241,7 +241,7 @@
                 <Viewbox Grid.Row="0"
                          Margin="20">
                     <Canvas Width="24" Height="24">
-                        <Path Data="{x:Static metrolib:Icons.FileFind}"
+                        <Path Data="{Binding ErrorIcon, ElementName=This}"
                               Fill="White" />
                     </Canvas>
                 </Viewbox>
@@ -250,10 +250,11 @@
                            FontWeight="Bold"
                            FontSize="18"
                            Foreground="#A0A0A0"
-                           Text="No data source opened"/>
+                           Text="{Binding ErrorMessage, ElementName=This}"
+                           TextWrapping="Wrap" />
                 <TextBlock Grid.Row="2"
                            Foreground="#A0A0A0"
-                           Text="Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window."
+                           Text="{Binding ErrorMessageAction, ElementName=This}"
                            TextWrapping="Wrap" />
             </Grid>
 
@@ -289,18 +290,6 @@
                                            ItemsSource="{Binding Observable}"
                                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                            IsPinned="{Binding IsPinned, Mode=TwoWay}" />
-
-        <!-- Error Message (File missing, access error, etc...) -->
-        <StackPanel Grid.Row="2" VerticalAlignment="Center">
-            <TextBlock
-                HorizontalAlignment="Center"
-                FontSize="20"
-                Text="{Binding ErrorMessage, ElementName=This}" />
-            <TextBlock
-                HorizontalAlignment="Center"
-                FontSize="12"
-                Text="{Binding DetailedErrorMessage, ElementName=This}" />
-        </StackPanel>
 
         <!-- Bottom information "Strip" -->
         <Border Grid.Row="3"

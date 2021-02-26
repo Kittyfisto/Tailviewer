@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -33,14 +34,15 @@ namespace Tailviewer.Ui.ViewModels
 		private ILogSource _logSource;
 		private int _logEntryCount;
 		private string _noEntriesExplanation;
-		private string _noEntriesSubtext;
+		private string _noEntriesAction;
+		private Geometry _noEntriesIcon;
 		private int _totalLogEntryCount;
 		private ILogSourceSearch _search;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource,
-			IActionCenter actionCenter,
-			IApplicationSettings applicationSettings,
-			TimeSpan maximumWaitTime)
+		                          IActionCenter actionCenter,
+		                          IApplicationSettings applicationSettings,
+		                          TimeSpan maximumWaitTime)
 		{
 			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
 			_applicationSettings = applicationSettings ?? throw new ArgumentNullException(nameof(applicationSettings));
@@ -94,15 +96,27 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public string NoEntriesSubtext
+		public Geometry NoEntriesIcon
 		{
-			get { return _noEntriesSubtext; }
+			get { return _noEntriesIcon; }
 			private set
 			{
-				if (Equals(value, _noEntriesSubtext))
+				if (value == _noEntriesIcon)
+					return;
+				_noEntriesIcon = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string NoEntriesAction
+		{
+			get { return _noEntriesAction; }
+			private set
+			{
+				if (Equals(value, _noEntriesAction))
 					return;
 
-				_noEntriesSubtext = value;
+				_noEntriesAction = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -252,59 +266,63 @@ namespace Tailviewer.Ui.ViewModels
 				var emptyReason = source.GetProperty(GeneralProperties.EmptyReason);
 				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
-					NoEntriesExplanation = string.Format("Can't find \"{0}\"", Path.GetFileName(dataSource.FullFileName));
-					NoEntriesSubtext = string.Format("It was last seen at {0}", Path.GetDirectoryName(dataSource.FullFileName));
+					NoEntriesIcon = Icons.FileRemove;
+					NoEntriesExplanation = "Data source does not exist";
+					NoEntriesAction = $"The data source '{Path.GetFileName(dataSource.FullFileName)}' was last seen {Path.GetDirectoryName(dataSource.FullFileName)}";
 				}
 				else if ((emptyReason & ErrorFlags.SourceCannotBeAccessed) == ErrorFlags.SourceCannotBeAccessed)
 				{
-					NoEntriesExplanation = string.Format("Unable to access \"{0}\"", Path.GetFileName(dataSource.FullFileName));
-					NoEntriesSubtext = "The file may be opened exclusively by another process or you are not authorized to view it";
+					NoEntriesIcon = Icons.FileAlert;
+					NoEntriesExplanation = "Data source cannot be opened";
+					NoEntriesAction = $"The file '{Path.GetFileName(dataSource.FullFileName)}' may be opened exclusively by another process or you are not authorized to view it";
 				}
 				else if (folderDataSource != null && folderDataSource.UnfilteredFileCount == 0)
 				{
-					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file", Path.GetFileName(dataSource.FullFileName));
-					NoEntriesSubtext = dataSource.FullFileName;
+					NoEntriesIcon = null;
+					NoEntriesExplanation = $"The folder \"{Path.GetFileName(dataSource.FullFileName)}\" does not contain any file";
+					NoEntriesAction = dataSource.FullFileName;
 				}
 				else if (folderDataSource != null && folderDataSource.FilteredFileCount == 0)
 				{
-					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file matching \"{1}\"", Path.GetFileName(dataSource.FullFileName), folderDataSource.LogFileSearchPattern);
-					NoEntriesSubtext = dataSource.FullFileName;
+					NoEntriesIcon = null;
+					NoEntriesExplanation = $"The folder \"{Path.GetFileName(dataSource.FullFileName)}\" does not contain any file matching \"{folderDataSource.LogFileSearchPattern}\"";
+					NoEntriesAction = dataSource.FullFileName;
 				}
 				else if (source.GetProperty(GeneralProperties.Size) == Size.Zero)
 				{
-					NoEntriesExplanation = "The data source is empty";
-					NoEntriesSubtext = null;
+					NoEntriesIcon = Icons.File;
+					NoEntriesExplanation = "Data source is empty";
+					NoEntriesAction = null;
 				}
 				else if (dataSource.LevelFilter != LevelFlags.All)
 				{
-					NoEntriesExplanation = "Not a single log entry matches the level selection";
-					NoEntriesSubtext = null;
-				}
-				else if (!string.IsNullOrEmpty(dataSource.SearchTerm))
-				{
-					NoEntriesExplanation = "Not a single log entry matches the log file filter";
-					NoEntriesSubtext = null;
+					NoEntriesIcon = Icons.FileSearch;
+					NoEntriesExplanation = "Nothing matches level filter";
+					NoEntriesAction = "Try filtering by different levels or display everything regardless of its level again";
 				}
 				else if (chain != null && chain.All(x => x != null))
 				{
-					NoEntriesExplanation = "Not a single log entry matches the activated quick filters";
-					NoEntriesSubtext = null;
+					NoEntriesIcon = Icons.FileSearch;
+					NoEntriesExplanation = "Nothing matches quick filter";
+					NoEntriesAction = "Try filtering by different terms or disable all quick filters";
 				}
 				else if (source is MergedLogSource)
 				{
-					NoEntriesExplanation = "None of the data sources' contains identifiable timestamps: Merging them is not possible";
-					NoEntriesSubtext = null;
+					NoEntriesIcon = null;
+					NoEntriesExplanation = "No log entries with timestamps";
+					NoEntriesAction = "Try merging different data sources, change the timestamp format of the data or create a plugin to help Tailviewer parse its timestamp";
 				}
 				else
 				{
+					NoEntriesIcon = null;
 					NoEntriesExplanation = null;
-					NoEntriesSubtext = null;
+					NoEntriesAction = null;
 				}
 			}
 			else
 			{
 				NoEntriesExplanation = null;
-				NoEntriesSubtext = null;
+				NoEntriesAction = null;
 			}
 		}
 	}

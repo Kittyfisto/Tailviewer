@@ -121,6 +121,7 @@ namespace Tailviewer.Test.Ui
 			_model.RemoveAllDataSourcesCommand.Execute(null);
 			_model.DataSources.Should().BeEmpty("because we've just removed the last data source");
 			_dataSources.Sources.Should().BeEmpty("because we've just removed the last data source");
+			_model.SelectedItem.Should().BeNull();
 			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
 			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
 		}

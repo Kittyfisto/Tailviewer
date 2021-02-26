@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -83,12 +84,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("TotalLogEntryCount", typeof(int), typeof(LogViewerControl),
 				new PropertyMetadata(default(int)));
 
+		public static readonly DependencyProperty ErrorIconProperty =
+			DependencyProperty.Register("ErrorIcon", typeof(Geometry), typeof(LogViewerControl),
+			                            new PropertyMetadata(default(Geometry)));
+
 		public static readonly DependencyProperty ErrorMessageProperty =
 			DependencyProperty.Register("ErrorMessage", typeof(string), typeof(LogViewerControl),
 				new PropertyMetadata(default(string)));
 
-		public static readonly DependencyProperty DetailedErrorMessageProperty =
-			DependencyProperty.Register("DetailedErrorMessage", typeof(string), typeof(LogViewerControl),
+		public static readonly DependencyProperty ErrorMessageActionProperty =
+			DependencyProperty.Register("ErrorMessageAction", typeof(string), typeof(LogViewerControl),
 				new PropertyMetadata(default(string)));
 
 		public static readonly DependencyProperty MergedDataSourceDisplayModeProperty = DependencyProperty.Register(
@@ -176,10 +181,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(SearchProperty, value); }
 		}
 
-		public string DetailedErrorMessage
+		public Geometry ErrorIcon
 		{
-			get { return (string) GetValue(DetailedErrorMessageProperty); }
-			set { SetValue(DetailedErrorMessageProperty, value); }
+			get { return (Geometry) GetValue(ErrorMessageActionProperty); }
+			set { SetValue(ErrorMessageActionProperty, value); }
+		}
+
+		public string ErrorMessageAction
+		{
+			get { return (string) GetValue(ErrorMessageActionProperty); }
+			set { SetValue(ErrorMessageActionProperty, value); }
 		}
 
 		public string ErrorMessage

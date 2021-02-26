@@ -4,7 +4,8 @@
                     xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
                     xmlns:controls1="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:quickNavigation1="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation"
-                    xmlns:goToLine="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine">
+                    xmlns:goToLine="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
 
     <DataTemplate DataType="{x:Type mainPanel:LogViewMainPanelViewModel}">
 
@@ -20,10 +21,10 @@
                     Settings="{Binding Settings}"
                     LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
                     TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
-                    ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
-                    DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
+                    ErrorIcon="{Binding CurrentDataSourceLogView.NoEntriesIcon, FallbackValue={x:Static metrolib:Icons.File}}"
+                    ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation, FallbackValue='No data source opened'}"
+                    ErrorMessageAction="{Binding CurrentDataSourceLogView.NoEntriesAction, FallbackValue='Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.'}"
                     LogView="{Binding CurrentDataSourceLogView}" />
-
 
                 <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
                                         Placement="Center"

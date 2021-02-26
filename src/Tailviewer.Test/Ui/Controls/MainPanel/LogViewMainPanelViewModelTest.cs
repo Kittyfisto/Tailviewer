@@ -92,7 +92,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			logFile.AddEntry("", LevelFlags.All);
 			logFile.SetValue(GeneralProperties.Size, Size.OneByte);
 			model.Update();
-			model.CurrentDataSourceLogView.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
+			model.CurrentDataSourceLogView.NoEntriesExplanation.Should().Be("Nothing matches level filter");
 		}
 
 		[Test]
