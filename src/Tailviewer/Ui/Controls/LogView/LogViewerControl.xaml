@@ -182,9 +182,9 @@
             </Border>
 
             <!-- Filters, Bookmarks, Outline and Issues Selector -->
-            <Border Grid.Column="2">
-                <sidePanel:SidePanelControl Width="300"
-                                            SidePanels="{Binding SidePanels}"
+            <Border Grid.Column="2"
+                    Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
+                <sidePanel:SidePanelControl SidePanels="{Binding SidePanels}"
                                             SelectedPanel="{Binding SelectedSidePanel, Mode=TwoWay}" />
             </Border>
         </Grid>

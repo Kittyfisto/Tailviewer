@@ -12,8 +12,8 @@
                            Title="{Binding WindowTitle}"
                            x:Name="This"
                            AllowDrop="True"
-                           MinWidth="640"
-                           MinHeight="480"
+                           MinWidth="800"
+                           MinHeight="600"
                            HideTitle="True">
 
     <Window.InputBindings>
@@ -71,7 +71,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Image Source="pack://application:,,,/Resources/Tailviewer.png"
@@ -146,7 +146,12 @@
                                         VerticalContentAlignment="Top"
                                         HorizontalContentAlignment="Right"
                                         IsChecked="{Binding ActionCenter.IsOpen}"
-                                        Padding="1">
+                                        Foreground="{StaticResource ForegroundBrushInverted}"
+                                        HoveredBackground="{StaticResource ForegroundBrushHovered}"
+                                        CheckedBackground="{StaticResource ForegroundBrushHovered}"
+                                        Width="30"
+                                        Margin="4,0,4,0"
+                                        Padding="4">
                 <metrolib:EmailToggleButton.ContextMenu>
                     <metrolib:FlatContextMenu AnchorAlignment="Right"
                                               HorizontalOffset="-236"
