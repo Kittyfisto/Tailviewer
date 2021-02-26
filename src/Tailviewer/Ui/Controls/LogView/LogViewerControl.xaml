@@ -7,7 +7,6 @@
              xmlns:converters1="clr-namespace:Metrolib.Converters;assembly=Metrolib"
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
              xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
-             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -42,11 +41,7 @@
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
             <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
-            <logView:NonMergedDataSourceToVisibilityCollapsedConverter
-                x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
-            <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
             <logView:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
-            <converters1:NullToVisibleConverter x:Key="NullToVisibleConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -74,6 +69,7 @@
                                                     IsChecked="{Binding DataSources.IsChecked, Mode=TwoWay}"
                                                     IsEnabled="{Binding DataSources.IsPinned, Converter={StaticResource InvertBoolConverter}}" />
 
+            <!-- Data Source Panel Pin, Top Left on top of Data Source Selector -->
             <controls:PinToggleButton Grid.Column="0"
                                       Width="26"
                                       Height="22"
@@ -87,6 +83,7 @@
 
             <!-- Central Toolbar -->
             <Border Grid.Column="1"
+                    Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                     BorderThickness="1,0,0,1"
                     BorderBrush="{StaticResource PrimarySeparatorBrush}">
                 <WrapPanel Orientation="Horizontal"
@@ -208,56 +205,101 @@
                     BorderThickness="0,0,1,0"
                     Background="{StaticResource SeparatorBrush}" />
 
-            <logView:LogEntryListView
-                x:Name="PART_ListView"
-                Grid.Column="1"
-                DataSource="{Binding DataSource.DataSource, ElementName=This}"
-                LogSource="{Binding LogSource, ElementName=This}"
-                Search="{Binding Search, ElementName=This}"
-                CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
-                ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-                MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-                Settings="{Binding Settings, ElementName=This}"
-                SnapsToDevicePixels="True" />
-
-            <!-- Is displayed to the user when there's an error: no data sources, file not found -->
-            <Grid Grid.Column="1"
-                  Visibility="{Binding ErrorMessage, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  Width="300"
-                  Margin="20">
+            <!-- Center: Data Source View, Error Message, Find All View -->
+            <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Ellipse  Grid.Row="0"
-                          Fill="#D8D8D8"
-                          VerticalAlignment="Stretch"
-                          HorizontalAlignment="Stretch"
-                          Margin="10"/>
-                <Viewbox Grid.Row="0"
-                         Margin="20">
-                    <Canvas Width="24" Height="24">
-                        <Path Data="{Binding ErrorIcon, ElementName=This}"
-                              Fill="White" />
-                    </Canvas>
-                </Viewbox>
-                <TextBlock Grid.Row="1"
-                           HorizontalAlignment="Center"
-                           FontWeight="Bold"
-                           FontSize="18"
-                           Foreground="#A0A0A0"
-                           Text="{Binding ErrorMessage, ElementName=This}"
-                           TextWrapping="Wrap" />
-                <TextBlock Grid.Row="2"
-                           Foreground="#A0A0A0"
-                           Text="{Binding ErrorMessageAction, ElementName=This}"
-                           TextWrapping="Wrap" />
+
+                <!-- Main Data Source View -->
+                <logView:LogEntryListView
+                    x:Name="PART_ListView"
+                    Grid.Row="0"
+                    DataSource="{Binding DataSource.DataSource, ElementName=This}"
+                    LogSource="{Binding LogSource, ElementName=This}"
+                    Search="{Binding Search, ElementName=This}"
+                    CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+                    ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+                    ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+                    ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+                    ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+                    MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                    Settings="{Binding Settings, ElementName=This}"
+                    SnapsToDevicePixels="True" />
+
+                <!-- Error message when main Data Source View is empty -->
+                <Grid Grid.Row="0"
+                      Visibility="{Binding ErrorMessage, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Width="300"
+                      Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Ellipse  Grid.Row="0"
+                              Fill="#D8D8D8"
+                              VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
+                              Margin="10"/>
+                    <Viewbox Grid.Row="0"
+                             Margin="20">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{Binding ErrorIcon, ElementName=This}"
+                                  Fill="White" />
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock Grid.Row="1"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               FontSize="18"
+                               Foreground="#A0A0A0"
+                               Text="{Binding ErrorMessage, ElementName=This}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="2"
+                               Foreground="#A0A0A0"
+                               Text="{Binding ErrorMessageAction, ElementName=This}"
+                               TextWrapping="Wrap" />
+                </Grid>
+
+                <!-- Find all data source view -->
+                <Grid Grid.Row="1"
+                      Visibility="{Binding DataSource.FindAll.Show, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}, FallbackValue=Collapsed}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Background="{StaticResource PrimaryBrush}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Find all results:"
+                                   Foreground="White"
+                                   Margin="8,4,8,4" />
+                        <controls:CloseButton Grid.Column="1"
+                                              Height="26"
+                                              Foreground="{StaticResource PrimaryForegroundBrush}"
+                                              Command="{Binding DataSource.FindAll.CloseCommand, ElementName=This}" />
+                    </Grid>
+                    <logView:LogEntryListView
+                        x:Name="PART_FindAllView"
+                        Height="300"
+                        Grid.Row="1"
+                        LogSource="{Binding DataSource.FindAll.LogSource, ElementName=This}"
+                        Search="{Binding DataSource.FindAll.Search, ElementName=This}"
+                        SelectedIndices="{Binding DataSource.FindAll.SelectedLogLines, ElementName=This, Mode=TwoWay}"
+                        ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+                        ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+                        ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+                        ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+                        MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                        Settings="{Binding Settings, ElementName=This}"
+                        SnapsToDevicePixels="True" />
+                </Grid>
             </Grid>
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
@@ -341,41 +383,6 @@
 
             </Grid>
         </Border>
-
-        <!-- Find all result display -->
-        <Grid Grid.Row="4"
-              Visibility="{Binding DataSource.FindAll.Show, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}, FallbackValue=Collapsed}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid Background="{StaticResource PrimaryBrush}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Find all results:"
-                           Foreground="White"
-                           Margin="8,4,8,4" />
-                <controls:CloseButton Grid.Column="1"
-                                      Height="26"
-                                      Command="{Binding DataSource.FindAll.CloseCommand, ElementName=This}" />
-            </Grid>
-            <logView:LogEntryListView
-                x:Name="PART_FindAllView"
-                Height="300"
-                Grid.Row="1"
-                LogSource="{Binding DataSource.FindAll.LogSource, ElementName=This}"
-                Search="{Binding DataSource.FindAll.Search, ElementName=This}"
-                SelectedIndices="{Binding DataSource.FindAll.SelectedLogLines, ElementName=This, Mode=TwoWay}"
-                ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-                MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-                Settings="{Binding Settings, ElementName=This}"
-                SnapsToDevicePixels="True" />
-        </Grid>
     </Grid>
 
 </UserControl>
