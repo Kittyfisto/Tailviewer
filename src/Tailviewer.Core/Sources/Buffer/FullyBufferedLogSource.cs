@@ -20,8 +20,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
 		                              ILogSource source)
 			: this(taskScheduler, source, source.Columns, TimeSpan.FromMilliseconds(value: 100))
-		{
-		}
+		{}
 
 		public FullyBufferedLogSource(ITaskScheduler taskScheduler,
 		                              ILogSource source,

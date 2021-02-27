@@ -123,30 +123,6 @@ namespace Tailviewer.Test.BusinessLogic.Columns
 		}
 
 		[Test]
-		[Description("Verifies that the RawContentMaxPresentationWidth property doesn't regress")]
-		public void TestRawContentMaxPresentationWidth()
-		{
-			GeneralColumns.RawContentMaxPresentationWidth.Id.Should().Be("raw_content_max_presentation_width");
-			GeneralColumns.RawContentMaxPresentationWidth.DataType.Should().Be<float>();
-		}
-
-		[Test]
-		[Description("Verifies that the PresentationStartingLineNumber property doesn't regress")]
-		public void TestPresentationStartingLineNumber()
-		{
-			GeneralColumns.PresentationStartingLineNumber.Id.Should().Be("presentation_line_number");
-			GeneralColumns.PresentationStartingLineNumber.DataType.Should().Be<int>();
-		}
-
-		[Test]
-		[Description("Verifies that the PresentationLineCount property doesn't regress")]
-		public void TestPresentationLineCount()
-		{
-			GeneralColumns.PresentationLineCount.Id.Should().Be("presentation_line_count");
-			GeneralColumns.PresentationLineCount.DataType.Should().Be<int>();
-		}
-
-		[Test]
 		public void TestCombine1()
 		{
 			GeneralColumns.Combine(new IColumnDescriptor[0], GeneralColumns.OriginalLineNumber)
@@ -158,9 +134,9 @@ namespace Tailviewer.Test.BusinessLogic.Columns
 		{
 			GeneralColumns.Combine(new IColumnDescriptor[]
 			              {
-				              GeneralColumns.PresentationLineCount
+				              GeneralColumns.LineNumber
 			              }, GeneralColumns.OriginalLineNumber)
-			              .Should().Equal(GeneralColumns.PresentationLineCount, GeneralColumns.OriginalLineNumber);
+			              .Should().Equal(GeneralColumns.LineNumber, GeneralColumns.OriginalLineNumber);
 		}
 
 		[Test]
@@ -170,9 +146,9 @@ namespace Tailviewer.Test.BusinessLogic.Columns
 			GeneralColumns.Combine(new IColumnDescriptor[]
 			              {
 				              GeneralColumns.RawContent,
-							  GeneralColumns.RawContentMaxPresentationWidth
-			              }, GeneralColumns.RawContentMaxPresentationWidth)
-			              .Should().Equal(GeneralColumns.RawContent, GeneralColumns.RawContentMaxPresentationWidth);
+							  GeneralColumns.LineNumber
+			              }, GeneralColumns.LineNumber)
+			              .Should().Equal(GeneralColumns.RawContent, GeneralColumns.LineNumber);
 		}
 	}
 }

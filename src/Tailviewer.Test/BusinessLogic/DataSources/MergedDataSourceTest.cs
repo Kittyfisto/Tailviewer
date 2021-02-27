@@ -216,14 +216,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestMergeMultiline1()
 		{
 			var logFile1 = new InMemoryLogSource();
-			var source1Id = new LogLineSourceId(0);
+			var source1Id = new LogEntrySourceId(0);
 			var source1 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile1,
 			                                   TimeSpan.Zero);
 
 			var logFile2 = new InMemoryLogSource();
-			var source2Id = new LogLineSourceId(1);
+			var source2Id = new LogEntrySourceId(1);
 			var source2 = new FileDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,

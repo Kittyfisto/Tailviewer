@@ -83,7 +83,7 @@ namespace Tailviewer
 		/// </remarks>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		new LogLineSourceId SourceId { get; set; }
+		new LogEntrySourceId SourceId { get; set; }
 
 		/// <summary>
 		/// The log level of this entry.

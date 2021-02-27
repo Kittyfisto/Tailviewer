@@ -84,7 +84,7 @@ namespace Tailviewer.Core.Columns
 		/// <remarks>
 		///     This column is present when multiple sources are merged together in order to tell which file a particular entry belongs to.
 		/// </remarks>
-		public static readonly IColumnDescriptor<LogLineSourceId> SourceId;
+		public static readonly IColumnDescriptor<LogEntrySourceId> SourceId;
 
 		/// <summary>
 		///     The log level of the entry (debug, info, warning, etc...)
@@ -112,25 +112,6 @@ namespace Tailviewer.Core.Columns
 		/// </summary>
 		public static readonly IColumnDescriptor<string> Message;
 
-		#region Presentation
-
-		/// <summary>
-		///     The maximum width (in pixels) of the <see cref="RawContent"/> column content.
-		/// </summary>
-		public static readonly IColumnDescriptor<float> RawContentMaxPresentationWidth;
-
-		/// <summary>
-		/// The line number of the first line of a log entry's presentation.
-		/// </summary>
-		public static readonly IColumnDescriptor<int> PresentationStartingLineNumber;
-
-		/// <summary>
-		/// The number of lines in a log entry's presentation.
-		/// </summary>
-		public static readonly IColumnDescriptor<int> PresentationLineCount;
-
-		#endregion
-
 		static GeneralColumns()
 		{
 			RawContent = new WellKnownColumnDescriptor<string>("raw_content");
@@ -140,16 +121,12 @@ namespace Tailviewer.Core.Columns
 			LineNumber = new WellKnownColumnDescriptor<int>("line_number");
 			OriginalLineNumber = new WellKnownColumnDescriptor<int>("original_line_number");
 			OriginalDataSourceName = new WellKnownColumnDescriptor<string>("original_data_source_name");
-			SourceId = new WellKnownColumnDescriptor<LogLineSourceId>("source_id");
+			SourceId = new WellKnownColumnDescriptor<LogEntrySourceId>("source_id");
 			LogLevel = new WellKnownColumnDescriptor<LevelFlags>("log_level");
 			Timestamp = new WellKnownColumnDescriptor<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownColumnDescriptor<TimeSpan?>("elapsed_time");
 			DeltaTime = new WellKnownColumnDescriptor<TimeSpan?>("delta_time");
 			Message = new WellKnownColumnDescriptor<string>("message", "Message");
-
-			RawContentMaxPresentationWidth = new WellKnownColumnDescriptor<float>("raw_content_max_presentation_width");
-			PresentationStartingLineNumber = new WellKnownColumnDescriptor<int>("presentation_line_number");
-			PresentationLineCount = new WellKnownColumnDescriptor<int>("presentation_line_count");
 
 			Minimum = new IColumnDescriptor[]
 			{

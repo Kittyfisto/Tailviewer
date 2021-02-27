@@ -33,7 +33,7 @@ namespace Tailviewer.Core.Entries
 		public string OriginalDataSourceName => GetValue(GeneralColumns.OriginalDataSourceName);
 
 		/// <inheritdoc />
-		public LogLineSourceId SourceId => GetValue(GeneralColumns.SourceId);
+		public LogEntrySourceId SourceId => GetValue(GeneralColumns.SourceId);
 
 		/// <inheritdoc />
 		public LevelFlags LogLevel => GetValue(GeneralColumns.LogLevel);

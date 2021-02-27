@@ -146,11 +146,11 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 			var view = new LogEntryView(entry.Object, GeneralColumns.SourceId);
 
 			entry.SetupProperty(x => x.SourceId);
-			entry.Object.SourceId = new LogLineSourceId(101);
-			view.SourceId.Should().Be(new LogLineSourceId(101));
+			entry.Object.SourceId = new LogEntrySourceId(101);
+			view.SourceId.Should().Be(new LogEntrySourceId(101));
 
-			view.SourceId = new LogLineSourceId(201);
-			entry.Object.SourceId.Should().Be(new LogLineSourceId(201));
+			view.SourceId = new LogEntrySourceId(201);
+			entry.Object.SourceId.Should().Be(new LogEntrySourceId(201));
 		}
 
 		[Test]
@@ -165,8 +165,8 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 			}).Should().Throw<NoSuchColumnException>();
 			entry.VerifyGet(x => x.SourceId, Times.Never);
 
-			new Action(() => { view.SourceId = new LogLineSourceId(101); }).Should().Throw<NoSuchColumnException>();
-			entry.VerifySet(x => x.SourceId = new LogLineSourceId(101), Times.Never);
+			new Action(() => { view.SourceId = new LogEntrySourceId(101); }).Should().Throw<NoSuchColumnException>();
+			entry.VerifySet(x => x.SourceId = new LogEntrySourceId(101), Times.Never);
 		}
 
 		[Test]

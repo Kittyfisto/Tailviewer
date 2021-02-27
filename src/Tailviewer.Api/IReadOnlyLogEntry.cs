@@ -92,7 +92,7 @@ namespace Tailviewer
 		/// </remarks>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		LogLineSourceId SourceId { get; }
+		LogEntrySourceId SourceId { get; }
 
 
 		/// <summary>

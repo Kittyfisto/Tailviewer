@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
+using Tailviewer.Core.Buffers;
+using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Adorner;
 using Tailviewer.Core.Sources.Buffer;
@@ -41,16 +43,18 @@ namespace Tailviewer.Core.Sources.Text
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly TimeSpan _maximumWaitTime;
-		private const int MaximumLineCount = 100000;
+		private const int MaximumLineCount = 10000;
 		private bool _isDisposed;
 
 		#region Processing
 
 		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
+		private readonly LogBufferArray _buffer;
 		private IReadOnlyList<ILogSource> _logSources;
 		private ILogSource _finalLogSource;
 		private int _count;
 		private FileFingerprint _lastFingerprint;
+		private int _maxCharactersInLine;
 
 		#endregion
 
@@ -72,6 +76,7 @@ namespace Tailviewer.Core.Sources.Text
 			_encodingDetector = new EncodingDetector();
 			_formatDetector = new FileFormatDetector(formatMatcher);
 
+			_buffer = new LogBufferArray(MaximumLineCount, GeneralColumns.RawContent);
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>>();
 
 			_propertiesBuffer = new PropertiesBufferList();
@@ -182,8 +187,8 @@ namespace Tailviewer.Core.Sources.Text
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			UpdateFormat();
-			UpdateProperties();
 			ProcessPendingSections(out bool workDone);
+			UpdateProperties();
 
 			if (workDone)
 				return TimeSpan.Zero;
@@ -289,6 +294,7 @@ namespace Tailviewer.Core.Sources.Text
 			_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
 			_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_propertiesBuffer.SetValue(TextProperties.Encoding, null);
+			_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine = 0);
 			_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
 			_propertiesBuffer.SetValue(GeneralProperties.Created, _lastFingerprint?.Created);
 			_propertiesBuffer.SetValue(GeneralProperties.LastModified, _lastFingerprint?.LastModified);
@@ -370,6 +376,7 @@ namespace Tailviewer.Core.Sources.Text
 			if (_finalLogSource != null)
 			{
 				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(TextProperties.AutoDetectedEncoding, GeneralProperties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
+				_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine);
 			}
 			else
 			{
@@ -394,16 +401,19 @@ namespace Tailviewer.Core.Sources.Text
 				{
 					Listeners.Reset();
 					_count = 0;
+					_maxCharactersInLine = 0;
 				}
 				else if (section.IsInvalidate)
 				{
 					Listeners.Invalidate((int) section.Index, section.Count);
 					_count = (int) section.Index;
+					// TODO: What about max width?
 				}
 				else
 				{
 					Listeners.OnRead(section.LastIndex);
 					_count = (int) (section.Index + section.Count);
+					UpdateMaxWidth(section, pair.Key);
 				}
 
 				workDone = true;
@@ -411,6 +421,19 @@ namespace Tailviewer.Core.Sources.Text
 
 			if (!workDone)
 				Listeners.OnRead(_count);
+		}
+
+		private void UpdateMaxWidth(LogFileSection section, ILogSource logSource)
+		{
+			logSource.GetEntries(section, _buffer);
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var rawContent = _buffer[i].RawContent;
+				if (rawContent == null)
+					break;
+
+				_maxCharactersInLine = Math.Max(_maxCharactersInLine, rawContent.Length);
+			}
 		}
 
 		#endregion

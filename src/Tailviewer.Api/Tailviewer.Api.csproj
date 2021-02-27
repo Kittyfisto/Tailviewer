@@ -94,7 +94,7 @@
     <Compile Include="IReadOnlyLogBuffer.cs" />
     <Compile Include="ITimestampParser.cs" />
     <Compile Include="LogEntrySectionExtensions.cs" />
-    <Compile Include="LogLineSourceId.cs" />
+    <Compile Include="LogEntrySourceId.cs" />
     <Compile Include="Plugins\IFileFormatPlugin2.cs" />
     <Compile Include="Plugins\ILogSourceIssueAnalyser.cs" />
     <Compile Include="Plugins\ILogFileIssueListener.cs" />

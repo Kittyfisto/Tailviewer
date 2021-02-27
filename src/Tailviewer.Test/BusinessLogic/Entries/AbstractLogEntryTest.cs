@@ -141,9 +141,9 @@ namespace Tailviewer.Test.BusinessLogic.Entries
 			var entry = Create(GeneralColumns.SourceId);
 			entry.SourceId.Should().Be(GeneralColumns.SourceId.DefaultValue);
 
-			entry.SourceId = new LogLineSourceId(42);
-			entry.SourceId.Should().Be(new LogLineSourceId(42));
-			entry.GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(42));
+			entry.SourceId = new LogEntrySourceId(42);
+			entry.SourceId.Should().Be(new LogEntrySourceId(42));
+			entry.GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(42));
 		}
 
 		[Test]

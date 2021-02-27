@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Tailviewer
 {
 	/// <summary>
-	///     An id which represents the source of a particular <see cref="LogLine" />.
+	///     An id which represents the source of a particular <see cref="IReadOnlyLogEntry" />.
 	/// </summary>
 	/// <remarks>
 	///     If you're implementing <see cref="ILogSource" />, then you may simply specify <see cref="Default" />.
@@ -14,11 +14,11 @@ namespace Tailviewer
 	///     the log line emerged. May be used in other scenarios as well.
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public struct LogLineSourceId
-		: IEquatable<LogLineSourceId>
+	public readonly struct LogEntrySourceId
+		: IEquatable<LogEntrySourceId>
 	{
 		/// <inheritdoc />
-		public bool Equals(LogLineSourceId other)
+		public bool Equals(LogEntrySourceId other)
 		{
 			return _value == other._value;
 		}
@@ -27,7 +27,7 @@ namespace Tailviewer
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is LogLineSourceId && Equals((LogLineSourceId) obj);
+			return obj is LogEntrySourceId && Equals((LogEntrySourceId) obj);
 		}
 
 		/// <inheritdoc />
@@ -42,7 +42,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(LogLineSourceId left, LogLineSourceId right)
+		public static bool operator ==(LogEntrySourceId left, LogEntrySourceId right)
 		{
 			return left.Equals(right);
 		}
@@ -53,7 +53,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(LogLineSourceId left, LogLineSourceId right)
+		public static bool operator !=(LogEntrySourceId left, LogEntrySourceId right)
 		{
 			return !left.Equals(right);
 		}
@@ -61,12 +61,12 @@ namespace Tailviewer
 		/// <summary>
 		///     A value which represents that the log line originated from the sender
 		/// </summary>
-		public static readonly LogLineSourceId Default = new LogLineSourceId(value: 0);
+		public static readonly LogEntrySourceId Default = new LogEntrySourceId(value: 0);
 
 		/// <summary>
 		///     A value which represents an invalid source (or a source which cannot be known).
 		/// </summary>
-		public static readonly LogLineSourceId Invalid = new LogLineSourceId(byte.MaxValue);
+		public static readonly LogEntrySourceId Invalid = new LogEntrySourceId(byte.MaxValue);
 
 		/// <summary>
 		///     The maximum number of sources which can be differentiated using this id.
@@ -78,7 +78,7 @@ namespace Tailviewer
 		/// <summary>
 		/// </summary>
 		/// <param name="value"></param>
-		public LogLineSourceId(byte value)
+		public LogEntrySourceId(byte value)
 		{
 			_value = value;
 		}
@@ -100,7 +100,7 @@ namespace Tailviewer
 		///     Every other index will be converted to the numerical value given upon construction.
 		/// </remarks>
 		/// <param name="id"></param>
-		public static explicit operator int(LogLineSourceId id)
+		public static explicit operator int(LogEntrySourceId id)
 		{
 			if (id == Invalid)
 				return -1;

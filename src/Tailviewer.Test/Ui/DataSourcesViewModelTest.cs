@@ -231,7 +231,7 @@ namespace Tailviewer.Test.Ui
 			_model.OnDropped(b, group, DataSourceDropType.Group);
 
 			IDataSourceViewModel unused;
-			for (var i = 0; i < LogLineSourceId.MaxSources - 2; ++i)
+			for (var i = 0; i < LogEntrySourceId.MaxSources - 2; ++i)
 			{
 				var source = _model.GetOrAddFile(i.ToString());
 				_model.CanBeDropped(source, group, DataSourceDropType.Group, out unused)

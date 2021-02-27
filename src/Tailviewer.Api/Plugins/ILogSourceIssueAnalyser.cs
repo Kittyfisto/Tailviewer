@@ -4,11 +4,11 @@ namespace Tailviewer.Plugins
 {
 	/// <summary>
 	///     Responsible for analysing a log file for a list of issues.
-	///     Whenever the list of issues changes, an analyser should notify
+	///     Whenever the list of issues changes, an analyzer should notify
 	///     its <see cref="ILogFileIssueListener" />.
 	/// </summary>
 	/// <remarks>
-	///     The goal of an issue analyser is to **condense** the errors/warnings
+	///     The goal of an issue analyzer is to **condense** the errors/warnings
 	///     of a log file into a **short** and **concise** list of issues
 	///     which the user can then inspect.
 	/// </remarks>
@@ -16,19 +16,19 @@ namespace Tailviewer.Plugins
 		: IDisposable
 	{
 		/// <summary>
-		///     Adds a listener to this analyser.
+		///     Adds a listener to this analyzer.
 		/// </summary>
 		/// <param name="listener">A listener which must be notified whenever the newly created analyzer updates its list of issues</param>
 		void AddListener(ILogFileIssueListener listener);
 
 		/// <summary>
-		///     Removes a listener from this analyser.
+		///     Removes a listener from this analyzer.
 		/// </summary>
 		/// <param name="listener"></param>
 		void RemoveListener(ILogFileIssueListener listener);
 
 		/// <summary>
-		///     This method is called by tailviewer and signals the analyser to start its analysis.
+		///     This method is called by tailviewer and signals the analyzer to start its analysis.
 		/// </summary>
 		/// <remarks>
 		///     Implementations of this interface should NOT call the <see cref="ILogFileIssueListener" /> given by

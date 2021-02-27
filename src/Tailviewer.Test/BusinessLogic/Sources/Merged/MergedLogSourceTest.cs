@@ -91,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		[Description("Verifies that a merged log file can be created using the maximum number of supported sources")]
 		public void TestConstruction2()
 		{
-			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources)
+			var sources = Enumerable.Range(0, LogEntrySourceId.MaxSources)
 				.Select(unused =>
 				{
 					var logFileSource = new Mock<ILogSource>();
@@ -106,7 +106,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		[Description("Verifies that the ctor complains if too many sources are merged")]
 		public void TestConstruction3()
 		{
-			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources+1)
+			var sources = Enumerable.Range(0, LogEntrySourceId.MaxSources+1)
 				.Select(unused => new Mock<ILogSource>().Object).ToArray();
 
 			new Action(() => new MergedLogSource(_taskScheduler, TimeSpan.FromMilliseconds(1), sources))
@@ -141,11 +141,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			entries.Count.Should().Be(2);
 			entries[0].RawContent.Should().Be("Everything");
 			entries[0].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 15, 11));
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1), "because this log entry is from the second source of the log file");
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1), "because this log entry is from the second source of the log file");
 			entries[0].GetValue(myCustomColumn).Should().Be("A very important piece of information");
 			entries[1].RawContent.Should().Be("What is up Munich?");
 			entries[1].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 16, 49));
-			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(0), "because this log entry is from the first source of the log file");
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(0), "because this log entry is from the first source of the log file");
 			entries[1].GetValue(myCustomColumn).Should().Be(myCustomColumn.DefaultValue, "because the first source doesn't have this column");
 		}
 
@@ -255,14 +255,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			entries[0].Index.Should().Be(0);
 			entries[0].OriginalIndex.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(0));
 			entries[0].RawContent.Should().Be("a");
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(timestamp);
 			entries[1].Index.Should().Be(1);
 			entries[1].OriginalIndex.Should().Be(1);
 			entries[1].LogEntryIndex.Should().Be(1);
-			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1));
 			entries[1].RawContent.Should().Be("b");
 			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
 			entries[1].Timestamp.Should().Be(timestamp);
@@ -324,13 +324,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1));
 			entries[0].RawContent.Should().Be("c");
 			entries[0].LogLevel.Should().Be(LevelFlags.Error);
 			entries[0].Timestamp.Should().Be(earlier);
 			entries[1].Index.Should().Be(1);
 			entries[1].LogEntryIndex.Should().Be(1);
-			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(0));
 			entries[1].RawContent.Should().Be("a");
 			entries[1].LogLevel.Should().Be(LevelFlags.Warning);
 			entries[1].Timestamp.Should().Be(later);
@@ -366,7 +366,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1));
 			entries[0].RawContent.Should().Be("Hello World");
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(timestamp);
@@ -381,9 +381,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestMergeMultiline1()
 		{
 			var source1 = new InMemoryLogSource();
-			var source1Id = new LogLineSourceId(0);
+			var source1Id = new LogEntrySourceId(0);
 			var source2 = new InMemoryLogSource();
-			var source2Id = new LogLineSourceId(1);
+			var source2Id = new LogEntrySourceId(1);
 			var merged = new MergedLogSource(_taskScheduler, TimeSpan.Zero, source1, source2);
 
 			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
@@ -432,9 +432,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestMergeMultiline2()
 		{
 			var source1 = new InMemoryLogSource();
-			var source1Id = new LogLineSourceId(0);
+			var source1Id = new LogEntrySourceId(0);
 			var source2 = new InMemoryLogSource();
-			var source2Id = new LogLineSourceId(1);
+			var source2Id = new LogEntrySourceId(1);
 			var merged = new MergedLogSource(_taskScheduler, TimeSpan.Zero, source1, source2);
 
 			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
@@ -480,9 +480,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestMergeMultiline3()
 		{
 			var source1 = new InMemoryLogSource();
-			var source1Id = new LogLineSourceId(0);
+			var source1Id = new LogEntrySourceId(0);
 			var source2 = new InMemoryLogSource();
-			var source2Id = new LogLineSourceId(1);
+			var source2Id = new LogEntrySourceId(1);
 			var merged = new MergedLogSource(_taskScheduler, TimeSpan.Zero, source1, source2);
 
 			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
@@ -590,7 +590,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			{
 				buffer[i].Index.Should().Be(i);
 				buffer[i].LogEntryIndex.Should().Be(i);
-				buffer[i].SourceId.Should().Be(new LogLineSourceId(i));
+				buffer[i].SourceId.Should().Be(new LogEntrySourceId(i));
 				buffer[i].RawContent.Should().Be(i.ToString());
 				buffer[i].LogLevel.Should().Be(LevelFlags.Info);
 				buffer[i].Timestamp.Should().Be(start + TimeSpan.FromSeconds(i));
@@ -636,7 +636,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 				entry.Index.Should().Be(i);
 				entry.LogEntryIndex.Should().Be(i);
 				int idx = sourceCount - i - 1;
-				entry.SourceId.Should().Be(new LogLineSourceId((byte) idx));
+				entry.SourceId.Should().Be(new LogEntrySourceId((byte) idx));
 				entry.RawContent.Should().Be(idx.ToString());
 				entry.LogLevel.Should().Be(LevelFlags.Info);
 				entry.Timestamp.Should().Be(end - TimeSpan.FromSeconds(idx));
@@ -674,15 +674,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			merged.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 			var entries = merged.GetEntries(new LogFileSection(0, 2));
 			entries[0].GetValue(GeneralColumns.OriginalDataSourceName).Should().Be("rubbish.log");
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1));
 			entries[1].GetValue(GeneralColumns.OriginalDataSourceName).Should().Be("important_document.txt");
-			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(0));
 
 			entries = merged.GetEntries(new []{new LogLineIndex(1), new LogLineIndex(0) });
 			entries[0].GetValue(GeneralColumns.OriginalDataSourceName).Should().Be("important_document.txt");
-			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(0));
 			entries[1].GetValue(GeneralColumns.OriginalDataSourceName).Should().Be("rubbish.log");
-			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[1].GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(1));
 		}
 
 		[Test]

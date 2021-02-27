@@ -157,7 +157,7 @@ namespace Tailviewer.Test.Ui
 			var model = CreateMergedViewModel(dataSource);
 
 			var sources = new List<FileDataSourceViewModel>();
-			for (int i = 0; i < LogLineSourceId.MaxSources; ++i)
+			for (int i = 0; i < LogEntrySourceId.MaxSources; ++i)
 			{
 				var source = _dataSources.AddFile(i.ToString());
 				var sourceViewModel = CreateFileViewModel(source);

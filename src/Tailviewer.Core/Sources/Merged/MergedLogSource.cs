@@ -67,7 +67,7 @@ namespace Tailviewer.Core.Sources.Merged
 		{
 			if (sources == null) throw new ArgumentNullException(nameof(sources));
 			if (sources.Any(x => x == null)) throw new ArgumentException("sources.Any(x => x == null)", nameof(sources));
-			if (sources.Length > LogLineSourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported ({1} were given)", LogLineSourceId.MaxSources, sources.Length));
+			if (sources.Length > LogEntrySourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported ({1} were given)", LogEntrySourceId.MaxSources, sources.Length));
 
 			_sources = sources;
 			_index = new MergedLogSourceIndex(sources);
@@ -191,7 +191,7 @@ namespace Tailviewer.Core.Sources.Merged
 			}
 			else if (Equals(column, GeneralColumns.SourceId))
 			{
-				_index.GetSourceIds(sourceIndices, (LogLineSourceId[]) (object) destination, destinationIndex);
+				_index.GetSourceIds(sourceIndices, (LogEntrySourceId[]) (object) destination, destinationIndex);
 			}
 			else
 			{

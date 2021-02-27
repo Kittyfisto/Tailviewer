@@ -67,7 +67,7 @@ namespace Tailviewer.Core.Entries
 		}
 
 		/// <inheritdoc />
-		public LogLineSourceId SourceId
+		public LogEntrySourceId SourceId
 		{
 			get { return GetValue(GeneralColumns.SourceId); }
 			set { SetValue(GeneralColumns.SourceId, value); }

@@ -29,6 +29,28 @@ namespace Tailviewer.Ui.LogView
 	{
 		const int MaximumLineCount = 1000;
 
+		/// <summary>
+		///     The maximum width (in pixels) of the <see cref="GeneralColumns.RawContent"/> column content.
+		/// </summary>
+		public static readonly IColumnDescriptor<float> RawContentMaxPresentationWidth;
+
+		/// <summary>
+		/// The line number of the first line of a log entry's presentation.
+		/// </summary>
+		public static readonly IColumnDescriptor<int> PresentationStartingLineNumber;
+
+		/// <summary>
+		/// The number of lines in a log entry's presentation.
+		/// </summary>
+		public static readonly IColumnDescriptor<int> PresentationLineCount;
+
+		static PresentationLogSource()
+		{
+			RawContentMaxPresentationWidth = new WellKnownColumnDescriptor<float>("raw_content_max_presentation_width");
+			PresentationStartingLineNumber = new WellKnownColumnDescriptor<int>("presentation_line_number");
+			PresentationLineCount = new WellKnownColumnDescriptor<int>("presentation_line_count");
+		}
+
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly LogBufferArray _array;
 
@@ -80,9 +102,9 @@ namespace Tailviewer.Ui.LogView
 		/// </summary>
 		private static IReadOnlyList<IColumnDescriptor> IndexedColumns => new IColumnDescriptor[]
 		{
-			GeneralColumns.PresentationStartingLineNumber,
-			GeneralColumns.PresentationLineCount,
-			GeneralColumns.RawContentMaxPresentationWidth
+			PresentationStartingLineNumber,
+			PresentationLineCount,
+			RawContentMaxPresentationWidth
 		};
 
 		public double MaximumWidth => _maxWidth;
@@ -188,13 +210,13 @@ namespace Tailviewer.Ui.LogView
 						if (_indices.Count > 0)
 						{
 							var last = _indices[_indices.Count - 1];
-							var maxWidth = last.GetValue(GeneralColumns.PresentationStartingLineNumber) +
-							               last.GetValue(GeneralColumns.PresentationLineCount);
-							index.SetValue(GeneralColumns.PresentationStartingLineNumber, maxWidth);
+							var maxWidth = last.GetValue(PresentationStartingLineNumber) +
+							               last.GetValue(PresentationLineCount);
+							index.SetValue(PresentationStartingLineNumber, maxWidth);
 						}
 						_indices.Add(index);
-						_maxWidth = Math.Max(_maxWidth, index.GetValue(GeneralColumns.RawContentMaxPresentationWidth));
-						_lineCount += index.GetValue(GeneralColumns.PresentationLineCount);
+						_maxWidth = Math.Max(_maxWidth, index.GetValue(RawContentMaxPresentationWidth));
+						_lineCount += index.GetValue(PresentationLineCount);
 					}
 				}
 			}
@@ -206,8 +228,8 @@ namespace Tailviewer.Ui.LogView
 			_lineCount = 0;
 			foreach (var tmp in _indices)
 			{
-				_maxWidth = Math.Max(_maxWidth, tmp.GetValue(GeneralColumns.RawContentMaxPresentationWidth));
-				_lineCount += tmp.GetValue(GeneralColumns.PresentationLineCount);
+				_maxWidth = Math.Max(_maxWidth, tmp.GetValue(RawContentMaxPresentationWidth));
+				_lineCount += tmp.GetValue(PresentationLineCount);
 			}
 		}
 
@@ -216,8 +238,8 @@ namespace Tailviewer.Ui.LogView
 			int numLines;
 			var width = EstimateWidth(logEntry.RawContent, out numLines);
 			var index = new LogEntry();
-			index.SetValue(GeneralColumns.RawContentMaxPresentationWidth, width);
-			index.SetValue(GeneralColumns.PresentationLineCount, numLines);
+			index.SetValue(RawContentMaxPresentationWidth, width);
+			index.SetValue(PresentationLineCount, numLines);
 			return index;
 		}
 

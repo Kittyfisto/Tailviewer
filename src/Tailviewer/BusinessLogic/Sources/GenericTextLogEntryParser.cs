@@ -121,7 +121,7 @@ namespace Tailviewer.BusinessLogic.Sources
 				get { return _inner.OriginalDataSourceName; }
 			}
 
-			public LogLineSourceId SourceId
+			public LogEntrySourceId SourceId
 			{
 				get { return _inner.SourceId; }
 			}

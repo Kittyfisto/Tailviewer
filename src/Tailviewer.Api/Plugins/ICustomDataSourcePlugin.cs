@@ -4,7 +4,7 @@ using Tailviewer.Ui;
 namespace Tailviewer.Plugins
 {
 	/// <summary>
-	///     The plugin interface for a non-file based data source which nontheless contains log events.
+	///     The plugin interface for a non-file based data source which nonetheless contains log events.
 	/// </summary>
 	/// <remarks>
 	///     File-less data sources are usually only accessible via some sort of API, be it an operating system
