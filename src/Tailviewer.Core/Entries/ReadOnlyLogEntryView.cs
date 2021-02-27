@@ -121,7 +121,7 @@ namespace Tailviewer.Core.Entries
 		}
 
 		/// <inheritdoc />
-		public LogLineSourceId SourceId
+		public LogEntrySourceId SourceId
 		{
 			get
 			{

@@ -149,7 +149,7 @@ namespace Tailviewer.Ui.DataSourceTree
 			if (dataSource.Parent != null)
 				throw new ArgumentException("dataSource.Parent");
 
-			if (_observable.Count >= LogLineSourceId.MaxSources)
+			if (_observable.Count >= LogEntrySourceId.MaxSources)
 			{
 				Log.InfoFormat("Cannot add source '{0}': The maximum number of sources in this group has been reached", dataSource);
 				return false;

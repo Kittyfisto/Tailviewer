@@ -491,14 +491,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			{
 				source.Add(new Dictionary<IColumnDescriptor, object>
 				{
-					{GeneralColumns.SourceId, new LogLineSourceId(0) },
+					{GeneralColumns.SourceId, new LogEntrySourceId(0) },
 					{GeneralColumns.RawContent, "DEBUG: This is a test"},
 					{GeneralColumns.LogLevel, LevelFlags.Debug }
 				});
 
 				source.Add(new Dictionary<IColumnDescriptor, object>
 				{
-					{GeneralColumns.SourceId, new LogLineSourceId(42) },
+					{GeneralColumns.SourceId, new LogEntrySourceId(42) },
 					{GeneralColumns.RawContent, "ERROR: I feel a disturbance in the source"},
 					{GeneralColumns.LogLevel, LevelFlags.Error }
 				});
@@ -512,7 +512,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				entry.LogEntryIndex.Should().Be(0);
 				entry.OriginalIndex.Should().Be(1);
 				entry.RawContent.Should().Be("ERROR: I feel a disturbance in the source");
-				entry.GetValue(GeneralColumns.SourceId).Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
+				entry.GetValue(GeneralColumns.SourceId).Should().Be(new LogEntrySourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
 			}
 		}
 

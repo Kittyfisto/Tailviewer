@@ -84,7 +84,7 @@ namespace Tailviewer.Core.Columns
 		/// <remarks>
 		///     This column is present when multiple sources are merged together in order to tell which file a particular entry belongs to.
 		/// </remarks>
-		public static readonly IColumnDescriptor<LogLineSourceId> SourceId;
+		public static readonly IColumnDescriptor<LogEntrySourceId> SourceId;
 
 		/// <summary>
 		///     The log level of the entry (debug, info, warning, etc...)
@@ -140,7 +140,7 @@ namespace Tailviewer.Core.Columns
 			LineNumber = new WellKnownColumnDescriptor<int>("line_number");
 			OriginalLineNumber = new WellKnownColumnDescriptor<int>("original_line_number");
 			OriginalDataSourceName = new WellKnownColumnDescriptor<string>("original_data_source_name");
-			SourceId = new WellKnownColumnDescriptor<LogLineSourceId>("source_id");
+			SourceId = new WellKnownColumnDescriptor<LogEntrySourceId>("source_id");
 			LogLevel = new WellKnownColumnDescriptor<LevelFlags>("log_level");
 			Timestamp = new WellKnownColumnDescriptor<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownColumnDescriptor<TimeSpan?>("elapsed_time");

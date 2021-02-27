@@ -56,7 +56,7 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
-		public LogLineSourceId SourceId
+		public LogEntrySourceId SourceId
 		{
 			get { throw new NotImplementedException(); }
 		}

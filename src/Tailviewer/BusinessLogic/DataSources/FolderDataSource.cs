@@ -480,7 +480,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 						if (!_dataSources.TryGetValue(file, out var dataSource))
 						{
 							// We'll print a nice warning to the user if this happens
-							if (_dataSources.Count >= LogLineSourceId.MaxSources)
+							if (_dataSources.Count >= LogEntrySourceId.MaxSources)
 								break;
 
 							var settings = new DataSource(file.FullPath)

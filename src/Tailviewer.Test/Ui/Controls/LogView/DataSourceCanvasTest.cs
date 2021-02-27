@@ -58,12 +58,12 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var mergedLogFile = new InMemoryLogSource(GeneralColumns.SourceId);
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.SourceId, new LogLineSourceId(1) },
+				{GeneralColumns.SourceId, new LogEntrySourceId(1) },
 				{GeneralColumns.RawContent, "foo" }
 			});
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.SourceId, new LogLineSourceId(0) },
+				{GeneralColumns.SourceId, new LogEntrySourceId(0) },
 				{GeneralColumns.RawContent, "bar" }
 			});
 			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);
@@ -96,12 +96,12 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var mergedLogFile = new InMemoryLogSource(GeneralColumns.SourceId);
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.SourceId, new LogLineSourceId(1) },
+				{GeneralColumns.SourceId, new LogEntrySourceId(1) },
 				{GeneralColumns.RawContent, "foo" }
 			});
 			mergedLogFile.Add(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.SourceId, new LogLineSourceId(0) },
+				{GeneralColumns.SourceId, new LogEntrySourceId(0) },
 				{GeneralColumns.RawContent, "bar" }
 			});
 			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);

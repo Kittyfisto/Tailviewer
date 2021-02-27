@@ -27,6 +27,16 @@ namespace Tailviewer.Plugins
 			Id = id;
 		}
 
+		#region Overrides of Object
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return Id;
+		}
+
+		#endregion
+
 		#region Equality members
 
 		private bool Equals(CustomDataSourceId other)

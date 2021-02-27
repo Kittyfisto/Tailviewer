@@ -177,7 +177,7 @@ namespace Tailviewer.Core.Sources.Merged
 			}
 		}
 
-		public void GetSourceIds(IReadOnlyList<LogLineIndex> sourceIndices, LogLineSourceId[] destination, int destinationIndex)
+		public void GetSourceIds(IReadOnlyList<LogLineIndex> sourceIndices, LogEntrySourceId[] destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
@@ -186,7 +186,7 @@ namespace Tailviewer.Core.Sources.Merged
 					var index = sourceIndices[i].Value;
 					if (index >= 0 && index < _indices.Count)
 					{
-						destination[destinationIndex + i] = new LogLineSourceId(_indices[index].SourceId);
+						destination[destinationIndex + i] = new LogEntrySourceId(_indices[index].SourceId);
 					}
 					else
 					{

@@ -397,7 +397,7 @@ namespace Tailviewer.Ui.SidePanel.DataSources
 			var group = dest as IMergedDataSourceViewModel;
 			if (group != null)
 			{
-				if (group.Observable.Count >= LogLineSourceId.MaxSources)
+				if (group.Observable.Count >= LogEntrySourceId.MaxSources)
 					return false;
 			}
 

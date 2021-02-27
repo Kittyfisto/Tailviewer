@@ -61,7 +61,7 @@ namespace Tailviewer
 		/// <remarks>
 		///     As a result, only up to 256 different sources may be used at once.
 		/// </remarks>
-		public LogLineSourceId SourceId;
+		public LogEntrySourceId SourceId;
 
 		/// <summary>
 		///     Initializes this log line.
@@ -74,7 +74,7 @@ namespace Tailviewer
 		/// <param name="sourceId"></param>
 		/// <param name="line"></param>
 		[DebuggerStepThrough]
-		public LogLine(LogLineSourceId sourceId, LogLine line)
+		public LogLine(LogEntrySourceId sourceId, LogLine line)
 			: this(line.LineIndex, line.OriginalLineIndex, line.LogEntryIndex, sourceId, line.Message, line.Level, line.Timestamp, 0)
 		{
 		}
@@ -206,7 +206,7 @@ namespace Tailviewer
 		/// <param name="sourceId">The source from which this line originated</param>
 		/// <param name="line"></param>
 		[DebuggerStepThrough]
-		public LogLine(int lineIndex, int logEntryIndex, LogLineSourceId sourceId, LogLine line)
+		public LogLine(int lineIndex, int logEntryIndex, LogEntrySourceId sourceId, LogLine line)
 			: this(lineIndex, lineIndex, logEntryIndex, sourceId, line.Message, line.Level, line.Timestamp, 0)
 		{ }
 
@@ -231,7 +231,7 @@ namespace Tailviewer
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
-		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
+		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogEntrySourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
 			: this((int)lineIndex, (int)lineIndex, (int)logEntryIndex, sourceId, message, level, timestamp, matchedFilters: 0)
 		{ }
 
@@ -270,7 +270,7 @@ namespace Tailviewer
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
-		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogEntrySourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
 			: this(lineIndex, originalLineIndex, logEntryIndex, sourceId, message, level, timestamp, 0)
 		{ }
 
@@ -291,7 +291,7 @@ namespace Tailviewer
 		/// <param name="matchedFilters"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
-			: this(lineIndex, originalLineIndex, logEntryIndex, LogLineSourceId.Default, message, level, timestamp, matchedFilters)
+			: this(lineIndex, originalLineIndex, logEntryIndex, LogEntrySourceId.Default, message, level, timestamp, matchedFilters)
 		{}
 
 		/// <summary>
@@ -311,7 +311,7 @@ namespace Tailviewer
 		/// <param name="timestamp"></param>
 		/// <param name="matchedFilters"></param>
 		[DebuggerStepThrough]
-		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogEntrySourceId sourceId, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
 		{
 			LineIndex = lineIndex;
 			OriginalLineIndex = originalLineIndex;
