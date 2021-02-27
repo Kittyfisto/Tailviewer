@@ -5,11 +5,12 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
-    <Style TargetType="{x:Type local:LogLevelToggleButton}">
+    <Style TargetType="{x:Type local:ToolbarToggleButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
         <Setter Property="Margin" Value="4,2,4,2" />
@@ -21,7 +22,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:LogLevelToggleButton}">
+                <ControlTemplate TargetType="{x:Type local:ToolbarToggleButton}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
@@ -30,21 +31,30 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0"
-                                  Margin="0,0,2,0"
+
+                            <Grid Grid.Column="0"
                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                  Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
-                                <!--<Viewbox HorizontalAlignment="Center">
-                                    <Canvas Width="24" Height="24">
+                                  Visibility="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolTrueToCollapsedConverter}}">
+                                <Viewbox HorizontalAlignment="Center" 
+                                         Visibility="{Binding UncheckedIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
+                                    <Canvas Width="24" Height="24"
+                                            Margin="0,0,2,0">
                                         <Path
-                                            Data="{TemplateBinding IconBackground}"
-                                            Fill="{TemplateBinding IconBackgroundBrush}" />
+                                            Data="{TemplateBinding UncheckedIcon}"
+                                            Fill="{TemplateBinding Foreground}" />
                                     </Canvas>
-                                </Viewbox>-->
-                                <Viewbox HorizontalAlignment="Center">
-                                    <Canvas Width="24" Height="24">
+                                </Viewbox>
+                            </Grid>
+
+                            <Grid Grid.Column="0"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  Visibility="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                                <Viewbox HorizontalAlignment="Center"
+                                         Visibility="{Binding UncheckedIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
+                                    <Canvas Width="24" Height="24"
+                                            Margin="0,0,2,0">
                                         <Path
-                                            Data="{TemplateBinding Icon}"
+                                            Data="{TemplateBinding CheckedIcon}"
                                             Fill="{TemplateBinding Foreground}" />
                                     </Canvas>
                                 </Viewbox>
@@ -69,9 +79,6 @@
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
             </MultiTrigger>
-            <!--<Trigger Property="IsChecked" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource PrimaryForegroundBrush}" />
-            </Trigger>-->
             <Trigger Property="IsChecked" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>

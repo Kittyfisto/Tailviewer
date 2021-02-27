@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Metrolib;
-using Metrolib.Controls;
 
 namespace Tailviewer.Ui.LogView
 {
@@ -9,20 +8,11 @@ namespace Tailviewer.Ui.LogView
 	///     Quickly filters / shows log entries with the specified log level.
 	/// </summary>
 	public sealed class LogLevelToggleButton
-		: FlatToggleButton
+		: ToolbarToggleButton
 	{
 		public static readonly DependencyProperty LogLevelProperty = DependencyProperty.Register(
 		 "LogLevel", typeof(LevelFlags), typeof(LogLevelToggleButton),
 		 new PropertyMetadata(default(LevelFlags), OnLogLevelChanged));
-
-		private static readonly DependencyPropertyKey IconPropertyKey
-			= DependencyProperty.RegisterReadOnly("Icon", typeof(Geometry), typeof(LogLevelToggleButton),
-			                                      new FrameworkPropertyMetadata(default(Geometry),
-				                                                                    FrameworkPropertyMetadataOptions
-					                                                                    .None));
-
-		public static readonly DependencyProperty IconProperty
-			= IconPropertyKey.DependencyProperty;
 
 		private static readonly Geometry ScriptTextRemoveOutline;
 		private static readonly Geometry AlertCircleRemoveOutline;
@@ -52,18 +42,6 @@ namespace Tailviewer.Ui.LogView
 			InformationRemoveOutline = CreateGeometry("M 12 2 A 10 10 0 0 0 2 12 A 10 10 0 0 0 12 22 A 10 10 0 0 0 14.527344 21.673828 A 6.1626956 6.1626956 0 0 1 13.984375 19.740234 C 13.34827 19.903665 12.686257 20 12 20 C 7.5899999 20 4 16.41 4 12 C 4 7.59 7.5899999 4 12 4 C 16.41 4 20 7.59 20 12 C 20 12.307514 19.979292 12.609602 19.945312 12.908203 A 6.1626956 6.1626956 0 0 1 20.082031 12.904297 A 6.1626956 6.1626956 0 0 1 20.111328 12.904297 A 6.1626956 6.1626956 0 0 1 21.929688 13.179688 A 10 10 0 0 0 22 12 A 10 10 0 0 0 12 2 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z M 17.837891 15.435547 L 16.427734 16.855469 L 18.548828 18.974609 L 16.427734 21.095703 L 17.837891 22.515625 L 19.958984 20.384766 L 22.078125 22.515625 L 23.498047 21.095703 L 21.369141 18.974609 L 23.498047 16.855469 L 22.078125 15.435547 L 19.958984 17.564453 L 17.837891 15.435547 z ");
 		}
 
-		public LogLevelToggleButton()
-		{
-			Checked += OnIsCheckedChanged;
-			Unchecked += OnIsCheckedChanged;
-		}
-
-		public Geometry Icon
-		{
-			get { return (Geometry) GetValue(IconProperty); }
-			private set { SetValue(IconPropertyKey, value); }
-		}
-
 		public LevelFlags LogLevel
 		{
 			get { return (LevelFlags) GetValue(LogLevelProperty); }
@@ -75,21 +53,10 @@ namespace Tailviewer.Ui.LogView
 			((LogLevelToggleButton) d).OnLogLevelChanged((LevelFlags) e.NewValue);
 		}
 
-		private void OnIsCheckedChanged(object sender, RoutedEventArgs e)
-		{
-			UpdateIcon(IsChecked, LogLevel);
-		}
-
 		private void OnLogLevelChanged(LevelFlags logLevel)
 		{
-			UpdateIcon(IsChecked, logLevel);
-		}
-
-		private void UpdateIcon(bool? isChecked, LevelFlags logLevel)
-		{
-			Icon = isChecked == true
-				? GetCheckedIcon(logLevel)
-				: GetUncheckedIcon(logLevel);
+			CheckedIcon = GetCheckedIcon(logLevel);
+			UncheckedIcon = GetUncheckedIcon(logLevel);
 		}
 
 		private Geometry GetCheckedIcon(LevelFlags logLevel)

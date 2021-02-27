@@ -7,6 +7,7 @@
              xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.DataSourceTree"
              xmlns:logView="clr-namespace:Tailviewer.Ui.LogView"
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
+             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -14,12 +15,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/LogView/DataSourceDisplayModeToggleButton.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogLevelToggleButtonTemplate.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/DataSourcesToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/LogView/DataSourceDisplayModeToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogLevelToggleButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/DataSourcesToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
@@ -91,6 +89,14 @@
                 <WrapPanel Orientation="Horizontal"
                            VerticalAlignment="Center"
                            Margin="8">
+
+                    <logView:ToolbarToggleButton 
+                        Margin="0,0,8,8"
+                        IsChecked="{Binding DataSource.FollowTail, ElementName=This}"
+                        ToolTip="Follow tail of the data source"
+                        CheckedIcon="{x:Static metrolib:Icons.ScriptTextPlayOutline}"
+                        UncheckedIcon="{x:Static metrolib:Icons.ScriptTextOutline}"
+                        />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
