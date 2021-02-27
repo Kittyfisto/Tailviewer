@@ -6,7 +6,7 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	public sealed class ToggleExcludeFromGroupViewModel
 		: IMenuViewModel

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
 	///     Executes a particular command when the user clicks on the corresponding menu item.

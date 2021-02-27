@@ -4,26 +4,26 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
-	public sealed class ExcludeAllInGroupViewModel
+	public sealed class IncludeAllInGroupViewModel
 		: IMenuViewModel
 	{
 		private readonly IMergedDataSourceViewModel _viewModel;
 		private readonly DelegateCommand2 _command;
 
-		public ExcludeAllInGroupViewModel(IMergedDataSourceViewModel viewModel)
+		public IncludeAllInGroupViewModel(IMergedDataSourceViewModel viewModel)
 		{
 			_viewModel = viewModel;
-			_command = new DelegateCommand2(OnExcludeAll);
+			_command = new DelegateCommand2(OnIncludeAll);
 		}
 
-		private void OnExcludeAll()
+		private void OnIncludeAll()
 		{
 			foreach (var dataSource in _viewModel.Observable)
 			{
 				if (dataSource is ISingleDataSourceViewModel singleDataSource)
-					singleDataSource.ExcludeFromParent = true;
+					singleDataSource.ExcludeFromParent = false;
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace Tailviewer.Ui.ContextMenu
 
 		public string Header
 		{
-			get { return "Exclude all"; }
+			get { return "Include all"; }
 		}
 
 		public string ToolTip => null;

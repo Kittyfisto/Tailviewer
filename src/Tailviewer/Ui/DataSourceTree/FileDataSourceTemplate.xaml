@@ -9,7 +9,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/MenuItemTemplates.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Menu/MenuItemTemplates.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters2:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />

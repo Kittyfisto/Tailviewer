@@ -17,8 +17,8 @@ using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.Menu;
 
 namespace Tailviewer.Ui.LogView
 {

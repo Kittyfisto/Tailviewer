@@ -75,8 +75,8 @@
     <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.159, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.159\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.160, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.160\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -326,12 +326,12 @@
     <Compile Include="Ui\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\LogView\AddCustomDataSourceViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\AbstractMenuViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\CommandMenuViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\ParentMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\AbstractMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\CommandMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\ParentMenuViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\CustomDataSourceViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\ExcludeAllInGroupViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\FileMenu.cs" />
+    <Compile Include="Ui\Menu\ExcludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\Menu\FileMenu.cs" />
     <Compile Include="Ui\DataSourceTree\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\LogView\LogViewMainPanelEntry.cs" />
@@ -376,14 +376,14 @@
     <Compile Include="Ui\ActionCenter\ChangeViewModel.cs" />
     <Compile Include="Ui\ActionCenter\NotificationViewModel.cs" />
     <Compile Include="Ui\AutoUpdateViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\IMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\IMenuViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\IDataSourceViewModel.cs" />
     <Compile Include="Ui\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\IFileDataSourceViewModel.cs" />
     <Compile Include="Ui\LogView\IFindAllViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\IMergedDataSourceViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\IncludeAllInGroupViewModel.cs" />
+    <Compile Include="Ui\Menu\IncludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\LogView\ISearchViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\MergedDataSourceViewModel.cs" />
@@ -400,8 +400,8 @@
     <Compile Include="Ui\LogView\LogViewerViewModel.cs" />
     <Compile Include="Ui\MainWindowViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\FileDataSourceViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\ToggleMenuViewModel.cs" />
-    <Compile Include="Ui\ContextMenu\ToggleExcludeFromGroupViewModel.cs" />
+    <Compile Include="Ui\Menu\ToggleMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\ToggleExcludeFromGroupViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -450,7 +450,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\MenuItemTemplates.xaml">
+    <Page Include="Ui\Menu\MenuItemTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
