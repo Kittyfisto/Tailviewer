@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Tailviewer.Collections
 {
@@ -83,17 +84,21 @@ namespace Tailviewer.Collections
 			{
 				if (collection != null)
 				{
-					if (needsSeparator && _hasSeparator)
-					{
-						_values.Add(_separator);
-						needsSeparator = false;
-					}
-
+					bool addedAny = false;
 					foreach (var value in collection)
 					{
+						if (needsSeparator && _hasSeparator)
+						{
+							_values.Add(_separator);
+							needsSeparator = false;
+						}
+
 						_values.Add(value);
-						needsSeparator = true;
+						addedAny = true;
 					}
+
+					if (addedAny)
+						needsSeparator = true;
 				}
 			}
 			EmitCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _values,

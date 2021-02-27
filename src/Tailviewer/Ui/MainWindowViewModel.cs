@@ -56,8 +56,6 @@ namespace Tailviewer.Ui
 
 		private string _windowTitle;
 		private string _windowTitleSuffix;
-		private readonly DelegateCommand2 _showQuickNavigationCommand;
-		private readonly DelegateCommand2 _showGoToLineCommand;
 		private readonly ICommand _goToPreviousDataSourceCommand;
 		private readonly ICommand _goToNextDataSourceCommand;
 
@@ -105,8 +103,6 @@ namespace Tailviewer.Ui
 			timer.Start();
 			
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
-			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
-			_showQuickNavigationCommand = new DelegateCommand2(ShowQuickNavigation);
 			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
 			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
@@ -117,7 +113,8 @@ namespace Tailviewer.Ui
 			                                              new DelegateCommand2(ShowPlugins),
 			                                              new DelegateCommand2(ShowSettings),
 			                                              new DelegateCommand2(Exit));
-			var editMenu = new EditMenuViewModel(_showGoToLineCommand);
+			var editMenu = new EditMenuViewModel(new DelegateCommand2(ShowGoToLine),
+			                                     new DelegateCommand2(ShowGoToDataSource));
 			var viewMenu = new ViewMenuViewModel();
 			var helpMenu = new HelpMenuViewModel(new DelegateCommand2(ReportIssue),
 			                                     new DelegateCommand2(SuggestFeature),
@@ -195,7 +192,7 @@ namespace Tailviewer.Ui
 			_logViewPanel.GoToLine.Show = true;
 		}
 
-		private void ShowQuickNavigation()
+		private void ShowGoToDataSource()
 		{
 			_logViewPanel.ShowQuickNavigation = true;
 		}
@@ -221,7 +218,6 @@ namespace Tailviewer.Ui
 		}
 
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
-		public ICommand ShowQuickNavigationCommand => _showQuickNavigationCommand;
 		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
 		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 

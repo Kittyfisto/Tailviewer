@@ -13,13 +13,16 @@ namespace Tailviewer.Ui.Menu
 		: AbstractMainMenuViewModel
 	{
 		private readonly ICommand _goToLineCommand;
+		private readonly ICommand _goToDataSource;
 		private readonly int _dataSourceInsertionIndex;
 		private readonly int _minCount;
 		private readonly ObservableCollectionExt<IMenuViewModel> _goToItems;
 
-		public EditMenuViewModel(ICommand goToLineCommand)
+		public EditMenuViewModel(ICommand goToLineCommand,
+		                         ICommand goToDataSource)
 		{
 			_goToLineCommand = goToLineCommand;
+			_goToDataSource = goToDataSource;
 			_goToItems = new ObservableCollectionExt<IMenuViewModel>();
 
 			AllItems.Add(_goToItems);
@@ -38,6 +41,15 @@ namespace Tailviewer.Ui.Menu
 				})
 				{
 					Header = "Go To Line..."
+				},
+				null,
+				new CommandMenuViewModel(new KeyBindingCommand(_goToDataSource)
+				{
+					GestureModifier = ModifierKeys.Control,
+					GestureKey = Key.T
+				})
+				{
+					Header = "Go To Data Source..."
 				}
 			};
 		}

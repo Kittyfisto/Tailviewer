@@ -86,7 +86,7 @@ namespace Tailviewer.Ui.LogView
 					ToolTip = "Export the current Data Source to a text file (with the current filters)"
 				}
 			};
-
+			_editMenuItems = new ObservableCollectionExt<IMenuViewModel>();
 			_viewMenuItems = new ObservableCollectionExt<IMenuViewModel>
 			{
 				new ToggleMenuViewModel(FollowTail, newValue => { FollowTail = newValue; })

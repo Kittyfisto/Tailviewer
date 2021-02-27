@@ -156,10 +156,12 @@ namespace Tailviewer.Test.Ui
 		public void TestShowQuickNavigation()
 		{
 			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeFalse();
-
-			_mainWindow.ShowQuickNavigationCommand.Should().NotBeNull();
-			_mainWindow.ShowQuickNavigationCommand.CanExecute(null).Should().BeTrue();
-			_mainWindow.ShowQuickNavigationCommand.Execute(null);
+			_mainWindow.AddFileOrDirectory("foo");
+			
+			var goToDataSourceItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Data Source...");
+			goToDataSourceItem.Command.Should().NotBeNull();
+			goToDataSourceItem.Command.CanExecute(null).Should().BeTrue();
+			goToDataSourceItem.Command.Execute(null);
 			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeTrue();
 		}
 
@@ -169,7 +171,7 @@ namespace Tailviewer.Test.Ui
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeFalse();
 			_mainWindow.AddFileOrDirectory("foo");
 
-			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x.Header == "Go To Line...");
+			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Line...");
 			goToLineItem.Command.Should().NotBeNull();
 			goToLineItem.Command.CanExecute(null).Should().BeTrue();
 			goToLineItem.Command.Execute(null);
