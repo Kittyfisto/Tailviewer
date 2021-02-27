@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Tailviewer
 {
@@ -10,13 +11,21 @@ namespace Tailviewer
 		, INotifyCollectionChanged
 	{
 		private readonly IEnumerable<T> _source;
-		private readonly Predicate<T> _filter;
+		private readonly Func<T, bool> _predicate;
 		private readonly List<T> _destination;
 
-		public FilteringObservableCollection(IEnumerable<T> source, Predicate<T> filter)
+		public FilteringObservableCollection(IEnumerable<T> source, Func<T, bool> predicate)
 		{
 			_source = source;
-			_filter = filter;
+			if (source is INotifyCollectionChanged observable)
+				observable.CollectionChanged += SourceOnCollectionChanged;
+			_predicate = predicate;
+			_destination = new List<T>(source.Where(_predicate));
+		}
+
+		private void SourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			throw new NotImplementedException();
 		}
 
 		#region Implementation of IEnumerable

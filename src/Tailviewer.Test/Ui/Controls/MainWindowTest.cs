@@ -64,6 +64,34 @@ namespace Tailviewer.Test.Ui.Controls
 			control.InputBindings.Should().NotContain(inputBinding);
 		}
 
+		[Test]
+		public void TestRemoveInputBindings()
+		{
+			var command1 = new KeyBindingCommand(() => { })
+			{
+				GestureKey = Key.B, GestureModifier = ModifierKeys.Control | ModifierKeys.Alt
+			};
+			_keyBindings.Add(command1);
+			var command2 = new KeyBindingCommand(() => { })
+			{
+				GestureKey = Key.A, GestureModifier = ModifierKeys.Control | ModifierKeys.Alt
+			};
+			_keyBindings.Add(command2);
+
+			var control = CreateControl();
+			control.InputBindings.Should().NotBeEmpty();
+			var inputBinding1 = control.InputBindings.Cast<InputBinding>().First(x => x.Command == command1);
+			var inputBinding2 = control.InputBindings.Cast<InputBinding>().First(x => x.Command == command2);
+
+			_keyBindings.Remove(command1);
+			control.InputBindings.Should().NotContain(inputBinding1);
+			control.InputBindings.Should().Contain(inputBinding2);
+
+			_keyBindings.Remove(command2);
+			control.InputBindings.Should().NotContain(inputBinding1);
+			control.InputBindings.Should().NotContain(inputBinding2);
+		}
+
 		private MainWindow CreateControl()
 		{
 			var control = new MainWindow(_applicationSettings.Object, _viewModel.Object);
