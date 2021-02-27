@@ -242,10 +242,7 @@ namespace Tailviewer
 						                                              updater);
 						navigationService.MainWindow = windowViewModel;
 
-						var window = new MainWindow(settings)
-						{
-							DataContext = windowViewModel
-						};
+						var window = new MainWindow(settings, windowViewModel);
 						
 						settings.MainWindow.ClipToBounds(Desktop.Current);
 						settings.MainWindow.RestoreTo(window);

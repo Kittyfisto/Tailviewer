@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 
 namespace Tailviewer
 {
@@ -12,15 +11,16 @@ namespace Tailviewer
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public sealed class CompoundObservableCollection<T>
-		: IEnumerable<T>
-		, INotifyCollectionChanged
+		: IObservableCollection<T>
 	{
+		private readonly bool _hasSeparator;
 		private readonly T _separator;
 		private readonly List<IEnumerable<T>> _collections;
 		private readonly List<T> _values;
 
-		public CompoundObservableCollection(T separator)
+		public CompoundObservableCollection(bool hasSeparator, T separator = default)
 		{
+			_hasSeparator = hasSeparator;
 			_separator = separator;
 			_collections = new List<IEnumerable<T>>();
 			_values = new List<T>();
@@ -83,7 +83,7 @@ namespace Tailviewer
 			{
 				if (collection != null)
 				{
-					if (needsSeparator)
+					if (needsSeparator && _hasSeparator)
 					{
 						_values.Add(_separator);
 						needsSeparator = false;

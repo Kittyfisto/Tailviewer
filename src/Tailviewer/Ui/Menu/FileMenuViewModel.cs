@@ -9,7 +9,8 @@ namespace Tailviewer.Ui.Menu
 	/// <summary>
 	///     Responsible for building the (dynamic) file menu.
 	/// </summary>
-	public sealed class FileMenu
+	public sealed class FileMenuViewModel
+		: IMenu
 	{
 		private readonly ObservableCollection<IMenuViewModel> _openItems;
 		private readonly ObservableCollection<IMenuViewModel> _closeItems;
@@ -21,13 +22,13 @@ namespace Tailviewer.Ui.Menu
 		private readonly int _fileMenuDataSourceInsertionIndex;
 		private readonly int _fileMenuMinimumCount;
 
-		public FileMenu(ICommand addDataSourceFromFile,
-		                ICommand addDataSourceFromFolder,
-		                ICommand closeCurrentDataSource,
-		                ICommand closeAllDataSources,
-		                ICommand showPlugins,
-		                ICommand showSettings,
-		                ICommand exitCommand)
+		public FileMenuViewModel(ICommand addDataSourceFromFile,
+		                         ICommand addDataSourceFromFolder,
+		                         ICommand closeCurrentDataSource,
+		                         ICommand closeAllDataSources,
+		                         ICommand showPlugins,
+		                         ICommand showSettings,
+		                         ICommand exitCommand)
 		{
 			_newCustomMenuViewModels = new ObservableCollection<IMenuViewModel>
 			{
@@ -63,7 +64,7 @@ namespace Tailviewer.Ui.Menu
 			// We instruct the special collection to place a null value as a separator in between different
 			// collections and then instruct the style (in xaml) to place a separator whenever a null value
 			// is encountered.
-			_fileMenuItems = new CompoundObservableCollection<IMenuViewModel>(null) {_openItems};
+			_fileMenuItems = new CompoundObservableCollection<IMenuViewModel>(true, null) {_openItems};
 			_fileMenuDataSourceInsertionIndex = _fileMenuItems.ChildCollectionCount;
 			_closeItems = new ObservableCollection<IMenuViewModel>
 			{

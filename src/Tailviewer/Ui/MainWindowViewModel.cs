@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -30,10 +29,8 @@ namespace Tailviewer.Ui
 	///    The view model governing the main window of the application.
 	/// </summary>
 	public sealed class MainWindowViewModel
-		: INotifyPropertyChanged
+		: IMainWindowViewModel
 	{
-		private readonly DelegateCommand _showLogCommand;
-
 		#region ViewModels
 
 		private readonly ActionCenterViewModel _actionCenterViewModel;
@@ -45,9 +42,8 @@ namespace Tailviewer.Ui
 
 		#region Main Menu
 
-		private readonly FileMenu _fileMenu;
-		private IEnumerable<IMenuViewModel> _viewMenuItems;
-		private readonly IEnumerable<IMenuViewModel> _helpMenuItems;
+		
+		private readonly MainMenu _mainMenu;
 
 		#endregion
 
@@ -93,19 +89,10 @@ namespace Tailviewer.Ui
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
 			                                              applicationSettings);
-			ViewMenuItems = _logViewPanel.CurrentDataSource?.ViewMenuItems;
 			WindowTitle = _logViewPanel.WindowTitle;
 			WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
 
 			((NavigationService) services.Retrieve<INavigationService>()).LogViewer = _logViewPanel;
-
-			_fileMenu = new FileMenu(new DelegateCommand2(AddDataSourceFromFile),
-			                         new DelegateCommand2(AddDataSourceFromFolder),
-			                         _logViewPanel.DataSources.RemoveCurrentDataSourceCommand,
-			                         _logViewPanel.DataSources.RemoveAllDataSourcesCommand,
-			                         new DelegateCommand2(ShowPlugins),
-			                         new DelegateCommand2(ShowSettings),
-			                         new DelegateCommand2(Exit));
 
 			_logViewPanel.PropertyChanged += LogViewPanelOnPropertyChanged;
 
@@ -117,51 +104,33 @@ namespace Tailviewer.Ui
 			timer.Start();
 			
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
-			_showLogCommand = new DelegateCommand(ShowLog);
 			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
 			_showQuickNavigationCommand = new DelegateCommand2(ShowQuickNavigation);
 			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
 			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
-			var feedbackMenuItems = new[]
-			{
-				new CommandMenuViewModel(new DelegateCommand2(ReportIssue))
-				{
-					Header = "Report a Problem...",
-					Icon = Icons.AlertCircleOutline
-				},
-				new CommandMenuViewModel(new DelegateCommand2(SuggestFeature))
-				{
-					Header = "Suggest a Feature...",
-					Icon = Icons.ChatOutline
-				},
-				new CommandMenuViewModel(new DelegateCommand2(AskQuestion))
-				{
-					Header = "Ask a Question...",
-					Icon = Icons.ChatQuestionOutline
-				}
-			};
-			_helpMenuItems = new IMenuViewModel[]
-			{
-				new ParentMenuViewModel(feedbackMenuItems)
-				{
-					Header = "Send Feedback",
-				},
-				null,
-				new CommandMenuViewModel(AutoUpdater.CheckForUpdatesCommand)
-				{
-					Header = "Check For Updates"
-				},
-				new CommandMenuViewModel(ShowLogCommand)
-				{
-					Header = "Show Log"
-				},
-				null,
-				new CommandMenuViewModel(new DelegateCommand2(ShowAboutFlyout))
-				{
-					Header = "About"
-				}
-			};
+			var fileMenuViewModel = new FileMenuViewModel(new DelegateCommand2(AddDataSourceFromFile),
+			                                              new DelegateCommand2(AddDataSourceFromFolder),
+			                                              _logViewPanel.DataSources.RemoveCurrentDataSourceCommand,
+			                                              _logViewPanel.DataSources.RemoveAllDataSourcesCommand,
+			                                              new DelegateCommand2(ShowPlugins),
+			                                              new DelegateCommand2(ShowSettings),
+			                                              new KeyBindingCommand(Exit)
+			                                              {
+				                                              GestureModifier = ModifierKeys.Alt,
+				                                              GestureKey = Key.F4
+			                                              });
+			var viewMenu = new ViewMenuViewModel();
+			var helpMenu = new HelpMenuViewModel(new DelegateCommand2(ReportIssue),
+			                                     new DelegateCommand2(SuggestFeature),
+			                                     new DelegateCommand2(AskQuestion),
+			                                     AutoUpdater.CheckForUpdatesCommand,
+			                                     new DelegateCommand(ShowLog),
+			                                     new DelegateCommand2(ShowAboutFlyout));
+			_mainMenu = new MainMenu(fileMenuViewModel,
+			                         viewMenu,
+			                         helpMenu);
+			_mainMenu.CurrentDataSource = _logViewPanel.CurrentDataSource;
 		}
 
 		public IFlyoutViewModel CurrentFlyout
@@ -253,26 +222,13 @@ namespace Tailviewer.Ui
 		}
 
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
-		public ICommand ShowLogCommand => _showLogCommand;
 		public ICommand ShowQuickNavigationCommand => _showQuickNavigationCommand;
 		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
 		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
-		public IEnumerable<IMenuViewModel> FileMenuItems => _fileMenu.Items;
 
-		public IEnumerable<IMenuViewModel> ViewMenuItems
-		{
-			get{return _viewMenuItems;}
-			private set
-			{
-				if (value == _viewMenuItems)
-					return;
+		public MainMenu MainMenu => _mainMenu;
 
-				_viewMenuItems = value;
-				EmitPropertyChanged();
-			}
-		}
-		public IEnumerable<IMenuViewModel> HelpMenuItems => _helpMenuItems;
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			switch (args.PropertyName)
@@ -286,8 +242,8 @@ namespace Tailviewer.Ui
 					break;
 
 				case nameof(LogViewMainPanelViewModel.CurrentDataSource):
-					_fileMenu.CurrentDataSource = _logViewPanel.CurrentDataSource;
-					ViewMenuItems = _logViewPanel.CurrentDataSource?.ViewMenuItems;
+					_mainMenu.CurrentDataSource = _logViewPanel.CurrentDataSource;
+					
 					break;
 			}
 		}
@@ -375,5 +331,11 @@ namespace Tailviewer.Ui
 		{
 			CurrentFlyout = new AboutFlyoutViewModel();
 		}
+
+		#region Implementation of IMainWindowViewModel
+
+		public IObservableCollection<KeyBindingCommand> KeyBindings => _mainMenu.KeyBindings;
+
+		#endregion
 	}
 }

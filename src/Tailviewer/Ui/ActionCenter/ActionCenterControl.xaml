@@ -15,6 +15,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
                 <ResourceDictionary Source="ActionCenterItem.xaml" />
                 <ResourceDictionary Source="NotificationTemplate.xaml" />
                 <ResourceDictionary Source="BugTemplate.xaml" />

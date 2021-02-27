@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.AcceptanceTests.Ui.ViewModels
+namespace Tailviewer.AcceptanceTests.Ui.LogView
 {
 	[TestFixture]
 	public sealed class FolderDataSourceViewModelTest

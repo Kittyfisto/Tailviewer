@@ -246,6 +246,8 @@
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormatPluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
+    <Compile Include="Ui\Controls\MainWindowTest.cs" />
+    <Compile Include="Ui\Controls\ObservableCollectionExt.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModelTest.cs" />

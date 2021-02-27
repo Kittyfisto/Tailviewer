@@ -8,13 +8,11 @@ using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
-using Tailviewer.Test.BusinessLogic.Sources.Buffer;
 using Tailviewer.Ui.LogView;
 using WpfUnit;
 

@@ -15,7 +15,7 @@
                            MinHeight="600"
                            HideTitle="True">
 
-    <Window.InputBindings>
+    <!--<Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="F"
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+F"
@@ -34,12 +34,13 @@
                     Command="{Binding GoToPreviousDataSourceCommand}" />
         <KeyBinding Gesture="Ctrl+G"
                     Command="{Binding ShowGoToLineCommand}" />
-    </Window.InputBindings>
+    </Window.InputBindings>-->
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Menu/MenuItemTemplates.xaml" />
 
@@ -61,7 +62,6 @@
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Outline/OutlineSidePanelDataTemplate.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -93,13 +93,13 @@
                   Background="Transparent">
                 <MenuItem Header="_File"
                           Style="{StaticResource MainMenuItemStyle}"
-                          ItemsSource="{Binding FileMenuItems}" />
+                          ItemsSource="{Binding MainMenu.File.Items}" />
                 <MenuItem Header="_View"
                           Style="{StaticResource MainMenuItemStyle}"
-                          ItemsSource="{Binding ViewMenuItems}" />
+                          ItemsSource="{Binding MainMenu.View.Items}" />
                 <MenuItem Header="_Help"
                           Style="{StaticResource MainMenuItemStyle}"
-                          ItemsSource="{Binding HelpMenuItems}" />
+                          ItemsSource="{Binding MainMenu.Help.Items}" />
             </Menu>
 
             <metrolib:SearchTextBox x:Name="PartSearchBox"

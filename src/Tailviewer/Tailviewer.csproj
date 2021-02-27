@@ -150,8 +150,10 @@
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="CompoundObservableCollection.cs" />
+    <Compile Include="FilteringObservableCollection.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
+    <Compile Include="ProjectingObservableCollection.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\CustomFormats\CustomFormatSettings.cs" />
     <Compile Include="Settings\CustomFormats\CustomLogFileFormat.cs" />
@@ -231,6 +233,9 @@
     <Compile Include="Ui\AboutViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\FlatImage.cs" />
+    <Compile Include="IObservableCollection.cs" />
+    <Compile Include="Ui\IMainWindowViewModel.cs" />
+    <Compile Include="Ui\Menu\KeyBindingCommand.cs" />
     <Compile Include="Ui\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\LogView\Any\AnyFormatter.cs" />
     <Compile Include="Ui\Converters\DoubleOneToHiddenConverter.cs" />
@@ -247,6 +252,10 @@
     <Compile Include="Ui\LogView\TextBrushes.cs" />
     <Compile Include="Ui\LogView\Timestamps\TimestampColumnPresenter.cs" />
     <Compile Include="Ui\LogView\Timestamps\TimestampFormatter.cs" />
+    <Compile Include="Ui\Menu\HelpMenuViewModel.cs" />
+    <Compile Include="Ui\Menu\IMenu.cs" />
+    <Compile Include="Ui\Menu\MainMenu.cs" />
+    <Compile Include="Ui\Menu\ViewMenuViewModel.cs" />
     <Compile Include="Ui\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Settings\CustomFormats\CustomFormatPluginViewModel.cs" />
@@ -331,7 +340,7 @@
     <Compile Include="Ui\Menu\ParentMenuViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\CustomDataSourceViewModel.cs" />
     <Compile Include="Ui\Menu\ExcludeAllInGroupViewModel.cs" />
-    <Compile Include="Ui\Menu\FileMenu.cs" />
+    <Compile Include="Ui\Menu\FileMenuViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\LogView\LogViewMainPanelEntry.cs" />
