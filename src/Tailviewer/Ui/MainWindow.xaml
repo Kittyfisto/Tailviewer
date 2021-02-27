@@ -32,8 +32,6 @@
                     Command="{Binding GoToNextDataSourceCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+Tab"
                     Command="{Binding GoToPreviousDataSourceCommand}" />
-        <KeyBinding Gesture="Ctrl+G"
-                    Command="{Binding ShowGoToLineCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -94,6 +92,9 @@
                 <MenuItem Header="_File"
                           Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding MainMenu.File.Items}" />
+                <MenuItem Header="_Edit"
+                          Style="{StaticResource MainMenuItemStyle}"
+                          ItemsSource="{Binding MainMenu.Edit.Items}" />
                 <MenuItem Header="_View"
                           Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding MainMenu.View.Items}" />

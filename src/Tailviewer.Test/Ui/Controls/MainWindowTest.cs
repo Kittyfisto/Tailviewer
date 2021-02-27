@@ -4,6 +4,7 @@ using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Collections;
 using Tailviewer.Settings;
 using Tailviewer.Ui;
 using Tailviewer.Ui.Menu;

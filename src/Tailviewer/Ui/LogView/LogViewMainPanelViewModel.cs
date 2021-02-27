@@ -10,6 +10,7 @@ using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.Collections;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.GoToLine;
@@ -61,11 +62,8 @@ namespace Tailviewer.Ui.LogView
 		                                 IHighlighters highlighters,
 		                                 IApplicationSettings applicationSettings)
 		{
-			if (actionCenter == null)
-				throw new ArgumentNullException(nameof(actionCenter));
-
 			_applicationSettings = applicationSettings;
-			_actionCenter = actionCenter;
+			_actionCenter = actionCenter ?? throw new ArgumentNullException(nameof(actionCenter));
 
 			_dataSources = new DataSourcesViewModel(applicationSettings, dataSources, _actionCenter);
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;

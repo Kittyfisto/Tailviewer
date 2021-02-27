@@ -167,10 +167,12 @@ namespace Tailviewer.Test.Ui
 		public void TestShowGoToLine()
 		{
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeFalse();
+			_mainWindow.AddFileOrDirectory("foo");
 
-			_mainWindow.ShowGoToLineCommand.Should().NotBeNull();
-			_mainWindow.ShowGoToLineCommand.CanExecute(null).Should().BeTrue();
-			_mainWindow.ShowGoToLineCommand.Execute(null);
+			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x.Header == "Go To Line...");
+			goToLineItem.Command.Should().NotBeNull();
+			goToLineItem.Command.CanExecute(null).Should().BeTrue();
+			goToLineItem.Command.Execute(null);
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeTrue();
 		}
 

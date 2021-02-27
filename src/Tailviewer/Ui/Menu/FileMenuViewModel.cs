@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Ui.Menu
@@ -98,7 +99,11 @@ namespace Tailviewer.Ui.Menu
 			_fileMenuItems.Add(_settingsItems);
 			_exitItems = new ObservableCollection<IMenuViewModel>
 			{
-				new CommandMenuViewModel(exitCommand)
+				new CommandMenuViewModel(new KeyBindingCommand(exitCommand)
+				{
+					GestureModifier = ModifierKeys.Alt,
+					GestureKey = Key.F4
+				})
 				{
 					Header = "E_xit"
 				}

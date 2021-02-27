@@ -27,7 +27,6 @@ using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
-using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.Outline;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;

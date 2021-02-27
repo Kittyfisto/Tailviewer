@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +12,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Collections;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
@@ -54,9 +54,10 @@ namespace Tailviewer.Ui.LogView
 		private readonly DelegateCommand2 _clearScreenCommand;
 		private readonly DelegateCommand2 _showAllCommand;
 
-		private readonly ObservableCollection<IMenuViewModel> _fileMenuItems;
-		private readonly ObservableCollection<IMenuViewModel> _viewMenuItems;
-		private readonly ObservableCollection<IMenuViewModel> _contextMenuItems;
+		private readonly ObservableCollectionExt<IMenuViewModel> _fileMenuItems;
+		private readonly ObservableCollectionExt<IMenuViewModel> _editMenuItems;
+		private readonly ObservableCollectionExt<IMenuViewModel> _viewMenuItems;
+		private readonly ObservableCollectionExt<IMenuViewModel> _contextMenuItems;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource,
 		                                      IActionCenter actionCenter,
@@ -77,7 +78,7 @@ namespace Tailviewer.Ui.LogView
 				CanBeExecuted = false
 			};
 
-			_fileMenuItems = new ObservableCollection<IMenuViewModel>
+			_fileMenuItems = new ObservableCollectionExt<IMenuViewModel>
 			{
 				new CommandMenuViewModel(new DelegateCommand2(ExportToFile))
 				{
@@ -86,7 +87,7 @@ namespace Tailviewer.Ui.LogView
 				}
 			};
 
-			_viewMenuItems = new ObservableCollection<IMenuViewModel>
+			_viewMenuItems = new ObservableCollectionExt<IMenuViewModel>
 			{
 				new ToggleMenuViewModel(FollowTail, newValue => { FollowTail = newValue; })
 				{
@@ -138,7 +139,7 @@ namespace Tailviewer.Ui.LogView
 				},
 			};
 
-			_contextMenuItems = new ObservableCollection<IMenuViewModel>();
+			_contextMenuItems = new ObservableCollectionExt<IMenuViewModel>();
 		}
 
 		public int NewLogLineCount
@@ -186,9 +187,11 @@ namespace Tailviewer.Ui.LogView
 
 		public IPluginDescription TranslationPlugin => _dataSource.TranslationPlugin;
 
-		public IEnumerable<IMenuViewModel> FileMenuItems => _fileMenuItems;
+		public IObservableCollection<IMenuViewModel> FileMenuItems => _fileMenuItems;
 
-		public IEnumerable<IMenuViewModel> ViewMenuItems => _viewMenuItems;
+		public IObservableCollection<IMenuViewModel> EditMenuItems => _editMenuItems;
+
+		public IObservableCollection<IMenuViewModel> ViewMenuItems => _viewMenuItems;
 
 		public abstract string DisplayName { get; set; }
 		public abstract bool CanBeRenamed { get; }

@@ -1,28 +1,39 @@
-﻿using Tailviewer.Ui.DataSourceTree;
+﻿using Tailviewer.Collections;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Ui.Menu
 {
+	/// <summary>
+	///     Represents the main menu of Tailviewer.
+	/// </summary>
+	/// <remarks>
+	///     Responsible for updating the available menu items depending on what the user is currently doing.
+	/// </remarks>
 	public sealed class MainMenu
 	{
+		private readonly EditMenuViewModel _edit;
 		private readonly FileMenuViewModel _file;
-		private readonly ViewMenuViewModel _view;
 		private readonly HelpMenuViewModel _help;
-		private readonly CompoundObservableCollection<IMenuViewModel> _allMenuItems;
 		private readonly ProjectingObservableCollection<IMenuViewModel, KeyBindingCommand> _keyBindings;
+		private readonly ViewMenuViewModel _view;
 
 		public MainMenu(FileMenuViewModel file,
+		                EditMenuViewModel edit,
 		                ViewMenuViewModel view,
 		                HelpMenuViewModel help)
 		{
 			_file = file;
+			_edit = edit;
 			_view = view;
 			_help = help;
 
-			_allMenuItems = new CompoundObservableCollection<IMenuViewModel>(false, null)
+			var allMenuItems = new CompoundObservableCollection<IMenuViewModel>(hasSeparator: false)
 			{
-				file.Items, view.Items, help.Items
+				file.Items, _edit.Items, view.Items, help.Items
 			};
-			_keyBindings = new ProjectingObservableCollection<IMenuViewModel, KeyBindingCommand>(_allMenuItems, menuItem => menuItem?.Command as KeyBindingCommand);
+			_keyBindings =
+				new ProjectingObservableCollection<IMenuViewModel, KeyBindingCommand>(allMenuItems,
+					menuItem => menuItem?.Command as KeyBindingCommand);
 		}
 
 		public IDataSourceViewModel CurrentDataSource
@@ -30,16 +41,37 @@ namespace Tailviewer.Ui.Menu
 			set
 			{
 				_file.CurrentDataSource = value;
+				_edit.CurrentDataSource = value;
 				_view.CurrentDataSource = value;
 			}
 		}
 
-		public IObservableCollection<KeyBindingCommand> KeyBindings => _keyBindings;
+		/// <summary>
+		///     A collection of all key bindings the user may currently press.
+		/// </summary>
+		public IObservableCollection<KeyBindingCommand> KeyBindings
+		{
+			get { return _keyBindings; }
+		}
 
-		public FileMenuViewModel File => _file;
+		public FileMenuViewModel File
+		{
+			get { return _file; }
+		}
 
-		public ViewMenuViewModel View => _view;
+		public EditMenuViewModel Edit
+		{
+			get { return _edit; }
+		}
 
-		public HelpMenuViewModel Help => _help;
+		public ViewMenuViewModel View
+		{
+			get { return _view; }
+		}
+
+		public HelpMenuViewModel Help
+		{
+			get { return _help; }
+		}
 	}
 }

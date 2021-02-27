@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace Tailviewer
+namespace Tailviewer.Collections
 {
 	/// <summary>
 	///     Projects a (possibly <see cref="INotifyCollectionChanged" />) source into a destination.

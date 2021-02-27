@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace Tailviewer
+namespace Tailviewer.Collections
 {
 	/// <summary>
 	///     Provides a view onto a list of enumerations which is the result of concat-ing them into one big list.

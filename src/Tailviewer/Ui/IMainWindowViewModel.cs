@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;

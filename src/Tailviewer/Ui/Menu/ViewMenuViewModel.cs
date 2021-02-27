@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.Ui.Menu

@@ -149,11 +149,12 @@
     <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
-    <Compile Include="CompoundObservableCollection.cs" />
-    <Compile Include="FilteringObservableCollection.cs" />
+    <Compile Include="Collections\CompoundObservableCollection.cs" />
+    <Compile Include="Collections\FilteringObservableCollection.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
-    <Compile Include="ProjectingObservableCollection.cs" />
+    <Compile Include="Collections\ObservableCollectionExt.cs" />
+    <Compile Include="Collections\ProjectingObservableCollection.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\CustomFormats\CustomFormatSettings.cs" />
     <Compile Include="Settings\CustomFormats\CustomLogFileFormat.cs" />
@@ -232,8 +233,9 @@
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\AboutViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
+    <Compile Include="Ui\Menu\EditMenuViewModel.cs" />
     <Compile Include="Ui\FlatImage.cs" />
-    <Compile Include="IObservableCollection.cs" />
+    <Compile Include="Collections\IObservableCollection.cs" />
     <Compile Include="Ui\IMainWindowViewModel.cs" />
     <Compile Include="Ui\Menu\KeyBindingCommand.cs" />
     <Compile Include="Ui\LogView\Any\AnyColumnPresenter.cs" />
@@ -378,7 +380,7 @@
     <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\LogView\AbstractDataSourceViewModel.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Collections\EnumerableExtensions.cs" />
     <Compile Include="Ui\ActionCenter\AbstractNotificationViewModel.cs" />
     <Compile Include="Ui\ActionCenter\ActionCenterViewModel.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Level.cs" />

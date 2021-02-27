@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Collections;
 using Tailviewer.Settings;
 using Tailviewer.Ui.About;
 using Tailviewer.Ui.ActionCenter;
@@ -115,11 +116,8 @@ namespace Tailviewer.Ui
 			                                              _logViewPanel.DataSources.RemoveAllDataSourcesCommand,
 			                                              new DelegateCommand2(ShowPlugins),
 			                                              new DelegateCommand2(ShowSettings),
-			                                              new KeyBindingCommand(Exit)
-			                                              {
-				                                              GestureModifier = ModifierKeys.Alt,
-				                                              GestureKey = Key.F4
-			                                              });
+			                                              new DelegateCommand2(Exit));
+			var editMenu = new EditMenuViewModel(_showGoToLineCommand);
 			var viewMenu = new ViewMenuViewModel();
 			var helpMenu = new HelpMenuViewModel(new DelegateCommand2(ReportIssue),
 			                                     new DelegateCommand2(SuggestFeature),
@@ -128,6 +126,7 @@ namespace Tailviewer.Ui
 			                                     new DelegateCommand(ShowLog),
 			                                     new DelegateCommand2(ShowAboutFlyout));
 			_mainMenu = new MainMenu(fileMenuViewModel,
+			                         editMenu,
 			                         viewMenu,
 			                         helpMenu);
 			_mainMenu.CurrentDataSource = _logViewPanel.CurrentDataSource;
@@ -225,7 +224,6 @@ namespace Tailviewer.Ui
 		public ICommand ShowQuickNavigationCommand => _showQuickNavigationCommand;
 		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
 		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
-		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
 
 		public MainMenu MainMenu => _mainMenu;
 

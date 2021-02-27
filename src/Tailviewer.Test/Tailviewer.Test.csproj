@@ -247,7 +247,6 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormatPluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
     <Compile Include="Ui\Controls\MainWindowTest.cs" />
-    <Compile Include="Ui\Controls\ObservableCollectionExt.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModelTest.cs" />
@@ -263,6 +262,7 @@
     <Compile Include="Ui\DataSourcesViewModelTest.cs" />
     <Compile Include="Ui\DragLayerTest.cs" />
     <Compile Include="Ui\FolderDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\Menu\EditMenuViewModelTest.cs" />
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
     <Compile Include="Ui\FileDataSourceViewModelTest.cs" />
