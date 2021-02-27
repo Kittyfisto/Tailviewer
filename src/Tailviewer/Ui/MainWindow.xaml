@@ -41,7 +41,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/MenuItemTemplates.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Menu/MenuItemTemplates.xaml" />
 
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogViewMainPanelDataTemplate.xaml" />
@@ -111,6 +111,7 @@
                                     Width="200"
                                     RequiresExplicitSearchStart="False"
                                     AcceptsTab="True"
+                                    Visibility="{Binding LogViewPanel.CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                                     Text="{Binding LogViewPanel.Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     OccurenceCount="{Binding LogViewPanel.Search.ResultCount}"
                                     CurrentOccurenceIndex="{Binding LogViewPanel.Search.CurrentResultIndex, Mode=TwoWay}"
@@ -124,7 +125,7 @@
                                     Height="24"
                                     Width="200"
                                     AcceptsTab="True"
-                                    IsEnabled="{Binding LogViewPanel.FindAll, Converter={StaticResource NullToFalseConverter}}"
+                                    Visibility="{Binding LogViewPanel.CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                                     FilterText="{Binding LogViewPanel.FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Watermark="Find all in log file (Ctrl+Shift+F)" />
 

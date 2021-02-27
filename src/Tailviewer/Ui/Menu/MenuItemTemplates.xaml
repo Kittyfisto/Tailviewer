@@ -51,8 +51,8 @@
                             <Viewbox Grid.Column="0"
                                      HorizontalAlignment="Center"
                                      Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}"
-                                     Width="12"
-                                     Height="12">
+                                     Width="18"
+                                     Height="18">
                                 <Canvas Width="24" Height="24">
                                     <Path Data="{TemplateBinding Icon}"
                                           Fill="{StaticResource MenuForegroundBrush}" />

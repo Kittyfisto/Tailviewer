@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -15,9 +16,9 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.About;
 using Tailviewer.Ui.ActionCenter;
-using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.Menu;
 using Tailviewer.Ui.Plugins;
 using Tailviewer.Ui.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -92,7 +93,7 @@ namespace Tailviewer.Ui
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
 			                                              applicationSettings);
-			
+			ViewMenuItems = _logViewPanel.CurrentDataSource?.ViewMenuItems;
 			WindowTitle = _logViewPanel.WindowTitle;
 			WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
 
@@ -122,8 +123,31 @@ namespace Tailviewer.Ui
 			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
 			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
-			_helpMenuItems = new[]
+			var feedbackMenuItems = new[]
 			{
+				new CommandMenuViewModel(new DelegateCommand2(ReportIssue))
+				{
+					Header = "Report a Problem...",
+					Icon = Icons.AlertCircleOutline
+				},
+				new CommandMenuViewModel(new DelegateCommand2(SuggestFeature))
+				{
+					Header = "Suggest a Feature...",
+					Icon = Icons.ChatOutline
+				},
+				new CommandMenuViewModel(new DelegateCommand2(AskQuestion))
+				{
+					Header = "Ask a Question...",
+					Icon = Icons.ChatQuestionOutline
+				}
+			};
+			_helpMenuItems = new IMenuViewModel[]
+			{
+				new ParentMenuViewModel(feedbackMenuItems)
+				{
+					Header = "Send Feedback",
+				},
+				null,
 				new CommandMenuViewModel(AutoUpdater.CheckForUpdatesCommand)
 				{
 					Header = "Check For Updates"
@@ -330,6 +354,21 @@ namespace Tailviewer.Ui
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private void ReportIssue()
+		{
+			Process.Start("https://github.com/Kittyfisto/Tailviewer/issues/new");
+		}
+
+		private void SuggestFeature()
+		{
+			Process.Start("https://github.com/Kittyfisto/Tailviewer/discussions/new");
+		}
+
+		private void AskQuestion()
+		{
+			Process.Start("https://github.com/Kittyfisto/Tailviewer/discussions/new");
 		}
 
 		private void ShowAboutFlyout()

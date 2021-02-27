@@ -1,7 +1,7 @@
 ﻿using System;
 using Metrolib;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
 	///     Toggles a boolean value between true and false when the user clicks on the corresponding menu item.
