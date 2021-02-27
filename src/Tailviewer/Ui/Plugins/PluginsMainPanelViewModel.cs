@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Metrolib;
@@ -18,7 +20,7 @@ namespace Tailviewer.Ui.Plugins
 	///     Represents the plugin page (displays the list of plugins, etc...).
 	/// </summary>
 	public sealed class PluginsMainPanelViewModel
-		: AbstractMainPanelViewModel
+		: IFlyoutViewModel
 	{
 		private readonly IApplicationSettings _applicationSettings;
 		private readonly IDispatcher _dispatcher;
@@ -122,9 +124,11 @@ namespace Tailviewer.Ui.Plugins
 			}
 		}
 
-		public override void Update()
+		public void Update()
 		{
 		}
+
+		public string Name => "Plugins";
 
 		private void OpenPluginFolder()
 		{
@@ -227,6 +231,17 @@ namespace Tailviewer.Ui.Plugins
 		private void OnPluginDownloaded(Task task)
 		{
 			var exception = task.Exception;
+		}
+
+		#region Implementation of INotifyPropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

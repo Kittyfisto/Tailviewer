@@ -13,6 +13,7 @@ using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
@@ -48,6 +49,7 @@ namespace Tailviewer.Test.Ui
 			_services.RegisterInstance<IPluginLoader>(new PluginRegistry());
 			_services.RegisterInstance<IHighlighters>(new HighlighterCollection());
 			_services.RegisterInstance<INavigationService>(new NavigationService());
+			_services.RegisterInstance<IPluginUpdater>(new Mock<IPluginUpdater>().Object);
 
 			_mainWindow = new MainWindowViewModel(_services,
 			                                      _settings,

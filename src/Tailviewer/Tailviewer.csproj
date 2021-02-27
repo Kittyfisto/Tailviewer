@@ -296,7 +296,6 @@
     <Compile Include="Ui\About\AboutFlyoutViewModel.cs" />
     <Compile Include="Ui\AbstractMainPanelViewModel.cs" />
     <Compile Include="Ui\IMainPanelEntry.cs" />
-    <Compile Include="Ui\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Plugins\PluginsMainPanelViewModel.cs" />
     <Compile Include="Ui\Settings\SettingsFlyoutViewModel.cs" />
     <Compile Include="Ui\Plugins\InstalledPluginViewModel.cs" />

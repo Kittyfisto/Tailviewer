@@ -7,15 +7,18 @@ using System.Windows.Threading;
 using Metrolib;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.About;
 using Tailviewer.Ui.ActionCenter;
 using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.Plugins;
 using Tailviewer.Ui.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -28,8 +31,6 @@ namespace Tailviewer.Ui
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		private readonly IServiceContainer _services;
-		private readonly IApplicationSettings _applicationSettings;
 		private readonly DelegateCommand _showLogCommand;
 
 		#region ViewModels
@@ -37,6 +38,7 @@ namespace Tailviewer.Ui
 		private readonly ActionCenterViewModel _actionCenterViewModel;
 		private readonly AutoUpdateViewModel _autoUpdater;
 		private readonly SettingsFlyoutViewModel _settings;
+		private readonly PluginsMainPanelViewModel _plugins;
 
 		#endregion
 
@@ -61,7 +63,6 @@ namespace Tailviewer.Ui
 		private readonly ICommand _goToPreviousDataSourceCommand;
 		private readonly ICommand _goToNextDataSourceCommand;
 
-		private string _leftSidePanelExpanderTooltip;
 		private IFlyoutViewModel _currentFlyout;
 
 		public MainWindowViewModel(IServiceContainer services,
@@ -75,9 +76,13 @@ namespace Tailviewer.Ui
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 			if (updater == null) throw new ArgumentNullException(nameof(updater));
 
-			_services = services;
-			_applicationSettings = settings;
+			var services1 = services;
+			var applicationSettings = settings;
 
+			_plugins = new PluginsMainPanelViewModel(applicationSettings,
+			                                         services1.Retrieve<IDispatcher>(),
+			                                         services1.Retrieve<IPluginUpdater>(),
+			                                         services1.Retrieve<IPluginLoader>().Plugins);
 			_settings = new SettingsFlyoutViewModel(settings, services);
 			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
 
@@ -86,7 +91,7 @@ namespace Tailviewer.Ui
 			                                              dataSources,
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
-			                                              _applicationSettings);
+			                                              applicationSettings);
 			
 			WindowTitle = _logViewPanel.WindowTitle;
 			WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
@@ -97,6 +102,7 @@ namespace Tailviewer.Ui
 			                         new DelegateCommand2(AddDataSourceFromFolder),
 			                         _logViewPanel.DataSources.RemoveCurrentDataSourceCommand,
 			                         _logViewPanel.DataSources.RemoveAllDataSourcesCommand,
+			                         new DelegateCommand2(ShowPlugins),
 			                         new DelegateCommand2(ShowSettings),
 			                         new DelegateCommand2(Exit));
 
@@ -202,9 +208,14 @@ namespace Tailviewer.Ui
 			_logViewPanel.ShowQuickNavigation = true;
 		}
 
+		private void ShowPlugins()
+		{
+			CurrentFlyout = _plugins;
+		}
+
 		private void ShowSettings()
 		{
-			CurrentFlyout = new SettingsFlyoutViewModel(_applicationSettings, _services);
+			CurrentFlyout = _settings;
 		}
 
 		private void ShowLog()
@@ -270,19 +281,6 @@ namespace Tailviewer.Ui
 					return;
 
 				_windowTitle = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public string LeftSidePanelExpanderTooltip
-		{
-			get { return _leftSidePanelExpanderTooltip; }
-			set
-			{
-				if (value == _leftSidePanelExpanderTooltip)
-					return;
-
-				_leftSidePanelExpanderTooltip = value;
 				EmitPropertyChanged();
 			}
 		}
