@@ -103,7 +103,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Fatal"
-                        IconBackgroundBrush="DarkRed"
                         IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of fatal log entries"
                         Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
@@ -111,7 +110,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Error"
-                        IconBackgroundBrush="Red"
                         IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of error log entries"
                         Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
@@ -119,7 +117,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Warning"
-                        IconBackgroundBrush="Orange"
                         IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of warning log entries"
                         Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
@@ -127,7 +124,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Info"
-                        IconBackgroundBrush="White"
                         IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of info log entries"
                         Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
@@ -135,7 +131,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Debug"
-                        IconBackgroundBrush="LightGray"
                         IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of debug log entries"
                         Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
@@ -143,7 +138,6 @@
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
                         LogLevel="Trace"
-                        IconBackgroundBrush="LightSlateGray"
                         IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
                         ToolTip="Toggle display of trace log entries"
                         Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />

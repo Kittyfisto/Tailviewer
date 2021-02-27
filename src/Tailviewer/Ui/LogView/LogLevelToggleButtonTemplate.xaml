@@ -16,7 +16,7 @@
         <Setter Property="Padding" Value="4" />
         <Setter Property="MaxWidth" Value="60" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Template">
@@ -33,7 +33,7 @@
                             <Grid Grid.Row="0"
                                   Margin="0,0,2,0"
                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                  Visibility="{Binding IconOutline, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
+                                  Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
                                 <!--<Viewbox HorizontalAlignment="Center">
                                     <Canvas Width="24" Height="24">
                                         <Path
@@ -44,7 +44,7 @@
                                 <Viewbox HorizontalAlignment="Center">
                                     <Canvas Width="24" Height="24">
                                         <Path
-                                            Data="{TemplateBinding IconOutline}"
+                                            Data="{TemplateBinding Icon}"
                                             Fill="{TemplateBinding Foreground}" />
                                     </Canvas>
                                 </Viewbox>
@@ -69,26 +69,12 @@
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
             </MultiTrigger>
-            <Trigger Property="IsChecked" Value="True">
+            <!--<Trigger Property="IsChecked" Value="True">
                 <Setter Property="BorderBrush" Value="{StaticResource PrimaryForegroundBrush}" />
+            </Trigger>-->
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
-
-            <!--<MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsChecked" Value="True" />
-                    <Condition Property="IsMouseOver" Value="True" />
-                </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
-                <Setter Property="Foreground" Value="{StaticResource SecondaryForegroundBrush}" />
-            </MultiTrigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsChecked" Value="True" />
-                    <Condition Property="IsMouseOver" Value="False" />
-                </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource PrimaryForegroundBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource SecondaryForegroundBrush}" />
-            </MultiTrigger>-->
         </Style.Triggers>
     </Style>
 
