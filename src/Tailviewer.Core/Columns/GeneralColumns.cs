@@ -112,25 +112,6 @@ namespace Tailviewer.Core.Columns
 		/// </summary>
 		public static readonly IColumnDescriptor<string> Message;
 
-		#region Presentation
-
-		/// <summary>
-		///     The maximum width (in pixels) of the <see cref="RawContent"/> column content.
-		/// </summary>
-		public static readonly IColumnDescriptor<float> RawContentMaxPresentationWidth;
-
-		/// <summary>
-		/// The line number of the first line of a log entry's presentation.
-		/// </summary>
-		public static readonly IColumnDescriptor<int> PresentationStartingLineNumber;
-
-		/// <summary>
-		/// The number of lines in a log entry's presentation.
-		/// </summary>
-		public static readonly IColumnDescriptor<int> PresentationLineCount;
-
-		#endregion
-
 		static GeneralColumns()
 		{
 			RawContent = new WellKnownColumnDescriptor<string>("raw_content");
@@ -146,10 +127,6 @@ namespace Tailviewer.Core.Columns
 			ElapsedTime = new WellKnownColumnDescriptor<TimeSpan?>("elapsed_time");
 			DeltaTime = new WellKnownColumnDescriptor<TimeSpan?>("delta_time");
 			Message = new WellKnownColumnDescriptor<string>("message", "Message");
-
-			RawContentMaxPresentationWidth = new WellKnownColumnDescriptor<float>("raw_content_max_presentation_width");
-			PresentationStartingLineNumber = new WellKnownColumnDescriptor<int>("presentation_line_number");
-			PresentationLineCount = new WellKnownColumnDescriptor<int>("presentation_line_count");
 
 			Minimum = new IColumnDescriptor[]
 			{
