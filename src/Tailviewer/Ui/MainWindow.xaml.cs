@@ -71,7 +71,7 @@ namespace Tailviewer.Ui
 			Drop += OnDrop;
 			MouseMove += OnMouseMove;
 
-			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
+			DragLayer.AdornerLayer = PartDragDecorator.AdornerLayer;
 		}
 
 		public ICommand FocusDataSourceSearchCommand
@@ -169,12 +169,12 @@ namespace Tailviewer.Ui
 
 		private void FocusLogFileSearch()
 		{
-			PART_SearchBox.Focus();
+			PartSearchBox.Focus();
 		}
 
 		private void FocusLogFileSearchAll()
 		{
-			PART_FindAllBox.Focus();
+			PartFindAllBox.Focus();
 		}
 
 		private void FocusDataSourceSearch()
@@ -185,7 +185,7 @@ namespace Tailviewer.Ui
 		private void NewQuickFilter()
 		{
 			var viewModel = DataContext as MainWindowViewModel;
-			var logViewModel = viewModel?.SelectedMainPanel as LogViewMainPanelViewModel;
+			var logViewModel = viewModel?.LogViewPanel;
 			if (logViewModel != null)
 			{
 				var model = logViewModel.AddQuickFilter();
@@ -208,7 +208,7 @@ namespace Tailviewer.Ui
 		private void NewBookmark()
 		{
 			var viewModel = DataContext as MainWindowViewModel;
-			var logViewModel = viewModel?.SelectedMainPanel as LogViewMainPanelViewModel;
+			var logViewModel = viewModel?.LogViewPanel;
 			if (logViewModel != null)
 			{
 				if (logViewModel.AddBookmark())

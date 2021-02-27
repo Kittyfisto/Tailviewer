@@ -5,16 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using Metrolib;
-using Microsoft.Win32;
-using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.GoToLine;
 using Tailviewer.Ui.QuickFilter;
@@ -29,12 +25,14 @@ using Tailviewer.Ui.SidePanel.QuickFilters;
 
 namespace Tailviewer.Ui.LogView
 {
+	/// <summary>
+	///    The view model governing the main panel which shows the current data source, data source tree,
+	///    various side panels, etc..
+	/// </summary>
 	public sealed class LogViewMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-		private readonly FileMenu _fileMenu;
 
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly BookmarksViewModel _bookmarks;
@@ -54,6 +52,7 @@ namespace Tailviewer.Ui.LogView
 		private string _windowTitle;
 		private string _windowTitleSuffix;
 		private bool _showQuickNavigation;
+		private ISidePanelViewModel _selectedSidePanel;
 
 		public LogViewMainPanelViewModel(IServiceContainer services,
 		                                 IActionCenter actionCenter,
@@ -61,7 +60,6 @@ namespace Tailviewer.Ui.LogView
 		                                 IQuickFilters quickFilters,
 		                                 IHighlighters highlighters,
 		                                 IApplicationSettings applicationSettings)
-			: base(applicationSettings)
 		{
 			if (actionCenter == null)
 				throw new ArgumentNullException(nameof(actionCenter));
@@ -82,13 +80,6 @@ namespace Tailviewer.Ui.LogView
 			_quickNavigation = new QuickNavigationViewModel(dataSources);
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
-			_fileMenu = new FileMenu(new DelegateCommand2(AddDataSourceFromFile),
-			                         new DelegateCommand2(AddDataSourceFromFolder),
-			                         _dataSources.RemoveCurrentDataSourceCommand,
-			                         _dataSources.RemoveAllDataSourcesCommand,
-			                         new DelegateCommand2(Exit));
-			FileMenuItems = _fileMenu.Items;
-
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 			_outline = new OutlineSidePanelViewModel(services);
 			_issues = new IssuesSidePanelViewModel(services);
@@ -108,52 +99,12 @@ namespace Tailviewer.Ui.LogView
 			ChangeDataSource(CurrentDataSource);
 		}
 
-		private void AddDataSourceFromFile()
-		{
-			var dlg = new OpenFileDialog
-			{
-				Title = "Select log file to open",
-				DefaultExt = ".log",
-				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
-				Multiselect = true
-			};
-
-			if (dlg.ShowDialog() == true)
-			{
-				string[] selectedFiles = dlg.FileNames;
-				foreach (string fileName in selectedFiles)
-				{
-					GetOrAddFile(fileName);
-				}
-			}
-		}
-
-		private void AddDataSourceFromFolder()
-		{
-			var dlg = new VistaFolderBrowserDialog
-			{
-				Description = "Select folder to open",
-				UseDescriptionForTitle = true
-			};
-
-			if (dlg.ShowDialog() == true)
-			{
-				var folder = dlg.SelectedPath;
-				GetOrAddFolder(folder);
-			}
-		}
-
-		private void Exit()
-		{
-			System.Windows.Application.Current.Shutdown();
-		}
-
-		private void GetOrAddFile(string fileName)
+		public void GetOrAddFile(string fileName)
 		{
 			CurrentDataSource = _dataSources.GetOrAddFile(fileName);
 		}
 
-		private void GetOrAddFolder(string folder)
+		public void GetOrAddFolder(string folder)
 		{
 			CurrentDataSource = _dataSources.GetOrAddFolder(folder);
 		}
@@ -457,13 +408,26 @@ namespace Tailviewer.Ui.LogView
 
 				_currentDataSourceLogView = value;
 				EmitPropertyChanged();
-
-				_fileMenu.CurrentDataSource = value?.DataSource;
-				ViewMenuItems = value?.DataSource.ViewMenuItems;
 			}
 		}
 
-		public override IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
+		public IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
+
+		public ISidePanelViewModel SelectedSidePanel
+		{
+			get { return _selectedSidePanel; }
+			set
+			{
+				if (value == _selectedSidePanel)
+					return;
+
+				_selectedSidePanel = value;
+				EmitPropertyChanged();
+
+				_applicationSettings.MainWindow.SelectedSidePanel = value?.Id;
+				_applicationSettings.SaveAsync();
+			}
+		}
 
 		public IEnumerable<IDataSourceViewModel> RecentFiles => _dataSources.Observable;
 

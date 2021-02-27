@@ -18,7 +18,6 @@ namespace Tailviewer.Ui
 			if (LogViewer == null)
 				return false;
 
-			MainWindow.SelectRawEntry();
 			return LogViewer.RequestBringIntoView(line);
 		}
 
@@ -30,7 +29,6 @@ namespace Tailviewer.Ui
 			if (LogViewer == null)
 				return false;
 
-			MainWindow.SelectRawEntry();
 			return LogViewer.RequestBringIntoView(dataSource, line);
 		}
 

@@ -37,7 +37,6 @@ namespace Tailviewer.Ui.Plugins
 										 IDispatcher dispatcher,
 										 IPluginUpdater pluginUpdater,
 										 IEnumerable<IPluginDescription> plugins)
-			: base(applicationSettings)
 		{
 			_applicationSettings = applicationSettings;
 			_dispatcher = dispatcher;
@@ -61,7 +60,7 @@ namespace Tailviewer.Ui.Plugins
 			}
 		}
 
-		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
+		public IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
 		public ICommand UpdatePluginsCommand => _updatePluginsCommand;
 		public ICommand RefreshPluginsCommand => _refreshPluginsCommand;
 		public IEnumerable<IPluginViewModel> Plugins => _installedPlugins;

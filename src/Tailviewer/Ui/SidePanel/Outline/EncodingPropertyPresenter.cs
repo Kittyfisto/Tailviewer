@@ -22,7 +22,7 @@ namespace Tailviewer.Ui.SidePanel.Outline
 		public EncodingPropertyPresenter(string displayName)
 		{
 			_displayName = displayName;
-			_encodings = new List<EncodingViewModel>(SettingsMainPanelViewModel.Encodings);
+			_encodings = new List<EncodingViewModel>(SettingsFlyoutViewModel.Encodings);
 
 			_comboBox = new ComboBox
 			{

@@ -298,8 +298,7 @@
     <Compile Include="Ui\IMainPanelEntry.cs" />
     <Compile Include="Ui\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Plugins\PluginsMainPanelViewModel.cs" />
-    <Compile Include="Ui\Settings\SettingsMainPanelEntry.cs" />
-    <Compile Include="Ui\Settings\SettingsMainPanelViewModel.cs" />
+    <Compile Include="Ui\Settings\SettingsFlyoutViewModel.cs" />
     <Compile Include="Ui\Plugins\InstalledPluginViewModel.cs" />
     <Compile Include="Ui\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\SidePanel\AbstractSidePanelViewModel.cs" />
@@ -464,7 +463,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\About\AboutMainPanelDataTemplate.xaml">
+    <Page Include="Ui\About\AboutFlyoutDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -524,7 +523,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Settings\SettingsMainPanelDataTemplate.xaml">
+    <Page Include="Ui\Settings\SettingsFlyoutDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

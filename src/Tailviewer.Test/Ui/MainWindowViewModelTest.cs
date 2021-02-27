@@ -10,6 +10,8 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
@@ -19,8 +21,6 @@ using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.QuickFilter;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
-using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
-using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui
 {
@@ -95,57 +95,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
-		public void TestConstructionCollapseSidePanel([Values(true, false)] bool isLeftSidePanelVisible)
-		{
-			_settings.MainWindow.IsLeftSidePanelVisible = isLeftSidePanelVisible;
-
-			_mainWindow = new MainWindowViewModel(_services,
-			                                      _settings,
-			                                      _dataSources,
-			                                      _quickFilters,
-			                                      _actionCenter,
-			                                      _updater.Object);
-
-			_mainWindow.IsLeftSidePanelVisible.Should().Be(isLeftSidePanelVisible);
-		}
-
-		[Test]
-		[Description("Verifies that the tooltip of the chevron changes based on whether the panel is collapsed or not")]
-		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
-		public void TestLeftSidePanelTooltip()
-		{
-			using (var monitor = _mainWindow.Monitor())
-			{
-				_mainWindow.IsLeftSidePanelVisible.Should().BeTrue();
-				_mainWindow.LeftSidePanelExpanderTooltip.Should().Be("Hide icons");
-				monitor.Should().NotRaisePropertyChangeFor(x => x.IsLeftSidePanelVisible);
-				monitor.Should().NotRaisePropertyChangeFor(x => x.LeftSidePanelExpanderTooltip);
-
-				_mainWindow.IsLeftSidePanelVisible = false;
-				_mainWindow.LeftSidePanelExpanderTooltip.Should().Be("Show hidden icons");
-				monitor.Should().RaisePropertyChangeFor(x => x.IsLeftSidePanelVisible);
-				monitor.Should().RaisePropertyChangeFor(x => x.LeftSidePanelExpanderTooltip);
-			}
-		}
-
-		[Test]
-		[Description("Verifies that changing the collapsed chevron causes the setting to be persisted on disk.")]
-		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
-		public void TestSaveIsLeftSidePanelVisible()
-		{
-			_mainWindow.IsLeftSidePanelVisible.Should().BeTrue();
-
-			_mainWindow.IsLeftSidePanelVisible = false;
-			_settings.MainWindow.IsLeftSidePanelVisible.Should().BeFalse();
-			_settings.NumSaved.Should().Be(1);
-
-			_mainWindow.IsLeftSidePanelVisible = true;
-			_settings.MainWindow.IsLeftSidePanelVisible.Should().BeTrue();
-			_settings.NumSaved.Should().Be(2);
-		}
-
-		[Test]
 		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/75")]
 		public void TestShowLog()
 		{
@@ -163,7 +112,6 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
-			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
@@ -174,7 +122,7 @@ namespace Tailviewer.Test.Ui
 			      .BeSameAs(dataSource.DataSource,
 			                "Because now that said data source is visible, the filter should be applied to it");
 
-			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			var panel = _mainWindow.LogViewPanel;
 			panel.CurrentDataSourceLogView.Should().NotBeNull();
 			panel.CurrentDataSourceLogView.QuickFilterChain.Should()
 				.BeNull("Because no quick filters have been added / nor activated");
@@ -184,7 +132,6 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDataSource2()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
-			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
@@ -198,7 +145,7 @@ namespace Tailviewer.Test.Ui
 			dataSource2.DataSource.ActivateQuickFilter(filter.Id);
 
 			_mainWindow.LogViewPanel.CurrentDataSource = dataSource1;
-			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			var panel = _mainWindow.LogViewPanel;
 			panel.CurrentDataSourceLogView.Should().NotBeNull();
 			panel.CurrentDataSourceLogView.QuickFilterChain.Should().NotBeNull();
 		}
@@ -230,8 +177,6 @@ namespace Tailviewer.Test.Ui
 			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
 		public void TestGroup1()
 		{
-			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
-
 			IDataSourceViewModel dataSource1 = _mainWindow.AddFileOrDirectory("foo");
 			IDataSourceViewModel dataSource2 = _mainWindow.AddFileOrDirectory("bar");
 			var mainWindowChanges = new List<string>();
@@ -244,9 +189,9 @@ namespace Tailviewer.Test.Ui
 			group.Should().NotBeNull();
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(group);
 
-			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			var panel = _mainWindow.LogViewPanel;
 			panel.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
-			mainWindowChanges.Should().Equal("WindowTitleSuffix", "WindowTitle", "WindowTitleSuffix");
+			mainWindowChanges.Should().Equal("WindowTitleSuffix", "WindowTitle", "WindowTitleSuffix", "ViewMenuItems");
 			logViewChanges.Should().Contain("CurrentDataSourceLogView", "CurrentDataSourceLogView", "CurrentDataSource");
 		}
 		

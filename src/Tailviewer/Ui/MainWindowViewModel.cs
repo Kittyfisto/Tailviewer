@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
+using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
@@ -21,6 +22,9 @@ using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Ui
 {
+	/// <summary>
+	///    The view model governing the main window of the application.
+	/// </summary>
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
@@ -32,17 +36,21 @@ namespace Tailviewer.Ui
 
 		private readonly ActionCenterViewModel _actionCenterViewModel;
 		private readonly AutoUpdateViewModel _autoUpdater;
-		private readonly SettingsMainPanelViewModel _settings;
+		private readonly SettingsFlyoutViewModel _settings;
+
+		#endregion
+
+		#region Main Menu
+
+		private readonly FileMenu _fileMenu;
+		private IEnumerable<IMenuViewModel> _viewMenuItems;
+		private readonly IEnumerable<IMenuViewModel> _helpMenuItems;
 
 		#endregion
 
 		#region Main Panel
 
-		private readonly LogViewMainPanelEntry _rawEntry;
 		private readonly LogViewMainPanelViewModel _logViewPanel;
-		private readonly IMainPanelEntry[] _topEntries;
-		private IMainPanelEntry _selectedTopEntry;
-		private IMainPanelViewModel _selectedMainPanel;
 
 		#endregion
 
@@ -52,10 +60,8 @@ namespace Tailviewer.Ui
 		private readonly DelegateCommand2 _showGoToLineCommand;
 		private readonly ICommand _goToPreviousDataSourceCommand;
 		private readonly ICommand _goToNextDataSourceCommand;
-		private bool _isLeftSidePanelVisible;
 
 		private string _leftSidePanelExpanderTooltip;
-		private readonly IEnumerable<IMenuViewModel> _helpMenuItems;
 		private IFlyoutViewModel _currentFlyout;
 
 		public MainWindowViewModel(IServiceContainer services,
@@ -72,7 +78,7 @@ namespace Tailviewer.Ui
 			_services = services;
 			_applicationSettings = settings;
 
-			_settings = new SettingsMainPanelViewModel(settings, services);
+			_settings = new SettingsFlyoutViewModel(settings, services);
 			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
 
 			_logViewPanel = new LogViewMainPanelViewModel(services,
@@ -81,7 +87,18 @@ namespace Tailviewer.Ui
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
 			                                              _applicationSettings);
+			
+			WindowTitle = _logViewPanel.WindowTitle;
+			WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
+
 			((NavigationService) services.Retrieve<INavigationService>()).LogViewer = _logViewPanel;
+
+			_fileMenu = new FileMenu(new DelegateCommand2(AddDataSourceFromFile),
+			                         new DelegateCommand2(AddDataSourceFromFolder),
+			                         _logViewPanel.DataSources.RemoveCurrentDataSourceCommand,
+			                         _logViewPanel.DataSources.RemoveAllDataSourcesCommand,
+			                         new DelegateCommand2(ShowSettings),
+			                         new DelegateCommand2(Exit));
 
 			_logViewPanel.PropertyChanged += LogViewPanelOnPropertyChanged;
 
@@ -99,12 +116,6 @@ namespace Tailviewer.Ui
 			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
 			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
-			_rawEntry = new LogViewMainPanelEntry();
-			_topEntries = new IMainPanelEntry[]
-			{
-				_rawEntry
-			};
-
 			_helpMenuItems = new[]
 			{
 				new CommandMenuViewModel(AutoUpdater.CheckForUpdatesCommand)
@@ -121,20 +132,6 @@ namespace Tailviewer.Ui
 					Header = "About"
 				}
 			};
-
-			var selectedTopEntry = _topEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel);
-
-			if (selectedTopEntry != null)
-			{
-				SelectedTopEntry = selectedTopEntry;
-			}
-			else
-			{
-				SelectedTopEntry = _rawEntry;
-			}
-
-			_isLeftSidePanelVisible = settings.MainWindow.IsLeftSidePanelVisible;
-			UpdateLeftSidePanelExpanderTooltip();
 		}
 
 		public IFlyoutViewModel CurrentFlyout
@@ -150,47 +147,74 @@ namespace Tailviewer.Ui
 			}
 		}
 
-		public LogViewMainPanelViewModel SelectRawEntry()
+		private void AddDataSourceFromFile()
 		{
-			SelectedTopEntry = _rawEntry;
-			return _logViewPanel;
+			var dlg = new OpenFileDialog
+			{
+				Title = "Select log file to open",
+				DefaultExt = ".log",
+				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+				Multiselect = true
+			};
+
+			if (dlg.ShowDialog() == true)
+			{
+				string[] selectedFiles = dlg.FileNames;
+				foreach (string fileName in selectedFiles)
+				{
+					_logViewPanel.GetOrAddFile(fileName);
+				}
+			}
+		}
+
+		private void AddDataSourceFromFolder()
+		{
+			var dlg = new VistaFolderBrowserDialog
+			{
+				Description = "Select folder to open",
+				UseDescriptionForTitle = true
+			};
+
+			if (dlg.ShowDialog() == true)
+			{
+				var folder = dlg.SelectedPath;
+				_logViewPanel.GetOrAddFolder(folder);
+			}
 		}
 
 		private void GoToNextDataSource()
 		{
-			if (SelectedMainPanel == _logViewPanel)
-			{
-				_logViewPanel.GoToNextDataSource();
-			}
+			_logViewPanel.GoToNextDataSource();
 		}
 
 		private void GoToPreviousDataSource()
 		{
-			if (SelectedMainPanel == _logViewPanel)
-			{
-				_logViewPanel.GoToPreviousDataSource();
-			}
+			_logViewPanel.GoToPreviousDataSource();
 		}
 
 		private void ShowGoToLine()
 		{
-			if (SelectedMainPanel == _logViewPanel)
-			{
-				_logViewPanel.GoToLine.Show = true;
-			}
+			_logViewPanel.GoToLine.Show = true;
 		}
 
 		private void ShowQuickNavigation()
 		{
-			if (SelectedMainPanel == _logViewPanel)
-			{
-				_logViewPanel.ShowQuickNavigation = true;
-			}
+			_logViewPanel.ShowQuickNavigation = true;
+		}
+
+		private void ShowSettings()
+		{
+			CurrentFlyout = new SettingsFlyoutViewModel(_applicationSettings, _services);
 		}
 
 		private void ShowLog()
 		{
 			_logViewPanel.GetOrAddPath(Constants.ApplicationLogFile);
+		}
+
+		private void Exit()
+		{
+			System.Windows.Application.Current.Shutdown();
 		}
 
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
@@ -199,19 +223,36 @@ namespace Tailviewer.Ui
 		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
 		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
+		public IEnumerable<IMenuViewModel> FileMenuItems => _fileMenu.Items;
+
+		public IEnumerable<IMenuViewModel> ViewMenuItems
+		{
+			get{return _viewMenuItems;}
+			private set
+			{
+				if (value == _viewMenuItems)
+					return;
+
+				_viewMenuItems = value;
+				EmitPropertyChanged();
+			}
+		}
 		public IEnumerable<IMenuViewModel> HelpMenuItems => _helpMenuItems;
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			switch (args.PropertyName)
 			{
 				case nameof(LogViewMainPanelViewModel.WindowTitle):
-					if (SelectedMainPanel == _logViewPanel)
-						WindowTitle = _logViewPanel.WindowTitle;
+					WindowTitle = _logViewPanel.WindowTitle;
 					break;
 
 				case nameof(LogViewMainPanelViewModel.WindowTitleSuffix):
-					if (SelectedMainPanel == _logViewPanel)
-						WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
+					WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
+					break;
+
+				case nameof(LogViewMainPanelViewModel.CurrentDataSource):
+					_fileMenu.CurrentDataSource = _logViewPanel.CurrentDataSource;
+					ViewMenuItems = _logViewPanel.CurrentDataSource?.ViewMenuItems;
 					break;
 			}
 		}
@@ -231,31 +272,6 @@ namespace Tailviewer.Ui
 				_windowTitle = value;
 				EmitPropertyChanged();
 			}
-		}
-
-		public bool IsLeftSidePanelVisible
-		{
-			get => _isLeftSidePanelVisible;
-			set
-			{
-				if (value == _isLeftSidePanelVisible)
-					return;
-
-				_isLeftSidePanelVisible = value;
-				EmitPropertyChanged();
-
-				UpdateLeftSidePanelExpanderTooltip();
-
-				_applicationSettings.MainWindow.IsLeftSidePanelVisible = value;
-				_applicationSettings.SaveAsync();
-			}
-		}
-
-		private void UpdateLeftSidePanelExpanderTooltip()
-		{
-			LeftSidePanelExpanderTooltip = IsLeftSidePanelVisible
-				? "Hide icons"
-				: "Show hidden icons";
 		}
 
 		public string LeftSidePanelExpanderTooltip
@@ -283,56 +299,12 @@ namespace Tailviewer.Ui
 				EmitPropertyChanged();
 			}
 		}
-
-		#region Main Panel
-
-		public IMainPanelViewModel SelectedMainPanel
-		{
-			get { return _selectedMainPanel; }
-			private set
-			{
-				if (value == _selectedMainPanel)
-					return;
-
-				_selectedMainPanel = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public IEnumerable<IMainPanelEntry> TopEntries => _topEntries;
-
-		public IMainPanelEntry SelectedTopEntry
-		{
-			get { return _selectedTopEntry; }
-			set
-			{
-				if (value == _selectedTopEntry)
-					return;
-
-				_selectedTopEntry = value;
-				EmitPropertyChanged();
-
-				if (value == _rawEntry)
-				{
-					SelectedMainPanel = _logViewPanel;
-					WindowTitle = _logViewPanel.WindowTitle;
-					WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
-				}
-
-				if (value != null)
-				{
-					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
-				}
-			}
-		}
-
-		#endregion
-
+		
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			_selectedMainPanel?.Update();
+			_logViewPanel?.Update();
 			_actionCenterViewModel.Update();
 		}
 
@@ -349,37 +321,12 @@ namespace Tailviewer.Ui
 			IDataSourceViewModel dataSource = _logViewPanel.GetOrAddPath(file);
 			return dataSource;
 		}
-		
-		public bool CanBeDragged(IDataSourceViewModel source)
-		{
-			var panel = _selectedMainPanel as LogViewMainPanelViewModel;
-			if (panel != null)
-				return panel.CanBeDragged(source);
-
-			return false;
-		}
-
-		public bool CanBeDropped(IDataSourceViewModel source,
-		                         IDataSourceViewModel dest,
-		                         DataSourceDropType dropType,
-		                         out IDataSourceViewModel finalDest)
-		{
-			var panel = _selectedMainPanel as LogViewMainPanelViewModel;
-			if (panel != null)
-			{
-				return panel.CanBeDropped(source, dest, dropType, out finalDest);
-			}
-
-			finalDest = null;
-			return false;
-		}
 
 		public void OnDropped(IDataSourceViewModel source,
 		                      IDataSourceViewModel dest,
 		                      DataSourceDropType dropType)
 		{
-			var panel = _selectedMainPanel as LogViewMainPanelViewModel;
-			panel?.OnDropped(source, dest, dropType);
+			_logViewPanel?.OnDropped(source, dest, dropType);
 		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)

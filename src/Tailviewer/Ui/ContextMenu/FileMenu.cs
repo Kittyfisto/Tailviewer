@@ -13,6 +13,7 @@ namespace Tailviewer.Ui.ContextMenu
 	{
 		private readonly ObservableCollection<IMenuViewModel> _openItems;
 		private readonly ObservableCollection<IMenuViewModel> _closeItems;
+		private readonly ObservableCollection<IMenuViewModel> _settingsItems;
 		private readonly ObservableCollection<IMenuViewModel> _exitItems;
 		private readonly ObservableCollection<IMenuViewModel> _newCustomMenuViewModels;
 		private readonly CompoundObservableCollection<IMenuViewModel> _fileMenuItems;
@@ -23,6 +24,7 @@ namespace Tailviewer.Ui.ContextMenu
 		                ICommand addDataSourceFromFolder,
 		                ICommand closeCurrentDataSource,
 		                ICommand closeAllDataSources,
+		                ICommand showSettings,
 		                ICommand exitCommand)
 		{
 			_newCustomMenuViewModels = new ObservableCollection<IMenuViewModel>
@@ -73,6 +75,14 @@ namespace Tailviewer.Ui.ContextMenu
 				},
 			};
 			_fileMenuItems.Add(_closeItems);
+			_settingsItems = new ObservableCollection<IMenuViewModel>
+			{
+				new CommandMenuViewModel(showSettings)
+				{
+					Header = "Settings"
+				}
+			};
+			_fileMenuItems.Add(_settingsItems);
 			_exitItems = new ObservableCollection<IMenuViewModel>
 			{
 				new CommandMenuViewModel(exitCommand)

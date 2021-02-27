@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -10,18 +12,17 @@ using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Settings.CustomFormats;
-using Tailviewer.Ui.SidePanel;
 
 namespace Tailviewer.Ui.Settings
 {
-	public sealed class SettingsMainPanelViewModel
-		: AbstractMainPanelViewModel
+	public sealed class SettingsFlyoutViewModel
+		: IFlyoutViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static readonly IReadOnlyList<EncodingViewModel> Encodings;
 
-		static SettingsMainPanelViewModel()
+		static SettingsFlyoutViewModel()
 		{
 			Encodings = new[]
 			{
@@ -49,9 +50,8 @@ namespace Tailviewer.Ui.Settings
 		private EncodingViewModel _defaultTextFileEncoding;
 		private readonly CustomFormatsSettingsViewModel _customFormats;
 
-		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings,
+		public SettingsFlyoutViewModel(IApplicationSettings applicationSettings,
 		                                  IServiceContainer serviceContainer)
-			: base(applicationSettings)
 		{
 			_settings = applicationSettings;
 
@@ -308,10 +308,10 @@ namespace Tailviewer.Ui.Settings
 			}
 		}
 
-		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
-
-		public override void Update()
+		public void Update()
 		{}
+
+		public string Name => "Settings";
 
 		private void ChooseExportFolder()
 		{
@@ -326,6 +326,17 @@ namespace Tailviewer.Ui.Settings
 			{
 				ExportFolder = dialog.SelectedPath;
 			}
+		}
+
+		#region Implementation of INotifyPropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

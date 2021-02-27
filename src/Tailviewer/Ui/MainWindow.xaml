@@ -46,11 +46,11 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogViewMainPanelDataTemplate.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/Settings/SettingsMainPanelDataTemplate.xaml" />
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Settings/SettingsFlyoutDataTemplate.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/Plugins/PluginsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/About/AboutMainPanelDataTemplate.xaml" />
+                    Source="pack://application:,,,/Tailviewer;component/Ui/About/AboutFlyoutDataTemplate.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary
@@ -93,16 +93,16 @@
                   Background="Transparent">
                 <MenuItem Header="_File"
                           Style="{StaticResource MainMenuItemStyle}"
-                          ItemsSource="{Binding SelectedMainPanel.FileMenuItems}" />
+                          ItemsSource="{Binding FileMenuItems}" />
                 <MenuItem Header="_View"
                           Style="{StaticResource MainMenuItemStyle}"
-                          ItemsSource="{Binding SelectedMainPanel.ViewMenuItems}" />
+                          ItemsSource="{Binding ViewMenuItems}" />
                 <MenuItem Header="_Help"
                           Style="{StaticResource MainMenuItemStyle}"
                           ItemsSource="{Binding HelpMenuItems}" />
             </Menu>
 
-            <metrolib:SearchTextBox x:Name="PART_SearchBox"
+            <metrolib:SearchTextBox x:Name="PartSearchBox"
                                     Grid.Column="2"
                                     Margin="8,2,8,2"
                                     Padding="2"
@@ -111,12 +111,12 @@
                                     Width="200"
                                     RequiresExplicitSearchStart="False"
                                     AcceptsTab="True"
-                                    Text="{Binding SelectedMainPanel.Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    OccurenceCount="{Binding SelectedMainPanel.Search.ResultCount}"
-                                    CurrentOccurenceIndex="{Binding SelectedMainPanel.Search.CurrentResultIndex, Mode=TwoWay}"
+                                    Text="{Binding LogViewPanel.Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    OccurenceCount="{Binding LogViewPanel.Search.ResultCount}"
+                                    CurrentOccurenceIndex="{Binding LogViewPanel.Search.CurrentResultIndex, Mode=TwoWay}"
                                     Watermark="Search log file (Ctrl+F)" />
 
-            <metrolib:FilterTextBox x:Name="PART_FindAllBox"
+            <metrolib:FilterTextBox x:Name="PartFindAllBox"
                                     Grid.Column="3"
                                     Margin="0,2,8,2"
                                     Padding="2"
@@ -124,8 +124,8 @@
                                     Height="24"
                                     Width="200"
                                     AcceptsTab="True"
-                                    IsEnabled="{Binding SelectedMainPanel.FindAll, Converter={StaticResource NullToFalseConverter}}"
-                                    FilterText="{Binding SelectedMainPanel.FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding LogViewPanel.FindAll, Converter={StaticResource NullToFalseConverter}}"
+                                    FilterText="{Binding LogViewPanel.FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Watermark="Find all in log file (Ctrl+Shift+F)" />
 
             <TextBlock Grid.Column="4"
@@ -154,7 +154,7 @@
                                               IsFirstItemHovered="True"
                                               VerticalOffset="-2">
                         <metrolib:MenuItemContentControl Padding="0">
-                            <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
+                            <actionCenter:ActionCenterControl x:Name="PartActionCenter"
                                                               DataContext="{Binding ActionCenter}"
                                                               Width="260"
                                                               VerticalAlignment="Stretch"
@@ -169,7 +169,7 @@
         </Grid>
     </metrolib:ChromelessWindow.Header>
 
-    <AdornerDecorator x:Name="PART_DragDecorator"
+    <AdornerDecorator x:Name="PartDragDecorator"
                       SnapsToDevicePixels="True">
         <Grid>
             <Grid>
@@ -188,8 +188,8 @@
                                       Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
 
                 <ContentPresenter Grid.Row="2"
-                                  Content="{Binding SelectedMainPanel}"
-                                  x:Name="PART_Content" />
+                                  Content="{Binding LogViewPanel}"
+                                  x:Name="PartContent" />
 
                 <!-- Overlay to darken the main window content to show that a flyout (a popup) is laid over the window-->
                 <Grid Grid.Row="2"
@@ -233,7 +233,7 @@
                     <ContentPresenter Grid.Row="2"
                                       Content="{Binding CurrentFlyout}"
                                       Margin="16"
-                                      x:Name="PART_Flyout" />
+                                      x:Name="PartFlyout" />
                 </Grid>
 
             </Grid>

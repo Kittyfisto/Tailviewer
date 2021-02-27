@@ -19,7 +19,7 @@ namespace Tailviewer.Test.Ui
 			settings.DataSources.FolderDataSourceRecursive = recursive;
 			settings.DataSources.FolderDataSourcePattern = "*.log;*.txt";
 
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.FolderDataSourceRecursive.Should().Be(recursive);
 			model.FolderDataSourcePatterns.Should().Be("*.log;*.txt");
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui
 			var settings = new ApplicationSettings("foo");
 			settings.LogFile.DefaultEncoding = encoding;
 
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.DefaultTextFileEncoding.Should().NotBeNull();
 			model.DefaultTextFileEncoding.Encoding.Should().BeSameAs(encoding);
@@ -43,7 +43,7 @@ namespace Tailviewer.Test.Ui
 		public void TestSetFolderDataSourcePatterns1([Values(null, "", " ", ";;")] string emptyPattern)
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.FolderDataSourcePatterns = emptyPattern;
 			settings.DataSources.FolderDataSourcePattern.Should().Be(emptyPattern);
@@ -53,7 +53,7 @@ namespace Tailviewer.Test.Ui
 		public void TestSetFolderDataSourcePatternsSkipTrailingSpace()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.FolderDataSourcePatterns = "*.log ";
 			settings.DataSources.FolderDataSourcePattern.Should().Be("*.log ");
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.Ui
 		public void TestSetFolderDataSourceMultiplePatterns()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.FolderDataSourcePatterns = "*.txt;*.log ;*log*";
 			settings.DataSources.FolderDataSourcePattern.Should().Be("*.txt;*.log ;*log*");
@@ -73,7 +73,7 @@ namespace Tailviewer.Test.Ui
 		public void TestSetFolderDataSourcePatternsSkipLeadingSpace()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.FolderDataSourcePatterns = " *.log";
 			settings.DataSources.FolderDataSourcePattern.Should().Be(" *.log");
@@ -83,7 +83,7 @@ namespace Tailviewer.Test.Ui
 		public void TestProxyPassword1()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			var changes = new List<string>();
 			model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -110,7 +110,7 @@ namespace Tailviewer.Test.Ui
 		public void TestProxyPassword2()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			model.ProxyPassword = "foobar";
 			settings.AutoUpdate.ProxyPassword.Should().Be("foobar");
@@ -126,7 +126,7 @@ namespace Tailviewer.Test.Ui
 		public void TestTestChangeDefaultEncoding()
 		{
 			var settings = new ApplicationSettings("foo");
-			var model = new SettingsMainPanelViewModel(settings, new ServiceContainer());
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
 
 			var newEncoding = model.TextFileEncodings.Last();
 			model.DefaultTextFileEncoding = newEncoding;
