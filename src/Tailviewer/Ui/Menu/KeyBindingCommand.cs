@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows.Input;
 using Metrolib;
 
@@ -29,7 +30,46 @@ namespace Tailviewer.Ui.Menu
 		
 		public Key GestureKey { get; set; }
 		public ModifierKeys GestureModifier { get; set; }
-		public MouseAction MouseGesture { get; set; }
+
+		#region Overrides of Object
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			void AddPlus()
+			{
+				if (builder.Length > 0)
+					builder.Append("+");
+			};
+
+			if (GestureModifier != ModifierKeys.None)
+			{
+				if ((GestureModifier & ModifierKeys.Control) == ModifierKeys.Control)
+				{
+					AddPlus();
+					builder.Append("Ctrl");
+				}
+
+				if ((GestureModifier & ModifierKeys.Shift) == ModifierKeys.Shift)
+				{
+					AddPlus();
+					builder.Append("Shift");
+				}
+
+				if ((GestureModifier & ModifierKeys.Alt) == ModifierKeys.Alt)
+				{
+					AddPlus();
+					builder.Append("Alt");
+				}
+			}
+
+			AddPlus();
+			builder.Append(GestureKey);
+
+			return builder.ToString();
+		}
+
+		#endregion
 
 		#region Implementation of ICommand
 

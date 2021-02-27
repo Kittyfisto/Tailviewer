@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.Menu
 {
 	public sealed class ToggleExcludeFromGroupViewModel
 		: IMenuViewModel
-			, INotifyPropertyChanged
+		, INotifyPropertyChanged
 	{
 		private readonly DelegateCommand2 _command;
 		private readonly ISingleDataSourceViewModel _dataSource;
@@ -59,6 +59,8 @@ namespace Tailviewer.Ui.Menu
 		{
 			get { return null; }
 		}
+
+		public string Shortcut => null;
 
 		public Geometry Icon
 		{

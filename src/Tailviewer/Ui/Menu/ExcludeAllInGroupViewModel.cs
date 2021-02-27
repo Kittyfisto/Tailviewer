@@ -36,6 +36,8 @@ namespace Tailviewer.Ui.Menu
 
 		public string ToolTip => null;
 
+		public string Shortcut => null;
+
 		public Geometry Icon => null;
 
 		public ICommand Command => _command;

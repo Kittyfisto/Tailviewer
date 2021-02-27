@@ -15,7 +15,7 @@
                            MinHeight="600"
                            HideTitle="True">
 
-    <!--<Window.InputBindings>
+    <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="F"
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+F"
@@ -34,7 +34,7 @@
                     Command="{Binding GoToPreviousDataSourceCommand}" />
         <KeyBinding Gesture="Ctrl+G"
                     Command="{Binding ShowGoToLineCommand}" />
-    </Window.InputBindings>-->
+    </Window.InputBindings>
 
     <Window.Resources>
         <ResourceDictionary>
