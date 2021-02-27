@@ -10,10 +10,9 @@ namespace Tailviewer.Ui.Menu
 	///     Represents the "Edit" main menu.
 	/// </summary>
 	public sealed class EditMenuViewModel
-		: IMenu
+		: AbstractMainMenuViewModel
 	{
 		private readonly ICommand _goToLineCommand;
-		private readonly CompoundObservableCollection<IMenuViewModel> _items;
 		private readonly int _dataSourceInsertionIndex;
 		private readonly int _minCount;
 		private readonly ObservableCollectionExt<IMenuViewModel> _goToItems;
@@ -21,12 +20,11 @@ namespace Tailviewer.Ui.Menu
 		public EditMenuViewModel(ICommand goToLineCommand)
 		{
 			_goToLineCommand = goToLineCommand;
-			_items = new CompoundObservableCollection<IMenuViewModel>(true);
 			_goToItems = new ObservableCollectionExt<IMenuViewModel>();
 
-			_items.Add(_goToItems);
-			_dataSourceInsertionIndex = _items.ChildCollectionCount;
-			_minCount = _items.ChildCollectionCount;
+			AllItems.Add(_goToItems);
+			_dataSourceInsertionIndex = AllItems.ChildCollectionCount;
+			_minCount = AllItems.ChildCollectionCount;
 		}
 
 		private IEnumerable<IMenuViewModel> CreateGoToItems()
@@ -46,18 +44,16 @@ namespace Tailviewer.Ui.Menu
 
 		#region Implementation of IMenu
 
-		public IEnumerable<IMenuViewModel> Items => _items;
-
-		public IDataSourceViewModel CurrentDataSource
+		public override IDataSourceViewModel CurrentDataSource
 		{
 			set
 			{
-				if (_items.ChildCollectionCount > _minCount)
+				if (AllItems.ChildCollectionCount > _minCount)
 				{
-					_items.RemoveAt(_dataSourceInsertionIndex);
+					AllItems.RemoveAt(_dataSourceInsertionIndex);
 				}
 
-				_items.Insert(_dataSourceInsertionIndex, value?.EditMenuItems);
+				AllItems.Insert(_dataSourceInsertionIndex, value?.EditMenuItems);
 
 				if (value != null)
 				{

@@ -233,6 +233,7 @@
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\AboutViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
+    <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModel.cs" />
     <Compile Include="Ui\FlatImage.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />

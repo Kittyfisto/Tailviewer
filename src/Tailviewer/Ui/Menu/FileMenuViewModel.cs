@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Collections;
@@ -130,5 +132,18 @@ namespace Tailviewer.Ui.Menu
 		}
 
 		public IEnumerable<IMenuViewModel> Items => _fileMenuItems;
+
+		public bool HasItems => true;
+
+		#region Implementation of INotifyPropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }

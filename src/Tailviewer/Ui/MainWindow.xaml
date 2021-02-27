@@ -94,9 +94,11 @@
                           ItemsSource="{Binding MainMenu.File.Items}" />
                 <MenuItem Header="_Edit"
                           Style="{StaticResource MainMenuItemStyle}"
+                          Visibility="{Binding MainMenu.Edit.HasItems, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                           ItemsSource="{Binding MainMenu.Edit.Items}" />
                 <MenuItem Header="_View"
                           Style="{StaticResource MainMenuItemStyle}"
+                          Visibility="{Binding MainMenu.Edit.HasItems, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                           ItemsSource="{Binding MainMenu.View.Items}" />
                 <MenuItem Header="_Help"
                           Style="{StaticResource MainMenuItemStyle}"

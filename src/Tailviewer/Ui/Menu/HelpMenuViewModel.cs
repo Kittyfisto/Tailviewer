@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 
@@ -57,9 +59,28 @@ namespace Tailviewer.Ui.Menu
 			};
 		}
 
+		#region Implementation of INotifyPropertyChanged
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		#region Implementation of IMenu
 
-		public IEnumerable<IMenuViewModel> Items => _items;
+		public IEnumerable<IMenuViewModel> Items
+		{
+			get { return _items; }
+		}
+
+		public bool HasItems
+		{
+			get { return true; }
+		}
 
 		#endregion
 	}

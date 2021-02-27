@@ -817,6 +817,12 @@ namespace Tailviewer.Ui.LogView
 				_fileMenuItems.Add(item);
 		}
 
+		protected void AddEditMenuItems(IEnumerable<IMenuViewModel> viewModels)
+		{
+			foreach (var item in viewModels)
+				_editMenuItems.Add(item);
+		}
+
 		protected void AddViewMenuItems(IEnumerable<IMenuViewModel> viewModels)
 		{
 			foreach (var item in viewModels)
