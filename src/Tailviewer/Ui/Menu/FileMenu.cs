@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
 	///     Responsible for building the (dynamic) file menu.
@@ -39,7 +39,7 @@ namespace Tailviewer.Ui.ContextMenu
 				new CommandMenuViewModel(addDataSourceFromFile)
 				{
 					Header = "_File",
-					Icon = Icons.File,
+					Icon = Icons.FileOutline,
 				},
 				new CommandMenuViewModel(addDataSourceFromFolder)
 				{
@@ -82,7 +82,7 @@ namespace Tailviewer.Ui.ContextMenu
 				new CommandMenuViewModel(showPlugins)
 				{
 					Header = "Plugins",
-					Icon = Icons.Puzzle
+					Icon = Icons.PuzzleOutline
 				}
 			};
 			_fileMenuItems.Add(_pluginsItems);

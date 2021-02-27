@@ -15,9 +15,9 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.About;
 using Tailviewer.Ui.ActionCenter;
-using Tailviewer.Ui.ContextMenu;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.Menu;
 using Tailviewer.Ui.Plugins;
 using Tailviewer.Ui.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -92,7 +92,7 @@ namespace Tailviewer.Ui
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
 			                                              applicationSettings);
-			
+			ViewMenuItems = _logViewPanel.CurrentDataSource?.ViewMenuItems;
 			WindowTitle = _logViewPanel.WindowTitle;
 			WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
 

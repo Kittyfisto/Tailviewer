@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
 	///     A menu view model which holds a list of children.

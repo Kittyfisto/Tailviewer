@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Tailviewer.Ui.ContextMenu
+namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
 	///     Base class for context menu view models.
