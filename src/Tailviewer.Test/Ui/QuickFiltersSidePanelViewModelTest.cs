@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -9,9 +10,9 @@ using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
-using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.SidePanel.QuickFilters;
+using Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui
@@ -24,6 +25,7 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ApplicationSettings _settings;
 		private Mock<IActionCenter> _actionCenter;
+		private Mock<IApplicationSettings> _applicationSettings;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -31,6 +33,7 @@ namespace Tailviewer.Test.Ui
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
+			_applicationSettings = new Mock<IApplicationSettings>();
 		}
 
 		[SetUp]
@@ -38,6 +41,12 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new ApplicationSettings("addwa");
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
+		}
+
+		[Pure]
+		private FileDataSourceViewModel CreateViewModel(FileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
 		}
 
 		[Test]
@@ -109,7 +118,7 @@ namespace Tailviewer.Test.Ui
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
 				new DataSource("sw") {Id = DataSourceId.CreateNew()});
-			model.CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+			model.CurrentDataSource = CreateViewModel(dataSource);
 			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
 		}
@@ -123,7 +132,7 @@ namespace Tailviewer.Test.Ui
 			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
 
-			model.CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+			model.CurrentDataSource = CreateViewModel(dataSource);
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
 
 			model.CurrentDataSource = null;
@@ -133,10 +142,11 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeFilterType1()
 		{
+			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			                                    new DataSource("adw") {Id = DataSourceId.CreateNew()});
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
 			{
-				CurrentDataSource = new FileDataSourceViewModel(new FileDataSource(_logFileFactory, _scheduler,
-					new DataSource("adw") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+				CurrentDataSource = CreateViewModel(dataSource)
 			};
 
 			var numFilterChanges = 0;
@@ -197,7 +207,7 @@ namespace Tailviewer.Test.Ui
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			var changed = 0;
 			model.OnFiltersChanged += () => ++changed;
-			model.CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+			model.CurrentDataSource = CreateViewModel(dataSource);
 			changed.Should().Be(1, "Because changing the current data source MUST apply ");
 		}
 
@@ -212,7 +222,7 @@ namespace Tailviewer.Test.Ui
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
 			{
-				CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object)
+				CurrentDataSource = CreateViewModel(dataSource)
 			};
 			var filter1Model = model.QuickFilters.First();
 
@@ -235,7 +245,7 @@ namespace Tailviewer.Test.Ui
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
 			{
-				CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object)
+				CurrentDataSource = CreateViewModel(dataSource)
 			};
 			var filter1Model = model.QuickFilters.First();
 			filter1Model.IsActive = false;
@@ -257,7 +267,7 @@ namespace Tailviewer.Test.Ui
 
 			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
 				new DataSource("daw") {Id = DataSourceId.CreateNew()});
-			model.CurrentDataSource = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+			model.CurrentDataSource = CreateViewModel(dataSource);
 			model.QuickFilters.ElementAt(0).IsActive = true;
 			model.QuickInfo.Should().Be("1 active");
 

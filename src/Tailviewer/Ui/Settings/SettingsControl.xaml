@@ -1,0 +1,447 @@
+﻿<UserControl x:Class="Tailviewer.Ui.Settings.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+             xmlns:tailviewer="clr-namespace:Tailviewer"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:settings="clr-namespace:Tailviewer.Ui.Settings"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance settings:SettingsFlyoutViewModel}"
+             Foreground="#333333"
+             Background="White">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+                <ResourceDictionary Source="CustomFormats/CustomFormatsSettingsDataTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="HeaderDataTemplate">
+                <TextBlock FontSize="22" Text="{Binding}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <controls:FlatScrollViewer VerticalScrollBarVisibility="Auto"
+                               HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                
+                <controls:FlatGroupBox Header="Export" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Export folder" Margin="0,6,6,6"/>
+                        <controls:PathChooserTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     PathChooserCommand="{Binding ChooseExportFolderCommand}"
+                                                     Grid.Column="1"/>
+                    </Grid>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="1" Header="Log Viewer" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Scroll speed"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="0" />
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="0"
+                                                Margin="0,6,6,6">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="ScrollSpeed"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
+
+                        <TextBlock Text="Font Size"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="1"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="1"
+                                                Margin="0,6,6,6">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="FontSize"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
+
+                        <TextBlock Text="Tab Width"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="2"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="2"
+                                                Margin="0,6,6,6">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="TabWidth"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
+                    </Grid>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="2" Header="Log Levels" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Foreground Color"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Background Color"
+                                       HorizontalAlignment="Center"/>
+                        </Grid>
+
+                        <TextBlock Text="Other"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="1"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="1"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Trace"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="2"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="2"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Debug"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="3"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="3"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Info"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="4"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="4"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Warning"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="5"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="5"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Error"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="6"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="6"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Fatal"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="7"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="7"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+                    </Grid>
+                </controls:FlatGroupBox>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <controls:FlatGroupBox Header="Data Sources" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Grid.Row="0"
+                                  Margin="0,6,6,6"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding FolderDataSourceRecursive, Mode=TwoWay}">
+                            <TextBlock Text="When checked, newly created folder data sources will display all files in the selected folder AND its subfolders."
+                                       TextWrapping="Wrap" />
+                        </CheckBox>
+
+                        <TextBlock Text="Folder data source filter"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="1"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="1"
+                                                Text="{Binding FolderDataSourcePatterns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="2"
+                                   Foreground="#6B6B6B"
+                                   TextWrapping="Wrap">
+                            <Run Text="Newly created folder data sources will use this pattern to select files which shall be displayed." />
+                            <LineBreak />
+                            <Run Text="A pattern such as '*.log' (without quotes) selects files which end in .log." />
+                            <LineBreak />
+                            <Run Text="'*.txt;*.log' (without quotes) selects files which end in either .txt or .log." />
+                            <LineBreak />
+                            <Run Text="'*bb*' (without quotes) selects files which have bb in their file name." />
+                        </TextBlock>
+
+                        <TextBlock Text="Default text file encoding"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="3"
+                                   Grid.Column="0" />
+
+                        <ComboBox Grid.Column="1"
+                                  Grid.Row="3"
+                                  Margin="0,6,6,6"
+                                  ItemsSource="{Binding TextFileEncodings}"
+                                  SelectedItem="{Binding DefaultTextFileEncoding}"/>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="4"
+                                   Foreground="#6B6B6B"
+                                   TextWrapping="Wrap">
+                            <Run Text="If anything else but 'Auto detect' is selected, then tailviewer will only use the given encoding to decode text-based log files." />
+                            <LineBreak />
+                            <Run Text="Changing this value requires tailviewer to be restarted in order to take effect." />
+                        </TextBlock>
+
+                    </Grid>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Header="Custom Log file Formats"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}"
+                                       Grid.Row="1"
+                                       VerticalAlignment="Top" Margin="8">
+                    <ContentPresenter Content="{Binding CustomFormats}" />
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="2"
+                                       Header="Window" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
+                    </Grid>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8"
+                                       Grid.Row="3">
+                    <controls:FlatGroupBox.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="22" Text="{Binding}" />
+                        </DataTemplate>
+                    </controls:FlatGroupBox.HeaderTemplate>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <CheckBox x:Name="PART_CheckForUpdates" IsChecked="{Binding CheckForUpdates, Mode=TwoWay}"
+                                      Content="Notify me when an update becomes available" Margin="0,4,4,4" />
+                            <!--<CheckBox Grid.Row="1" IsChecked="{Binding AutomaticallyInstallUpdates, Mode=TwoWay}" Content="Automatically install the newest versions" IsEnabled="{Binding IsChecked,ElementName=PART_CheckForUpdates}"></CheckBox>-->
+                            <TextBlock Grid.Row="2" TextWrapping="Wrap" Margin="0,4,0,0"
+                                       Text="If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available." />
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
+                                <controls:EditorTextBox Watermark="Proxy username" Width="110"
+                                                           Text="{Binding ProxyUsername}" Margin="0,0,4,0"
+                                                           IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                                <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
+                                                          x:Name="PART_ProxyPassword"
+                                                          PasswordChanged="OnPasswordChanged"
+                                                          Margin="0,0,4,0"
+                                                          IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                                <controls:EditorTextBox Watermark="Proxy server" Width="150"
+                                                           Text="{Binding ProxyServer}" Margin="0"
+                                                           IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                            </StackPanel>
+                            
+                        </Grid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Margin="4"
+                                       Text="Third party plugins will be automatically updated from the following repositories:"/>
+
+                            <controls:EditorTextBox Grid.Row="1" Text="{Binding PluginRepositories}"
+                                                    TextWrapping="Wrap"
+                                                    AcceptsReturn="True" />
+                        </Grid>
+                    </StackPanel>
+                </controls:FlatGroupBox>
+
+            </Grid>
+        </Grid>
+    </controls:FlatScrollViewer>
+</UserControl>

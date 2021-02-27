@@ -6,14 +6,12 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
-using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.Controls.SidePanel.DataSources;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.SidePanel.DataSources;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Test.Ui
@@ -52,12 +50,79 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that when the data source view model is created with the data sources pinned, then the correct properties are set")]
+		public void TestConstructionPinned()
+		{
+			_settings.DataSources.IsPinned = true;
+			var model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
+			model.IsPinned.Should().BeTrue();
+			model.IsChecked.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			_settings.DataSources.IsPinned = false;
+			var model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
+			model.IsPinned.Should().BeFalse();
+			model.IsChecked.Should().BeFalse();
+			model.DataSources.Should().BeEmpty();
+			model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+		}
+
+		[Test]
 		[Description("Verifies that adding the first data source sets it to be selected")]
 		public void TestAdd1()
 		{
 			var model = _model.GetOrAddFile("foo");
 			_model.SelectedItem.Should().BeSameAs(model);
 			model.IsVisible.Should().BeTrue();
+		}
+
+		[Test]
+		[Description("Verifies that it's possible to remove the current data source when it exists")]
+		public void TestRemoveCurrentDataSource()
+		{
+			var model1 = _model.GetOrAddFile("foo");
+			_model.SelectedItem.Should().BeSameAs(model1);
+			model1.IsVisible.Should().BeTrue();
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			var model2 = _model.GetOrAddFile("bar");
+			_model.SelectedItem = model2;
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's two data sources to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's two data sources to remove");
+
+			_model.RemoveCurrentDataSourceCommand.Execute(null);
+			_model.DataSources.Should().Equal(new object[]{model1}, "because we've just removed the selected data source, leaving one behind");
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			_model.RemoveCurrentDataSourceCommand.Execute(null);
+			_model.DataSources.Should().BeEmpty("because we've just removed the last data source");
+			_dataSources.Sources.Should().BeEmpty("because we've just removed the last data source");
+
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+		}
+
+		[Test]
+		[Description("Verifies that it's possible to remove the current data source when it exists")]
+		public void TestRemoveAllDataSources()
+		{
+			_model.GetOrAddFile("foo");
+			_model.GetOrAddFile("bar");
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeTrue("because there's a data source to remove");
+
+			_model.RemoveAllDataSourcesCommand.Execute(null);
+			_model.DataSources.Should().BeEmpty("because we've just removed the last data source");
+			_dataSources.Sources.Should().BeEmpty("because we've just removed the last data source");
+			_model.SelectedItem.Should().BeNull();
+			_model.RemoveCurrentDataSourceCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
+			_model.RemoveAllDataSourcesCommand.CanExecute(null).Should().BeFalse("because there's no data source to remove");
 		}
 
 		[Test]
@@ -688,6 +753,8 @@ namespace Tailviewer.Test.Ui
 			_model.Observable.Should().Equal(a, merged, d);
 			merged.RemoveCommand.Execute(null);
 			_model.Observable.Should().Equal(a, b, c, d);
+			_model.SelectedItem.Should().NotBeNull("becuse the view model should still make sure that a data source is selected, when possible");
+			_model.SelectedItem.Should().NotBe(merged);
 		}
 
 		[Test]

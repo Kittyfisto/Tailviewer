@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.AcceptanceTests.BusinessLogic.Sources;
-using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple;
+using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Test;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {
@@ -43,25 +44,31 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		{
 		}
 
+		[Pure]
+		private FileDataSourceViewModel CreateViewModel(FileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _settings);
+		}
+
 		[Test]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestSearch1()
 		{
 			using (
 				var dataSource = new FileDataSource(_logFileFactory, _taskScheduler,
-					new DataSource(TextLogSourceAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
+					new DataSource(AbstractTextLogSourceAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
 			{
-				var dataSourceModel = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
+				var dataSourceModel = CreateViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
-				dataSourceModel.SearchTerm = "i";
+				dataSourceModel.Search.Term = "i";
 				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
-				dataSourceModel.SearchTerm = "in";
-				dataSourceModel.SearchTerm = "inf";
-				dataSourceModel.SearchTerm = "info";
+				dataSourceModel.Search.Term = "in";
+				dataSourceModel.Search.Term = "inf";
+				dataSourceModel.Search.Term = "info";
 
 				// Now we wait for the very last filter operation to complete
 				dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);

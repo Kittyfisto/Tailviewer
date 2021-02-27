@@ -15,7 +15,7 @@ using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 using Tailviewer.Test.BusinessLogic.Sources.Buffer;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.LogView;
 using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls

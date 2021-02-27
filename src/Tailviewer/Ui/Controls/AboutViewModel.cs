@@ -1,3 +1,0 @@
-﻿namespace Tailviewer.Ui.Controls
-{
-}

@@ -2,7 +2,7 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.LogView.DeltaTimes;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 {

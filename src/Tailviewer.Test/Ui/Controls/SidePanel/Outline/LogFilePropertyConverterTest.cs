@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Formats;
-using Tailviewer.Ui.Controls.SidePanel.Outline;
+using Tailviewer.Ui.SidePanel.Outline;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 {

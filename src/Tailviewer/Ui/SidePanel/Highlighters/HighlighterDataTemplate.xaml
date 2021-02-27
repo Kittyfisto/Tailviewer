@@ -1,0 +1,78 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.SidePanel.Highlighters"
+                    xmlns:ui="clr-namespace:Tailviewer.Ui">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+
+    <DataTemplate DataType="{x:Type local:HighlighterViewModel}">
+        <Grid Margin="8,4,0,4">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="10" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox
+                    x:Name="PART_IsActive"
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"
+                    IsChecked="{Binding IsActive}" />
+
+                <controls:FilterTextBox
+                    x:Name="PART_Value"
+                    Grid.Column="1"
+                    Height="26"
+                    AcceptsTab="True"
+                    FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                    IsValid="{Binding IsValid, Mode=OneWay}"
+                    Watermark="Enter highlighted term" />
+
+                <controls:EditToggleButton
+                    SnapsToDevicePixels="True"
+                    x:Name="PART_EditToggleButton"
+                    Grid.Column="2"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding IsEditing, Mode=TwoWay}" />
+
+                <controls:CloseButton
+                    x:Name="PART_RemoveButton"
+                    Grid.Column="3"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Right"
+                    Command="{Binding RemoveCommand}" />
+            </Grid>
+
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="1" />
+                </Grid.RowDefinitions>
+
+                <ui:QuickFilterMatchTypeToggleButton
+                    FilterMatchType="{Binding MatchType, Mode=TwoWay}"
+                    Margin="0,8,0,8" />
+
+                <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="2" />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

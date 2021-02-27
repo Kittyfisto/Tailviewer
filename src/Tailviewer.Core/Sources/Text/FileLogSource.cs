@@ -218,6 +218,7 @@ namespace Tailviewer.Core.Sources.Text
 								var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
 								_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, autoDetectedEncoding);
 								_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, autoDetectedEncoding != null);
+								_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
 								var encodingChanged = _propertiesBuffer.SetValue(TextProperties.Encoding, encoding);
 								var currentLogSources = _logSources;
 

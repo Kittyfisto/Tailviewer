@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Settings;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {
@@ -19,13 +21,16 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			dataSource.Setup(x => x.LogFileFolderPath).Returns(@"C:\foo\bar\logs");
 
 			var actionCenter = new Mock<IActionCenter>();
-			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var applicationSettings = new Mock<IApplicationSettings>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object, applicationSettings.Object);
 
 			actionCenter.Verify(x => x.Add(It.Is<INotification>(y => y is OpenFolderAction)), Times.Never);
 
-			viewModel.OpenInExplorerCommand.Should().NotBeNull();
-			viewModel.OpenInExplorerCommand.CanExecute(null).Should().BeTrue();
-			viewModel.OpenInExplorerCommand.Execute(null);
+			var openInExplorerItem = viewModel.FileMenuItems.First(x => x.Header != null && x.Header == "Open Containing Folder");
+			var openInExplorerCommand = openInExplorerItem.Command;
+			openInExplorerCommand.Should().NotBeNull();
+			openInExplorerCommand.CanExecute(null).Should().BeTrue();
+			openInExplorerCommand.Execute(null);
 
 			actionCenter.Verify(x => x.Add(It.Is<INotification>(y => y is OpenFolderAction)), Times.Once);
 		}

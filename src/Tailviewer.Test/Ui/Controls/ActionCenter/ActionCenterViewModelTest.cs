@@ -3,7 +3,7 @@ using FluentAssertions;
 using Metrolib;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.Ui.Controls.ActionCenter;
+using Tailviewer.Ui.ActionCenter;
 
 namespace Tailviewer.Test.Ui.Controls.ActionCenter
 {

@@ -7,15 +7,13 @@ using System.Windows;
 using System.Windows.Input;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
-using Tailviewer.Test.BusinessLogic.Sources.Buffer;
-using Tailviewer.Ui.Controls.LogView;
-using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.LogView;
+using Tailviewer.Ui.LogView.DeltaTimes;
 using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls

@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="Tailviewer.Ui.ActionCenter.ActionCenterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+             xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+             xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ActionCenter"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="300"
+             d:DataContext="{d:DesignInstance actionCenter:ActionCenterViewModel}"
+             Background="White">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ActionCenterItem.xaml" />
+                <ResourceDictionary Source="NotificationTemplate.xaml" />
+                <ResourceDictionary Source="BugTemplate.xaml" />
+                <ResourceDictionary Source="ChangeTemplate.xaml" />
+                <ResourceDictionary Source="ExportTemplate.xaml" />
+                <ResourceDictionary Source="BuildTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+            <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.Foreground>
+        <StaticResource ResourceKey="ForegroundBrush" />
+    </UserControl.Foreground>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Border Background="{StaticResource BackgroundBrushSelected}">
+            <TextBlock Text="Action Center"
+                       FontSize="28"
+                       VerticalAlignment="Center"
+                       Margin="8"
+                       Foreground="{StaticResource ForegroundBrushInverted}" />
+        </Border>
+
+        <controls:FlatScrollViewer VerticalScrollBarVisibility="Auto"
+                                   Grid.Row="1">
+            <controls:FlatListView ItemsSource="{Binding Notifications}"
+                                   BorderThickness="0"
+                                   ItemContainerStyle="{StaticResource ActionCenterItemStyle}"/>
+        </controls:FlatScrollViewer>
+
+        <TextBlock Text="No new messages"
+                   TextWrapping="Wrap"
+                   Grid.Row="1"
+                   Margin="8"
+                   Visibility="{Binding HasNewMessages, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
+    </Grid>
+</UserControl>

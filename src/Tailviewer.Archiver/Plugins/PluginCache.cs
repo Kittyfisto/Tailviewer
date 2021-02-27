@@ -12,11 +12,13 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PluginCache
 		: IPluginLoader
 	{
+		private readonly object _syncRoot;
 		private readonly IPluginLoader _pluginLoader;
 		private readonly Dictionary<Type, IReadOnlyList<IPluginWithDescription<IPlugin>>> _loadedPlugins;
 
 		public PluginCache(IPluginLoader pluginLoader)
 		{
+			_syncRoot = new object();
 			_pluginLoader = pluginLoader ?? throw new ArgumentNullException(nameof(pluginLoader));
 			_loadedPlugins = new Dictionary<Type, IReadOnlyList<IPluginWithDescription<IPlugin>>>();
 		}
@@ -51,22 +53,25 @@ namespace Tailviewer.Archiver.Plugins
 
 		private IReadOnlyList<IPluginWithDescription<IPlugin>> GetOrLoad<T>() where T : class, IPlugin
 		{
-			if (!_loadedPlugins.TryGetValue(typeof(T), out var plugins))
+			lock (_syncRoot)
 			{
-				var tmp = _pluginLoader.LoadAllOfTypeWithDescription<T>();
-				if (tmp != null)
+				if (!_loadedPlugins.TryGetValue(typeof(T), out var plugins))
 				{
-					plugins = new List<IPluginWithDescription<IPlugin>>(tmp);
-				}
-				else
-				{
-					plugins = new List<IPluginWithDescription<IPlugin>>();
+					var tmp = _pluginLoader.LoadAllOfTypeWithDescription<T>();
+					if (tmp != null)
+					{
+						plugins = new List<IPluginWithDescription<IPlugin>>(tmp);
+					}
+					else
+					{
+						plugins = new List<IPluginWithDescription<IPlugin>>();
+					}
+
+					_loadedPlugins.Add(typeof(T), plugins);
 				}
 
-				_loadedPlugins.Add(typeof(T), plugins);
+				return plugins;
 			}
-
-			return plugins;
 		}
 	}
 }

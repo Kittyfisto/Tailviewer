@@ -9,7 +9,7 @@ using log4net.Repository.Hierarchy;
 using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Streaming;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer
 {

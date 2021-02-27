@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Test.Ui.Controls
 {

@@ -189,6 +189,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		}
 
 		[Test]
+		[FlakyTest(2)]
 		public void TestLive1()
 		{
 			string fname = GetUniqueNonExistingFileName();

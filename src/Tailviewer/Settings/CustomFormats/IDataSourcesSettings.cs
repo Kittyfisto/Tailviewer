@@ -28,5 +28,12 @@ namespace Tailviewer.Settings.CustomFormats
 		///     will be selected.
 		/// </summary>
 		bool FolderDataSourceRecursive { get; set; }
+
+		/// <summary>
+		///     When set to true, then the data sources Panel is pinned to the left side of the application.
+		///     When set to false, then the data sources Panel is a Fly-out which is laid over the left side of the application
+		///     (e.g. parts of the log file will be hidden).
+		/// </summary>
+		bool IsPinned { get; set; }
 	}
 }

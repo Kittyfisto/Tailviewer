@@ -45,6 +45,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		MergedDataSource AddGroup();
 		CustomDataSource AddCustom(CustomDataSourceId id);
 		bool Remove(IDataSource viewModelDataSource);
+		void Clear();
 
 		#endregion
 	}

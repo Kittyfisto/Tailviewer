@@ -295,6 +295,17 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return removed;
 		}
 
+		public void Clear()
+		{
+			lock (_syncRoot)
+			{
+				_settings.Clear();
+				_dataSources.Clear();
+			}
+
+			GC.Collect(3, GCCollectionMode.Forced);
+		}
+
 		private bool RemoveNoLock(IDataSource dataSource)
 		{
 			_settings.Remove(dataSource.Settings);

@@ -175,6 +175,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		}
 
 		[Test]
+		[FlakyTest(2)]
 		[LocalTest("Why doesn't this work on AppVeyor anymore?")]
 		public void TestEncoding_Overwrite_Windows_1252()
 		{

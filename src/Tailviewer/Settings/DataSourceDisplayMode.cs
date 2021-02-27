@@ -1,4 +1,4 @@
-using Tailviewer.Ui.Controls.LogView.DataSource;
+using Tailviewer.Ui.LogView.DataSource;
 
 namespace Tailviewer.Settings
 {

@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui;
 
 namespace Tailviewer.Test.Ui
 {

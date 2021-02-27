@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView.DataSource;
+using Tailviewer.Ui.LogView.DataSource;
 
 namespace Tailviewer.Test.Ui.Controls.LogView
 {

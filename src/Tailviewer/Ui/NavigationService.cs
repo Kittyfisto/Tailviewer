@@ -1,5 +1,4 @@
-﻿using Tailviewer.Ui.Controls.MainPanel;
-using Tailviewer.Ui.ViewModels;
+﻿using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Ui
 {
@@ -19,7 +18,6 @@ namespace Tailviewer.Ui
 			if (LogViewer == null)
 				return false;
 
-			MainWindow.SelectRawEntry();
 			return LogViewer.RequestBringIntoView(line);
 		}
 
@@ -31,7 +29,6 @@ namespace Tailviewer.Ui
 			if (LogViewer == null)
 				return false;
 
-			MainWindow.SelectRawEntry();
 			return LogViewer.RequestBringIntoView(dataSource, line);
 		}
 

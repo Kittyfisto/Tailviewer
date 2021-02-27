@@ -9,7 +9,7 @@ using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView.LineNumbers;
+using Tailviewer.Ui.LogView.LineNumbers;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 {

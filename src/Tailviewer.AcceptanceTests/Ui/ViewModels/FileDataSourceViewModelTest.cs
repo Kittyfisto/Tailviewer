@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Text;
 using System.Threading;
 using FluentAssertions;
@@ -12,7 +13,7 @@ using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Settings;
 using Tailviewer.Test;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.DataSourceTree;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {
@@ -20,11 +21,15 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 	public sealed class FileDataSourceViewModelTest
 	{
 		private DefaultTaskScheduler _taskScheduler;
+		private Mock<IActionCenter> _actionCenter;
+		private Mock<IApplicationSettings> _applicationSettings;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
+			_actionCenter = new Mock<IActionCenter>();
+			_applicationSettings = new Mock<IApplicationSettings>();
 		}
 
 		[TearDown]
@@ -33,9 +38,26 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			_taskScheduler.Dispose();
 		}
 
+		[Pure]
+		private FileDataSourceViewModel CreateFileViewModel(IFileDataSource dataSource)
+		{
+			return new FileDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
+		}
+
+		[Pure]
+		private FolderDataSourceViewModel CreateFolderViewModel(IFolderDataSource dataSource)
+		{
+			return new FolderDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
+		}
+
+		[Pure]
+		private MergedDataSourceViewModel CreateMergedViewModel(IMergedDataSource dataSource)
+		{
+			return new MergedDataSourceViewModel(dataSource, _actionCenter.Object, _applicationSettings.Object);
+		}
+
 		private TextLogSource Create(string fileName)
 		{
-			var serviceContainer = new ServiceContainer();
 			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
@@ -49,7 +71,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			using (var logFile = Create(AbstractTextLogSourceAcceptanceTest.File2Mb))
 			using (var dataSource = new FileDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
-				var model = new FileDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);
+				var model = CreateFileViewModel(dataSource);
 
 				logFile.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
@@ -62,13 +84,13 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				//model.Update();
 				//model.TotalCount.Should().Be(16114);
 
-				model.SearchTerm = "RPC #12";
+				model.Search.Term = "RPC #12";
 				var search = dataSource.Search;
 				search.Property(x => x.Count).ShouldEventually().Be(334);
 
 				model.Update();
-				model.SearchResultCount.Should().Be(334);
-				model.CurrentSearchResultIndex.Should().Be(0);
+				model.Search.ResultCount.Should().Be(334);
+				model.Search.CurrentResultIndex.Should().Be(0);
 			}
 		}
 
@@ -77,17 +99,16 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Description("This is a temporary requirement until #195 is implemented in which case this test must be removed once more")]
 		public void TestCannotBeRemovedAsPartOfFolder()
 		{
-			var actionCenter = new Mock<IActionCenter>();
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
-			var model = new FileDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 			using (var monitor = model.Monitor())
 			{
 				model.CanBeRemoved.Should().BeTrue();
 
 				var folderDataSource = new Mock<IFolderDataSource>();
 				folderDataSource.Setup(x => x.Settings).Returns(new DataSource());
-				var folder = new FolderDataSourceViewModel(folderDataSource.Object, actionCenter.Object);
+				var folder = CreateFolderViewModel(folderDataSource.Object);
 				model.Parent = folder;
 				model.CanBeRemoved.Should().BeFalse();
 				monitor.Should().RaisePropertyChangeFor(x => x.CanBeRemoved);
@@ -107,14 +128,14 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			var actionCenter = new Mock<IActionCenter>();
 			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
-			var model = new FileDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			var model = CreateFileViewModel(dataSource.Object);
 			using (var monitor = model.Monitor())
 			{
 				model.CanBeRemoved.Should().BeTrue();
 
 				var mergedDataSource = new Mock<IMergedDataSource>();
 				mergedDataSource.Setup(x => x.Settings).Returns(new DataSource());
-				var merged = new MergedDataSourceViewModel(mergedDataSource.Object, actionCenter.Object);
+				var merged = CreateMergedViewModel(mergedDataSource.Object);
 				model.Parent = merged;
 				model.CanBeRemoved.Should().BeTrue();
 				monitor.Should().NotRaisePropertyChangeFor(x => x.CanBeRemoved);
@@ -131,7 +152,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestClearAllShowAll()
 		{
 			var dataSource = new Mock<IFileDataSource>();
-			var model = new FileDataSourceViewModel(dataSource.Object, new Mock<IActionCenter>().Object);
+			var model = CreateFileViewModel(dataSource.Object);
 
 			model.ScreenCleared.Should().BeFalse();
 

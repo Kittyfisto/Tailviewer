@@ -19,6 +19,7 @@ namespace Tailviewer.Settings
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private string _pattern;
+		private bool _isPinned;
 
 		public DataSourceId SelectedItem { get; set; }
 
@@ -29,6 +30,15 @@ namespace Tailviewer.Settings
 		}
 
 		public bool FolderDataSourceRecursive { get; set; }
+
+		public bool IsPinned
+		{
+			get { return _isPinned; }
+			set
+			{
+				_isPinned = value;
+			}
+		}
 
 		object ICloneable.Clone()
 		{
@@ -66,6 +76,10 @@ namespace Tailviewer.Settings
 								case "folderdatasourcepattern":
 									FolderDataSourcePattern = subtree.ReadContentAsString();
 									break;
+
+								case "ispinned":
+									IsPinned = subtree.ReadContentAsBoolean();
+									break;
 							}
 						}
 						break;
@@ -100,6 +114,7 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttribute("selecteditem", SelectedItem);
+			writer.WriteAttributeBool("ispinned", _isPinned);
 			writer.WriteAttributeBool("folderdatasourcerecursive", FolderDataSourceRecursive);
 			writer.WriteAttributeString("folderdatasourcepattern", _pattern);
 
@@ -118,6 +133,7 @@ namespace Tailviewer.Settings
 			clone.SelectedItem = SelectedItem;
 			clone.FolderDataSourceRecursive = FolderDataSourceRecursive;
 			clone.FolderDataSourcePattern = FolderDataSourcePattern;
+			clone.IsPinned = IsPinned;
 			return clone;
 		}
 
