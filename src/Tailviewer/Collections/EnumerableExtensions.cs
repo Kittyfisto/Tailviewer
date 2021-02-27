@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using log4net;
 
-namespace Tailviewer
+namespace Tailviewer.Collections
 {
 	public static class EnumerableExtensions
 	{

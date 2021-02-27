@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.Menu
 		private Geometry _icon;
 		private string _toolTip;
 		private IEnumerable<IMenuViewModel> _children;
+		private string _shortcut;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -53,6 +54,18 @@ namespace Tailviewer.Ui.Menu
 				if (value == _toolTip)
 					return;
 				_toolTip = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string Shortcut
+		{
+			get { return _shortcut; }
+			set
+			{
+				if (value == _shortcut)
+					return;
+				_shortcut = value;
 				EmitPropertyChanged();
 			}
 		}

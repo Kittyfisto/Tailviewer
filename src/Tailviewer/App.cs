@@ -27,7 +27,6 @@ using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
-using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.Outline;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -242,10 +241,7 @@ namespace Tailviewer
 						                                              updater);
 						navigationService.MainWindow = windowViewModel;
 
-						var window = new MainWindow(settings)
-						{
-							DataContext = windowViewModel
-						};
+						var window = new MainWindow(settings, windowViewModel);
 						
 						settings.MainWindow.ClipToBounds(Desktop.Current);
 						settings.MainWindow.RestoreTo(window);

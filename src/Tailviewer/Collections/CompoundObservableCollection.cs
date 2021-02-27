@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace Tailviewer
+namespace Tailviewer.Collections
 {
 	/// <summary>
 	///     Provides a view onto a list of enumerations which is the result of concat-ing them into one big list.
@@ -12,15 +12,16 @@ namespace Tailviewer
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public sealed class CompoundObservableCollection<T>
-		: IEnumerable<T>
-		, INotifyCollectionChanged
+		: IObservableCollection<T>
 	{
+		private readonly bool _hasSeparator;
 		private readonly T _separator;
 		private readonly List<IEnumerable<T>> _collections;
 		private readonly List<T> _values;
 
-		public CompoundObservableCollection(T separator)
+		public CompoundObservableCollection(bool hasSeparator, T separator = default)
 		{
+			_hasSeparator = hasSeparator;
 			_separator = separator;
 			_collections = new List<IEnumerable<T>>();
 			_values = new List<T>();
@@ -83,17 +84,21 @@ namespace Tailviewer
 			{
 				if (collection != null)
 				{
-					if (needsSeparator)
-					{
-						_values.Add(_separator);
-						needsSeparator = false;
-					}
-
+					bool addedAny = false;
 					foreach (var value in collection)
 					{
+						if (needsSeparator && _hasSeparator)
+						{
+							_values.Add(_separator);
+							needsSeparator = false;
+						}
+
 						_values.Add(value);
-						needsSeparator = true;
+						addedAny = true;
 					}
+
+					if (addedAny)
+						needsSeparator = true;
 				}
 			}
 			EmitCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _values,

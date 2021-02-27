@@ -44,7 +44,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="30" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="26" />
+                                <ColumnDefinition Width="Auto" MinWidth="26" />
                             </Grid.ColumnDefinitions>
 
                             <!-- Icon, if any -->
@@ -68,6 +68,14 @@
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+
+                            <!-- Shortcuts, if available -->
+                            <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextBrushUnimportant}"
+                                       Visibility="{Binding Shortcut, Converter={StaticResource NullToCollapsedConverter}}"
+                                       Margin="4,0,4,0"
+                                       Text="{Binding Shortcut}" />
 
                             <!-- Expander chevron, if sub menu available -->
                             <Viewbox Grid.Column="2"

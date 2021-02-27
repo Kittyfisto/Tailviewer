@@ -19,7 +19,6 @@ using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using Tailviewer.Ui.DataSourceTree;
-using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.QuickFilter;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 
@@ -101,9 +100,10 @@ namespace Tailviewer.Test.Ui
 		public void TestShowLog()
 		{
 			_dataSources.Sources.Should().BeEmpty();
-			_mainWindow.ShowLogCommand.Should().NotBeNull();
-			_mainWindow.ShowLogCommand.CanExecute(null).Should().BeTrue();
-			_mainWindow.ShowLogCommand.Execute(null);
+			var showLog = _mainWindow.MainMenu.Help.Items.First(x => x != null && x.Header == "Show Log");
+			showLog.Command.Should().NotBeNull();
+			showLog.Command.CanExecute(null).Should().BeTrue();
+			showLog.Command.Execute(null);
 
 			_dataSources.Sources.Should().HaveCount(1);
 			var dataSource = _dataSources.Sources.First();
@@ -156,10 +156,12 @@ namespace Tailviewer.Test.Ui
 		public void TestShowQuickNavigation()
 		{
 			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeFalse();
-
-			_mainWindow.ShowQuickNavigationCommand.Should().NotBeNull();
-			_mainWindow.ShowQuickNavigationCommand.CanExecute(null).Should().BeTrue();
-			_mainWindow.ShowQuickNavigationCommand.Execute(null);
+			_mainWindow.AddFileOrDirectory("foo");
+			
+			var goToDataSourceItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Data Source...");
+			goToDataSourceItem.Command.Should().NotBeNull();
+			goToDataSourceItem.Command.CanExecute(null).Should().BeTrue();
+			goToDataSourceItem.Command.Execute(null);
 			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeTrue();
 		}
 
@@ -167,10 +169,12 @@ namespace Tailviewer.Test.Ui
 		public void TestShowGoToLine()
 		{
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeFalse();
+			_mainWindow.AddFileOrDirectory("foo");
 
-			_mainWindow.ShowGoToLineCommand.Should().NotBeNull();
-			_mainWindow.ShowGoToLineCommand.CanExecute(null).Should().BeTrue();
-			_mainWindow.ShowGoToLineCommand.Execute(null);
+			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Line...");
+			goToLineItem.Command.Should().NotBeNull();
+			goToLineItem.Command.CanExecute(null).Should().BeTrue();
+			goToLineItem.Command.Execute(null);
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeTrue();
 		}
 
@@ -193,7 +197,7 @@ namespace Tailviewer.Test.Ui
 
 			var panel = _mainWindow.LogViewPanel;
 			panel.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
-			mainWindowChanges.Should().Equal("WindowTitleSuffix", "WindowTitle", "WindowTitleSuffix", "ViewMenuItems");
+			mainWindowChanges.Should().Equal("WindowTitleSuffix", "WindowTitle", "WindowTitleSuffix");
 			logViewChanges.Should().Contain("CurrentDataSourceLogView", "CurrentDataSourceLogView", "CurrentDataSource");
 		}
 		

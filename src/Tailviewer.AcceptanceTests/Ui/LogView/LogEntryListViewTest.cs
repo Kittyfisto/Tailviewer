@@ -8,7 +8,7 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 using WpfUnit;
 
-namespace Tailviewer.AcceptanceTests.Ui.Controls.LogView
+namespace Tailviewer.AcceptanceTests.Ui.LogView
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]

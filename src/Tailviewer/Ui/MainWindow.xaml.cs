@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -8,9 +10,9 @@ using System.Windows.Threading;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
-using Tailviewer.Ui.LogView;
-using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
+using Tailviewer.Ui.Menu;
 
 namespace Tailviewer.Ui
 {
@@ -46,21 +48,20 @@ namespace Tailviewer.Ui
 		                                                                                                      new
 			                                                                                                      PropertyMetadata(default
 			                                                                                                                       (ICommand
-			                                                                                                                       )))
-			;
+			                                                                                                                       )));
 
-		private readonly ApplicationSettings _settings;
+		private readonly IApplicationSettings _settings;
+		private readonly Dictionary<KeyBindingCommand, InputBinding> _inputBindingsByCommand;
 
-		public MainWindow(ApplicationSettings settings)
+		public MainWindow(IApplicationSettings settings, IMainWindowViewModel mainWindowViewModel)
 		{
-			if (settings == null) throw new ArgumentNullException(nameof(settings));
-
-			_settings = settings;
+			_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 			FocusLogFileSearchAllCommand = new DelegateCommand(FocusLogFileSearchAll);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
 			NewBookmarkCommand = new DelegateCommand(NewBookmark);
+			_inputBindingsByCommand = new Dictionary<KeyBindingCommand, InputBinding>();
 
 			InitializeComponent();
 			SizeChanged += OnSizeChanged;
@@ -72,6 +73,10 @@ namespace Tailviewer.Ui
 			MouseMove += OnMouseMove;
 
 			DragLayer.AdornerLayer = PartDragDecorator.AdornerLayer;
+
+			DataContext = mainWindowViewModel;
+			SynchronizeInputBindings();
+			mainWindowViewModel.KeyBindings.CollectionChanged += KeyBindingsOnCollectionChanged;
 		}
 
 		public ICommand FocusDataSourceSearchCommand
@@ -147,7 +152,7 @@ namespace Tailviewer.Ui
 			Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Log.InfoFormat("Opening data source because another process asked us to...");
-				var viewModel = DataContext as MainWindowViewModel;
+				var viewModel = DataContext as IMainWindowViewModel;
 				viewModel?.AddFileOrDirectory(dataSourceUri);
 			}));
 		}
@@ -184,7 +189,7 @@ namespace Tailviewer.Ui
 
 		private void NewQuickFilter()
 		{
-			var viewModel = DataContext as MainWindowViewModel;
+			var viewModel = DataContext as IMainWindowViewModel;
 			var logViewModel = viewModel?.LogViewPanel;
 			if (logViewModel != null)
 			{
@@ -207,7 +212,7 @@ namespace Tailviewer.Ui
 
 		private void NewBookmark()
 		{
-			var viewModel = DataContext as MainWindowViewModel;
+			var viewModel = DataContext as IMainWindowViewModel;
 			var logViewModel = viewModel?.LogViewPanel;
 			if (logViewModel != null)
 			{
@@ -265,12 +270,49 @@ namespace Tailviewer.Ui
 
 		private void OnClickOverlay(object sender, MouseButtonEventArgs e)
 		{
-			((MainWindowViewModel) DataContext).CurrentFlyout = null;
+			((IMainWindowViewModel) DataContext).CurrentFlyout = null;
 		}
 
 		private void OnCloseFlyout(object sender, RoutedEventArgs e)
 		{
-			((MainWindowViewModel) DataContext).CurrentFlyout = null;
+			((IMainWindowViewModel) DataContext).CurrentFlyout = null;
+		}
+
+		private void KeyBindingsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			SynchronizeInputBindings();
+		}
+
+		private void SynchronizeInputBindings()
+		{
+			var items = ((IMainWindowViewModel) DataContext).KeyBindings;
+			foreach (var command in items)
+			{
+				if (command != null)
+				{
+					if (!_inputBindingsByCommand.ContainsKey(command))
+					{
+						var binding = CreateInputBinding(command);
+						_inputBindingsByCommand.Add(command, binding);
+						InputBindings.Add(binding);
+					}
+				}
+			}
+
+			foreach (var pair in _inputBindingsByCommand.ToList())
+			{
+				if (!items.Contains(pair.Key))
+				{
+					_inputBindingsByCommand.Remove(pair.Key);
+					InputBindings.Remove(pair.Value);
+				}
+			}
+		}
+
+		private static InputBinding CreateInputBinding(KeyBindingCommand item)
+		{
+			var gesture = new KeyGesture(item.GestureKey, item.GestureModifier);
+			return new InputBinding(item, gesture);
 		}
 	}
 }

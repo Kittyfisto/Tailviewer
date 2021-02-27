@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using log4net;
 using Metrolib.Controls;
+using Tailviewer.Collections;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.DataSources;
 

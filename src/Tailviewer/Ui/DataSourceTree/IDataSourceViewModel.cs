@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Collections;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;
 
@@ -18,12 +19,17 @@ namespace Tailviewer.Ui.DataSourceTree
 		/// <summary>
 		///     The list of menu items which are displayed in the "File" menu of the main window.
 		/// </summary>
-		IEnumerable<IMenuViewModel> FileMenuItems { get; }
+		IObservableCollection<IMenuViewModel> FileMenuItems { get; }
+
+		/// <summary>
+		///     The list of menu items which are displayed in the "edit" menu of the main window.
+		/// </summary>
+		IObservableCollection<IMenuViewModel> EditMenuItems { get; }
 
 		/// <summary>
 		///     The list of menu items which are displayed in the "View" menu of the main window.
 		/// </summary>
-		IEnumerable<IMenuViewModel> ViewMenuItems { get; }
+		IObservableCollection<IMenuViewModel> ViewMenuItems { get; }
 
 		/// <summary>
 		///     The name of this data source as presented to the user.

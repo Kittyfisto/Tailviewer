@@ -15,7 +15,7 @@ using Tailviewer.Settings;
 using Tailviewer.Test;
 using Tailviewer.Ui.DataSourceTree;
 
-namespace Tailviewer.AcceptanceTests.Ui.ViewModels
+namespace Tailviewer.AcceptanceTests.Ui.LogView
 {
 	[TestFixture]
 	public sealed class FileDataSourceViewModelTest

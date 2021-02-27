@@ -6,9 +6,20 @@ namespace Tailviewer.Ui.Menu
 {
 	public interface IMenuViewModel
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		string Header { get; }
 
+		/// <summary>
+		/// 
+		/// </summary>
 		string ToolTip { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		string Shortcut { get; }
 
 		/// <summary>
 		///     The icon to display, if any.

@@ -114,10 +114,10 @@
     </Compile>
     <Compile Include="SingleApplicationHelperTest.cs" />
     <Compile Include="SystemtestBase.cs" />
-    <Compile Include="Ui\Controls\LogView\LogEntryListViewTest.cs" />
-    <Compile Include="Ui\ViewModels\FolderDataSourceViewModelTest.cs" />
-    <Compile Include="Ui\ViewModels\LogViewerViewModelTest.cs" />
-    <Compile Include="Ui\ViewModels\FileDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\LogView\LogEntryListViewTest.cs" />
+    <Compile Include="Ui\LogView\FolderDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\LogView\LogViewerViewModelTest.cs" />
+    <Compile Include="Ui\LogView\FileDataSourceViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

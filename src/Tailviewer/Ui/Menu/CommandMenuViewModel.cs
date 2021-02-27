@@ -11,6 +11,10 @@ namespace Tailviewer.Ui.Menu
 		public CommandMenuViewModel(ICommand command)
 		{
 			Command = command;
+			if (command is KeyBindingCommand keyBinding)
+			{
+				Shortcut = keyBinding.ToString();
+			}
 		}
 
 		public override bool IsCheckable
