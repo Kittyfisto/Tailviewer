@@ -34,6 +34,7 @@
             <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
             <converters1:InvertBoolConverter x:Key="InvertBoolConverter" />
 
+            <converters:CountConverter x:Key="TotalCountConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" />
             <converters:CountConverter x:Key="ErrorCountConverter" />
             <converters:CountConverter x:Key="WarningCountConverter" />
@@ -42,6 +43,7 @@
             <converters:CountConverter x:Key="TraceCountConverter" />
             <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
 
+            <converters:LevelToggleTooltipConverter x:Key="AllTooltipConverter" Level="All" />
             <converters:LevelToggleTooltipConverter x:Key="FatalTooltipConverter" Level="Fatal" />
             <converters:LevelToggleTooltipConverter x:Key="ErrorTooltipConverter" Level="Error" />
             <converters:LevelToggleTooltipConverter x:Key="WarningTooltipConverter" Level="Warning" />
@@ -111,11 +113,10 @@
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
-                        Width="42"
                         LogLevel="All"
                         IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of all log entries"
-                        Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource AllTooltipConverter}}"
+                        Content="{Binding DataSource.TotalCount, Converter={StaticResource TotalCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"

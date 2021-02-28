@@ -16,7 +16,8 @@ namespace Tailviewer.Ui.Converters
 			if (!(value is bool isChecked))
 				return null;
 
-			return string.Format("Click to {0} {1} log entries", isChecked ? "hide" : "show", Level);
+			var levelName = Level == LevelFlags.All ? "all" : Level.ToString();
+			return string.Format("Click to {0} {1} log entries", isChecked ? "hide" : "show", levelName);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -47,7 +47,7 @@ namespace Tailviewer.Ui.DataSourceTree
 
 		/// <summary>
 		///     A user-readable description of the origin of the data source.
-		///     Could be a simpel filesystem path, a URL, etc...
+		///     Could be a simple filesystem path, a URL, etc...
 		/// </summary>
 		string DataSourceOrigin { get; }
 
