@@ -51,16 +51,20 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Bookmarks
 		[Test]
 		public void TestRemove1()
 		{
+			_viewModel.HasBookmarks.Should().BeFalse();
+
 			_bookmarks.Add(new Bookmark(_dataSource.Object, 1));
 			_viewModel.CurrentDataSource = _dataSource.Object;
 			_viewModel.Update();
 			_viewModel.Bookmarks.Should().HaveCount(1);
+			_viewModel.HasBookmarks.Should().BeTrue();
 
 			var bookmark = _viewModel.Bookmarks.First();
 			bookmark.RemoveCommand.CanExecute(null).Should().BeTrue();
 			new Action(() => bookmark.RemoveCommand.Execute(null)).Should().NotThrow();
 			_viewModel.Bookmarks.Should().BeEmpty();
 			_dataSources.Verify(x => x.RemoveBookmark(It.IsAny<Bookmark>()), Times.Once);
+			_viewModel.HasBookmarks.Should().BeFalse();
 		}
 
 		[Test]
@@ -74,9 +78,12 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Bookmarks
 			_viewModel.CurrentDataSource = _dataSource.Object;
 			_viewModel.AddBookmarkCommand.Execute(null);
 			_viewModel.Bookmarks.Should().NotBeEmpty();
+			_viewModel.HasBookmarks.Should().BeTrue();
+
 			var bookmark = _viewModel.Bookmarks.First();
 			bookmark.RemoveCommand.Execute(null);
 			_viewModel.Bookmarks.Should().BeEmpty();
+			_viewModel.HasBookmarks.Should().BeFalse();
 		}
 	}
 }
