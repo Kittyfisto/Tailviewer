@@ -232,7 +232,10 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\AboutViewModel.cs" />
+    <Compile Include="Ui\Converters\FollowTailTooltipConverter.cs" />
+    <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
+    <Compile Include="Ui\LogView\ToolbarToggleButton.cs" />
     <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModel.cs" />
     <Compile Include="Ui\FlatImage.cs" />
@@ -441,11 +444,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\LogView\LogLevelToggleButtonTemplate.xaml">
+    <Page Include="Ui\LogView\LogLevelToggleButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\LogView\PluginDescriptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\LogView\ToolbarToggleButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

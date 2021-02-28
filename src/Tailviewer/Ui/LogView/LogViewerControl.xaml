@@ -7,6 +7,7 @@
              xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.DataSourceTree"
              xmlns:logView="clr-namespace:Tailviewer.Ui.LogView"
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
+             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -14,12 +15,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/LogView/DataSourceDisplayModeToggleButton.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogLevelToggleButtonTemplate.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/DataSourcesToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/LogView/DataSourceDisplayModeToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/LogView/LogLevelToggleButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/DataSourcesToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
@@ -35,6 +33,8 @@
             <converters1:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
             <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
             <converters1:InvertBoolConverter x:Key="InvertBoolConverter" />
+
+            <converters:CountConverter x:Key="TotalCountConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" />
             <converters:CountConverter x:Key="ErrorCountConverter" />
             <converters:CountConverter x:Key="WarningCountConverter" />
@@ -42,6 +42,17 @@
             <converters:CountConverter x:Key="DebugCountConverter" />
             <converters:CountConverter x:Key="TraceCountConverter" />
             <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
+
+            <converters:LevelToggleTooltipConverter x:Key="AllTooltipConverter" Level="All" />
+            <converters:LevelToggleTooltipConverter x:Key="FatalTooltipConverter" Level="Fatal" />
+            <converters:LevelToggleTooltipConverter x:Key="ErrorTooltipConverter" Level="Error" />
+            <converters:LevelToggleTooltipConverter x:Key="WarningTooltipConverter" Level="Warning" />
+            <converters:LevelToggleTooltipConverter x:Key="InfoTooltipConverter" Level="Info" />
+            <converters:LevelToggleTooltipConverter x:Key="DebugTooltipConverter" Level="Debug" />
+            <converters:LevelToggleTooltipConverter x:Key="TraceTooltipConverter" Level="Trace" />
+            <converters:LevelToggleTooltipConverter x:Key="OtherTooltipConverter" Level="Other" />
+            <converters:FollowTailTooltipConverter x:Key="FollowTailTooltipConverter" />
+
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <converters:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
 
@@ -92,67 +103,68 @@
                            VerticalAlignment="Center"
                            Margin="8">
 
+                    <logView:ToolbarToggleButton 
+                        Margin="0,0,8,8"
+                        IsChecked="{Binding DataSource.FollowTail, ElementName=This}"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource FollowTailTooltipConverter}}"
+                        CheckedIcon="{x:Static metrolib:Icons.ScriptTextPlayOutline}"
+                        UncheckedIcon="{x:Static metrolib:Icons.ScriptTextOutline}"
+                        />
+
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
-                        Width="42"
                         LogLevel="All"
                         IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of all log entries"
-                        Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource AllTooltipConverter}}"
+                        Content="{Binding DataSource.TotalCount, Converter={StaticResource TotalCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Fatal"
-                        IconBackgroundBrush="DarkRed"
                         IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of fatal log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource FatalTooltipConverter}}"
                         Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Error"
-                        IconBackgroundBrush="Red"
                         IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of error log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorTooltipConverter}}"
                         Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Warning"
-                        IconBackgroundBrush="Orange"
                         IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of warning log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource WarningTooltipConverter}}"
                         Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Info"
-                        IconBackgroundBrush="White"
                         IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of info log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource InfoTooltipConverter}}"
                         Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Debug"
-                        IconBackgroundBrush="LightGray"
                         IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of debug log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource DebugTooltipConverter}}"
                         Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
                         LogLevel="Trace"
-                        IconBackgroundBrush="LightSlateGray"
                         IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of trace log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource TraceTooltipConverter}}"
                         Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
                         LogLevel="Other"
                         IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide other log entries (i.e. those who's log level cannot be identified by Tailviewer)"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource OtherTooltipConverter}}"
                         Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
                     <controls:PluginToggleButton
@@ -303,17 +315,17 @@
             </Grid>
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
-            <Border BorderThickness="1,0,0,0"
-                    BorderBrush="{StaticResource SeparatorBrush}"
-                    Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}"
-                    Grid.Column="2">
-                <Grid>
+            <Grid Grid.Column="2"
+                  Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}">
+                <Border BorderThickness="1,0,0,0"
+                        BorderBrush="{StaticResource SeparatorBrush}"
+                        Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}">
                     <ContentPresenter Width="300"
                                       VerticalAlignment="Stretch"
                                       HorizontalAlignment="Right"
                                       Content="{Binding SelectedSidePanel}" />
-                </Grid>
-            </Border>
+                </Border>
+            </Grid>
         </Grid>
 
         <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the fly-out is opened AND NOT pinned -->
