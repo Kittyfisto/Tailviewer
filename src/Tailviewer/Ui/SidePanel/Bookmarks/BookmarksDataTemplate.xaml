@@ -3,7 +3,11 @@
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:bookmarks="clr-namespace:Tailviewer.Ui.SidePanel.Bookmarks"
-                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel">
+                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
+                    xmlns:ui="clr-namespace:Tailviewer.Ui"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type bookmarks:BookmarksViewModel}">
         <Border Background="White">
@@ -81,6 +85,11 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </controls:FlatScrollViewer>
+
+                <ui:EmptyState Grid.Row="1"
+                               Visibility="{Binding HasBookmarks, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                               EmptyStatement="No Bookmarks added"
+                               EmptyExplanation="Try selecting a log entry /or line and click Add Bookmark"/>
             </Grid>
         </Border>
     </DataTemplate>

@@ -25,16 +25,12 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 
 		private IDataSource _currentDataSource;
 		private bool _canAddBookmarks;
+		private bool _hasBookmarks;
 
 		public BookmarksViewModel(IDataSources dataSources, Action<Bookmark> navigateToBookmark)
 		{
-			if (dataSources == null)
-				throw new ArgumentNullException(nameof(dataSources));
-			if (navigateToBookmark == null)
-				throw new ArgumentNullException(nameof(navigateToBookmark));
-
-			_dataSources = dataSources;
-			_navigateToBookmark = navigateToBookmark;
+			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
+			_navigateToBookmark = navigateToBookmark ?? throw new ArgumentNullException(nameof(navigateToBookmark));
 			_addBookmarkCommand = new DelegateCommand(AddBookmark, CanAddBookmark);
 			_viewModelByBookmark = new Dictionary<Bookmark, BookmarkViewModel>();
 			_bookmarks = new ObservableCollection<BookmarkViewModel>();
@@ -62,6 +58,19 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 
 
 		public ICommand AddBookmarkCommand => _addBookmarkCommand;
+
+		public bool HasBookmarks
+		{
+			get { return _hasBookmarks; }
+			private set
+			{
+				if (value == _hasBookmarks)
+					return;
+
+				_hasBookmarks = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		private bool CanAddBookmarks
 		{
@@ -103,8 +112,7 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 				// Add bookmarks we haven't added yet
 				foreach (var bookmark in bookmarks)
 				{
-					BookmarkViewModel viewModel;
-					if (!_viewModelByBookmark.TryGetValue(bookmark, out viewModel))
+					if (!_viewModelByBookmark.TryGetValue(bookmark, out var viewModel))
 					{
 						viewModel = new BookmarkViewModel(bookmark,
 							OnNavigateToBookmark,
@@ -129,6 +137,8 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 						++i;
 					}
 				}
+
+				HasBookmarks = _bookmarks.Count > 0;
 			}
 			CanAddBookmarks = Any(_currentDataSource?.SelectedLogLines);
 			QuickInfo = FormatBookmarksCount();

@@ -235,6 +235,7 @@
     <Compile Include="Ui\Converters\FollowTailTooltipConverter.cs" />
     <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
+    <Compile Include="Ui\EmptyState.cs" />
     <Compile Include="Ui\LogView\ToolbarToggleButton.cs" />
     <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModel.cs" />
@@ -439,6 +440,10 @@
     <Page Include="Ui\DataSourceTree\FolderDataSourceTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\EmptyStateStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\FlatImage.xaml">
       <SubType>Designer</SubType>
