@@ -282,11 +282,20 @@ namespace Tailviewer.Core.Sources.Merged
 					var firstIndex = _indices.FindIndex(x => x.SourceId == logFileIndex);
 					if (firstIndex >= 0)
 					{
-						changes.InvalidateFrom(firstIndex);
 						_indices.RemoveAll(x => x.SourceId == logFileIndex);
 						if (_indices.Count == 0)
 						{
 							changes.Reset();
+						}
+						else
+						{
+							changes.InvalidateFrom(firstIndex);
+
+							var appendCount = _indices.Count - firstIndex;
+							if (appendCount > 0)
+							{
+								changes.Append(firstIndex, appendCount);
+							}
 						}
 					}
 				}

@@ -327,6 +327,80 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		}
 
 		[Test]
+		public void TestTwoSourcesAppendBothResetOne()
+		{
+			var source1 = new InMemoryLogSource();
+			var source2 = new InMemoryLogSource();
+			source2.AddEntry("a", LevelFlags.Warning, new DateTime(2021, 2, 28, 22, 15, 0));
+			source1.AddEntry("b", LevelFlags.Info, new DateTime(2021, 2, 28, 22, 16, 0));
+			source2.AddEntry("c", LevelFlags.Error, new DateTime(2021, 2, 28, 22, 17, 0));
+
+			var index = new MergedLogSourceIndex(source1, source2);
+			var changes = index.Process(
+			                            new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)),
+			                            new MergedLogSourcePendingModification(source2, new LogFileSection(0, 2))
+			                           );
+			changes.Should().Equal(new object[]
+			{
+				new LogFileSection(0, 3)
+			});
+			index.Count.Should().Be(3);
+			index[0].SourceId.Should().Be(1);
+			index[1].SourceId.Should().Be(0);
+			index[2].SourceId.Should().Be(1);
+
+
+			changes = index.Process(new MergedLogSourcePendingModification(source1, LogFileSection.Reset));
+			changes.Should().Equal(new object[]
+			{
+				LogFileSection.Invalidate(1, 2),
+				new LogFileSection(1, 1)
+			});
+			index.Count.Should().Be(2);
+			index[0].SourceId.Should().Be(1);
+			index[1].SourceId.Should().Be(1);
+		}
+
+		[Test]
+		[Ignore("This just isn't implemented yet")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/288")]
+		public void TestTwoSourcesAppendBothInvalidateOne()
+		{
+			var source1 = new InMemoryLogSource();
+			var source2 = new InMemoryLogSource();
+			source2.AddEntry("a", LevelFlags.Warning, new DateTime(2021, 2, 28, 23, 00, 0));
+			source2.AddEntry("b", LevelFlags.Warning, new DateTime(2021, 2, 28, 23, 01, 0));
+			source1.AddEntry("c", LevelFlags.Info, new DateTime(2021, 2, 28, 23, 02, 0));
+			source2.AddEntry("d", LevelFlags.Error, new DateTime(2021, 2, 28, 23, 03, 0));
+
+			var index = new MergedLogSourceIndex(source1, source2);
+			var changes = index.Process(
+			                            new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)),
+			                            new MergedLogSourcePendingModification(source2, new LogFileSection(0, 3))
+			                           );
+			changes.Should().Equal(new object[]
+			{
+				new LogFileSection(0, 4)
+			});
+			index.Count.Should().Be(4);
+			index[0].SourceId.Should().Be(1);
+			index[1].SourceId.Should().Be(1);
+			index[2].SourceId.Should().Be(0);
+			index[3].SourceId.Should().Be(1);
+
+
+			changes = index.Process(new MergedLogSourcePendingModification(source2, LogFileSection.Invalidate(1, 2)));
+			changes.Should().Equal(new object[]
+			{
+				LogFileSection.Invalidate(1, 3),
+				new LogFileSection(1, 2)
+			});
+			index.Count.Should().Be(2);
+			index[0].SourceId.Should().Be(1);
+			index[1].SourceId.Should().Be(0);
+		}
+
+		[Test]
 		public void TestOneSourceManySameTimestamps()
 		{
 			var source = new InMemoryLogSource();

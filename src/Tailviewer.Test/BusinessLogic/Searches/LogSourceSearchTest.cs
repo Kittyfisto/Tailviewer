@@ -127,6 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/288")]
 		[Description("Verifies that the search handles a complete invalidation of the log source correctly")]
 		public void TestInvalidate2()
 		{

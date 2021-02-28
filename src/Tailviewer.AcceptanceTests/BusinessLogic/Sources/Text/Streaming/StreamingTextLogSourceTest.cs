@@ -276,6 +276,40 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			entries[0].RawContent.Should().Be(line);
 		}
 
+		[Test]
+		public void TestInvokeListenerEventually()
+		{
+			var line = "Hello, World!";
+			var fileName = GetUniqueNonExistingFileName();
+			using (var stream = File.OpenWrite(fileName))
+			using (var writer = new StreamWriter(stream))
+			{
+				writer.Write(line);
+			}
+
+			var logFile = Create(fileName, new UTF8Encoding(true));
+			var listener = new Mock<ILogSourceListener>();
+			var changes = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(logFile, It.IsAny<LogFileSection>()))
+			        .Callback((ILogSource _, LogFileSection section) =>
+			        {
+				        changes.Add(section);
+			        });
+			var maxWaitTime = TimeSpan.FromMilliseconds(500);
+			logFile.AddListener(listener.Object, maxWaitTime, 500);
+			changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+			_taskScheduler.RunOnce();
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's one log entry in the file");
+			changes.Should().Equal(new object[] {LogFileSection.Reset}, "because not enough time has elapsed and thus the log source may not have notified the listener just yet");
+
+
+			Thread.Sleep(maxWaitTime);
+			_taskScheduler.RunOnce();
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's still one log entry in the file");
+			changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)}, "because enough time has passed for the log file to notify us at this point in time");
+		}
+
 		#region Reference Files
 
 		[Test]

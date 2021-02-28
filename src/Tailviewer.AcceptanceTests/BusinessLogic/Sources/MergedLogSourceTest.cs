@@ -9,7 +9,6 @@ using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Test;
 

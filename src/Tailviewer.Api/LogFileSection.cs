@@ -37,6 +37,9 @@ namespace Tailviewer
 		/// Whether or not this section represents an addition (=False)
 		/// or an invalidation (i.e. Removal, True).
 		/// </summary>
+		/// <remarks>
+		///    TODO: Rename to IsRemove because that's what it's supposed to imply
+		/// </remarks>
 		public readonly bool IsInvalidate;
 
 		static LogFileSection()
