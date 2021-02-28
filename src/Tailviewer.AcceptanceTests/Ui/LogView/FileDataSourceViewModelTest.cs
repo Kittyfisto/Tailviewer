@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using FluentAssertions;
@@ -156,19 +157,22 @@ namespace Tailviewer.AcceptanceTests.Ui.LogView
 
 			model.ScreenCleared.Should().BeFalse();
 
-			model.ClearScreenCommand.Should().NotBeNull();
-			model.ClearScreenCommand.CanExecute(null).Should().BeTrue("because the screen can always be cleared");
-			model.ShowAllCommand.Should().NotBeNull();
-			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because the screen hasn't been cleared so nothing needs to be shown again");
-			model.ClearScreenCommand.Execute(null);
+			var clearScreenCommand = model.ViewMenuItems.First(x => x != null && x.Header == "Clear Screen").Command;
+			var showAllCommand = model.ViewMenuItems.First(x => x != null && x.Header == "Show All").Command;
+
+			clearScreenCommand.Should().NotBeNull();
+			clearScreenCommand.CanExecute(null).Should().BeTrue("because the screen can always be cleared");
+			showAllCommand.Should().NotBeNull();
+			showAllCommand.CanExecute(null).Should().BeFalse("because the screen hasn't been cleared so nothing needs to be shown again");
+			clearScreenCommand.Execute(null);
 			dataSource.Verify(x => x.ClearScreen(), Times.Once);
 
-			model.ShowAllCommand.Should().NotBeNull();
-			model.ShowAllCommand.CanExecute(null).Should().BeTrue("because the screen has been cleared and thus everything may be shown again");
-			model.ShowAllCommand.Execute(null);
+			showAllCommand.Should().NotBeNull();
+			showAllCommand.CanExecute(null).Should().BeTrue("because the screen has been cleared and thus everything may be shown again");
+			showAllCommand.Execute(null);
 			dataSource.Verify(x => x.ShowAll(), Times.Once);
 
-			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because everything has been shown again and thus nothing further can be shown");
+			showAllCommand.CanExecute(null).Should().BeFalse("because everything has been shown again and thus nothing further can be shown");
 		}
 	}
 }

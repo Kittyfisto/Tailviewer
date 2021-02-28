@@ -127,16 +127,17 @@ namespace Tailviewer.Ui.LogView
 					ToolTip = "Treat every single line as a separate log entry"
 				},
 				null,
-				new CommandMenuViewModel(ClearScreenCommand)
+				new CommandMenuViewModel(_clearScreenCommand)
 				{
+					Icon = Icons.PlaylistRemove,
 					Header = "Clear Screen",
 					ToolTip = "Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."
 				},
-				new CommandMenuViewModel(ShowAllCommand)
+				new CommandMenuViewModel(_showAllCommand)
 				{
-					Header = "ShowAll",
+					Header = "Show All",
 					ToolTip = "Shows all log entries that were previously cleared again"
-				},
+				}
 			};
 
 			_contextMenuItems = new ObservableCollectionExt<IMenuViewModel>();
@@ -483,16 +484,6 @@ namespace Tailviewer.Ui.LogView
 			get { return _dataSource.ScreenCleared; }
 		}
 
-		public ICommand ClearScreenCommand
-		{
-			get { return _clearScreenCommand; }
-		}
-
-		public ICommand ShowAllCommand
-		{
-			get { return _showAllCommand; }
-		}
-
 		#region Searches
 
 		public double Progress
@@ -791,8 +782,7 @@ namespace Tailviewer.Ui.LogView
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			Exists = _dataSource.UnfilteredLogSource?.GetProperty(GeneralProperties.EmptyReason)
-			         == ErrorFlags.None;
+			Exists = _dataSource.UnfilteredLogSource?.GetProperty(GeneralProperties.EmptyReason) == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			_search.Update();
@@ -871,6 +861,7 @@ namespace Tailviewer.Ui.LogView
 			EmitPropertyChanged(nameof(ScreenCleared));
 			_showAllCommand.CanBeExecuted = false;
 		}
+
 		private void ExportToFile()
 		{
 			var dataSource = DataSource;

@@ -301,6 +301,12 @@ namespace Tailviewer.Ui.LogView
 					NoEntriesExplanation = "Nothing matches level filter";
 					NoEntriesAction = "Try filtering by different levels or display everything regardless of its level again";
 				}
+				else if (dataSource.ScreenCleared)
+				{
+					NoEntriesIcon = Icons.PlaylistRemove;
+					NoEntriesExplanation = "The screen was cleared";
+					NoEntriesAction = "No new log entries have been added to the data source since the screen was cleared. Try waiting for a little longer or show all log entries again.";
+				}
 				else if (chain != null && chain.All(x => x != null))
 				{
 					NoEntriesIcon = Icons.FileSearch;
