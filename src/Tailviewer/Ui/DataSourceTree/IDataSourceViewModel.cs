@@ -103,17 +103,6 @@ namespace Tailviewer.Ui.DataSourceTree
 		/// </summary>
 		bool ScreenCleared { get; }
 
-		/// <summary>
-		/// Clears all log entries currently part of the data source.
-		/// Future log entries will be shown once they become available.
-		/// </summary>
-		ICommand ClearScreenCommand { get; }
-
-		/// <summary>
-		/// Sets <see cref="ScreenCleared"/> to false.
-		/// </summary>
-		ICommand ShowAllCommand { get; }
-
 		double Progress { get; }
 
 		DateTime LastViewed { get; }

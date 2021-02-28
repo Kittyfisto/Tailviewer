@@ -75,8 +75,8 @@
     <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.160, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.160\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.161, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.161\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -346,7 +346,6 @@
     <Compile Include="Ui\Menu\FileMenuViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\SidePanel\HyperlinkRun.cs" />
-    <Compile Include="Ui\LogView\LogViewMainPanelEntry.cs" />
     <Compile Include="Ui\LogView\LogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourceDragAdorner.cs" />
