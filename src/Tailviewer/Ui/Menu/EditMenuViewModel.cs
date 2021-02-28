@@ -14,15 +14,21 @@ namespace Tailviewer.Ui.Menu
 	{
 		private readonly ICommand _goToLineCommand;
 		private readonly ICommand _goToDataSource;
+		private readonly ICommand _goToPreviousDataSource;
+		private readonly ICommand _goToNextDataSource;
 		private readonly int _dataSourceInsertionIndex;
 		private readonly int _minCount;
 		private readonly ObservableCollectionExt<IMenuViewModel> _goToItems;
 
 		public EditMenuViewModel(ICommand goToLineCommand,
-		                         ICommand goToDataSource)
+		                         ICommand goToDataSource,
+		                         ICommand goToPreviousDataSource,
+		                         ICommand goToNextDataSource)
 		{
 			_goToLineCommand = goToLineCommand;
 			_goToDataSource = goToDataSource;
+			_goToPreviousDataSource = goToPreviousDataSource;
+			_goToNextDataSource = goToNextDataSource;
 			_goToItems = new ObservableCollectionExt<IMenuViewModel>();
 
 			AllItems.Add(_goToItems);
@@ -32,6 +38,7 @@ namespace Tailviewer.Ui.Menu
 
 		private IEnumerable<IMenuViewModel> CreateGoToItems()
 		{
+			// TODO: Move this closer to where it belongs: LogViewMainPanelViewModel
 			return new[]
 			{
 				new CommandMenuViewModel(new KeyBindingCommand(_goToLineCommand)
@@ -50,6 +57,22 @@ namespace Tailviewer.Ui.Menu
 				})
 				{
 					Header = "Go To Data Source..."
+				},
+				new CommandMenuViewModel(new KeyBindingCommand(_goToPreviousDataSource)
+				{
+					GestureModifier = ModifierKeys.Control | ModifierKeys.Shift,
+					GestureKey = Key.Tab
+				})
+				{
+					Header = "Go To Previous Data Source"
+				},
+				new CommandMenuViewModel(new KeyBindingCommand(_goToNextDataSource)
+				{
+					GestureModifier = ModifierKeys.Control,
+					GestureKey = Key.Tab
+				})
+				{
+					Header = "Go To Next Data Source"
 				}
 			};
 		}

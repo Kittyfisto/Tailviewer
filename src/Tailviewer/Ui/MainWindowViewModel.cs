@@ -56,8 +56,6 @@ namespace Tailviewer.Ui
 
 		private string _windowTitle;
 		private string _windowTitleSuffix;
-		private readonly ICommand _goToPreviousDataSourceCommand;
-		private readonly ICommand _goToNextDataSourceCommand;
 
 		private IFlyoutViewModel _currentFlyout;
 
@@ -103,8 +101,6 @@ namespace Tailviewer.Ui
 			timer.Start();
 			
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
-			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
-			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
 			var fileMenuViewModel = new FileMenuViewModel(new DelegateCommand2(AddDataSourceFromFile),
 			                                              new DelegateCommand2(AddDataSourceFromFolder),
@@ -114,7 +110,9 @@ namespace Tailviewer.Ui
 			                                              new DelegateCommand2(ShowSettings),
 			                                              new DelegateCommand2(Exit));
 			var editMenu = new EditMenuViewModel(new DelegateCommand2(ShowGoToLine),
-			                                     new DelegateCommand2(ShowGoToDataSource));
+			                                     new DelegateCommand2(ShowGoToDataSource),
+			                                     new DelegateCommand2(GoToNextDataSource),
+			                                     new DelegateCommand2(GoToPreviousDataSource));
 			var viewMenu = new ViewMenuViewModel();
 			var helpMenu = new HelpMenuViewModel(new DelegateCommand2(ReportIssue),
 			                                     new DelegateCommand2(SuggestFeature),
@@ -218,8 +216,6 @@ namespace Tailviewer.Ui
 		}
 
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
-		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
-		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 
 		public MainMenu MainMenu => _mainMenu;
 
