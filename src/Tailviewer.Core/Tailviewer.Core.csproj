@@ -79,6 +79,10 @@
     <Compile Include="Filters\ExpressionEngine\ContainsStringExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
+    <Compile Include="Filters\ExpressionEngine\IsExpression.cs" />
+    <Compile Include="Comparers\LevelFlagsComparer.cs" />
+    <Compile Include="Filters\ExpressionEngine\LogLevelLiteral.cs" />
+    <Compile Include="Filters\ExpressionEngine\LogLevelVariable.cs" />
     <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />

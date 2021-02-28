@@ -6,16 +6,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 	internal sealed class ContainsTimestampExpression
 		: IExpression<bool>
 	{
-		private readonly IExpression<DateTime?> _lhs;
-		private readonly IExpression<IInterval<DateTime?>> _rhs;
+		private readonly IExpression<IInterval<DateTime?>> _lhs;
+		private readonly IExpression<DateTime?> _rhs;
 
-		public ContainsTimestampExpression(IExpression<DateTime?> lhs, IExpression<IInterval<DateTime?>> rhs)
+		public ContainsTimestampExpression(IExpression<IInterval<DateTime?>> lhs, IExpression<DateTime?> rhs)
 		{
 			_lhs = lhs;
 			_rhs = rhs;
 		}
 
-		public static IExpression Create(IExpression<DateTime?> lhs, IExpression<IInterval<DateTime?>> rhs)
+		public static IExpression Create(IExpression<IInterval<DateTime?>> lhs, IExpression<DateTime?> rhs)
 		{
 			return new ContainsTimestampExpression(lhs, rhs);
 		}
@@ -35,21 +35,21 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			if (rhs == null)
 				return false;
 
-			var minimum = rhs.Minimum;
-			var maximum = rhs.Maximum;
+			var minimum = lhs.Minimum;
+			var maximum = lhs.Maximum;
 
 			if (minimum == null && maximum == null)
 				return false;
 
 			if (minimum != null)
 			{
-				if (lhs < minimum)
+				if (rhs < minimum)
 					return false;
 			}
 
 			if (maximum != null)
 			{
-				if (lhs > maximum)
+				if (rhs > maximum)
 					return false;
 			}
 
@@ -89,7 +89,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public override string ToString()
 		{
-			return string.Format("{0} {1} {2}", _lhs, Tokenizer.ToString(TokenType.Is), _rhs);
+			return string.Format("{0} {1} {2}", _lhs, Tokenizer.ToString(TokenType.Contains), _rhs);
 		}
 
 		#endregion

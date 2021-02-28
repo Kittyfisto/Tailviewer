@@ -24,6 +24,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
 		/// <summary>
+		///     The final filter which is used to filter the <see cref="UnfilteredLogSource"/> into the <see cref="FilteredLogSource"/>.
+		/// </summary>
+		/// <remarks>
+		///     Is an amalgamation of <see cref="QuickFilterChain"/>, <see cref="LevelFilter"/>, <see cref="ClearScreen"/>, etc...
+		/// </remarks>
+		ILogEntryFilter LogEntryFilter { get; }
+
+		/// <summary>
 		///     The actual log file this source eventually represents,
 		///     WITHOUT any of the settings of this source applied
 		///     (such as multiline, filters, etc...).

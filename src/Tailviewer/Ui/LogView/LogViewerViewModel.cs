@@ -13,6 +13,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.Filters;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
@@ -263,7 +264,7 @@ namespace Tailviewer.Ui.LogView
 
 			if (filtered.GetProperty(GeneralProperties.LogEntryCount) == 0)
 			{
-				IEnumerable<ILogEntryFilter> chain = dataSource.QuickFilterChain;
+				ILogEntryFilter filter = dataSource.LogEntryFilter;
 				var emptyReason = source.GetProperty(GeneralProperties.EmptyReason);
 				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
@@ -307,11 +308,13 @@ namespace Tailviewer.Ui.LogView
 					NoEntriesExplanation = "The screen was cleared";
 					NoEntriesAction = "No new log entries have been added to the data source since the screen was cleared. Try waiting for a little longer or show all log entries again.";
 				}
-				else if (chain != null && chain.All(x => x != null))
+				else if (filter != null)
 				{
 					NoEntriesIcon = Icons.FileSearch;
 					NoEntriesExplanation = "Nothing matches quick filter";
-					NoEntriesAction = "Try filtering by different terms or disable all quick filters";
+					NoEntriesAction = filter is FilterExpression
+						? $"No log entry matches \"{filter}\".\r\nTry changing your filter(s) or disable them again"
+						: "Try filtering by different terms or disable all quick filters";
 				}
 				else if (source is MergedLogSource)
 				{

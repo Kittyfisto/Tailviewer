@@ -107,6 +107,7 @@
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserErrorTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\FilterExpressionTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\LogLevelLiteralTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\TokenizerTest.cs" />
     <Compile Include="BusinessLogic\Filters\FilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilterTest.cs" />

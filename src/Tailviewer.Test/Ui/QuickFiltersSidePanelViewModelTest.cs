@@ -164,16 +164,20 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeTimeFilter()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
+			model.QuickInfo.Should().BeNull();
 			model.TimeFilters.SelectBySpecialInterval = true;
 
 			var numFilterChanges = 0;
 			model.OnFiltersChanged += () => ++numFilterChanges;
+			model.QuickInfo.Should().Be("1 active");
 
 			model.TimeFilters.SelectedSpecialInterval = new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisYear);
 			numFilterChanges.Should().Be(1, "because we've made a change to the selected time range");
+			model.QuickInfo.Should().Be("1 active");
 
 			model.TimeFilters.SelectEverything = true;
 			numFilterChanges.Should().Be(2, "because we've made a 2nd change to the selected time range");
+			model.QuickInfo.Should().BeNull();
 		}
 
 		[Test]

@@ -15,6 +15,15 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			_maximum = maximum;
 		}
 
+		#region Overrides of Object
+
+		public override string ToString()
+		{
+			return $"({_minimum}, {_maximum})";
+		}
+
+		#endregion
+
 		#region Implementation of IExpression
 
 		public Type ResultType => typeof(IInterval<DateTime?>);

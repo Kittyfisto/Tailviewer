@@ -245,7 +245,7 @@
                       Visibility="{Binding ErrorMessage, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"
-                      Width="300"
+                      Width="310"
                       Margin="20">
                     <Grid.RowDefinitions>
                         <RowDefinition />
