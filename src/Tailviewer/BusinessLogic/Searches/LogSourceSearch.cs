@@ -133,14 +133,30 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		private void FilterAllPending()
 		{
-			LogFileSection section;
-			while (_pendingModifications.TryDequeue(out section))
+			while (_pendingModifications.TryDequeue(out var section))
 			{
 				if (section.IsReset)
 				{
 					lock (_syncRoot)
 					{
 						_matches.Clear();
+					}
+
+					_listeners.EmitSearchChanged(_matches);
+				}
+				else if (section.IsInvalidate)
+				{
+					lock (_syncRoot)
+					{
+						int lastIndexInValidRange;
+						for (lastIndexInValidRange = _matches.Count - 1; lastIndexInValidRange >= 0; --lastIndexInValidRange)
+						{
+							if (_matches[lastIndexInValidRange].Index < section.Index)
+								break;
+						}
+
+						if (lastIndexInValidRange < _matches.Count)
+							_matches.RemoveRange(lastIndexInValidRange + 1, _matches.Count - lastIndexInValidRange - 1);
 					}
 
 					_listeners.EmitSearchChanged(_matches);

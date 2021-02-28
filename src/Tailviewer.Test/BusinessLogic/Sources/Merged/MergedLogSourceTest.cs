@@ -377,6 +377,34 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/288")]
+		public void TestMergeResetOneSource()
+		{
+			var source1 = new InMemoryLogSource();
+
+			var source2 = new InMemoryLogSource();
+
+			var merged = new MergedLogSource(_taskScheduler, TimeSpan.Zero, source1, source2);
+			var entries = Listen(merged);
+			var changes = ListenToChanges(merged, 100);
+			
+			source2.AddEntry("a", LevelFlags.Warning, new DateTime(2021, 2, 28, 22, 15, 0));
+			source1.AddEntry("b", LevelFlags.Info, new DateTime(2021, 2, 28, 22, 16, 0));
+			source2.AddEntry("c", LevelFlags.Error, new DateTime(2021, 2, 28, 22, 17, 0));
+
+			_taskScheduler.RunOnce();
+			merged.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			entries.Count.Should().Be(3);
+			changes.Should().Equal(new object[]{LogFileSection.Reset, new LogFileSection(0, 3)});
+
+
+			source1.Clear();
+			_taskScheduler.RunOnce();
+			entries.Count.Should().Be(2, "because the one entry from source should have been removed from the merged source");
+			changes.Should().Equal(new object[]{LogFileSection.Reset, new LogFileSection(0, 3), LogFileSection.Invalidate(1, 2), new LogFileSection(1, 1)});
+		}
+
+		[Test]
 		[Description("Verifies that merging a multi line entry in order works")]
 		public void TestMergeMultiline1()
 		{
@@ -559,7 +587,6 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		}
 
 		[Test]
-		//[Ignore("Not yet implemented")]
 		[Description("Verifies that changes from many sources are batched together")]
 		public void TestManySources1()
 		{

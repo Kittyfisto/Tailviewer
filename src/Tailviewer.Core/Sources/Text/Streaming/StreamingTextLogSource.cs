@@ -339,16 +339,6 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			return true;
 		}
 
-		private void Clear()
-		{
-			lock (_index)
-			{
-				_index.Clear();
-			}
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
-			UpdateLineCount(0);
-		}
-
 		private void AddFirstLineIfNecessary(FileStream stream)
 		{
 			if (stream.Length <= 0)
@@ -410,10 +400,20 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 				count = _index.Count;
 			}
 
-			_propertiesBuffer.SetValue(TextProperties.LineCount, count);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
+			UpdateLineCount(count);
+		}
+
+		private void Clear()
+		{
+			lock (_index)
+			{
+				_index.Clear();
+			}
+			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
+			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
+			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, 0);
 			SynchronizeProperties();
-			_listeners.OnRead(count);
+			_listeners.Reset();
 		}
 
 		private void UpdateLineCount(int count)

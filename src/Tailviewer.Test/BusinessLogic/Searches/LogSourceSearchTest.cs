@@ -103,5 +103,70 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 					});
 			}
 		}
+
+		[Test]
+		[Description("Verifies that the search handles a partial invalidation of the log source correctly")]
+		public void TestInvalidate1()
+		{
+			var logFile = new InMemoryLogSource();
+			logFile.AddEntry("What's up people?");
+			logFile.AddEntry("Hello World!");
+			logFile.AddEntry("Looks like a bug");
+			using (var search = new LogSourceSearch(_scheduler, logFile, "l", TimeSpan.Zero))
+			{
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(6);
+
+				logFile.RemoveFrom(1);
+				search.Matches.Should().HaveCount(6);
+
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(1, "because we've removed the second and third line, thus removing 5 of the 6 hits in the log source");
+				search.Matches.Should().Equal(new LogMatch(0, new LogLineMatch(14, 1)));
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/288")]
+		[Description("Verifies that the search handles a complete invalidation of the log source correctly")]
+		public void TestInvalidate2()
+		{
+			var logFile = new InMemoryLogSource();
+			logFile.AddEntry("What's up people?");
+			logFile.AddEntry("Hello World!");
+			logFile.AddEntry("Looks like a bug");
+			using (var search = new LogSourceSearch(_scheduler, logFile, "l", TimeSpan.Zero))
+			{
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(6);
+
+				logFile.RemoveFrom(0);
+				search.Matches.Should().HaveCount(6);
+
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(0, "because we've removed all lines");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the search handles a Reset of the log source correctly")]
+		public void TestReset()
+		{
+			var logFile = new InMemoryLogSource();
+			logFile.AddEntry("What's up people?");
+			logFile.AddEntry("Hello World!");
+			logFile.AddEntry("Looks like a bug");
+			using (var search = new LogSourceSearch(_scheduler, logFile, "l", TimeSpan.Zero))
+			{
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(6);
+
+				logFile.Clear();
+				search.Matches.Should().HaveCount(6);
+
+				_scheduler.RunOnce();
+				search.Matches.Should().HaveCount(0, "because we've cleared the log source");
+			}
+		}
 	}
 }
