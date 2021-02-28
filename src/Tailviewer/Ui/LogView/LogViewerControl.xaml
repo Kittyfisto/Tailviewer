@@ -33,6 +33,7 @@
             <converters1:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
             <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
             <converters1:InvertBoolConverter x:Key="InvertBoolConverter" />
+
             <converters:CountConverter x:Key="FatalCountConverter" />
             <converters:CountConverter x:Key="ErrorCountConverter" />
             <converters:CountConverter x:Key="WarningCountConverter" />
@@ -40,6 +41,16 @@
             <converters:CountConverter x:Key="DebugCountConverter" />
             <converters:CountConverter x:Key="TraceCountConverter" />
             <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
+
+            <converters:LevelToggleTooltipConverter x:Key="FatalTooltipConverter" Level="Fatal" />
+            <converters:LevelToggleTooltipConverter x:Key="ErrorTooltipConverter" Level="Error" />
+            <converters:LevelToggleTooltipConverter x:Key="WarningTooltipConverter" Level="Warning" />
+            <converters:LevelToggleTooltipConverter x:Key="InfoTooltipConverter" Level="Info" />
+            <converters:LevelToggleTooltipConverter x:Key="DebugTooltipConverter" Level="Debug" />
+            <converters:LevelToggleTooltipConverter x:Key="TraceTooltipConverter" Level="Trace" />
+            <converters:LevelToggleTooltipConverter x:Key="OtherTooltipConverter" Level="Other" />
+            <converters:FollowTailTooltipConverter x:Key="FollowTailTooltipConverter" />
+
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <converters:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
 
@@ -93,7 +104,7 @@
                     <logView:ToolbarToggleButton 
                         Margin="0,0,8,8"
                         IsChecked="{Binding DataSource.FollowTail, ElementName=This}"
-                        ToolTip="Follow tail of the data source"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource FollowTailTooltipConverter}}"
                         CheckedIcon="{x:Static metrolib:Icons.ScriptTextPlayOutline}"
                         UncheckedIcon="{x:Static metrolib:Icons.ScriptTextOutline}"
                         />
@@ -110,49 +121,49 @@
                         Margin="0,0,4,8"
                         LogLevel="Fatal"
                         IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of fatal log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource FatalTooltipConverter}}"
                         Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Error"
                         IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of error log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorTooltipConverter}}"
                         Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Warning"
                         IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of warning log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource WarningTooltipConverter}}"
                         Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Info"
                         IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of info log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource InfoTooltipConverter}}"
                         Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,4,8"
                         LogLevel="Debug"
                         IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of debug log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource DebugTooltipConverter}}"
                         Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
                         LogLevel="Trace"
                         IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Toggle display of trace log entries"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource TraceTooltipConverter}}"
                         Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
 
                     <logView:LogLevelToggleButton
                         Margin="0,0,8,8"
                         LogLevel="Other"
                         IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
-                        ToolTip="Show/hide other log entries (i.e. those who's log level cannot be identified by Tailviewer)"
+                        ToolTip="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={StaticResource OtherTooltipConverter}}"
                         Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
                     <controls:PluginToggleButton

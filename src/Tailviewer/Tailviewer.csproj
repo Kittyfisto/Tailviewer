@@ -232,6 +232,8 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\AboutViewModel.cs" />
+    <Compile Include="Ui\Converters\FollowTailTooltipConverter.cs" />
+    <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\LogView\ToolbarToggleButton.cs" />
     <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
