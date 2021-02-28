@@ -220,6 +220,29 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/307")]
+		public void TestTimeFilter()
+		{
+			var dataSource = new Mock<IFileDataSource>();
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(1);
+			logFile.Setup(x => x.GetProperty(GeneralProperties.Size)).Returns(Size.FromBytes(1));
+			var filteredLogFile = new Mock<ILogSource>();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.LogEntryFilter).Returns(FilterExpression.Parse("today contains $timestamp"));
+			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
+
+			var dataSourceModel = CreateFileViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Nothing matches quick filter");
+			model.NoEntriesAction.Should().Be("No log entry matches \"today contains $timestamp\".\r\nTry changing your filter(s) or disable them again");
+		}
+
+		[Test]
 		public void TestDataSourceNoFiles()
 		{
 			var dataSource = new Mock<IFolderDataSource>();
@@ -259,6 +282,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/308")]
 		public void TestScreenCleared()
 		{
 			var dataSource = new Mock<IFileDataSource>();
