@@ -253,7 +253,7 @@ namespace Tailviewer.Core.Sources.Merged
 
 				ProcessResetsNoLock(pendingModifications, changes);
 
-				// TODO: Process invalidations
+				ProcessInvalidationsNoLock(pendingModifications, changes);
 
 				ProcessAppendsNoLock(pendingModifications, changes);
 
@@ -279,10 +279,44 @@ namespace Tailviewer.Core.Sources.Merged
 				if (pendingModification.Section.IsReset)
 				{
 					var logFileIndex = GetLogFileIndex(pendingModification.LogSource);
-					var firstIndex = _indices.FindIndex(x => x.SourceId == logFileIndex);
+					bool Predicate(MergedLogLineIndex x) => x.SourceId == logFileIndex;
+					var firstIndex = _indices.FindIndex(Predicate);
 					if (firstIndex >= 0)
 					{
-						_indices.RemoveAll(x => x.SourceId == logFileIndex);
+						_indices.RemoveAll(Predicate);
+						if (_indices.Count == 0)
+						{
+							changes.Reset();
+						}
+						else
+						{
+							changes.InvalidateFrom(firstIndex);
+
+							var appendCount = _indices.Count - firstIndex;
+							if (appendCount > 0)
+							{
+								changes.Append(firstIndex, appendCount);
+							}
+						}
+					}
+				}
+			}
+		}
+			
+		private void ProcessInvalidationsNoLock(IReadOnlyList<MergedLogSourceSection> pendingModifications, MergedLogSourceChanges changes)
+		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
+			foreach (var pendingModification in pendingModifications)
+			{
+				if (pendingModification.Section.IsInvalidate)
+				{
+					var logFileIndex = GetLogFileIndex(pendingModification.LogSource);
+					bool Predicate(MergedLogLineIndex x) => x.SourceId == logFileIndex && x.SourceLineIndex >= pendingModification.Section.Index;
+					var firstIndex = _indices.FindIndex(Predicate);
+					if (firstIndex >= 0)
+					{
+						_indices.RemoveAll(Predicate);
 						if (_indices.Count == 0)
 						{
 							changes.Reset();
@@ -545,6 +579,11 @@ namespace Tailviewer.Core.Sources.Merged
 			}
 
 			return indices;
+		}
+
+		private void RepairLogEntryIndices(int firstIndexToRepair)
+		{
+			
 		}
 	}
 }

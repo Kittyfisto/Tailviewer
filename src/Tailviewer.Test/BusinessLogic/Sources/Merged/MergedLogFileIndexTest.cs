@@ -346,8 +346,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			});
 			index.Count.Should().Be(3);
 			index[0].SourceId.Should().Be(1);
+			index[0].MergedLogEntryIndex.Should().Be(0);
 			index[1].SourceId.Should().Be(0);
+			index[1].MergedLogEntryIndex.Should().Be(1);
 			index[2].SourceId.Should().Be(1);
+			index[2].MergedLogEntryIndex.Should().Be(2);
 
 
 			changes = index.Process(new MergedLogSourcePendingModification(source1, LogFileSection.Reset));
@@ -358,11 +361,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			});
 			index.Count.Should().Be(2);
 			index[0].SourceId.Should().Be(1);
+			index[0].MergedLogEntryIndex.Should().Be(0);
 			index[1].SourceId.Should().Be(1);
+			index[1].MergedLogEntryIndex.Should().Be(1);
 		}
 
 		[Test]
-		[Ignore("This just isn't implemented yet")]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/288")]
 		public void TestTwoSourcesAppendBothInvalidateOne()
 		{
@@ -384,16 +388,20 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			});
 			index.Count.Should().Be(4);
 			index[0].SourceId.Should().Be(1);
+			index[0].MergedLogEntryIndex.Should().Be(0);
 			index[1].SourceId.Should().Be(1);
+			index[1].MergedLogEntryIndex.Should().Be(1);
 			index[2].SourceId.Should().Be(0);
+			index[2].MergedLogEntryIndex.Should().Be(2);
 			index[3].SourceId.Should().Be(1);
+			index[3].MergedLogEntryIndex.Should().Be(3);
 
 
 			changes = index.Process(new MergedLogSourcePendingModification(source2, LogFileSection.Invalidate(1, 2)));
 			changes.Should().Equal(new object[]
 			{
 				LogFileSection.Invalidate(1, 3),
-				new LogFileSection(1, 2)
+				new LogFileSection(1, 1)
 			});
 			index.Count.Should().Be(2);
 			index[0].SourceId.Should().Be(1);
