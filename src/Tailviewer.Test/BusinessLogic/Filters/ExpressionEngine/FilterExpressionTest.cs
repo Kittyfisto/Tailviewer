@@ -20,5 +20,12 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 			expression.PassesFilter(new LogEntry(GeneralColumns.Minimum){LineNumber = 5001})
 			          .Should().BeTrue();
 		}
+
+		[Test]
+		public void TestToString()
+		{
+			var expression = FilterExpression.Parse("$linenumber > 5000");
+			expression.ToString().Should().Be("$linenumber > 5000");
+		}
 	}
 }

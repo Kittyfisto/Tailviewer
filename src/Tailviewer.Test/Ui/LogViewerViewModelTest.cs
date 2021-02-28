@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.Filters;
 using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
@@ -185,7 +186,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.SearchTerm).Returns("");
-			dataSource.Setup(x => x.QuickFilterChain).Returns(new List<ILogEntryFilter> {new Mock<ILogEntryFilter>().Object});
+			dataSource.Setup(x => x.LogEntryFilter).Returns(new SubstringFilter("foo", true));
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 
@@ -207,7 +208,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogSource>();
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.SearchTerm).Returns("s");
+			dataSource.Setup(x => x.LogEntryFilter).Returns(new SubstringFilter("s", true));
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
 

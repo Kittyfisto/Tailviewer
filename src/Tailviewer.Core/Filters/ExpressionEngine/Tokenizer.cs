@@ -5,11 +5,15 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class Tokenizer
 	{
-		private static readonly IReadOnlyDictionary<TokenType, string> SpecialTokens;
+		/// <summary>
+		///    The list of tokens which may appear next to a literal without whitespace and not be counted to belong to the literal.
+		/// </summary>
+		private static readonly IReadOnlyDictionary<TokenType, string> LiteralSeparatingTokens;
+		private static readonly IReadOnlyDictionary<TokenType, string> AllTokens;
 
 		static Tokenizer()
 		{
-			SpecialTokens = new Dictionary<TokenType, string>
+			LiteralSeparatingTokens = new Dictionary<TokenType, string>
 			{
 				{TokenType.OpenBracket, "("},
 				{TokenType.CloseBracket, ")"},
@@ -20,13 +24,17 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.Equals, "=="},
 				{TokenType.NotEquals, "!="},
 				{TokenType.Not, "!"},
+				{TokenType.Quotation, "\""},
+				{TokenType.BackwardSlash, "\\"},
+				{TokenType.Dollar, "$"}
+			};
+
+			AllTokens = new Dictionary<TokenType, string>((IDictionary<TokenType, string>) LiteralSeparatingTokens)
+			{
 				{TokenType.And, "and"},
 				{TokenType.Or, "or"},
 				{TokenType.Contains, "contains"},
 				{TokenType.Is, "is"},
-				{TokenType.Quotation, "\""},
-				{TokenType.BackwardSlash, "\\"},
-				{TokenType.Dollar, "$"},
 				{TokenType.True, "true"},
 				{TokenType.False, "false"}
 			};
@@ -35,7 +43,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		[Pure]
 		public static string ToString(TokenType token)
 		{
-			SpecialTokens.TryGetValue(token, out var value);
+			AllTokens.TryGetValue(token, out var value);
 			return value;
 		}
 
@@ -67,7 +75,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				return true;
 			}
 
-			foreach (var pair in SpecialTokens)
+			foreach (var pair in AllTokens)
 			{
 				if (StartsWith(expression, startIndex, pair.Value))
 				{
@@ -77,14 +85,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				}
 			}
 
-			// => Literal, but we need to determine the extent.
+			// => Literal, but we need to determine the extent, as some tokens are so special that they
+			//    may not end up being part of a literal, such as 'Foo==' which is the token Literal 'Foo' followed by
+			//    the token Equals
 			int i;
 			for (i = startIndex; i < expression.Length; ++i)
 			{
 				if (char.IsWhiteSpace(expression[i]))
 					break;
 
-				foreach (var pair in SpecialTokens)
+				foreach (var pair in LiteralSeparatingTokens)
 				{
 					if (StartsWith(expression, i, pair.Value))
 						goto eol;

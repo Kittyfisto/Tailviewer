@@ -20,7 +20,10 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			SpecialValues = new Dictionary<string, SpecialDateTimeInterval>
 			{
-				{"today", SpecialDateTimeInterval.Today}
+				{"today", SpecialDateTimeInterval.Today},
+				{"this_week", SpecialDateTimeInterval.ThisWeek},
+				{"this_month", SpecialDateTimeInterval.ThisMonth},
+				{"this_year", SpecialDateTimeInterval.ThisYear}
 			};
 			Strings = SpecialValues.ToDictionary(pair => pair.Value, pair => pair.Key);
 		}

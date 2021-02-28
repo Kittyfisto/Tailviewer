@@ -116,7 +116,7 @@ namespace Tailviewer.Core.Settings
 			if (interval == null)
 				return null;
 
-			var expression = new ContainsTimestampExpression(new TimestampVariable(), interval);
+			var expression = new ContainsTimestampExpression(interval, new TimestampVariable());
 			return new FilterExpression(expression);
 		}
 

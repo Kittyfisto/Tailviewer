@@ -23,7 +23,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.LessOrEquals, BinaryOperation.LessOrEquals},
 				{TokenType.GreaterThan, BinaryOperation.GreaterThan},
 				{TokenType.GreaterOrEquals, BinaryOperation.GreaterOrEquals},
-				{TokenType.Is, BinaryOperation.ContainsTimestamp}
+				{TokenType.Is, BinaryOperation.Is}
 			};
 			UnaryOperations = new Bimap<TokenType, UnaryOperation>
 			{
@@ -233,6 +233,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 				case LineNumberVariable.Value:
 					return new LineNumberVariable();
+
+				case LogLevelVariable.Value:
+					return new LogLevelVariable();
 
 				case TimestampVariable.Value:
 					return new TimestampVariable();

@@ -5,7 +5,7 @@
 		And,
 		Or,
 		Contains,
-		ContainsTimestamp,
+		Is,
 		LessThan,
 		LessOrEquals,
 		GreaterThan,

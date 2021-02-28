@@ -111,6 +111,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
+		public ILogEntryFilter LogEntryFilter => _mergedDataSource.LogEntryFilter;
+
 		public ILogSource OriginalLogSource
 		{
 			get { return _mergedDataSource.OriginalLogSource; }

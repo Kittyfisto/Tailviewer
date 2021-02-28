@@ -124,6 +124,9 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 		private void OnOnFiltersChanged()
 		{
 			var count = QuickFilters.Count(x => x.IsActive);
+			if (!TimeFilters.SelectEverything)
+				++count;
+
 			QuickInfo = count > 0 ? string.Format("{0} active", count) : null;
 			OnFiltersChanged?.Invoke();
 		}
