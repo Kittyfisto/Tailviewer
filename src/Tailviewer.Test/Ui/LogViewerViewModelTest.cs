@@ -256,5 +256,30 @@ namespace Tailviewer.Test.Ui
 			model.NoEntriesExplanation.Should().Be("The folder \"yesterday\" does not contain any file matching \"*.foo\"");
 			model.NoEntriesAction.Should().Be(@"C:\logs\yesterday");
 		}
+
+		[Test]
+		public void TestScreenCleared()
+		{
+			var dataSource = new Mock<IFileDataSource>();
+			var logFile = new Mock<ILogSource>();
+			logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(1);
+			logFile.Setup(x => x.GetProperty(GeneralProperties.Size)).Returns(Size.FromBytes(1));
+			var filteredLogFile = new Mock<ILogSource>();
+			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogSource).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.SearchTerm).Returns("");
+			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogSourceSearch>().Object);
+			dataSource.Setup(x => x.ScreenCleared).Returns(true);
+			dataSource.Setup(x => x.QuickFilterChain).Returns((IEnumerable<ILogEntryFilter>)null);
+
+			var dataSourceViewModel = new Mock<IFileDataSourceViewModel>();
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("The screen was cleared");
+			model.NoEntriesAction.Should().Be("No new log entries have been added to the data source since the screen was cleared. Try waiting for a little longer or show all log entries again.");
+		}
 	}
 }
