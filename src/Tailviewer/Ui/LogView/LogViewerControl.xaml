@@ -314,17 +314,17 @@
             </Grid>
 
             <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
-            <Border BorderThickness="1,0,0,0"
-                    BorderBrush="{StaticResource SeparatorBrush}"
-                    Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}"
-                    Grid.Column="2">
-                <Grid>
+            <Grid Grid.Column="2"
+                  Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NullToCollapsedConverter}}">
+                <Border BorderThickness="1,0,0,0"
+                        BorderBrush="{StaticResource SeparatorBrush}"
+                        Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}">
                     <ContentPresenter Width="300"
                                       VerticalAlignment="Stretch"
                                       HorizontalAlignment="Right"
                                       Content="{Binding SelectedSidePanel}" />
-                </Grid>
-            </Border>
+                </Border>
+            </Grid>
         </Grid>
 
         <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the fly-out is opened AND NOT pinned -->
