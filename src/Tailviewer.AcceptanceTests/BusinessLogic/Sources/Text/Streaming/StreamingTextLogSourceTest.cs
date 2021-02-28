@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
@@ -93,6 +94,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			readTask.Wait();
 			//readTask.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue("because the task should have been finished now that we've let the scheduler run");
 			return readTask.Result;
+		}
+
+		private IReadOnlyList<LogFileSection> AddListener(StreamingTextLogSource logSource, int maxCount)
+		{
+			var listener = new Mock<ILogSourceListener>();
+			var changes = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(logSource, It.IsAny<LogFileSection>()))
+			        .Callback((ILogSource _, LogFileSection section) =>
+			        {
+				        changes.Add(section);
+			        });
+			logSource.AddListener(listener.Object, TimeSpan.Zero, maxCount);
+			return changes;
 		}
 
 		[Test]
@@ -386,6 +400,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			var fileName = GetUniqueNonExistingFileName();
 
 			var logFile = Create(fileName, encoding);
+			var changes = AddListener(logFile, 1000);
+			changes.Should().Equal(new object[] {LogFileSection.Reset});
 
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
 			using (var writer = new StreamWriter(stream, encoding))
@@ -397,6 +413,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(23);
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)});
 
 				var entries = GetEntries(logFile);
 				entries.Count.Should().Be(2);
@@ -409,6 +426,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				_taskScheduler.RunOnce();
 
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1), LogFileSection.Reset},
+				                       "because the LogSource should have fired the Reset event now that the log source is done");
 
 				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
