@@ -14,12 +14,16 @@ namespace Tailviewer.Test.Ui.Menu
 	{
 		private Mock<ICommand> _goToLineCommand;
 		private Mock<ICommand> _goToDataSource;
+		private Mock<ICommand> _goToPreviousDataSource;
+		private Mock<ICommand> _goToNextDataSource;
 
 		[SetUp]
 		public void Setup()
 		{
 			_goToLineCommand = new Mock<ICommand>();
 			_goToDataSource = new Mock<ICommand>();
+			_goToPreviousDataSource = new Mock<ICommand>();
+			_goToNextDataSource = new Mock<ICommand>();
 		}
 
 		[Test]
@@ -40,16 +44,25 @@ namespace Tailviewer.Test.Ui.Menu
 
 			menu.Items.Should().NotBeEmpty();
 			menu.Items.Last().Should().NotBeNull();
-			var goToLine = menu.Items.First(x => x.Header == "Go To Line...");
+			var goToLine = menu.Items.First(x => x != null && x.Header == "Go To Line...");
+			var goToDataSource = menu.Items.First(x => x != null && x.Header == "Go To Data Source...");
+			var goToPreviousDataSource = menu.Items.First(x => x != null && x.Header == "Go To Previous Data Source");
+			var goToNextDataSource = menu.Items.First(x => x != null && x.Header == "Go To Next Data Source");
 
 			menu.CurrentDataSource = null;
 			menu.Items.Should().NotContain(goToLine);
-			menu.Items.Should().NotContain(x => x.Header == "Go To Line...");
+			menu.Items.Should().NotContain(goToDataSource);
+			menu.Items.Should().NotContain(goToPreviousDataSource);
+			menu.Items.Should().NotContain(goToNextDataSource);
+			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Line...");
+			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Data Source...");
+			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Previous Data Source");
+			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Next Data Source");
 		}
 
 		private EditMenuViewModel CreateMenu()
 		{
-			return new EditMenuViewModel(_goToLineCommand.Object, _goToDataSource.Object);
+			return new EditMenuViewModel(_goToLineCommand.Object, _goToDataSource.Object, _goToPreviousDataSource.Object, _goToNextDataSource.Object);
 		}
 
 		private IDataSourceViewModel CreateDataSource()
