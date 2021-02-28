@@ -236,6 +236,7 @@
     <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\EmptyState.cs" />
+    <Compile Include="Ui\LogView\ILogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\LogView\ToolbarToggleButton.cs" />
     <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModel.cs" />

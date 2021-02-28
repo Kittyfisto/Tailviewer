@@ -27,7 +27,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new Tailviewer.Settings.DataSourceSettings();
+			_settings = new DataSourceSettings();
 			_bookmarks = new Mock<IBookmarks>();
 			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 		}
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSources.Dispose();
 		}
 
-		private Tailviewer.Settings.DataSourceSettings _settings;
+		private DataSourceSettings _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
@@ -112,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that a business object is created for every data source")]
 		public void TestCtor1()
 		{
-			var settings = new Tailviewer.Settings.DataSourceSettings
+			var settings = new DataSourceSettings
 				{
 					new DataSource(@"E:\Code\test.log")
 						{
@@ -132,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that data sources are added to a parent, when specified")]
 		public void TestCtor2()
 		{
-			var settings = new Tailviewer.Settings.DataSourceSettings
+			var settings = new DataSourceSettings
 				{
 					new DataSource("test1.log")
 						{
@@ -171,7 +171,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that data sources are added to the correct parent")]
 		public void TestCtor3()
 		{
-			var settings = new Tailviewer.Settings.DataSourceSettings
+			var settings = new DataSourceSettings
 				{
 					new DataSource("test1.log")
 						{
@@ -216,7 +216,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor4()
 		{
-			var settings = new Tailviewer.Settings.DataSourceSettings
+			var settings = new DataSourceSettings
 			{
 				new DataSource
 				{
@@ -244,7 +244,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor5()
 		{
-			var settings = new Tailviewer.Settings.DataSourceSettings
+			var settings = new DataSourceSettings
 			{
 				new DataSource
 				{
@@ -275,7 +275,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
-		public void TestTestTryAddBookmark1()
+		public void TestTryAddBookmark1()
 		{
 			_dataSources.Bookmarks.Should().BeEmpty();
 

@@ -7,7 +7,7 @@
                     xmlns:ui="clr-namespace:Tailviewer.Ui"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
 
-    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type bookmarks:BookmarksViewModel}">
         <Border Background="White">
@@ -88,7 +88,7 @@
                 </controls:FlatScrollViewer>
 
                 <ui:EmptyState Grid.Row="1"
-                               Visibility="{Binding HasBookmarks, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                               Visibility="{Binding EmptyStatement, Converter={StaticResource NullToCollapsedConverter}}"
                                EmptyStatement="{Binding EmptyStatement}"
                                EmptyExplanation="{Binding EmptyExplanation}"/>
             </Grid>

@@ -28,10 +28,6 @@ namespace Tailviewer.Ui
 			DependencyProperty.Register("FocusLogFileSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
-		public static readonly DependencyProperty NewBookmarkCommandProperty =
-			DependencyProperty.Register("NewBookmarkCommand", typeof(ICommand), typeof(MainWindow),
-			                            new PropertyMetadata(default(ICommand)));
-
 		public static readonly DependencyProperty FocusDataSourceSearchCommandProperty =
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
@@ -60,7 +56,6 @@ namespace Tailviewer.Ui
 			FocusLogFileSearchAllCommand = new DelegateCommand(FocusLogFileSearchAll);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
-			NewBookmarkCommand = new DelegateCommand(NewBookmark);
 			_inputBindingsByCommand = new Dictionary<KeyBindingCommand, InputBinding>();
 
 			InitializeComponent();
@@ -101,12 +96,6 @@ namespace Tailviewer.Ui
 		{
 			get { return (ICommand) GetValue(NewQuickFilterCommandProperty); }
 			set { SetValue(NewQuickFilterCommandProperty, value); }
-		}
-
-		public ICommand NewBookmarkCommand
-		{
-			get { return (ICommand) GetValue(NewBookmarkCommandProperty); }
-			set { SetValue(NewBookmarkCommandProperty, value); }
 		}
 
 		public void OnShowMainwindow()

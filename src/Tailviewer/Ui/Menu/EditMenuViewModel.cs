@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using Metrolib;
 using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Ui.Menu
 {
@@ -16,6 +18,7 @@ namespace Tailviewer.Ui.Menu
 		private readonly ICommand _goToDataSource;
 		private readonly ICommand _goToPreviousDataSource;
 		private readonly ICommand _goToNextDataSource;
+		private readonly ILogViewMainPanelViewModel _mainPanel;
 		private readonly int _dataSourceInsertionIndex;
 		private readonly int _minCount;
 		private readonly ObservableCollectionExt<IMenuViewModel> _goToItems;
@@ -23,12 +26,14 @@ namespace Tailviewer.Ui.Menu
 		public EditMenuViewModel(ICommand goToLineCommand,
 		                         ICommand goToDataSource,
 		                         ICommand goToPreviousDataSource,
-		                         ICommand goToNextDataSource)
+		                         ICommand goToNextDataSource,
+		                         ILogViewMainPanelViewModel mainPanel)
 		{
 			_goToLineCommand = goToLineCommand;
 			_goToDataSource = goToDataSource;
 			_goToPreviousDataSource = goToPreviousDataSource;
 			_goToNextDataSource = goToNextDataSource;
+			_mainPanel = mainPanel;
 			_goToItems = new ObservableCollectionExt<IMenuViewModel>();
 
 			AllItems.Add(_goToItems);
@@ -73,6 +78,21 @@ namespace Tailviewer.Ui.Menu
 				})
 				{
 					Header = "Go To Next Data Source"
+				},
+				null,
+				new CommandMenuViewModel(new KeyBindingCommand(_mainPanel.AddBookmarkCommand)
+				{
+					GestureModifier = ModifierKeys.Control,
+					GestureKey = Key.B
+				})
+				{
+					Header = "Add Bookmark",
+					Icon = Icons.BookmarkPlusOutline
+				},
+				new CommandMenuViewModel(_mainPanel.RemoveAllBookmarkCommand)
+				{
+					Header = "Remove All Bookmarks",
+					Icon = Icons.BookmarkRemoveOutline
 				}
 			};
 		}

@@ -51,20 +51,20 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Bookmarks
 		[Test]
 		public void TestRemove1()
 		{
-			_viewModel.HasBookmarks.Should().BeFalse();
+			_viewModel.EmptyStatement.Should().BeNull();
 
 			_bookmarks.Add(new Bookmark(_dataSource.Object, 1));
 			_viewModel.CurrentDataSource = _dataSource.Object;
 			_viewModel.Update();
 			_viewModel.Bookmarks.Should().HaveCount(1);
-			_viewModel.HasBookmarks.Should().BeTrue();
+			_viewModel.EmptyStatement.Should().BeNull();
 
 			var bookmark = _viewModel.Bookmarks.First();
 			bookmark.RemoveCommand.CanExecute(null).Should().BeTrue();
 			new Action(() => bookmark.RemoveCommand.Execute(null)).Should().NotThrow();
 			_viewModel.Bookmarks.Should().BeEmpty();
 			_dataSources.Verify(x => x.RemoveBookmark(It.IsAny<Bookmark>()), Times.Once);
-			_viewModel.HasBookmarks.Should().BeFalse();
+			_viewModel.EmptyStatement.Should().Be("No Bookmarks added");
 		}
 
 		[Test]
@@ -78,12 +78,34 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Bookmarks
 			_viewModel.CurrentDataSource = _dataSource.Object;
 			_viewModel.AddBookmarkCommand.Execute(null);
 			_viewModel.Bookmarks.Should().NotBeEmpty();
-			_viewModel.HasBookmarks.Should().BeTrue();
+			_viewModel.EmptyStatement.Should().BeNull();
 
 			var bookmark = _viewModel.Bookmarks.First();
 			bookmark.RemoveCommand.Execute(null);
 			_viewModel.Bookmarks.Should().BeEmpty();
-			_viewModel.HasBookmarks.Should().BeFalse();
+			_viewModel.EmptyStatement.Should().Be("No Bookmarks added");;
+		}
+
+		[Test]
+		public void TestClearBookmarks()
+		{
+			_viewModel.RemoveAllBookmarksCommand.CanExecute(null).Should().BeFalse("because there are no bookmarks");
+			_viewModel.Update();
+			_viewModel.RemoveAllBookmarksCommand.CanExecute(null).Should().BeFalse("because there are no bookmarks");
+
+			_dataSource.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {13});
+			var logFile = new InMemoryLogSource();
+			logFile.AddEmptyEntries(13);
+			_dataSource.Setup(x => x.FilteredLogSource).Returns(logFile);
+
+			_viewModel.CurrentDataSource = _dataSource.Object;
+			_viewModel.AddBookmarkCommand.Execute(null);
+			_viewModel.Bookmarks.Should().NotBeEmpty();
+			_viewModel.RemoveAllBookmarksCommand.CanExecute(null).Should().BeTrue("because we now have bookmarks");
+
+			_viewModel.RemoveAllBookmarksCommand.Execute(null);
+			_viewModel.Bookmarks.Should().BeEmpty();
+			_viewModel.RemoveAllBookmarksCommand.CanExecute(null).Should().BeFalse("because there are no bookmarks anymore");
 		}
 	}
 }

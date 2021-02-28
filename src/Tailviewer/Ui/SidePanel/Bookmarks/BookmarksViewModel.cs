@@ -18,13 +18,13 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 		: AbstractSidePanelViewModel
 	{
 		private readonly DelegateCommand2 _addBookmarkCommand;
+		private readonly DelegateCommand2 _removeAllBookmarksCommand;
 		private readonly ObservableCollection<BookmarkViewModel> _bookmarks;
 		private readonly Dictionary<Bookmark, BookmarkViewModel> _viewModelByBookmark;
 		private readonly IDataSources _dataSources;
 		private readonly Action<Bookmark> _navigateToBookmark;
 
 		private IDataSource _currentDataSource;
-		private bool _hasBookmarks;
 
 		private string _emptyStatement;
 		private string _emptyExplanation;
@@ -34,6 +34,10 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
 			_navigateToBookmark = navigateToBookmark ?? throw new ArgumentNullException(nameof(navigateToBookmark));
 			_addBookmarkCommand = new DelegateCommand2(AddBookmark)
+			{
+				CanBeExecuted = false
+			};
+			_removeAllBookmarksCommand = new DelegateCommand2(RemoveAllBookmarks)
 			{
 				CanBeExecuted = false
 			};
@@ -64,19 +68,6 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 
 
 		public ICommand AddBookmarkCommand => _addBookmarkCommand;
-
-		public bool HasBookmarks
-		{
-			get { return _hasBookmarks; }
-			private set
-			{
-				if (value == _hasBookmarks)
-					return;
-
-				_hasBookmarks = value;
-				EmitPropertyChanged();
-			}
-		}
 
 		public IEnumerable<BookmarkViewModel> Bookmarks => _bookmarks;
 
@@ -123,6 +114,8 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 
 		public override string Id => "bookmarks";
 
+		public ICommand RemoveAllBookmarksCommand => _removeAllBookmarksCommand;
+
 		public override void Update()
 		{
 			var bookmarks = _dataSources.Bookmarks;
@@ -157,11 +150,11 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 					}
 				}
 
-				UpdateEmptyState();
+				OnBookmarksCountChanged();
 			}
 
 			_addBookmarkCommand.CanBeExecuted = Any(_currentDataSource?.SelectedLogLines);
-			UpdateEmptyState();
+			OnBookmarksCountChanged();
 
 			QuickInfo = FormatBookmarksCount();
 		}
@@ -189,7 +182,7 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			_viewModelByBookmark.Remove(viewModel.Bookmark);
 			_bookmarks.Remove(viewModel);
 			_dataSources.RemoveBookmark(viewModel.Bookmark);
-			UpdateEmptyState();
+			OnBookmarksCountChanged();
 		}
 
 		private static bool Any(HashSet<LogLineIndex> selectedLogLines)
@@ -229,13 +222,23 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 				}
 			}
 
-			UpdateEmptyState();
+			OnBookmarksCountChanged();
 		}
 
-		private void UpdateEmptyState()
+		private void RemoveAllBookmarks()
 		{
-			HasBookmarks = _bookmarks.Count > 0;
-			if (HasBookmarks)
+			_viewModelByBookmark.Clear();
+			_bookmarks.Clear();
+			_dataSources.ClearBookmarks();
+			OnBookmarksCountChanged();
+		}
+
+		private void OnBookmarksCountChanged()
+		{
+			bool hasBookmarks = _bookmarks.Count > 0;
+			_removeAllBookmarksCommand.CanBeExecuted = hasBookmarks;
+
+			if (hasBookmarks)
 			{
 				EmptyStatement = null;
 				EmptyExplanation = null;

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Sources;
@@ -181,7 +180,27 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			removeTask.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue("because RemoveDataSource should not block at all");
 
 			logFile.Verify(x => x.RemoveListener(collection), Times.Once);
-			
+		}
+
+		[Test]
+		public void TestClearBookmarks()
+		{
+			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
+			collection.AddDataSource(_dataSource.Object);
+
+			_logSource.AddEntry("", LevelFlags.Error);
+			_logSource.AddEntry("", LevelFlags.Error);
+
+			var bookmark1 = collection.TryAddBookmark(_dataSource.Object, 0);
+			var bookmark2 = collection.TryAddBookmark(_dataSource.Object, 1);
+			collection.Count.Should().Be(2);
+			collection.Bookmarks.Should().Equal(new[] {bookmark1, bookmark2});
+			_bookmarks.Verify(x => x.SaveAsync(), Times.Exactly(2));
+
+			collection.Clear();
+			collection.Count.Should().Be(0);
+			collection.Bookmarks.Should().BeEmpty();
+			_bookmarks.Verify(x => x.SaveAsync(), Times.Exactly(3));
 		}
 	}
 }

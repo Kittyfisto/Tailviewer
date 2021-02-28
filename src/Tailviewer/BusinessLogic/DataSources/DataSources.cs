@@ -106,6 +106,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_bookmarks.RemoveBookmark(bookmark);
 		}
 
+		public void ClearBookmarks()
+		{
+			_bookmarks.Clear();
+		}
+
 		public IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources
 		{
 			get { return _logFileFactory.CustomDataSources; }

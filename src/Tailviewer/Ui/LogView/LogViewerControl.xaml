@@ -96,11 +96,11 @@
 
             <!-- Central Toolbar -->
             <Border Grid.Column="1"
-                    Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                     BorderThickness="1,0,0,1"
                     BorderBrush="{StaticResource PrimarySeparatorBrush}">
                 <WrapPanel Orientation="Horizontal"
                            VerticalAlignment="Center"
+                           Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                            Margin="8">
 
                     <logView:ToolbarToggleButton 
