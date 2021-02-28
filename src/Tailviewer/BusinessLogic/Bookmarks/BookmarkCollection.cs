@@ -186,5 +186,16 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		{
 			_roBookmarks = _bookmarks.Keys.ToList();
 		}
+
+		public void Clear()
+		{
+			lock (_syncRoot)
+			{
+				_bookmarks.Clear();
+
+				Update();
+				_settings.SaveAsync();
+			}
+		}
 	}
 }

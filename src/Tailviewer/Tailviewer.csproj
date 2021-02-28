@@ -75,8 +75,8 @@
     <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.161, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.161\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.162, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.162\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -235,6 +235,8 @@
     <Compile Include="Ui\Converters\FollowTailTooltipConverter.cs" />
     <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
+    <Compile Include="Ui\EmptyState.cs" />
+    <Compile Include="Ui\LogView\ILogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\LogView\ToolbarToggleButton.cs" />
     <Compile Include="Ui\Menu\AbstractMainMenuViewModel.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModel.cs" />
@@ -439,6 +441,10 @@
     <Page Include="Ui\DataSourceTree\FolderDataSourceTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\EmptyStateStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\FlatImage.xaml">
       <SubType>Designer</SubType>

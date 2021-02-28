@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
 using log4net;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
@@ -32,6 +33,7 @@ namespace Tailviewer.Ui.LogView
 	/// </summary>
 	public sealed class LogViewMainPanelViewModel
 		: AbstractMainPanelViewModel
+		, ILogViewMainPanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -430,6 +432,10 @@ namespace Tailviewer.Ui.LogView
 		public IEnumerable<IDataSourceViewModel> RecentFiles => _dataSources.Observable;
 
 		public ILogViewerSettings Settings => _applicationSettings.LogViewer;
+
+		public ICommand AddBookmarkCommand => _bookmarks.AddBookmarkCommand;
+
+		public ICommand RemoveAllBookmarkCommand => _bookmarks.RemoveAllBookmarksCommand;
 
 		public override void Update()
 		{

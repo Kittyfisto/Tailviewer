@@ -6,6 +6,7 @@
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
                     xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.DataSourceTree"
+                    xmlns:ui="clr-namespace:Tailviewer.Ui"
                     mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>
@@ -20,6 +21,8 @@
             Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/MergedDataSourceTemplate.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/DataSourceTree/TreeViewItemStyle.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/EmptyStateStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters:EmptyToCollapsedConverter x:Key="EmptyToCollapsedConverter" />
@@ -58,27 +61,10 @@
                                                     Grid.Row="1" />
 
                             <!-- Is displayed to the user when there are no data sources -->
-                            <Grid Grid.Row="1"
-                                  Visibility="{Binding NoDataSourcesReason, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  Margin="20">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0"
-                                           HorizontalAlignment="Center"
-                                           FontWeight="Bold"
-                                           FontSize="18"
-                                           Foreground="#A0A0A0"
-                                           Text="{TemplateBinding NoDataSourcesReason}"/>
-                                <TextBlock Grid.Row="1"
-                                           Foreground="#A0A0A0"
-                                           Text="{TemplateBinding NoDataSourcesActions}"
-                                           TextWrapping="Wrap" />
-                            </Grid>
-
+                            <ui:EmptyState Grid.Row="1"
+                                           Visibility="{Binding NoDataSourcesReason, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}"
+                                           EmptyStatement="{TemplateBinding NoDataSourcesReason}"
+                                           EmptyExplanation="{TemplateBinding NoDataSourcesActions}" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

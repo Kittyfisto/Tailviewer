@@ -17,25 +17,31 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 	public sealed class BookmarksViewModel
 		: AbstractSidePanelViewModel
 	{
-		private readonly DelegateCommand _addBookmarkCommand;
+		private readonly DelegateCommand2 _addBookmarkCommand;
+		private readonly DelegateCommand2 _removeAllBookmarksCommand;
 		private readonly ObservableCollection<BookmarkViewModel> _bookmarks;
 		private readonly Dictionary<Bookmark, BookmarkViewModel> _viewModelByBookmark;
 		private readonly IDataSources _dataSources;
 		private readonly Action<Bookmark> _navigateToBookmark;
 
 		private IDataSource _currentDataSource;
-		private bool _canAddBookmarks;
+
+		private string _emptyStatement;
+		private string _emptyExplanation;
 
 		public BookmarksViewModel(IDataSources dataSources, Action<Bookmark> navigateToBookmark)
 		{
-			if (dataSources == null)
-				throw new ArgumentNullException(nameof(dataSources));
-			if (navigateToBookmark == null)
-				throw new ArgumentNullException(nameof(navigateToBookmark));
+			_dataSources = dataSources ?? throw new ArgumentNullException(nameof(dataSources));
+			_navigateToBookmark = navigateToBookmark ?? throw new ArgumentNullException(nameof(navigateToBookmark));
+			_addBookmarkCommand = new DelegateCommand2(AddBookmark)
+			{
+				CanBeExecuted = false
+			};
+			_removeAllBookmarksCommand = new DelegateCommand2(RemoveAllBookmarks)
+			{
+				CanBeExecuted = false
+			};
 
-			_dataSources = dataSources;
-			_navigateToBookmark = navigateToBookmark;
-			_addBookmarkCommand = new DelegateCommand(AddBookmark, CanAddBookmark);
 			_viewModelByBookmark = new Dictionary<Bookmark, BookmarkViewModel>();
 			_bookmarks = new ObservableCollection<BookmarkViewModel>();
 
@@ -63,19 +69,6 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 
 		public ICommand AddBookmarkCommand => _addBookmarkCommand;
 
-		private bool CanAddBookmarks
-		{
-			get { return _canAddBookmarks; }
-			set
-			{
-				if (value == _canAddBookmarks)
-					return;
-
-				_canAddBookmarks = value;
-				_addBookmarkCommand.RaiseCanExecuteChanged();
-			}
-		}
-
 		public IEnumerable<BookmarkViewModel> Bookmarks => _bookmarks;
 
 		public IDataSource CurrentDataSource
@@ -91,9 +84,37 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			}
 		}
 
+		public string EmptyStatement
+		{
+			get { return _emptyStatement; }
+			private set
+			{
+				if (value == _emptyStatement)
+					return;
+
+				_emptyStatement = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string EmptyExplanation
+		{
+			get { return _emptyExplanation; }
+			private set
+			{
+				if (value == _emptyExplanation)
+					return;
+
+				_emptyExplanation = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public override Geometry Icon => Icons.Bookmark;
 
 		public override string Id => "bookmarks";
+
+		public ICommand RemoveAllBookmarksCommand => _removeAllBookmarksCommand;
 
 		public override void Update()
 		{
@@ -103,8 +124,7 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 				// Add bookmarks we haven't added yet
 				foreach (var bookmark in bookmarks)
 				{
-					BookmarkViewModel viewModel;
-					if (!_viewModelByBookmark.TryGetValue(bookmark, out viewModel))
+					if (!_viewModelByBookmark.TryGetValue(bookmark, out var viewModel))
 					{
 						viewModel = new BookmarkViewModel(bookmark,
 							OnNavigateToBookmark,
@@ -129,8 +149,13 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 						++i;
 					}
 				}
+
+				OnBookmarksCountChanged();
 			}
-			CanAddBookmarks = Any(_currentDataSource?.SelectedLogLines);
+
+			_addBookmarkCommand.CanBeExecuted = Any(_currentDataSource?.SelectedLogLines);
+			OnBookmarksCountChanged();
+
 			QuickInfo = FormatBookmarksCount();
 		}
 
@@ -157,6 +182,7 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			_viewModelByBookmark.Remove(viewModel.Bookmark);
 			_bookmarks.Remove(viewModel);
 			_dataSources.RemoveBookmark(viewModel.Bookmark);
+			OnBookmarksCountChanged();
 		}
 
 		private static bool Any(HashSet<LogLineIndex> selectedLogLines)
@@ -174,11 +200,6 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 					break;
 			}
 			_bookmarks.Insert(i, viewModel);
-		}
-
-		private bool CanAddBookmark()
-		{
-			return CanAddBookmarks;
 		}
 
 		private void AddBookmark()
@@ -199,6 +220,35 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 					_viewModelByBookmark.Add(bookmark, viewModel);
 					Insert(viewModel);
 				}
+			}
+
+			OnBookmarksCountChanged();
+		}
+
+		private void RemoveAllBookmarks()
+		{
+			_viewModelByBookmark.Clear();
+			_bookmarks.Clear();
+			_dataSources.ClearBookmarks();
+			OnBookmarksCountChanged();
+		}
+
+		private void OnBookmarksCountChanged()
+		{
+			bool hasBookmarks = _bookmarks.Count > 0;
+			_removeAllBookmarksCommand.CanBeExecuted = hasBookmarks;
+
+			if (hasBookmarks)
+			{
+				EmptyStatement = null;
+				EmptyExplanation = null;
+			}
+			else
+			{
+				EmptyStatement = "No Bookmarks added";
+				EmptyExplanation = _addBookmarkCommand.CanBeExecuted
+					? "Try clicking Add Bookmark"
+					: "Try selecting a log entry /or line and click Add Bookmark";
 			}
 		}
 	}

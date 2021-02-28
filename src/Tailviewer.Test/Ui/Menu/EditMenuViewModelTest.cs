@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
+using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;
 
 namespace Tailviewer.Test.Ui.Menu
@@ -16,6 +17,8 @@ namespace Tailviewer.Test.Ui.Menu
 		private Mock<ICommand> _goToDataSource;
 		private Mock<ICommand> _goToPreviousDataSource;
 		private Mock<ICommand> _goToNextDataSource;
+		private Mock<ICommand> _addBookmarkCommand;
+		private Mock<ILogViewMainPanelViewModel> _mainPanel;
 
 		[SetUp]
 		public void Setup()
@@ -24,6 +27,9 @@ namespace Tailviewer.Test.Ui.Menu
 			_goToDataSource = new Mock<ICommand>();
 			_goToPreviousDataSource = new Mock<ICommand>();
 			_goToNextDataSource = new Mock<ICommand>();
+			_mainPanel = new Mock<ILogViewMainPanelViewModel>();
+			_addBookmarkCommand = new Mock<ICommand>();
+			_mainPanel.Setup(x => x.AddBookmarkCommand).Returns(_addBookmarkCommand.Object);
 		}
 
 		[Test]
@@ -48,21 +54,24 @@ namespace Tailviewer.Test.Ui.Menu
 			var goToDataSource = menu.Items.First(x => x != null && x.Header == "Go To Data Source...");
 			var goToPreviousDataSource = menu.Items.First(x => x != null && x.Header == "Go To Previous Data Source");
 			var goToNextDataSource = menu.Items.First(x => x != null && x.Header == "Go To Next Data Source");
+			var addBookmark = menu.Items.First(x => x != null && x.Header == "Add Bookmark");
 
 			menu.CurrentDataSource = null;
 			menu.Items.Should().NotContain(goToLine);
 			menu.Items.Should().NotContain(goToDataSource);
 			menu.Items.Should().NotContain(goToPreviousDataSource);
 			menu.Items.Should().NotContain(goToNextDataSource);
+			menu.Items.Should().NotContain(addBookmark);
 			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Line...");
 			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Data Source...");
 			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Previous Data Source");
 			menu.Items.Should().NotContain(x => x != null && x.Header == "Go To Next Data Source");
+			menu.Items.Should().NotContain(x => x != null && x.Header == "Add Bookmark");
 		}
 
 		private EditMenuViewModel CreateMenu()
 		{
-			return new EditMenuViewModel(_goToLineCommand.Object, _goToDataSource.Object, _goToPreviousDataSource.Object, _goToNextDataSource.Object);
+			return new EditMenuViewModel(_goToLineCommand.Object, _goToDataSource.Object, _goToPreviousDataSource.Object, _goToNextDataSource.Object, _mainPanel.Object);
 		}
 
 		private IDataSourceViewModel CreateDataSource()

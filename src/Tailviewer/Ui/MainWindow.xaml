@@ -24,12 +24,6 @@
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+N"
                     Command="{Binding NewQuickFilterCommand, ElementName=This}" />
-        <KeyBinding Gesture="Ctrl+B"
-                    Command="{Binding NewBookmarkCommand, ElementName=This}" />
-        <KeyBinding Gesture="Ctrl+Tab"
-                    Command="{Binding GoToNextDataSourceCommand}" />
-        <KeyBinding Gesture="Ctrl+Shift+Tab"
-                    Command="{Binding GoToPreviousDataSourceCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>

@@ -21,9 +21,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 		IReadOnlyList<Bookmark> Bookmarks { get; }
 
 		/// <summary>
+		///    Tries to remove the given bookmark.
 		/// </summary>
 		/// <param name="bookmark"></param>
 		void RemoveBookmark(Bookmark bookmark);
+
+		/// <summary>
+		///    Removes all bookmarks.
+		/// </summary>
+		void ClearBookmarks();
 
 		#endregion
 

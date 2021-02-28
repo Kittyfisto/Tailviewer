@@ -3,7 +3,11 @@
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:bookmarks="clr-namespace:Tailviewer.Ui.SidePanel.Bookmarks"
-                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel">
+                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
+                    xmlns:ui="clr-namespace:Tailviewer.Ui"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type bookmarks:BookmarksViewModel}">
         <Border Background="White">
@@ -26,15 +30,16 @@
                                FontSize="14"
                                Margin="8,0,0,0" />
 
-                    <controls:AddButton
+                    <controls:FlatIconButton
                         Grid.Column="1"
                         Width="26"
                         Height="26"
+                        Icon="{x:Static metrolib:Icons.BookmarkPlus}"
                         ToolTipService.ShowOnDisabled="True"
                         VerticalAlignment="Center"
                         Command="{Binding AddBookmarkCommand}">
-                        <controls:AddButton.Style>
-                            <Style TargetType="{x:Type controls:AddButton}">
+                        <controls:FlatIconButton.Style>
+                            <Style TargetType="{x:Type controls:FlatIconButton}">
                                 <Style.Triggers>
                                     <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="ToolTip" Value="Select a line to add a bookmark" />
@@ -44,8 +49,8 @@
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </controls:AddButton.Style>
-                    </controls:AddButton>
+                        </controls:FlatIconButton.Style>
+                    </controls:FlatIconButton>
                 </Grid>
                 <controls:FlatScrollViewer
                     ScrollBarThickness="7"
@@ -81,6 +86,11 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </controls:FlatScrollViewer>
+
+                <ui:EmptyState Grid.Row="1"
+                               Visibility="{Binding EmptyStatement, Converter={StaticResource NullToCollapsedConverter}}"
+                               EmptyStatement="{Binding EmptyStatement}"
+                               EmptyExplanation="{Binding EmptyExplanation}"/>
             </Grid>
         </Border>
     </DataTemplate>

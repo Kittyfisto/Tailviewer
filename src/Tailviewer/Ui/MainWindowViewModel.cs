@@ -112,7 +112,8 @@ namespace Tailviewer.Ui
 			var editMenu = new EditMenuViewModel(new DelegateCommand2(ShowGoToLine),
 			                                     new DelegateCommand2(ShowGoToDataSource),
 			                                     new DelegateCommand2(GoToNextDataSource),
-			                                     new DelegateCommand2(GoToPreviousDataSource));
+			                                     new DelegateCommand2(GoToPreviousDataSource),
+			                                     _logViewPanel);
 			var viewMenu = new ViewMenuViewModel();
 			var helpMenu = new HelpMenuViewModel(new DelegateCommand2(ReportIssue),
 			                                     new DelegateCommand2(SuggestFeature),
