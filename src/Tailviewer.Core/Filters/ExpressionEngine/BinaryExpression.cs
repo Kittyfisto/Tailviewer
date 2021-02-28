@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
@@ -17,9 +18,45 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{BinaryOperation.LessOrEquals, (lhs, rhs) => Create2<long, long>(BinaryOperation.LessOrEquals, lhs, rhs, LessOrEqualsExpression.Create)},
 				{BinaryOperation.GreaterThan, (lhs, rhs) => Create2<long, long>(BinaryOperation.GreaterThan, lhs, rhs, GreaterThanExpression.Create)},
 				{BinaryOperation.GreaterOrEquals, (lhs, rhs) => Create2<long, long>(BinaryOperation.GreaterOrEquals, lhs, rhs, GreaterOrEqualsExpression.Create)},
-				{BinaryOperation.Contains, (lhs, rhs) => Create2<string, string>(BinaryOperation.Contains, lhs, rhs, ContainsStringExpression.Create)},
-				{BinaryOperation.ContainsTimestamp, (lhs, rhs) => Create2<DateTime?, IInterval<DateTime?>>(BinaryOperation.ContainsTimestamp, lhs, rhs, ContainsTimestampExpression.Create)},
+				{BinaryOperation.Is, CreateIsExpression },
+				{BinaryOperation.Contains, CreateContainsExpression},
 			};
+		}
+
+		private static IExpression CreateIsExpression(IExpression lhs, IExpression rhs)
+		{
+			if (lhs.ResultType == rhs.ResultType)
+			{
+				var expressionType = typeof(IsExpression<>).MakeGenericType(new[] {lhs.ResultType});
+				var ctor = expressionType.GetMethod(nameof(IsExpression<int>.Create),
+				                                    BindingFlags.Public | BindingFlags.Static);
+
+				return (IExpression) ctor.Invoke(null, new object[]{lhs, rhs});
+			}
+
+			throw new NotImplementedException();
+		}
+
+		private static IExpression CreateContainsExpression(IExpression lhs, IExpression rhs)
+		{
+			// The "contains" operator is a bit fuzzy in that it sometimes performs an equal operation, and at other times it performs a range check.
+			// It exists to allow users to construct complex filters using a simple language.
+			// Example: "today contains $timestamp" is understandable to most people even though it actually evaluates to
+			//          "$timestamp.year == now.year and $timestamp.month == now.month and $timestamp.day == now.day"
+
+			if (lhs is IExpression<IInterval<DateTime?>> lhsDateTimeInterval &&
+			    rhs is IExpression<DateTime?> rhsDateTime)
+			{
+				return ContainsTimestampExpression.Create(lhsDateTimeInterval, rhsDateTime);
+			}
+
+			if (lhs is IExpression<string> lhsString &&
+			    rhs is IExpression<string> rhsString)
+			{
+				return ContainsStringExpression.Create(lhsString, rhsString);
+			}
+
+			throw new NotImplementedException();
 		}
 
 		private static IExpression Create2<TLhs, TRhs>(BinaryOperation operation,

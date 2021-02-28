@@ -33,6 +33,16 @@ namespace Tailviewer.Core.Filters
 			return new FilterExpression(expr);
 		}
 
+		#region Overrides of Object
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return _expression.ToString();
+		}
+
+		#endregion
+
 		#region Implementation of ILogLineFilter
 
 		/// <inheritdoc />

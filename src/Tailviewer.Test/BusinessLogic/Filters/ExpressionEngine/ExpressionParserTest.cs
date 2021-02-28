@@ -103,8 +103,28 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		[Test]
 		public void TestParseTimestampIsToday()
 		{
-			Parse("$timestamp is today")
-				.Should().Be(new ContainsTimestampExpression(new TimestampVariable(), new DateTimeIntervalLiteral(SpecialDateTimeInterval.Today)));
+			Parse("today contains $timestamp")
+				.Should().Be(new ContainsTimestampExpression(new DateTimeIntervalLiteral(SpecialDateTimeInterval.Today), new TimestampVariable()));
+		}
+
+		[Test]
+		public void TestParseLogLevel()
+		{
+			Parse("$loglevel").Should().Be(new LogLevelVariable());
+		}
+
+		[Test]
+		public void TestParseLogLevelLiteralError()
+		{
+			Parse("error")
+				.Should().Be(new LogLevelLiteral(LevelFlags.Error));
+		}
+
+		[Test]
+		public void TestParseLogLevelIsError()
+		{
+			Parse("$loglevel is error")
+				.Should().Be(new IsExpression<LevelFlags>(new LogLevelVariable(), new LogLevelLiteral(LevelFlags.Error)));
 		}
 
 		[Test]

@@ -28,6 +28,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly LogSourceProxy _findAllLogSource;
 		private readonly LogSourceSearchProxy _findAllSearch;
 
+		private ILogEntryFilter _logEntryFilter;
 		private ILogSource _filteredLogSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
@@ -69,6 +70,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public ILogSourceSearch Search => _search;
 
 		public abstract IPluginDescription TranslationPlugin { get; }
+
+		public ILogEntryFilter LogEntryFilter => _logEntryFilter;
 
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
@@ -334,11 +337,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (Filter.IsFilter(logEntryFilter) || Filter.IsFilter(logLineFilter))
 			{
+				_logEntryFilter = logEntryFilter;
 				_filteredLogSource = UnfilteredLogSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logSource.InnerLogSource = _filteredLogSource;
 			}
 			else
 			{
+				_logEntryFilter = null;
 				_filteredLogSource = null;
 				_logSource.InnerLogSource = UnfilteredLogSource;
 			}

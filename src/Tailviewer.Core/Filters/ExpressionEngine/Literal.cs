@@ -22,6 +22,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			if (DateTimeIntervalLiteral.TryParse(value, out var dateTimeLiteral))
 				return new DateTimeIntervalLiteral(dateTimeLiteral);
 
+			if (LogLevelLiteral.TryParse(value, out var logLevel))
+				return new LogLevelLiteral(logLevel);
+
 			if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue))
 				return new IntegerLiteral(integerValue);
 
