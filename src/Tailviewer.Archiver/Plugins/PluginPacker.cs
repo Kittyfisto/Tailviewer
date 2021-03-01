@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using log4net;
 using PE;
@@ -59,6 +58,8 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		public string Version => _index.Version;
+
+		public string Id => _index.Id;
 
 		/// <inheritdoc />
 		public void Dispose()

@@ -180,8 +180,8 @@
     <EmbeddedResource Include="InstallationFiles\Plugins\Readme.txt">
       <LogicalName>InstallationFiles\Plugins\Readme.txt</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Formats.Serilog.0.0.0.tvp">
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Formats.Serilog.0.0.0.tvp</LogicalName>
+    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Formats.Serilog.1.0.0.0.tvp">
+      <LogicalName>InstallationFiles\Plugins\Tailviewer.Formats.Serilog.1.0.0.0.tvp</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
