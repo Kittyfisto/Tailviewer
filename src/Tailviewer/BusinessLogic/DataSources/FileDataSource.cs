@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (logFileFactory == null)
 				throw new ArgumentNullException(nameof(logFileFactory));
 
-			_originalLogSource = logFileFactory.Open(settings.File, out _pluginDescription);
+			_originalLogSource = logFileFactory.Open(settings.File);
 			_unfilteredLogSource = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();

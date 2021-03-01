@@ -124,9 +124,8 @@
     <Compile Include="Sources\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="Sources\Merged\Stuff.cs" />
     <Compile Include="Properties\TextProperties.cs" />
-    <Compile Include="Sources\Text\FileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\GenericTextLogSource.cs" />
-    <Compile Include="Sources\Text\IFileLogSourceFactory.cs" />
+    <Compile Include="Sources\Text\IRawFileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\Streaming\LineOffsetDetector.cs" />
     <Compile Include="Sources\ListenerProxy.cs" />
     <Compile Include="Entries\ReadOnlyLogEntryExtensions.cs" />

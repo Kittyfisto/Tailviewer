@@ -67,10 +67,6 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		/// <summary>
 		///    Initializes this text log file.
 		/// </summary>
-		/// <remarks>
-		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
-		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateTextLogFile"/>.
-		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
 		/// <param name="format"></param>

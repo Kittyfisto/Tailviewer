@@ -2,15 +2,16 @@
 using System.Text;
 using System.Threading;
 using log4net;
+using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Streaming;
 
-namespace Tailviewer.Core.Sources.Text
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class FileLogSourceFactory
-		: IFileLogSourceFactory
+	public sealed class RawFileLogSourceFactory
+		: IRawFileLogSourceFactory
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -20,7 +21,7 @@ namespace Tailviewer.Core.Sources.Text
 		/// 
 		/// </summary>
 		/// <param name="taskScheduler"></param>
-		public FileLogSourceFactory(ITaskScheduler taskScheduler)
+		public RawFileLogSourceFactory(ITaskScheduler taskScheduler)
 		{
 			_taskScheduler = taskScheduler;
 		}

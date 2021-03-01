@@ -29,8 +29,21 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Description("Verifies that DetermineLevelFromLine returns the FIRST occurence of alog level")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/326")]
 		public void TestDetermineLevelsFromLine3()
+		{
+			var parser = new LogLevelParser();
+			parser.DetermineLevelFromLine("trace").Should().Be(LevelFlags.Trace);
+			parser.DetermineLevelFromLine("debug").Should().Be(LevelFlags.Debug);
+			parser.DetermineLevelFromLine("info").Should().Be(LevelFlags.Info);
+			parser.DetermineLevelFromLine("warn").Should().Be(LevelFlags.Warning);
+			parser.DetermineLevelFromLine("error").Should().Be(LevelFlags.Error);
+			parser.DetermineLevelFromLine("fatal").Should().Be(LevelFlags.Fatal);
+		}
+
+		[Test]
+		[Description("Verifies that DetermineLevelFromLine returns the FIRST occurrence of a log level")]
+		public void TestDetermineLevelsFromLine4()
 		{
 			var parser = new LogLevelParser();
 			parser.DetermineLevelFromLine("TRACE DEBUG INFO WARNING ERROR FATAL").Should().Be(LevelFlags.Trace);

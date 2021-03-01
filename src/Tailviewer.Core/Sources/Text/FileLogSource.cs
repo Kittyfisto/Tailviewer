@@ -483,7 +483,7 @@ namespace Tailviewer.Core.Sources.Text
 
 		private static ILogSource CreateTextLog(IServiceContainer serviceContainer, string fullFilename, ILogFileFormat format, Encoding encoding)
 		{
-			var fileLogSourceFactory = serviceContainer.Retrieve<IFileLogSourceFactory>();
+			var fileLogSourceFactory = serviceContainer.Retrieve<IRawFileLogSourceFactory>();
 			var textLogSource = fileLogSourceFactory.OpenRead(fullFilename, format, encoding);
 			return textLogSource;
 		}

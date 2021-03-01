@@ -40,7 +40,8 @@ namespace Tailviewer.Core.Parsers
 				return LevelFlags.Other;
 			}
 
-			var idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
+			var comparison = StringComparison.InvariantCultureIgnoreCase;
+			var idx = line.IndexOf("FATAL", comparison);
 			if (idx != -1)
 			{
 				if (idx < index)
@@ -50,7 +51,7 @@ namespace Tailviewer.Core.Parsers
 				}
 			}
 
-			idx = line.IndexOf("ERROR", StringComparison.InvariantCulture);
+			idx = line.IndexOf("ERROR", comparison);
 			if (idx != -1)
 			{
 				rightMost |= LevelFlags.Error;
@@ -61,7 +62,7 @@ namespace Tailviewer.Core.Parsers
 				}
 			}
 
-			idx = line.IndexOf("WARN", StringComparison.InvariantCulture);
+			idx = line.IndexOf("WARN", comparison);
 			if (idx != -1)
 			{
 				rightMost |= LevelFlags.Warning;
@@ -72,7 +73,7 @@ namespace Tailviewer.Core.Parsers
 				}
 			}
 
-			idx = line.IndexOf("INFO", StringComparison.InvariantCulture);
+			idx = line.IndexOf("INFO", comparison);
 			if (idx != -1)
 			{
 				rightMost |= LevelFlags.Info;
@@ -83,7 +84,7 @@ namespace Tailviewer.Core.Parsers
 				}
 			}
 
-			idx = line.IndexOf("DEBUG", StringComparison.InvariantCulture);
+			idx = line.IndexOf("DEBUG", comparison);
 			if (idx != -1)
 			{
 				rightMost |= LevelFlags.Debug;
@@ -94,7 +95,7 @@ namespace Tailviewer.Core.Parsers
 				}
 			}
 
-			idx = line.IndexOf("TRACE", StringComparison.InvariantCulture);
+			idx = line.IndexOf("TRACE", comparison);
 			if (idx != -1)
 			{
 				rightMost |= LevelFlags.Trace;

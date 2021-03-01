@@ -20,7 +20,7 @@ namespace Tailviewer.Test
 			container.RegisterInstance<ITaskScheduler>(scheduler);
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
-			container.RegisterInstance<IFileLogSourceFactory>(new FileLogSourceFactory(scheduler));
+			container.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(scheduler));
 			container.RegisterInstance<IPluginLoader>(new PluginRegistry());
 			container.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(container));
 			return container;

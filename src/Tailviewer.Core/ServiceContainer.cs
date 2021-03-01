@@ -5,7 +5,6 @@ using System.Threading;
 using log4net;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
-using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer.Core
 {
@@ -128,13 +127,6 @@ namespace Tailviewer.Core
 		public ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source)
 		{
 			return new NoThrowLogSource(source, pluginName);
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateTextLogFile(string fileName)
-		{
-			return new FileLogSource(this, fileName);
-			//return new TextLogSource(this, fileName);
 		}
 
 		/// <inheritdoc />

@@ -6,6 +6,7 @@ using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.BusinessLogic.Sources
@@ -35,10 +36,9 @@ namespace Tailviewer.BusinessLogic.Sources
 		{}
 
 		/// <inheritdoc />
-		public ILogSource Open(string filePath, out IPluginDescription pluginDescription)
+		public ILogSource Open(string filePath)
 		{
-			pluginDescription = null;
-			return _services.CreateTextLogFile(filePath);
+			return new FileLogSource(_services, filePath);
 		}
 
 		public IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources

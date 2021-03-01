@@ -183,8 +183,8 @@ namespace Tailviewer
 					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
 					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);
 
-					var fileLogSourceFactory = new FileLogSourceFactory(taskScheduler);
-					services.RegisterInstance<IFileLogSourceFactory>(fileLogSourceFactory);
+					var fileLogSourceFactory = new RawFileLogSourceFactory(taskScheduler);
+					services.RegisterInstance<IRawFileLogSourceFactory>(fileLogSourceFactory);
 
 					var parsingLogSourceFactory = new ParsingLogSourceFactory(services);
 					services.RegisterInstance<ILogSourceParserPlugin>(parsingLogSourceFactory);

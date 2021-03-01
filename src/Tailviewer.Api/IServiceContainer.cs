@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Tailviewer
 {
@@ -121,18 +120,6 @@ namespace Tailviewer
 		/// <param name="source"></param>
 		/// <returns></returns>
 		ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source);
-
-		/// <summary>
-		///     Creates a new log file object which interprets the given file as a text file.
-		/// </summary>
-		/// <remarks>
-		///     The following types may optionally be registered with this container in order to modify the behaviour of the returned object:
-		///     - <see cref="ITimestampParser"/>
-		///     - <see cref="Encoding"/>
-		/// </remarks>
-		/// <param name="fileName"></param>
-		/// <returns></returns>
-		ILogSource CreateTextLogFile(string fileName);
 
 		#endregion
 	}
