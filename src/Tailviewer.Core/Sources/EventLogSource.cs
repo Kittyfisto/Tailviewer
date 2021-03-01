@@ -123,7 +123,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetColumn<T>(LogSourceSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetColumn(sourceSection, column, destination, destinationIndex, queryOptions);
 		}
@@ -139,7 +139,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetEntries(LogSourceSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			_buffer.GetEntries(sourceSection, destination, destinationIndex, queryOptions);
 		}

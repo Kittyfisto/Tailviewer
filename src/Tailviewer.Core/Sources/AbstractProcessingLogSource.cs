@@ -77,7 +77,7 @@ namespace Tailviewer.Core.Sources
 			return true;
 		}
 
-		private void AppendSection(LogFileSection section)
+		private void AppendSection(LogSourceSection section)
 		{
 			_count = (int) (section.Index + section.Count);
 			try
@@ -94,7 +94,7 @@ namespace Tailviewer.Core.Sources
 			Listeners.OnRead(_count);
 		}
 
-		private void RemoveSection(LogFileSection section)
+		private void RemoveSection(LogSourceSection section)
 		{
 			_count = (int) section.Index;
 			try
@@ -130,7 +130,7 @@ namespace Tailviewer.Core.Sources
 
 		protected abstract void OnSectionRemoved(int totalLogEntryCount);
 
-		protected abstract void OnSectionAppended(LogFileSection section,
+		protected abstract void OnSectionAppended(LogSourceSection section,
 		                                        IReadOnlyLogBuffer data,
 		                                        int totalLogEntryCount);
 

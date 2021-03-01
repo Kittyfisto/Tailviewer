@@ -128,7 +128,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-				var entries = file.GetEntries(new LogFileSection(0, 1), GeneralColumns.Minimum);
+				var entries = file.GetEntries(new LogSourceSection(0, 1), GeneralColumns.Minimum);
 				entries.Should().HaveCount(1);
 				entries[0].Index.Should().Be(0);
 				entries[0].OriginalIndex.Should().Be(0);
@@ -373,7 +373,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-				var entries = file.GetEntries(new LogFileSection(0, 2), new IColumnDescriptor[]{GeneralColumns.Index, GeneralColumns.LogEntryIndex, GeneralColumns.RawContent, GeneralColumns.LogLevel});
+				var entries = file.GetEntries(new LogSourceSection(0, 2), new IColumnDescriptor[]{GeneralColumns.Index, GeneralColumns.LogEntryIndex, GeneralColumns.RawContent, GeneralColumns.LogLevel});
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
 				entries[0].RawContent.Should().Be("DEBUG: This is a test");
@@ -399,7 +399,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-				var entries = file.GetEntries(new LogFileSection(0, 2));
+				var entries = file.GetEntries(new LogSourceSection(0, 2));
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
 				entries[0].RawContent.Should().Be("DEBUG: This is a test");
@@ -450,7 +450,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-				var entries = file.GetEntries(new LogFileSection(0, 1), file.Columns);
+				var entries = file.GetEntries(new LogSourceSection(0, 1), file.Columns);
 				entries.Should().NotBeNull();
 				entries.Count.Should().Be(1);
 				entries[0].Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
@@ -707,7 +707,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 4));
 				_taskScheduler.RunOnce();
 
-				var originalIndices = file.GetColumn(new LogFileSection(0, 2), GeneralColumns.OriginalIndex);
+				var originalIndices = file.GetColumn(new LogSourceSection(0, 2), GeneralColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
 			}
 		}
@@ -750,7 +750,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			_taskScheduler.RunOnce();
 
 			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.LineNumber);
+			var lineNumbers = filteredLogFile.GetColumn(new LogSourceSection(0, 2), GeneralColumns.LineNumber);
 			lineNumbers[0].Should().Be(1);
 			lineNumbers[1].Should().Be(2);
 		}
@@ -793,7 +793,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			_taskScheduler.RunOnce();
 
 			filteredLogFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.OriginalLineNumber);
+			var lineNumbers = filteredLogFile.GetColumn(new LogSourceSection(0, 2), GeneralColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(2);
 			lineNumbers[1].Should().Be(4);
 		}
@@ -833,7 +833,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			{
 				source.AddEntry("", LevelFlags.Other, DateTime.MinValue);
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 1), GeneralColumns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogSourceSection(0, 1), GeneralColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(1);
 				deltas[0].Should().BeNull();
@@ -852,7 +852,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 11, 19, 35, 0));
 				_taskScheduler.RunOnce();
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(2);
 				deltas[0].Should().BeNull();
@@ -872,7 +872,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 36, 0));
 				_taskScheduler.RunOnce();
 
-				var deltas = logFile.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime);
+				var deltas = logFile.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime);
 				deltas.Should().NotBeNull();
 				deltas.Should().HaveCount(2);
 				deltas[0].Should().BeNull();
@@ -917,7 +917,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("", LevelFlags.Other, timestamp);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), GeneralColumns.Timestamp);
+				var timestamps = logFile.GetColumn(new LogSourceSection(0, 1), GeneralColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] {timestamp});
 			}
@@ -937,7 +937,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("", LevelFlags.Error, timestamp2);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), GeneralColumns.Timestamp);
+				var timestamps = logFile.GetColumn(new LogSourceSection(0, 1), GeneralColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] { timestamp2 }, "because the first entry doesn't match the filter and thus the timestamp of the 2nd one should've been returned");
 			}

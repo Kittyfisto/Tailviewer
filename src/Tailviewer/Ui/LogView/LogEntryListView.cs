@@ -536,7 +536,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void TextCanvasOnVisibleSectionChanged(LogFileSection section)
+		private void TextCanvasOnVisibleSectionChanged(LogSourceSection section)
 		{
 			CurrentLine = section.Index;
 		}
@@ -730,7 +730,7 @@ namespace Tailviewer.Ui.LogView
 		///     The section of the log file that is currently visible.
 		/// </summary>
 		[Pure]
-		public LogFileSection CalculateVisibleSection()
+		public LogSourceSection CalculateVisibleSection()
 		{
 			return PartTextCanvas.CalculateVisibleSection();
 		}

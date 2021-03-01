@@ -168,7 +168,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		private void AppendMatches(LogFileSection section)
+		private void AppendMatches(LogSourceSection section)
 		{
 			try
 			{

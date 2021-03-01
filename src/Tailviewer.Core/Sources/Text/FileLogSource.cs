@@ -423,7 +423,7 @@ namespace Tailviewer.Core.Sources.Text
 				Listeners.OnRead(_count);
 		}
 
-		private void UpdateMaxWidth(LogFileSection section, ILogSource logSource)
+		private void UpdateMaxWidth(LogSourceSection section, ILogSource logSource)
 		{
 			logSource.GetEntries(section, _buffer);
 			for (int i = 0; i < section.Count; ++i)

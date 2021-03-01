@@ -190,7 +190,7 @@ namespace Tailviewer.Core.Sources.Adorner
 			return true;
 		}
 
-		private void Process(LogFileSection section)
+		private void Process(LogSourceSection section)
 		{
 			DateTime? startTime = _propertiesBuffer.GetValue(GeneralProperties.StartTimestamp);
 			DateTime? endTime = _propertiesBuffer.GetValue(GeneralProperties.EndTimestamp);

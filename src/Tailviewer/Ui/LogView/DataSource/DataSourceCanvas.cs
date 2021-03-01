@@ -35,7 +35,7 @@ namespace Tailviewer.Ui.LogView.DataSource
 		private readonly double _maximumWidth;
 
 		private IDataSource _dataSource;
-		private LogFileSection _visibleSection;
+		private LogSourceSection _visibleSection;
 		private double _yOffset;
 
 		public DataSourceCanvas(TextSettings textSettings)
@@ -94,7 +94,7 @@ namespace Tailviewer.Ui.LogView.DataSource
 			}
 		}
 
-		public void UpdateDataSources(IDataSource dataSource, LogFileSection visibleSection, double yOffset)
+		public void UpdateDataSources(IDataSource dataSource, LogSourceSection visibleSection, double yOffset)
 		{
 			_dataSource = dataSource;
 			_visibleSection = visibleSection;

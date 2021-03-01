@@ -11,11 +11,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		{
 			var modification = LogSourceModification.Appended(10, 41);
 			modification.IsAppended(out var section).Should().BeTrue();
-			section.Should().Equal(new LogFileSection(10, 41));
+			section.Should().Equal(new LogSourceSection(10, 41));
 			modification.ToString().Should().Be("Appended [#10, #41]");
 
 			modification.IsRemoved(out var removedSection).Should().BeFalse();
-			removedSection.Should().Equal(new LogFileSection());
+			removedSection.Should().Equal(new LogSourceSection());
 
 			modification.IsReset().Should().BeFalse();
 
@@ -56,11 +56,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		{
 			var modification = LogSourceModification.Removed(9, 22);
 			modification.IsRemoved(out var removedSection).Should().BeTrue();
-			removedSection.Should().Equal(new LogFileSection(9, 22));
+			removedSection.Should().Equal(new LogSourceSection(9, 22));
 			modification.ToString().Should().Be("Removed [#9, #22]");
 
 			modification.IsAppended(out var appendedSection).Should().BeFalse();
-			appendedSection.Should().Equal(new LogFileSection());
+			appendedSection.Should().Equal(new LogSourceSection());
 
 			modification.IsReset().Should().BeFalse();
 
@@ -75,10 +75,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			modification.ToString().Should().Be("Reset");
 
 			modification.IsRemoved(out var removedSection).Should().BeFalse();
-			removedSection.Should().Equal(new LogFileSection());
+			removedSection.Should().Equal(new LogSourceSection());
 
 			modification.IsAppended(out var appendedSection).Should().BeFalse();
-			appendedSection.Should().Equal(new LogFileSection());
+			appendedSection.Should().Equal(new LogSourceSection());
 
 
 			modification.IsPropertiesChanged().Should().BeFalse();
@@ -92,10 +92,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			modification.ToString().Should().Be("Properties Changed");
 
 			modification.IsRemoved(out var removedSection).Should().BeFalse();
-			removedSection.Should().Equal(new LogFileSection());
+			removedSection.Should().Equal(new LogSourceSection());
 
 			modification.IsAppended(out var appendedSection).Should().BeFalse();
-			appendedSection.Should().Equal(new LogFileSection());
+			appendedSection.Should().Equal(new LogSourceSection());
 
 			modification.IsReset().Should().BeFalse();
 		}

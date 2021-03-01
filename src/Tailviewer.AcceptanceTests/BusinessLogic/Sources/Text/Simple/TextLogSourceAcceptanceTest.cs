@@ -137,7 +137,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 					});
 
 
-				var entries = file.GetEntries(new LogFileSection(0, 6));
+				var entries = file.GetEntries(new LogSourceSection(0, 6));
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
 				entries[0].RawContent.Should().Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");

@@ -135,7 +135,7 @@ namespace Tailviewer.Core.Sources
 		{
 			var count = logSource.GetProperty(GeneralProperties.LogEntryCount);
 			var buffer = new LogBufferArray(count, columns);
-			GetEntries(logSource, new LogFileSection(0, count), buffer);
+			GetEntries(logSource, new LogSourceSection(0, count), buffer);
 			return buffer;
 		}
 
@@ -222,7 +222,7 @@ namespace Tailviewer.Core.Sources
 		public static IReadOnlyLogEntry GetEntry(this ILogSource logSource, LogLineIndex sourceIndex, IEnumerable<IColumnDescriptor> columns)
 		{
 			var buffer = new LogBufferArray(1, columns);
-			logSource.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
+			logSource.GetEntries(new LogSourceSection(sourceIndex, 1), buffer);
 			return buffer[0];
 		}
 
@@ -239,7 +239,7 @@ namespace Tailviewer.Core.Sources
 		public static IReadOnlyLogEntry GetEntry(this ILogSource logSource, LogLineIndex sourceIndex)
 		{
 			var buffer = new LogBufferArray(1, logSource.Columns);
-			logSource.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
+			logSource.GetEntries(new LogSourceSection(sourceIndex, 1), buffer);
 			return buffer[0];
 		}
 

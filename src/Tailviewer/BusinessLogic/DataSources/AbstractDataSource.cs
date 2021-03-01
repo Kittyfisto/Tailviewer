@@ -355,7 +355,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (HideEmptyLines)
 				filters.Add(new EmptyLogLineFilter());
 			if (_hideLogLineCount != null)
-				filters.Add(new RangeFilter(new LogFileSection(0, _hideLogLineCount.Value)));
+				filters.Add(new RangeFilter(new LogSourceSection(0, _hideLogLineCount.Value)));
 			return Filter.Create(filters);
 		}
 

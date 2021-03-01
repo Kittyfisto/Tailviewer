@@ -53,7 +53,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 					filtered.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-					var entries = filtered.GetEntries(new LogFileSection(0, 5));
+					var entries = filtered.GetEntries(new LogSourceSection(0, 5));
 					entries[0].Index.Should().Be(0);
 					entries[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified));
 					entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -137,7 +137,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
 					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-					var entries = filtered.GetEntries(new LogFileSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
+					var entries = filtered.GetEntries(new LogSourceSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
 					entries[0].RawContent.Should().Be("INFO - Test");

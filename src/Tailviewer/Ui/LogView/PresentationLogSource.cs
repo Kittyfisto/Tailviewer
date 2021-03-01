@@ -182,7 +182,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void Add(ILogSource logSource, LogFileSection section)
+		private void Add(ILogSource logSource, LogSourceSection section)
 		{
 			// !!!We deliberately retrieve this section OUTSIDE of our own lock!!!
 			logSource.GetEntries(section, _array);

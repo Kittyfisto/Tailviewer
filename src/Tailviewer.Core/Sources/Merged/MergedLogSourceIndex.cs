@@ -75,7 +75,7 @@ namespace Tailviewer.Core.Sources.Merged
 		}
 
 		[Pure]
-		public IReadOnlyList<MergedLogLineIndex> Get(LogFileSection section)
+		public IReadOnlyList<MergedLogLineIndex> Get(LogSourceSection section)
 		{
 			var indices = new MergedLogLineIndex[section.Count];
 			lock (_syncRoot)

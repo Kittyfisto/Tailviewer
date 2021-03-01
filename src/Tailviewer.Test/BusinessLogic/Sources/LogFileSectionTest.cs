@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Test]
 		public void TestGetByIndex()
 		{
-			var section = new LogFileSection(42, 10);
+			var section = new LogSourceSection(42, 10);
 			for (int i = 0; i < 10; ++i)
 			{
 				section[i].Should().Be(new LogLineIndex(42 + i));
@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestEnumerate([Range(0, 5)] int startIndex,
 			[Range(0, 5)] int count)
 		{
-			var section = new LogFileSection(startIndex, count);
+			var section = new LogSourceSection(startIndex, count);
 			var expected = Enumerable.Range(startIndex, count).Select(x => (LogLineIndex) x).ToArray();
 			section.Should().Equal(expected);
 		}
@@ -30,7 +30,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Test]
 		public void TestGetCount([Values(0, 1)] int count)
 		{
-			var section = new LogFileSection(9001, count);
+			var section = new LogSourceSection(9001, count);
 			section.Count.Should().Be(count);
 			((IReadOnlyList<LogLineIndex>) section).Count.Should().Be(count);
 		}

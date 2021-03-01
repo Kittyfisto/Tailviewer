@@ -44,7 +44,7 @@ namespace Tailviewer.Ui.LogView
 		private readonly DispatcherTimer _timer;
 
 		private int _currentLine;
-		private LogFileSection _currentlyVisibleSection;
+		private LogSourceSection _currentlyVisibleSection;
 		private LogLineIndex _firstSelection;
 		private LogLineIndex _lastSelection;
 		private ILogSource _logSource;
@@ -102,7 +102,7 @@ namespace Tailviewer.Ui.LogView
 			get { return _requiresFurtherUpdate; }
 		}
 
-		public LogFileSection CurrentlyVisibleSection
+		public LogSourceSection CurrentlyVisibleSection
 		{
 			get { return _currentlyVisibleSection; }
 			set
@@ -111,7 +111,7 @@ namespace Tailviewer.Ui.LogView
 					return;
 
 				_currentlyVisibleSection = value;
-				Action<LogFileSection> fn = VisibleSectionChanged;
+				Action<LogSourceSection> fn = VisibleSectionChanged;
 				fn?.Invoke(value);
 			}
 		}
@@ -236,7 +236,7 @@ namespace Tailviewer.Ui.LogView
 			_textBrushes = textBrushes;
 		}
 
-		public event Action<LogFileSection> VisibleSectionChanged;
+		public event Action<LogSourceSection> VisibleSectionChanged;
 
 		public void UpdateVisibleSection()
 		{
@@ -454,10 +454,10 @@ namespace Tailviewer.Ui.LogView
 		///     The section of the log file that is currently visible.
 		/// </summary>
 		[Pure]
-		public LogFileSection CalculateVisibleSection()
+		public LogSourceSection CalculateVisibleSection()
 		{
 			if (_logSource == null)
-				return new LogFileSection(0, 0);
+				return new LogSourceSection(0, 0);
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
@@ -468,9 +468,9 @@ namespace Tailviewer.Ui.LogView
 			int linesLeft = logLineCount - actualCurrentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			if (count < 0)
-				return new LogFileSection();
+				return new LogSourceSection();
 
-			return new LogFileSection(actualCurrentLine, count);
+			return new LogSourceSection(actualCurrentLine, count);
 		}
 
 		public void OnMouseMove()

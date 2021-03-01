@@ -69,7 +69,7 @@ namespace Tailviewer.Core.Sources
 			while ((count = numberOfLinesRead - _lastNumberOfLines) > 0)
 			{
 				count = Math.Min(count, _maximumCount);
-				var section = new LogFileSection(_lastNumberOfLines, count);
+				var section = new LogSourceSection(_lastNumberOfLines, count);
 				_listener.OnLogFileModified(_logSource, LogSourceModification.Appended(section));
 
 				_lastNumberOfLines += count;
@@ -86,7 +86,7 @@ namespace Tailviewer.Core.Sources
 			// they don't need to be notified of the invalidation either.
 			if (invalidateCount > 0)
 			{
-				var section = new LogFileSection(firstIndex, invalidateCount);
+				var section = new LogSourceSection(firstIndex, invalidateCount);
 				_listener.OnLogFileModified(_logSource, LogSourceModification.Removed(section));
 				_lastNumberOfLines = firstIndex;
 			}

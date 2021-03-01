@@ -75,7 +75,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetNullColumn()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(0, 0), null, new int[0], 0)).Should().Throw<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogSourceSection(0, 0), null, new int[0], 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetColumnNullBuffer1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(), GeneralColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogSourceSection(), GeneralColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -103,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetColumnBufferTooSmall1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
 			                                   GeneralColumns.OriginalLineNumber,
 			                                   new int[9])).Should().Throw<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
 		}
@@ -121,7 +121,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetColumnDestinationIndexTooSmall1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
 			                                   GeneralColumns.OriginalLineNumber,
 			                                   new int[10],
 			                                   -1)).Should().Throw<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
@@ -141,7 +141,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetColumnDestinationIndexTooBig1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
 			                                   GeneralColumns.OriginalLineNumber,
 			                                   new int[15],
 			                                   6)).Should().Throw<ArgumentException>("because the given length and offset are greater than the buffer length");
@@ -191,7 +191,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = i + 9001;
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.Index,
 				                  buffer,
 				                  offset);
@@ -227,7 +227,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.Index, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.Index, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -309,7 +309,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = i + 9001;
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.OriginalIndex,
 				                  buffer,
 				                  offset);
@@ -345,7 +345,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.OriginalIndex, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.OriginalIndex, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -407,7 +407,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			indices[0] = new LogLineIndex(42);
 			indices[4] = new LogLineIndex(9001);
 
-			logFile.GetColumn(new LogFileSection(1, 3), GeneralColumns.OriginalIndex, indices, 1);
+			logFile.GetColumn(new LogSourceSection(1, 3), GeneralColumns.OriginalIndex, indices, 1);
 			indices[0].Should().Be(42, "because the original value shouldn't have been written over");
 			indices[1].Should().Be(1);
 			indices[2].Should().Be(2);
@@ -471,7 +471,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = i + 9001;
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.LineNumber,
 				                  buffer,
 				                  offset);
@@ -507,7 +507,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.LineNumber, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.LineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -589,7 +589,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = i + 9001;
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.OriginalLineNumber,
 				                  buffer,
 				                  offset);
@@ -625,7 +625,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.OriginalLineNumber, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.OriginalLineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -702,7 +702,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = LevelFlags.Trace;
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.LogLevel,
 				                  buffer,
 				                  offset);
@@ -738,7 +738,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = LevelFlags.Fatal;
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.LogLevel, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.LogLevel, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -816,7 +816,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = TimeSpan.FromDays(1);
 				}
 
-				logFile.GetColumn(new LogFileSection(1, count), GeneralColumns.ElapsedTime, buffer, offset);
+				logFile.GetColumn(new LogSourceSection(1, count), GeneralColumns.ElapsedTime, buffer, offset);
 
 				for (int i = 0; i < offset; ++i)
 				{
@@ -849,7 +849,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = TimeSpan.FromDays(1);
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.ElapsedTime, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.ElapsedTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -910,7 +910,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				new DateTime(2017, 12, 19, 15, 49, 17)
 			});
 			var logFile = CreateFromContent(content);
-			var values = logFile.GetColumn(new LogFileSection(0, 5), GeneralColumns.ElapsedTime);
+			var values = logFile.GetColumn(new LogSourceSection(0, 5), GeneralColumns.ElapsedTime);
 			values.Should().Equal(new object[]
 			{
 				TimeSpan.FromSeconds(0),
@@ -951,7 +951,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = TimeSpan.FromDays(1);
 				}
 
-				logFile.GetColumn(new LogFileSection(1, count), GeneralColumns.DeltaTime, buffer, offset);
+				logFile.GetColumn(new LogSourceSection(1, count), GeneralColumns.DeltaTime, buffer, offset);
 
 				for (int i = 0; i < offset; ++i)
 				{
@@ -984,7 +984,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				buffer[i] = TimeSpan.FromDays(1);
 			}
 
-			logFile.GetColumn(new LogFileSection(0, count), GeneralColumns.DeltaTime, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.DeltaTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -1059,7 +1059,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = new DateTime(2017, 12, 18, 10, 53, 0);
 				}
 
-				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
 				                  GeneralColumns.Timestamp,
 				                  buffer,
 				                  offset);
@@ -1096,7 +1096,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 					buffer[i] = new DateTime(2017, 12, 18, 10, 53, 0);
 				}
 
-				logFile.GetColumn(new LogFileSection(invalidStartIndex, count),
+				logFile.GetColumn(new LogSourceSection(invalidStartIndex, count),
 				                  GeneralColumns.Timestamp,
 				                  buffer,
 				                  offset);
@@ -1188,7 +1188,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 
 				logFile.Dispose();
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
-				var entries = logFile.GetEntries(new LogFileSection(0, 3));
+				var entries = logFile.GetEntries(new LogSourceSection(0, 3));
 				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[2].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");

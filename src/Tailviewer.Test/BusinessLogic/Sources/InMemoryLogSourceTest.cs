@@ -141,7 +141,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.Add(logEntry);
 
 			var buffer = new LogBufferArray(1, GeneralColumns.LogLevel);
-			logFile.GetEntries(new LogFileSection(0, 1), buffer);
+			logFile.GetEntries(new LogSourceSection(0, 1), buffer);
 			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}
 
@@ -378,7 +378,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		public void TestGetEntriesEmpty()
 		{
 			var logFile = new InMemoryLogSource();
-			logFile.GetEntries(new LogFileSection()).Should().BeEmpty("because the log file is empty");
+			logFile.GetEntries(new LogSourceSection()).Should().BeEmpty("because the log file is empty");
 		}
 
 		[Test]
@@ -386,7 +386,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		{
 			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("foobar");
-			var entries = logFile.GetEntries(new LogFileSection(0, 1), new[]{GeneralColumns.RawContent});
+			var entries = logFile.GetEntries(new LogSourceSection(0, 1), new[]{GeneralColumns.RawContent});
 			entries.Count.Should().Be(1);
 			entries.Columns.Should().Equal(new object[] {GeneralColumns.RawContent}, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("foobar");
@@ -399,7 +399,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddEntry("foo");
 			logFile.AddEntry("bar");
 			logFile.AddEntry("some lazy fox");
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new[]{GeneralColumns.RawContent});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new[]{GeneralColumns.RawContent});
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(new object[] { GeneralColumns.RawContent }, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("bar");
@@ -414,7 +414,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(new object[] {GeneralColumns.LogLevel, GeneralColumns.Timestamp});
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -431,7 +431,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(new object[] { GeneralColumns.LogLevel, GeneralColumns.Timestamp });
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -448,7 +448,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), GeneralColumns.Minimum);
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), GeneralColumns.Minimum);
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(GeneralColumns.Minimum);
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -467,7 +467,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 20, 17, 01, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(0, 5), new []{GeneralColumns.ElapsedTime});
+			var entries = logFile.GetEntries(new LogSourceSection(0, 5), new []{GeneralColumns.ElapsedTime});
 			entries.Count.Should().Be(5);
 			entries.Columns.Should().Equal(GeneralColumns.ElapsedTime);
 			entries[0].ElapsedTime.Should().Be(null);

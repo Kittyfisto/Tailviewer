@@ -41,7 +41,7 @@ namespace Tailviewer.Core.Sources
 		private readonly LogBufferArray _array;
 		private readonly TimeSpan _maximumWaitTime;
 
-		private LogFileSection _fullSourceSection;
+		private LogSourceSection _fullSourceSection;
 		private int _maxCharactersPerLine;
 		private int _currentSourceIndex;
 		private readonly LogBufferList _lastLogBuffer;
@@ -356,7 +356,7 @@ namespace Tailviewer.Core.Sources
 				else if (modification.IsRemoved(out var removedSection))
 				{
 					LogLineIndex startIndex = removedSection.Index;
-					_fullSourceSection = new LogFileSection(0, (int) startIndex);
+					_fullSourceSection = new LogSourceSection(0, (int) startIndex);
 
 					if (_currentSourceIndex > _fullSourceSection.LastIndex)
 						_currentSourceIndex = (int) removedSection.Index;
@@ -366,7 +366,7 @@ namespace Tailviewer.Core.Sources
 				}
 				else if(modification.IsAppended(out var appendedSection))
 				{
-					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, appendedSection);
+					_fullSourceSection = LogSourceSection.MinimumBoundingLine(_fullSourceSection, appendedSection);
 				}
 
 				performedWork = true;
@@ -385,7 +385,7 @@ namespace Tailviewer.Core.Sources
 			{
 				int remaining = _fullSourceSection.Index + _fullSourceSection.Count - _currentSourceIndex;
 				int nextCount = Math.Min(remaining, BatchSize);
-				var nextSection = new LogFileSection(_currentSourceIndex, nextCount);
+				var nextSection = new LogSourceSection(_currentSourceIndex, nextCount);
 				_source.GetEntries(nextSection, _array);
 
 				for (int i = 0; i < nextCount; ++i)
@@ -517,7 +517,7 @@ namespace Tailviewer.Core.Sources
 
 		private void Clear()
 		{
-			_fullSourceSection = new LogFileSection();
+			_fullSourceSection = new LogSourceSection();
 			lock (_indices)
 			{
 				_indices.Clear();

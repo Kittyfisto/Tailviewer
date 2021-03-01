@@ -51,7 +51,7 @@ namespace Tailviewer.Core.Sources.Buffer
 				if (Equals(column, PageBufferedLogSource.RetrievalState))
 				{
 					var dest = (RetrievalState[]) (object) destination;
-					if (sourceIndices is LogFileSection section)
+					if (sourceIndices is LogSourceSection section)
 					{
 						var totalCount = (int)(section.Index + section.Count);
 						var fillCount = Math.Min(totalCount, _buffer.Count);
@@ -106,7 +106,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		protected override void OnSectionAppended(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
+		protected override void OnSectionAppended(LogSourceSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
 		{
 			lock (_syncRoot)
 			{

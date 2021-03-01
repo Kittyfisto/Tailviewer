@@ -37,7 +37,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private readonly ILogSource _source;
 		private readonly int _maxNumPages;
 		private readonly PagedLogBuffer _buffer;
-		private readonly ConcurrentQueue<LogFileSection> _fetchQueue;
+		private readonly ConcurrentQueue<LogSourceSection> _fetchQueue;
 		private readonly IPeriodicTask _fetchTask;
 		private readonly LogBufferArray _fetchBuffer;
 
@@ -62,7 +62,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			_listeners = new ProxyLogListenerCollection(source, this);
 			_cachedColumns = source.Columns.Except(nonCachedColumns).ToList();
 			_buffer = new PagedLogBuffer(pageSize, maxNumPages, _cachedColumns);
-			_fetchQueue = new ConcurrentQueue<LogFileSection>();
+			_fetchQueue = new ConcurrentQueue<LogSourceSection>();
 			_source.AddListener(this, maximumWaitTime, pageSize);
 
 			_fetchBuffer = new LogBufferArray(pageSize, _cachedColumns);
@@ -168,7 +168,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			AddToCache(sourceIndices, destination, destinationIndex, queryOptions);
 		}
 
-		private void FetchForLater(IReadOnlyList<LogFileSection> sectionsToFetch)
+		private void FetchForLater(IReadOnlyList<LogSourceSection> sectionsToFetch)
 		{
 			_fetchQueue.EnqueueMany(sectionsToFetch);
 		}
@@ -207,7 +207,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private bool TryReadFromCache(IReadOnlyList<LogLineIndex> sourceIndices,
 		                              ILogBuffer destination, int destinationIndex,
 		                              LogSourceQueryOptions queryOptions,
-		                              out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		                              out IReadOnlyList<LogSourceSection> accessedPageBoundaries)
 		{
 			accessedPageBoundaries = null;
 
@@ -233,14 +233,14 @@ namespace Tailviewer.Core.Sources.Buffer
 			if ((queryOptions.QueryMode & LogSourceQueryMode.DontCache) == LogSourceQueryMode.DontCache)
 				return;
 
-			if (sourceIndices is LogFileSection contiguousSection)
+			if (sourceIndices is LogSourceSection contiguousSection)
 			{
 				AddToCache(source, sourceIndex, contiguousSection);
 			}
 		}
 
 		[ThreadSafe]
-		private void AddToCache(ILogBuffer source, int destinationIndex, LogFileSection contiguousSection)
+		private void AddToCache(ILogBuffer source, int destinationIndex, LogSourceSection contiguousSection)
 		{
 			lock (_syncRoot)
 			{

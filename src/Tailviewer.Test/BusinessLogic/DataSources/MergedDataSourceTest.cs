@@ -243,7 +243,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			logFile1.AddEntry("Houston, we have a problem", LevelFlags.Warning, t3);
 
 			_taskScheduler.Run(4); //< There's a few proxies involved and thus one round won't do it
-			var entries = _merged.FilteredLogSource.GetEntries(new LogFileSection(0, 4));
+			var entries = _merged.FilteredLogSource.GetEntries(new LogSourceSection(0, 4));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
 			entries[0].GetValue(GeneralColumns.SourceId).Should().Be(source1Id);

@@ -119,7 +119,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			source.AddEntry("1987");
 			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, source))
 			{
-				var entries = proxy.GetEntries(new LogFileSection(1, 2));
+				var entries = proxy.GetEntries(new LogSourceSection(1, 2));
 				entries[0].Index.Should().Be(1);
 				entries[0].RawContent.Should().Be("I'm an english man in new york");
 				entries[1].Index.Should().Be(2);
@@ -371,13 +371,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		[Test]
 		public void TestGetColumn1()
 		{
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new string[142];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
 			var destinationIndex = 42;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			logFile.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions);
-			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
+			_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == section),
 			                                 GeneralColumns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
@@ -388,7 +388,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		[Test]
 		public void TestGetColumn2()
 		{
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new string[100];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
 			logFile.GetColumn(section, GeneralColumns.RawContent, buffer);
@@ -443,13 +443,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 				var destinationIndex = 47;
 				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
-				proxy.GetColumn(new LogFileSection(1, 42),
+				proxy.GetColumn(new LogSourceSection(1, 42),
 				                GeneralColumns.OriginalIndex,
 				                buffer,
 				                destinationIndex,
 				                queryOptions);
 
-				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
+				_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == new LogSourceSection(1, 42)),
 				                                 GeneralColumns.OriginalIndex,
 				                                 buffer,
 				                                 destinationIndex,

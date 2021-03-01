@@ -45,7 +45,7 @@ namespace Tailviewer.Core.Sources
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 
-		private LogFileSection _fullSourceSection;
+		private LogSourceSection _fullSourceSection;
 
 		/// <summary>
 		///     Initializes this object.
@@ -282,7 +282,7 @@ namespace Tailviewer.Core.Sources
 			_properties.CopyFrom(_propertiesBuffer);
 		}
 
-		private void Append(LogFileSection section)
+		private void Append(LogSourceSection section)
 		{
 			var buffer = new LogBufferArray(section.Count, GeneralColumns.Index, GeneralColumns.Timestamp, GeneralColumns.LogLevel);
 			_source.GetEntries(section, buffer);
@@ -304,17 +304,17 @@ namespace Tailviewer.Core.Sources
 			}
 
 			_currentSourceIndex += section.Count;
-			_fullSourceSection = new LogFileSection(0, _currentSourceIndex.Value);
+			_fullSourceSection = new LogSourceSection(0, _currentSourceIndex.Value);
 		}
 
-		private void Invalidate(LogFileSection sectionToInvalidate)
+		private void Invalidate(LogSourceSection sectionToInvalidate)
 		{
 			var firstInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToInvalidate.Index);
 			var lastInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToInvalidate.LastIndex);
 			var invalidateCount = lastInvalidIndex - firstInvalidIndex + 1;
 			var previousSourceIndex = _currentSourceIndex;
 
-			_fullSourceSection = new LogFileSection(0, (int)firstInvalidIndex);
+			_fullSourceSection = new LogSourceSection(0, (int)firstInvalidIndex);
 			if (_fullSourceSection.Count > 0)
 			{
 				// It's possible (likely) that we've received an invalidation for a region of the source
@@ -355,13 +355,13 @@ namespace Tailviewer.Core.Sources
 
 			if (_fullSourceSection.Count > firstInvalidIndex)
 			{
-				_fullSourceSection = new LogFileSection(0, firstInvalidIndex.Value);
+				_fullSourceSection = new LogSourceSection(0, firstInvalidIndex.Value);
 			}
 		}
 
 		private void Clear()
 		{
-			_fullSourceSection = new LogFileSection(0, 0);
+			_fullSourceSection = new LogSourceSection(0, 0);
 			_currentSourceIndex = 0;
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 			lock (_syncRoot)

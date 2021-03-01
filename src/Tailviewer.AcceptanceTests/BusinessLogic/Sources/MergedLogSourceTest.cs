@@ -53,8 +53,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				merged.GetProperty(GeneralProperties.Size).Should().Be(source.GetProperty(GeneralProperties.Size));
 				merged.GetProperty(GeneralProperties.StartTimestamp).Should().Be(source.GetProperty(GeneralProperties.StartTimestamp));
 
-				var sourceEntries = source.GetEntries(new LogFileSection(0, source.GetProperty(GeneralProperties.LogEntryCount)));
-				var mergedEntries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
+				var sourceEntries = source.GetEntries(new LogSourceSection(0, source.GetProperty(GeneralProperties.LogEntryCount)));
+				var mergedEntries = merged.GetEntries(new LogSourceSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
 				for (int i = 0; i < source.GetProperty(GeneralProperties.LogEntryCount); ++i)
 				{
 					var mergedEntry = mergedEntries[i];
@@ -91,9 +91,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				merged.Property(x => x.GetProperty(GeneralProperties.Size)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.Size) + source1.GetProperty(GeneralProperties.Size));
 				merged.Property(x => x.GetProperty(GeneralProperties.StartTimestamp)).ShouldEventually().Be(source1.GetProperty(GeneralProperties.StartTimestamp));
 
-				var source0Lines = multi0.GetEntries(new LogFileSection(0, source0.GetProperty(GeneralProperties.LogEntryCount)));
-				var source1Lines = multi1.GetEntries(new LogFileSection(0, source1.GetProperty(GeneralProperties.LogEntryCount)));
-				var mergedLines = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
+				var source0Lines = multi0.GetEntries(new LogSourceSection(0, source0.GetProperty(GeneralProperties.LogEntryCount)));
+				var source1Lines = multi1.GetEntries(new LogSourceSection(0, source1.GetProperty(GeneralProperties.LogEntryCount)));
+				var mergedLines = merged.GetEntries(new LogSourceSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
 
 				mergedLines[0].Index.Should().Be(0);
 				mergedLines[0].LogEntryIndex.Should().Be(0);
@@ -149,7 +149,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				merged.Property(x => x.GetProperty(GeneralProperties.Size)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.Size) + source1.GetProperty(GeneralProperties.Size));
 				merged.Property(x => x.GetProperty(GeneralProperties.StartTimestamp)).ShouldEventually().Be(source0.GetProperty(GeneralProperties.StartTimestamp));
 
-				var entries = merged.GetEntries(new LogFileSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
+				var entries = merged.GetEntries(new LogSourceSection(0, merged.GetProperty(GeneralProperties.LogEntryCount)));
 
 				entries[0].Index.Should().Be(0);
 				entries[0].LineNumber.Should().Be(1);
@@ -418,7 +418,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				// TODO: Fix - the percentage gets reset because a log file implementation has a slightly botched Percetage calculation
 				merged.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(Percentage.HundredPercent);
 
-				var entries = merged.GetEntries(new LogFileSection(0, 11),
+				var entries = merged.GetEntries(new LogSourceSection(0, 11),
 				                                new IColumnDescriptor[]
 				                                {
 					                                GeneralColumns.Timestamp,

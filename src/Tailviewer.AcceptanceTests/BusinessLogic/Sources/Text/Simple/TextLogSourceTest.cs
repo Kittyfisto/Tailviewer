@@ -216,7 +216,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			_source.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
 
 			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-			var entries = _source.GetEntries(new LogFileSection(0, 2));
+			var entries = _source.GetEntries(new LogSourceSection(0, 2));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
 			entries[0].RawContent.Should().Be("Hello");

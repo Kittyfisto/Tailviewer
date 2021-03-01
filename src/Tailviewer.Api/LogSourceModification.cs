@@ -19,9 +19,9 @@ namespace Tailviewer
 		}
 
 		private readonly ModificationType _modificationType;
-		private readonly LogFileSection _section;
+		private readonly LogSourceSection _section;
 
-		private LogSourceModification(ModificationType modificationType, LogFileSection section)
+		private LogSourceModification(ModificationType modificationType, LogSourceSection section)
 		{
 			_modificationType = modificationType;
 			_section = section;
@@ -32,7 +32,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="appendedSection">The section of the log source which was appended.</param>
 		/// <returns></returns>
-		public bool IsAppended(out LogFileSection appendedSection)
+		public bool IsAppended(out LogSourceSection appendedSection)
 		{
 			if (_modificationType == ModificationType.Appended)
 			{
@@ -49,7 +49,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="removedSection">The section of the log source which was removed.</param>
 		/// <returns></returns>
-		public bool IsRemoved(out LogFileSection removedSection)
+		public bool IsRemoved(out LogSourceSection removedSection)
 		{
 			if (_modificationType == ModificationType.Removed)
 			{
@@ -160,7 +160,7 @@ namespace Tailviewer
 		/// <returns></returns>
 		public static LogSourceModification Appended(LogLineIndex index, int count)
 		{
-			return Appended(new LogFileSection(index, count));
+			return Appended(new LogSourceSection(index, count));
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="section"></param>
 		/// <returns></returns>
-		public static LogSourceModification Appended(LogFileSection section)
+		public static LogSourceModification Appended(LogSourceSection section)
 		{
 			return new LogSourceModification(ModificationType.Appended, section);
 		}
@@ -186,7 +186,7 @@ namespace Tailviewer
 		[Pure]
 		public static LogSourceModification Removed(LogLineIndex index, int count)
 		{
-			return Removed(new LogFileSection(index, count));
+			return Removed(new LogSourceSection(index, count));
 		}
 
 		/// <summary>
@@ -197,7 +197,7 @@ namespace Tailviewer
 		/// <param name="section"></param>
 		/// <returns></returns>
 		[Pure]
-		public static LogSourceModification Removed(LogFileSection section)
+		public static LogSourceModification Removed(LogSourceSection section)
 		{
 			return new LogSourceModification(ModificationType.Removed, section);
 		}
@@ -248,13 +248,13 @@ namespace Tailviewer
 			var remainingCount = _section.Count;
 			while (remainingCount > maxCount)
 			{
-				yield return Appended(new LogFileSection(nextIndex, maxCount));
+				yield return Appended(new LogSourceSection(nextIndex, maxCount));
 
 				nextIndex += maxCount;
 				remainingCount -= maxCount;
 			}
 
-			if (remainingCount > 0) yield return Appended(new LogFileSection(nextIndex, remainingCount));
+			if (remainingCount > 0) yield return Appended(new LogSourceSection(nextIndex, remainingCount));
 		}
 	}
 }

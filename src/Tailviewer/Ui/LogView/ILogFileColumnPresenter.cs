@@ -17,6 +17,6 @@ namespace Tailviewer.Ui.LogView
 		/// <param name="logSource"></param>
 		/// <param name="visibleSection"></param>
 		/// <param name="yOffset"></param>
-		void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset);
+		void FetchValues(ILogSource logSource, LogSourceSection visibleSection, double yOffset);
 	}
 }
