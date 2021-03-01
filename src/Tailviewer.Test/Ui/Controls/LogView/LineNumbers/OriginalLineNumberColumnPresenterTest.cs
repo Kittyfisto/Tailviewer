@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			const int count = 10;
 			AddLines(count);
 
-			_column.FetchValues(_logSource, new LogFileSection(0, count), 0);
+			_column.FetchValues(_logSource, new LogSourceSection(0, count), 0);
 			var numbers = _column.LineNumbers;
 			numbers.Should().NotBeNull();
 			numbers.Should().HaveCount(count);
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			var logFile = new Mock<ILogSource>();
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(4);
 			logFile.Setup(x => x.GetProperty(TextProperties.LineCount)).Returns(1000);
-			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
+			logFile.Setup(x => x.GetColumn(It.Is<LogSourceSection>(y => y == new LogSourceSection(0, 4)),
 			                               It.Is<IColumnDescriptor<int>>(y => y == GeneralColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
@@ -59,7 +59,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 					indices[2] = 255;
 					indices[3] = 512;
 				});
-			_column.FetchValues(logFile.Object, new LogFileSection(0, 4), 0);
+			_column.FetchValues(logFile.Object, new LogSourceSection(0, 4), 0);
 			_column.Width.Should().BeApproximately(24.8, 0.1, "because the canvas should reserve space for the original line count, which is 4 digits");
 			_column.LineNumbers.Should().Equal(new LineNumberFormatter(42),
 				new LineNumberFormatter(101),

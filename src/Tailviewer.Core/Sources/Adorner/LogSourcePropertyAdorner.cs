@@ -32,7 +32,7 @@ namespace Tailviewer.Core.Sources.Adorner
 		private readonly IReadOnlyList<IColumnDescriptor> _requiredColumns;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
-		private readonly ConcurrentQueue<LogFileSection> _pendingSections;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingSections;
 		private readonly LogBufferArray _buffer;
 		private int _count;
 
@@ -87,7 +87,7 @@ namespace Tailviewer.Core.Sources.Adorner
 			_adornedProperties = adornedProperties;
 			_propertiesBuffer = new PropertiesBufferList(_adornedProperties);
 			_properties = new ConcurrentPropertiesList(_adornedProperties);
-			_pendingSections = new ConcurrentQueue<LogFileSection>();
+			_pendingSections = new ConcurrentQueue<LogSourceModification>();
 			_requiredColumns = GetColumnsRequiredFor(_adornedProperties);
 			const int bufferSize = 1000;
 			_buffer = new LogBufferArray(bufferSize, _requiredColumns);
@@ -158,30 +158,30 @@ namespace Tailviewer.Core.Sources.Adorner
 
 		#endregion
 
-		private bool Process(IReadOnlyList<LogFileSection> pendingSections)
+		private bool Process(IReadOnlyList<LogSourceModification> pendingModifications)
 		{
-			if (pendingSections.Count == 0)
+			if (pendingModifications.Count == 0)
 				return false;
 
-			foreach (var section in pendingSections)
+			foreach (var modification in pendingModifications)
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 				{
 					_count = 0;
 					Listeners.Reset();
 					_propertiesBuffer.SetToDefault(_adornedProperties);
 					SynchronizeProperties();
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
-					_count = (int) section.Index;
+					_count = (int) removedSection.Index;
 					SynchronizeProperties();
-					Listeners.Invalidate((int) section.Index, section.Count);
+					Listeners.Remove((int) removedSection.Index, removedSection.Count);
 				}
-				else
+				else if (modification.IsAppended(out var appendedSection))
 				{
-					Process(section);
-					_count += section.Count;
+					Process(appendedSection);
+					_count += appendedSection.Count;
 					SynchronizeProperties();
 					Listeners.OnRead(_count);
 				}
@@ -190,7 +190,7 @@ namespace Tailviewer.Core.Sources.Adorner
 			return true;
 		}
 
-		private void Process(LogFileSection section)
+		private void Process(LogSourceSection section)
 		{
 			DateTime? startTime = _propertiesBuffer.GetValue(GeneralProperties.StartTimestamp);
 			DateTime? endTime = _propertiesBuffer.GetValue(GeneralProperties.EndTimestamp);
@@ -294,9 +294,9 @@ namespace Tailviewer.Core.Sources.Adorner
 
 		#region Implementation of ILogSourceListener
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			_pendingSections.Enqueue(section);
+			_pendingSections.Enqueue(modification);
 		}
 
 		#endregion

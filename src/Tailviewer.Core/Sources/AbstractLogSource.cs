@@ -44,7 +44,7 @@ namespace Tailviewer.Core.Sources
 		/// <remarks>
 		///     It is expected that any subclass calls <see cref="LogSourceListenerCollection.OnRead" /> when more lines have become
 		///     available,
-		///     <see cref="LogSourceListenerCollection.Invalidate" /> when a certain region is no longer available and
+		///     <see cref="LogSourceListenerCollection.Remove" /> when a certain region is no longer available and
 		///     <see cref="LogSourceListenerCollection.Reset" /> when the data source has become completely empty or has been
 		///     deleted.
 		/// </remarks>

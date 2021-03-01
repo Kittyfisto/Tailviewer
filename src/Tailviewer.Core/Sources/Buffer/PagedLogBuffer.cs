@@ -116,14 +116,14 @@ namespace Tailviewer.Core.Sources.Buffer
 		public bool TryGetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
 		                          ILogBuffer destination,
 		                          int destinationIndex,
-		                          out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		                          out IReadOnlyList<LogSourceSection> accessedPageBoundaries)
 		{
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex), destinationIndex, "The destination index must 0 or greater");
 
-			if (sourceIndices is LogFileSection contiguousSection)
+			if (sourceIndices is LogSourceSection contiguousSection)
 			{
 				return TryGetEntriesContiguous(contiguousSection, destination, destinationIndex, out accessedPageBoundaries);
 			}
@@ -137,7 +137,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		/// <param name="destinationSection">The destination indices of the log entries from the given source</param>
 		/// <param name="source">The source from which to copy data to this buffer</param>
 		/// <param name="sourceIndex">The index into the given source from which onwards log entries may be added to this cache.</param>
-		public void TryAdd(LogFileSection destinationSection, IReadOnlyLogBuffer source, int sourceIndex)
+		public void TryAdd(LogSourceSection destinationSection, IReadOnlyLogBuffer source, int sourceIndex)
 		{
 			if (!CanCache(source))
 				return;
@@ -174,12 +174,12 @@ namespace Tailviewer.Core.Sources.Buffer
 			return true;
 		}
 
-		private bool TryGetEntriesContiguous(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		private bool TryGetEntriesContiguous(LogSourceSection sourceSection, ILogBuffer destination, int destinationIndex, out IReadOnlyList<LogSourceSection> accessedPageBoundaries)
 		{
 			bool fullyRead = true;
 			var sourceSectionEndIndex = Math.Min((int)(sourceSection.Index + sourceSection.Count), _sourceCount);
 			var numEntriesRead = 0;
-			var tmpAccessedPageBoundaries = new List<LogFileSection>();
+			var tmpAccessedPageBoundaries = new List<LogSourceSection>();
 
 			for (LogLineIndex i = sourceSection.Index; i < sourceSectionEndIndex;)
 			{
@@ -217,9 +217,9 @@ namespace Tailviewer.Core.Sources.Buffer
 			return fullyRead;
 		}
 
-		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationStartIndex, out IReadOnlyList<LogFileSection> accessedPageBoundaries)
+		private bool TryGetEntriesSegmented(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationStartIndex, out IReadOnlyList<LogSourceSection> accessedPageBoundaries)
 		{
-			var tmpAccessedPageBoundaries = new List<LogFileSection>();
+			var tmpAccessedPageBoundaries = new List<LogSourceSection>();
 
 			bool fullyRead = true;
 			for (int i = 0; i < sourceIndices.Count; ++i)
@@ -261,9 +261,9 @@ namespace Tailviewer.Core.Sources.Buffer
 		}
 
 		[Pure]
-		private LogFileSection GetSectionForPage(int pageIndex)
+		private LogSourceSection GetSectionForPage(int pageIndex)
 		{
-			return new LogFileSection(_pageSize * pageIndex, _pageSize);
+			return new LogSourceSection(_pageSize * pageIndex, _pageSize);
 		}
 
 		[Pure]
@@ -310,7 +310,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		{
 			// The section of log sources *actually* currently buffered
 			// by pages is incredibly small compared to the section which
-			// may be invalidated. Therefore it is faster to iterate over all pages
+			// may be removed. Therefore it is faster to iterate over all pages
 			// (which are only ever a few handful) and see if they are part of
 			// the evicted region
 			for (int i = 0; i < _pages.Count;)

@@ -67,7 +67,7 @@ namespace Tailviewer.BusinessLogic.Exporter
 		{
 			try
 			{
-				_logSource.GetEntries(new LogFileSection(index, count), array);
+				_logSource.GetEntries(new LogSourceSection(index, count), array);
 
 				for (var i = 0; i < count; ++i)
 				{

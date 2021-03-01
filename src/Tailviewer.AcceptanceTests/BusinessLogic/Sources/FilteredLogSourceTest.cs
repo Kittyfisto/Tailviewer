@@ -53,7 +53,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 					filtered.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-					var entries = filtered.GetEntries(new LogFileSection(0, 5));
+					var entries = filtered.GetEntries(new LogSourceSection(0, 5));
 					entries[0].Index.Should().Be(0);
 					entries[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified));
 					entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -89,22 +89,22 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				using (FilteredLogSource filtered = file.AsFiltered(_taskScheduler, null, Filter.Create("info")))
 				{
 					var listener = new Mock<ILogSourceListener>();
-					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-							.Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
+					var modifications = new List<LogSourceModification>();
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+							.Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 
 					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 
 					filtered.AddListener(listener.Object, TimeSpan.Zero, 1);
 
-					sections.Should().Equal(new object[]
+					modifications.Should().Equal(new object[]
 						{
-							LogFileSection.Reset,
-							new LogFileSection(0, 1),
-							new LogFileSection(1, 1),
-							new LogFileSection(2, 1),
-							new LogFileSection(3, 1),
-							new LogFileSection(4, 1)
+							LogSourceModification.Reset(),
+							LogSourceModification.Appended(0, 1),
+							LogSourceModification.Appended(1, 1),
+							LogSourceModification.Appended(2, 1),
+							LogSourceModification.Appended(3, 1),
+							LogSourceModification.Appended(4, 1)
 						});
 				}
 			}
@@ -131,13 +131,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 				using (FilteredLogSource filtered = file.AsFiltered(_taskScheduler, null, Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
 				{
 					var listener = new Mock<ILogSourceListener>();
-					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-							.Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
+					var modifications = new List<LogSourceModification>();
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+							.Callback((ILogSource logFile, LogSourceModification section) => modifications.Add(section));
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
 					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-					var entries = filtered.GetEntries(new LogFileSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
+					var entries = filtered.GetEntries(new LogSourceSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
 					entries[0].RawContent.Should().Be("INFO - Test");
@@ -150,7 +150,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 
 					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
 					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-					sections.Should().EndWith(LogFileSection.Reset);
+					modifications.Should().EndWith(LogSourceModification.Reset());
 				}
 			}
 		}

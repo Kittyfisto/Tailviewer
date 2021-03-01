@@ -58,8 +58,8 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 
 			var source = new Mock<ILogSource>();
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			view.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions);
-			inner.Verify(x => x.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions), Times.Once);
+			view.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogSourceSection(2, 98), queryOptions);
+			inner.Verify(x => x.CopyFrom(GeneralColumns.LogLevel, 42, source.Object, new LogSourceSection(2, 98), queryOptions), Times.Once);
 		}
 
 		[Test]
@@ -70,8 +70,8 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 
 			var source = new Mock<ILogSource>();
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			new Action(() => view.CopyFrom(GeneralColumns.Timestamp, 42, source.Object, new LogFileSection(2, 98), queryOptions)).Should().Throw<NoSuchColumnException>();
-			inner.Verify(x => x.CopyFrom(GeneralColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogSource>(), It.IsAny<LogFileSection>(), It.IsAny<LogSourceQueryOptions>()), Times.Never);
+			new Action(() => view.CopyFrom(GeneralColumns.Timestamp, 42, source.Object, new LogSourceSection(2, 98), queryOptions)).Should().Throw<NoSuchColumnException>();
+			inner.Verify(x => x.CopyFrom(GeneralColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogSource>(), It.IsAny<LogSourceSection>(), It.IsAny<LogSourceQueryOptions>()), Times.Never);
 		}
 
 		[Test]

@@ -15,7 +15,7 @@ namespace Tailviewer.Ui.LogView
 
 		public abstract IColumnDescriptor Column { get; }
 		public abstract TextSettings TextSettings { get; set; }
-		public abstract void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset);
+		public abstract void FetchValues(ILogSource logSource, LogSourceSection visibleSection, double yOffset);
 
 		#endregion
 	}
@@ -66,7 +66,7 @@ namespace Tailviewer.Ui.LogView
 		/// <param name="logSource"></param>
 		/// <param name="visibleSection"></param>
 		/// <param name="yOffset"></param>
-		public override void FetchValues(ILogSource logSource, LogFileSection visibleSection, double yOffset)
+		public override void FetchValues(ILogSource logSource, LogSourceSection visibleSection, double yOffset)
 		{
 			if (Visibility != Visibility.Visible) //< We shouldn't waste CPU cycles when we're hidden from view...
 				return;

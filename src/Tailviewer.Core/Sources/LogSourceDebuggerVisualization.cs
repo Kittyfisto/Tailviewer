@@ -46,7 +46,7 @@ namespace Tailviewer.Core.Sources
 			{
 				var count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
 				var buffer = new LogBufferArray(count, _logSource.Columns);
-				_logSource.GetEntries(new LogFileSection(0, count), buffer);
+				_logSource.GetEntries(new LogSourceSection(0, count), buffer);
 				return buffer.ToArray<IReadOnlyLogEntry>();
 			}
 		}

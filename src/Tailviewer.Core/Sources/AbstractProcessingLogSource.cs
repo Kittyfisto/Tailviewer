@@ -27,7 +27,7 @@ namespace Tailviewer.Core.Sources
 		private readonly LogBufferArray _fetchBuffer;
 		private readonly int _maxEntryCount;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly ConcurrentQueue<LogFileSection> _pendingSections;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingSections;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly PropertiesBufferHidingView _propertiesBufferView;
@@ -43,7 +43,7 @@ namespace Tailviewer.Core.Sources
 			: base(taskScheduler)
 		{
 			_fetchBuffer = new LogBufferArray(maxEntryCount, columnsToFetch);
-			_pendingSections = new ConcurrentQueue<LogFileSection>();
+			_pendingSections = new ConcurrentQueue<LogSourceModification>();
 			_source = source;
 			_maximumWaitTime = maximumWaitTime;
 			_maxEntryCount = maxEntryCount;
@@ -54,36 +54,36 @@ namespace Tailviewer.Core.Sources
 
 		#region Implementation of ILogSourceListener
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			_pendingSections.Enqueue(section);
+			_pendingSections.Enqueue(modification);
 		}
 
 		#endregion
 
-		private bool Process(IReadOnlyList<LogFileSection> pendingSections)
+		private bool Process(IReadOnlyList<LogSourceModification> pendingModifications)
 		{
-			if (pendingSections.Count == 0)
+			if (pendingModifications.Count == 0)
 				return false;
 
-			foreach (var section in pendingSections)
-				if (section.IsReset)
+			foreach (var modification in pendingModifications)
+				if (modification.IsReset())
 					Reset();
-				else if (section.IsInvalidate)
-					InvalidateSection(section);
-				else
-					AppendSection(section);
+				else if (modification.IsRemoved(out var removedSection))
+					RemoveSection(removedSection);
+				else if (modification.IsAppended(out var appendedSection))
+					AppendSection(appendedSection);
 
 			return true;
 		}
 
-		private void AppendSection(LogFileSection section)
+		private void AppendSection(LogSourceSection section)
 		{
 			_count = (int) (section.Index + section.Count);
 			try
 			{
 				_source.GetEntries(section, _fetchBuffer);
-				OnAppendSection(section, _fetchBuffer, _count);
+				OnSectionAppended(section, _fetchBuffer, _count);
 			}
 			catch (Exception e)
 			{
@@ -94,12 +94,12 @@ namespace Tailviewer.Core.Sources
 			Listeners.OnRead(_count);
 		}
 
-		private void InvalidateSection(LogFileSection section)
+		private void RemoveSection(LogSourceSection section)
 		{
 			_count = (int) section.Index;
 			try
 			{
-				OnInvalidateSection(_count);
+				OnSectionRemoved(_count);
 			}
 			catch (Exception e)
 			{
@@ -107,7 +107,7 @@ namespace Tailviewer.Core.Sources
 			}
 
 			SynchronizeProperties();
-			Listeners.Invalidate((int) section.Index, section.Count);
+			Listeners.Remove((int) section.Index, section.Count);
 		}
 
 		private void Reset()
@@ -128,9 +128,9 @@ namespace Tailviewer.Core.Sources
 
 		protected abstract void OnResetSection();
 
-		protected abstract void OnInvalidateSection(int totalLogEntryCount);
+		protected abstract void OnSectionRemoved(int totalLogEntryCount);
 
-		protected abstract void OnAppendSection(LogFileSection section,
+		protected abstract void OnSectionAppended(LogSourceSection section,
 		                                        IReadOnlyLogBuffer data,
 		                                        int totalLogEntryCount);
 

@@ -36,7 +36,7 @@ namespace Tailviewer.Core.Sources
 		private readonly LogSourceListenerCollection _listeners;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly PropertiesBufferList _sourceProperties;
-		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
+		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>> _pendingSections;
 		private readonly IPeriodicTask _task;
 		private ILogSource _source;
 		private bool _isDisposed;
@@ -59,7 +59,7 @@ namespace Tailviewer.Core.Sources
 			_properties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
 			_sourceProperties = new PropertiesBufferList();
-			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>>();
+			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>>();
 			_listeners = new LogSourceListenerCollection(this);
 
 			_task = _taskScheduler.StartPeriodic(RunOnce, "Log File Proxy");
@@ -95,28 +95,28 @@ namespace Tailviewer.Core.Sources
 				{
 					var sender = pair.Key;
 					var innerLogFile = _source;
-					var section = pair.Value;
+					var modification = pair.Value;
 					if (sender != innerLogFile)
 					{
 						// If, for some reason, we receive an event from a previous log file,
 						// then we ignore it so our listeners are not confused.
 						Log.DebugFormat(
 						                "Skipping pending modification '{0}' from '{1}' because it is no longer our current log file '{2}'",
-						                section, sender, innerLogFile);
+						                modification, sender, innerLogFile);
 					}
 					else
 					{
-						if (section.IsReset)
+						if (modification.IsReset())
 						{
 							_listeners.Reset();
 						}
-						else if (section.IsInvalidate)
+						else if (modification.IsRemoved(out var removedSection))
 						{
-							_listeners.Invalidate((int)section.Index, section.Count);
+							_listeners.Remove((int)removedSection.Index, removedSection.Count);
 						}
-						else
+						else if (modification.IsAppended(out var appendedSection))
 						{
-							_listeners.OnRead((int)(section.Index + section.Count));
+							_listeners.OnRead((int)(appendedSection.Index + appendedSection.Count));
 						}
 					}
 
@@ -168,7 +168,7 @@ namespace Tailviewer.Core.Sources
 				// We're now representing a different log file.
 				// To the outside, we model this as a simple reset, followed
 				// by the content of the new logfile...
-				_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogFileSection>(_source, LogFileSection.Reset));
+				_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogSourceModification>(_source, LogSourceModification.Reset()));
 
 				_source?.AddListener(this, _maximumWaitTime, 10000);
 			}
@@ -335,12 +335,12 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			if (Log.IsDebugEnabled)
-				Log.DebugFormat("OnLogFileModified({0}, {1})", logSource, section);
+				Log.DebugFormat("OnLogFileModified({0}, {1})", logSource, modification);
 
-			_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogFileSection>(logSource, section));
+			_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogSourceModification>(logSource, modification));
 		}
 	}
 }

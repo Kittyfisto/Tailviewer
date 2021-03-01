@@ -75,12 +75,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because even though the filter doesn't have anything to do just yet - it's because its own source hasn't even started");
 
 				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.FromPercent(42));
-				fileListener.OnLogFileModified(source.Object, new LogFileSection(0, 84));
+				fileListener.OnLogFileModified(source.Object, LogSourceModification.Appended(0, 84));
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.FromPercent(42), "because now the filtered log file has processed 100% of the data the source sent it, but the original data source is still only at 42%");
 
 				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
-				fileListener.OnLogFileModified(source.Object, new LogFileSection(84, 200));
+				fileListener.OnLogFileModified(source.Object, LogSourceModification.Appended(84, 200));
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			}

@@ -264,7 +264,7 @@ namespace Tailviewer.Test.Ui.Controls
 				{GeneralColumns.RawContent, "Foobar" },
 				{GeneralColumns.LogLevel, LevelFlags.Info }
 			}));
-			_control.OnLogFileModified(_logSource, new LogFileSection(0, _logSource.Count));
+			_control.OnLogFileModified(_logSource, LogSourceModification.Appended(0, _logSource.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -471,7 +471,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] {new LogLineIndex(199)});
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(150, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogSourceSection(150, 50));
 			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
 		}
 
@@ -488,12 +488,12 @@ namespace Tailviewer.Test.Ui.Controls
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(199) });
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(150, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogSourceSection(150, 50));
 			_control.FollowTail.Should().BeTrue();
 
 			_keyboard.Click(_control.PartTextCanvas, Key.Home);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(0) });
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(0, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogSourceSection(0, 50));
 			_control.FollowTail.Should().BeFalse();
 		}
 	}

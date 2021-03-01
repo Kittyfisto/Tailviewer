@@ -409,7 +409,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			}
 
 			if (lineIndexToInvalidate != null)
-				_listeners.Invalidate(lineIndexToInvalidate.Value, 1);
+				_listeners.Remove(lineIndexToInvalidate.Value, 1);
 
 			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, percentageProcessed);
 			UpdateLineCount(count);
@@ -563,7 +563,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		private IReadRequest EnqueueReadRequest(IReadOnlyList<LogLineIndex> sourceIndices, ILogBuffer destination, int destinationIndex)
 		{
 			IReadRequest request;
-			if (sourceIndices is LogFileSection section)
+			if (sourceIndices is LogSourceSection section)
 			{
 				request = new ContiguousReadRequest(section, destination, destinationIndex);
 			}
@@ -835,9 +835,9 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		sealed class ContiguousReadRequest
 			: AbstractReadRequest
 		{
-			private readonly LogFileSection _sourceSection;
+			private readonly LogSourceSection _sourceSection;
 
-			public ContiguousReadRequest(LogFileSection sourceSection,
+			public ContiguousReadRequest(LogSourceSection sourceSection,
 			                             ILogBuffer destination,
 			                             int destinationIndex)
 				: base(destination, destinationIndex)
@@ -877,7 +877,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 				var indices = new long[1];
 				lock (index)
 				{
-					index.CopyTo(StreamingTextLogSource.LineOffsetInBytes, new LogFileSection(_sourceSection.Index, 1), indices, 0);
+					index.CopyTo(StreamingTextLogSource.LineOffsetInBytes, new LogSourceSection(_sourceSection.Index, 1), indices, 0);
 				}
 
 				return indices[0];

@@ -10,7 +10,7 @@
 		///     This method is called when a portion of the log file has been modified.
 		/// </summary>
 		/// <param name="logSource">The log-file that was modified</param>
-		/// <param name="section">The section of the log file that was modified</param>
-		void OnLogFileModified(ILogSource logSource, LogFileSection section);
+		/// <param name="modification">The section of the log file that was modified</param>
+		void OnLogFileModified(ILogSource logSource, LogSourceModification modification);
 	}
 }

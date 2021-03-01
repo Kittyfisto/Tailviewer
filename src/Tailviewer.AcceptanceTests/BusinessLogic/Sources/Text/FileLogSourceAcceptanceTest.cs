@@ -263,7 +263,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				
 				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
 
-				var entries = logSource.GetEntries(new LogFileSection(0, 6));
+				var entries = logSource.GetEntries(new LogSourceSection(0, 6));
 				entries[0].RawContent.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				entries[0].LogLevel.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
 
@@ -386,13 +386,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				writer.Flush();
 
 				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 11, 59, 30),
 					new DateTime(2017, 12, 3, 12, 00, 00)
 				});
 
-				source.GetColumn(new LogFileSection(1, 1), GeneralColumns.Timestamp)
+				source.GetColumn(new LogSourceSection(1, 1), GeneralColumns.Timestamp)
 				      .Should().Equal(new DateTime(2017, 12, 3, 12, 00, 00));
 			}
 		}
@@ -471,13 +471,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				writer.Flush();
 				
 				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					TimeSpan.FromSeconds(30)
 				});
 
-				source.GetColumn(new LogFileSection(1, 1), GeneralColumns.DeltaTime)
+				source.GetColumn(new LogSourceSection(1, 1), GeneralColumns.DeltaTime)
 				       .Should().Equal(new object[] {TimeSpan.FromSeconds(30)});
 			}
 		}
@@ -494,12 +494,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				writer.Flush();
 
 				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(1);
-				source.GetColumn(new LogFileSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					null
 				});
-				source.GetColumn(new LogFileSection(1, 5), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.GetColumn(new LogSourceSection(1, 5), GeneralColumns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					null,
@@ -531,7 +531,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
 				file.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-				var buffer = file.GetEntries(new LogFileSection(0, 10));
+				var buffer = file.GetEntries(new LogSourceSection(0, 10));
 
 
 				buffer[0].Index.Should().Be(0);

@@ -103,7 +103,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			{
 				var logFile = Create(fileName, Encoding.Default);
 				var listener = new Mock<ILogSourceListener>();
-				listener.Setup(x => x.OnLogFileModified(logFile, new LogFileSection(0, 1)))
+				listener.Setup(x => x.OnLogFileModified(logFile, LogSourceModification.Appended(0, 1)))
 				        .Callback(() => handle.Set());
 				logFile.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 2);
 
@@ -264,23 +264,22 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			using (var file = Create(File20Mb))
 			{
 				var listener = new Mock<ILogSourceListener>();
-				var sections = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
+				var modifications = new List<LogSourceModification>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 
 				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
 
-				sections[0].Should().Equal(LogFileSection.Reset);
-				for (int i = 1; i < sections.Count; ++i)
+				modifications[0].Should().Be(LogSourceModification.Reset());
+				for (int i = 1; i < modifications.Count; ++i)
 				{
-					LogFileSection change = sections[i];
-					change.IsInvalidate.Should().BeFalse();
-					change.IsReset.Should().BeFalse();
-					change.Index.Should().Be((LogLineIndex) (i - 1));
-					change.Count.Should().Be(1);
+					LogSourceModification modification = modifications[i];
+					modification.IsAppended(out var section).Should().BeTrue();
+					section.Index.Should().Be((LogLineIndex) (i - 1));
+					section.Count.Should().Be(1);
 				}
 			}
 		}

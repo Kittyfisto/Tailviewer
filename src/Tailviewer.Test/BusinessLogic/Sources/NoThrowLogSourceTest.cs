@@ -108,15 +108,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Test]
 		public void TestGetColumn1()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<IColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<LogSourceSection>(), It.IsAny<IColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>())).Throws<SystemException>();
 
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new string[9101];
 			var destinationIndex = 9001;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
-			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
+			_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == section),
 			                                 GeneralColumns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
@@ -145,15 +145,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		[Test]
 		public void TestGetEntries1()
 		{
-			_logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetEntries(It.IsAny<LogSourceSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>())).Throws<SystemException>();
 
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new Mock<ILogBuffer>().Object;
 			var destinationIndex = 9001;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			new Action(() => _proxy.GetEntries(section, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
-			_logFile.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
+			_logFile.Verify(x => x.GetEntries(It.Is<LogSourceSection>(y => y == section),
 			                                 It.Is<ILogBuffer>(y => ReferenceEquals(y, buffer)),
 			                                 destinationIndex,
 			                                 queryOptions),

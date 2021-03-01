@@ -21,7 +21,7 @@ namespace Tailviewer.Core.Sources
 
 			Reset();
 
-			_listener.OnLogFileModified(logSource, LogFileSection.Reset);
+			_listener.OnLogFileModified(logSource, LogSourceModification.Reset());
 		}
 
 		public int LastNumberOfLines => _lastNumberOfLines;
@@ -56,7 +56,7 @@ namespace Tailviewer.Core.Sources
 			else if (_sentAnyData) //< We want to avoid sending multiple successive reset events
 			{
 				Reset();
-				_listener.OnLogFileModified(_logSource, LogFileSection.Reset);
+				_listener.OnLogFileModified(_logSource, LogSourceModification.Reset());
 			}
 		}
 
@@ -69,15 +69,15 @@ namespace Tailviewer.Core.Sources
 			while ((count = numberOfLinesRead - _lastNumberOfLines) > 0)
 			{
 				count = Math.Min(count, _maximumCount);
-				var section = new LogFileSection(_lastNumberOfLines, count);
-				_listener.OnLogFileModified(_logSource, section);
+				var section = new LogSourceSection(_lastNumberOfLines, count);
+				_listener.OnLogFileModified(_logSource, LogSourceModification.Appended(section));
 
 				_lastNumberOfLines += count;
 				_lastReportedTime = now;
 			}
 		}
 
-		public void Invalidate(int firstIndex, int count)
+		public void Remove(int firstIndex, int count)
 		{
 			int lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
 			int invalidateCount = lastIndex - firstIndex;
@@ -86,8 +86,8 @@ namespace Tailviewer.Core.Sources
 			// they don't need to be notified of the invalidation either.
 			if (invalidateCount > 0)
 			{
-				var section = LogFileSection.Invalidate(firstIndex, invalidateCount);
-				_listener.OnLogFileModified(_logSource, section);
+				var section = new LogSourceSection(firstIndex, invalidateCount);
+				_listener.OnLogFileModified(_logSource, LogSourceModification.Removed(section));
 				_lastNumberOfLines = firstIndex;
 			}
 		}

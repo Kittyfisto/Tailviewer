@@ -8,13 +8,13 @@ namespace Tailviewer.Core.Filters
 	internal sealed class RangeFilter
 		: ILogEntryFilter
 	{
-		private readonly LogFileSection _filteredSection;
+		private readonly LogSourceSection _filteredSection;
 
 		/// <summary>
 		/// Initializes this range filter.
 		/// </summary>
 		/// <param name="filteredSection"></param>
-		public RangeFilter(LogFileSection filteredSection)
+		public RangeFilter(LogSourceSection filteredSection)
 		{
 			_filteredSection = filteredSection;
 		}

@@ -11,7 +11,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		private readonly int _pageSize;
 		private readonly LogBufferArray _buffer;
 		private readonly IReadOnlyList<IColumnDescriptor> _copiedColumns;
-		private readonly LogFileSection _section;
+		private readonly LogSourceSection _section;
 		private DateTime? _lastAccessTime;
 		private int _numReads;
 
@@ -20,7 +20,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			_index = index;
 			_pageSize = pageSize;
 			_copiedColumns = copiedColumns;
-			_section = new LogFileSection(index * pageSize, pageSize);
+			_section = new LogSourceSection(index * pageSize, pageSize);
 			_buffer = new LogBufferArray(pageSize, columns);
 			_lastAccessTime = DateTime.MinValue;
 			_numReads = 0;
@@ -32,7 +32,7 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		public int Index => _index;
 
-		public LogFileSection Section => _section;
+		public LogSourceSection Section => _section;
 
 		public void Add(int sourceIndex, int count, IReadOnlyLogBuffer source, LogLineIndex destinationIndex)
 		{
@@ -44,7 +44,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 
 			// We neither need, nor want the source buffer to have to supply the indices - we know them ourselves
-			_buffer.CopyFrom(GeneralColumns.Index, pageDestinationIndex, new LogFileSection(_section.Index + pageDestinationIndex, count), 0, count);
+			_buffer.CopyFrom(GeneralColumns.Index, pageDestinationIndex, new LogSourceSection(_section.Index + pageDestinationIndex, count), 0, count);
 			_buffer.Fill(PageBufferedLogSource.RetrievalState, RetrievalState.Retrieved, pageDestinationIndex, count);
 		}
 

@@ -83,7 +83,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 
 		private IReadOnlyLogBuffer GetEntries(StreamingTextLogSource logSource)
 		{
-			return GetEntries(logSource, new LogFileSection(0, logSource.GetProperty(GeneralProperties.LogEntryCount)));
+			return GetEntries(logSource, new LogSourceSection(0, logSource.GetProperty(GeneralProperties.LogEntryCount)));
 		}
 
 		private IReadOnlyLogBuffer GetEntries(StreamingTextLogSource logSource, IReadOnlyList<LogLineIndex> sourceSection)
@@ -96,17 +96,17 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			return readTask.Result;
 		}
 
-		private IReadOnlyList<LogFileSection> AddListener(StreamingTextLogSource logSource, int maxCount)
+		private IReadOnlyList<LogSourceModification> AddListener(StreamingTextLogSource logSource, int maxCount)
 		{
 			var listener = new Mock<ILogSourceListener>();
-			var changes = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(logSource, It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource _, LogFileSection section) =>
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(logSource, It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource _, LogSourceModification modification) =>
 			        {
-				        changes.Add(section);
+				        modifications.Add(modification);
 			        });
 			logSource.AddListener(listener.Object, TimeSpan.Zero, maxCount);
-			return changes;
+			return modifications;
 		}
 
 		[Test]
@@ -146,7 +146,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
 			_taskScheduler.RunOnce();
 
-			var entries = GetEntries(logFile, new LogFileSection(0, 1));
+			var entries = GetEntries(logFile, new LogSourceSection(0, 1));
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(LogLineIndex.Invalid);
 			entries[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
@@ -169,7 +169,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the source file does exist and can be accessed");
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogSourceSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(StreamingTextLogSource.LineOffsetInBytes.DefaultValue);
 
 			var entries = GetEntries(logFile);
@@ -190,7 +190,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(109));
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogSourceSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(0, "because the first line starts at an offset of 0 bytes wrt the start of the file");
 
 			var entries = GetEntries(logFile);
@@ -215,7 +215,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
 			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
-			var indices = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(3, "because the first line starts right after the preamble (also called byte order mark, BOM), which, for UTF-8, is 3 bytes long");
 			indices[1].Should().BeInRange(165L, 166L, "because git fucks with line endings and thus the offset might differ");
 
@@ -244,7 +244,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-			var indices = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+			var indices = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 			var expectedOffset = encoding.GetPreamble().Length;
 			indices[0].Should().Be(expectedOffset, "");
 			indices[1].Should().Be(-1);
@@ -289,25 +289,25 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 
 			var logFile = Create(fileName, new UTF8Encoding(true));
 			var listener = new Mock<ILogSourceListener>();
-			var changes = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(logFile, It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource _, LogFileSection section) =>
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(logFile, It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource _, LogSourceModification modification) =>
 			        {
-				        changes.Add(section);
+				        modifications.Add(modification);
 			        });
 			var maxWaitTime = TimeSpan.FromMilliseconds(500);
 			logFile.AddListener(listener.Object, maxWaitTime, 500);
-			changes.Should().Equal(new object[] {LogFileSection.Reset});
+			modifications.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's one log entry in the file");
-			changes.Should().Equal(new object[] {LogFileSection.Reset}, "because not enough time has elapsed and thus the log source may not have notified the listener just yet");
+			modifications.Should().Equal(new object[] {LogSourceModification.Reset()}, "because not enough time has elapsed and thus the log source may not have notified the listener just yet");
 
 
 			Thread.Sleep(maxWaitTime);
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's still one log entry in the file");
-			changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)}, "because enough time has passed for the log file to notify us at this point in time");
+			modifications.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)}, "because enough time has passed for the log file to notify us at this point in time");
 		}
 
 		#region Reference Files
@@ -435,7 +435,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 
 			var logFile = Create(fileName, encoding);
 			var changes = AddListener(logFile, 1000);
-			changes.Should().Equal(new object[] {LogFileSection.Reset});
+			changes.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
 			using (var writer = new StreamWriter(stream, encoding))
@@ -444,10 +444,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(23);
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Appended(1, 1)});
 
 				var entries = GetEntries(logFile);
 				entries.Count.Should().Be(2);
@@ -461,14 +461,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1), LogFileSection.Reset},
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Appended(1, 1), LogSourceModification.Reset()},
 				                       "because the LogSource should have fired the Reset event now that the log source is done");
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
 				index[1].Should().Be(-1, "because now we'Ve truncated the file which should have been detected by now");
 
-				var entries = GetEntries(logFile, new LogFileSection(0, 2));
+				var entries = GetEntries(logFile, new LogSourceSection(0, 2));
 				entries.Count.Should().Be(2);
 				entries[0].RawContent.Should().BeNullOrEmpty();
 				entries[1].RawContent.Should().BeNullOrEmpty();
@@ -490,7 +490,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(23);
 
@@ -509,11 +509,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
 				logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
 				index[1].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
 
-				var entries = GetEntries(logFile, new LogFileSection(0, 2));
+				var entries = GetEntries(logFile, new LogSourceSection(0, 2));
 				entries.Count.Should().Be(2);
 				entries[0].RawContent.Should().BeNullOrEmpty();
 				entries[1].RawContent.Should().BeNullOrEmpty();
@@ -539,7 +539,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(76);
 
@@ -553,7 +553,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+				index = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(encoding.GetPreamble().Length);
 				index[1].Should().Be(76);
 				index[2].Should().Be(128);
@@ -580,20 +580,20 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			using (var logFile = Create(fileName, encoding))
 			{
 				var changes = AddListener(logFile, 1000);
-				changes.Should().Equal(new object[] {LogFileSection.Reset});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 				writer.Write(line1 + "\r\n");
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)},
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Appended(1, 1)},
 				                       "because the file consists of two lines, one being totally empty");
 
 				writer.Write(line2 + "\r\n");
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1), LogFileSection.Invalidate(1, 1), new LogFileSection(1, 2)});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Appended(1, 1), LogSourceModification.Removed(1, 1), LogSourceModification.Appended(1, 2)});
 			}
 		}
 
@@ -611,23 +611,23 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			using (var logFile = Create(fileName, encoding))
 			{
 				var changes = AddListener(logFile, 1000);
-				changes.Should().Equal(new object[] {LogFileSection.Reset});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 				writer.Write(line1);
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)},
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)},
 				                       "because the file consists of one line");
 
 				writer.Write("\n" + line2);
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				//changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)});
+				//changes.Should().Equal(new object[] {LogSourceModification.Reset(), new LogFileSection(0, 1), new LogFileSection(1, 1)});
 				// The current behavior won't cause wrong behavior in upstream listeners, but it will cause them unnecessary work.
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1),
-					LogFileSection.Invalidate(0, 1), new LogFileSection(0, 2)});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1),
+					LogSourceModification.Removed(0, 1), LogSourceModification.Appended(0, 2)});
 			}
 		}
 
@@ -645,20 +645,20 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			using (var logFile = Create(fileName, encoding))
 			{
 				var changes = AddListener(logFile, 1000);
-				changes.Should().Equal(new object[] {LogFileSection.Reset});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 				writer.Write(linePart1);
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)},
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)},
 				                       "because the file consists of one line");
 
 				writer.Write(linePart2);
 				writer.Flush();
 				_taskScheduler.RunOnce();
 
-				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), LogFileSection.Invalidate(0, 1), new LogFileSection(0, 1)});
+				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Removed(0, 1), LogSourceModification.Appended(0, 1)});
 			}
 		}
 
@@ -677,13 +677,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				using (var writer = new StreamWriter(stream, encoding))
 				{
 					var changes = AddListener(logFile, 1000);
-					changes.Should().Equal(new object[] {LogFileSection.Reset});
+					changes.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 					writer.WriteLine(line1);
 					writer.Flush();
 					_taskScheduler.RunOnce();
 					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-					var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+					var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(9);
 
@@ -691,7 +691,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 					writer.Flush();
 					_taskScheduler.RunOnce();
 					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
-					index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					index = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(9);
 					index[2].Should().Be(19);
@@ -706,7 +706,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 
 					_taskScheduler.RunOnce();
 					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
-					var index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					var index = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(3);
 					index[2].Should().Be(6);

@@ -55,7 +55,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			new Action(() => _control.OnSizeChanged()).Should().NotThrow();
 
-			_control.CurrentlyVisibleSection.Should().Equal(new LogFileSection(0, 0));
+			_control.CurrentlyVisibleSection.Should().Equal(new LogSourceSection(0, 0));
 		}
 
 		[Test]
@@ -69,7 +69,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.CurrentLine = 600;
 
 			var section = _control.CalculateVisibleSection();
-			section.Should().Equal(new LogFileSection(0, 1), "because the control should clamp the visible section until something better becomes available");
+			section.Should().Equal(new LogSourceSection(0, 1), "because the control should clamp the visible section until something better becomes available");
 		}
 
 		[Test]
@@ -79,12 +79,12 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(42);
 			_control.LogSource = logFile.Object;
 
-			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
+			logFile.Setup(x => x.GetEntries(It.IsAny<LogSourceSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
 				.Throws<IndexOutOfRangeException>();
 
 			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 
-			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
+			logFile.Setup(x => x.GetEntries(It.IsAny<LogSourceSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))
 			       .Throws<ArgumentOutOfRangeException>();
 			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 		}

@@ -19,18 +19,18 @@ namespace Tailviewer.Test.BusinessLogic
 			ILogSource logSource = new Mock<ILogSource>().Object;
 			var collection = new LogSourceListenerCollection(logSource);
 			var listener = new Mock<ILogSourceListener>();
-			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource file, LogSourceModification y) => modifications.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
 			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).Should().NotThrow();
 
 			collection.OnRead(10);
-			sections.Should().Equal(new[]
+			modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 10)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 10)
 				}, "Because even though we added the listener twice, it should never be invoked twice");
 		}
 
@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 			collection.OnRead(1);
 			collection.CurrentLineIndex.Should().Be(1);
-			collection.Invalidate(0, 1);
+			collection.Remove(0, 1);
 			collection.CurrentLineIndex.Should().Be(0);
 		}
 
@@ -51,23 +51,23 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
 			var listener = new Mock<ILogSourceListener>();
-			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+					.Callback((ILogSource file, LogSourceModification y) => modifications.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
 
-			sections.Should().Equal(new object[]
+			modifications.Should().Equal(new object[]
 				{
-					LogFileSection.Reset
+					LogSourceModification.Reset()
 				});
 
 			collection.Flush();
-			sections.Should().Equal(new object[]
+			modifications.Should().Equal(new object[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1)
 				}, "Because Flush() should force calling the OnLogFileModified method");
 		}
 
@@ -77,19 +77,19 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
 			var listener = new Mock<ILogSourceListener>();
-			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+					.Callback((ILogSource file, LogSourceModification y) => modifications.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
 
 			collection.Flush();
 			collection.Flush();
-			sections.Should().Equal(new object[]
+			modifications.Should().Equal(new object[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1)
 				}, "Because Flush() shouldn't forward the same result to the same listener more than once");
 		}
 
@@ -99,20 +99,20 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
 			var listener = new Mock<ILogSourceListener>();
-			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-					.Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+					.Callback((ILogSource file, LogSourceModification y) => modifications.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
 			collection.Flush();
 			collection.OnRead(2);
 			collection.Flush();
-			sections.Should().Equal(new object[]
+			modifications.Should().Equal(new object[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1),
-					new LogFileSection(1, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1),
+					LogSourceModification.Appended(1, 1)
 				});
 		}
 
@@ -123,25 +123,25 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 
 			var listener = new Mock<ILogSourceListener>();
-			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource file, LogFileSection y) => sections.Add(y));
+			var modifications = new List<LogSourceModification>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource file, LogSourceModification y) => modifications.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 			collection.OnRead(1);
 			collection.Flush();
-			sections.Should().Equal(new object[]
+			modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1),
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
 			});
 
 			collection.Clear();
-			sections.Clear();
+			modifications.Clear();
 
 			collection.OnRead(2);
 			collection.Flush();
-			sections.Should()
+			modifications.Should()
 			        .BeEmpty("because the collection should have removed all listeners and thus we may not have been notified anymore");
 		}
 	}

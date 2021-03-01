@@ -36,12 +36,12 @@ namespace Tailviewer.Core.Sources
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
 		private readonly Dictionary<int, int> _logEntryIndices;
-		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingModifications;
 		private readonly ILogSource _source;
 		private readonly LogBufferArray _array;
 		private readonly TimeSpan _maximumWaitTime;
 
-		private LogFileSection _fullSourceSection;
+		private LogSourceSection _fullSourceSection;
 		private int _maxCharactersPerLine;
 		private int _currentSourceIndex;
 		private readonly LogBufferList _lastLogBuffer;
@@ -69,7 +69,7 @@ namespace Tailviewer.Core.Sources
 
 			_logLineFilter = logLineFilter ?? new NoFilter();
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
-			_pendingModifications = new ConcurrentQueue<LogFileSection>();
+			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_indices = new List<int>();
 			_logEntryIndices = new Dictionary<int, int>();
 			_array = new LogBufferArray(BatchSize, GeneralColumns.Minimum);
@@ -133,11 +133,11 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			Log.DebugFormat("OnLogFileModified({0})", section);
+			Log.DebugFormat("OnLogFileModified({0})", modification);
 
-			_pendingModifications.Enqueue(section);
+			_pendingModifications.Enqueue(modification);
 		}
 
 		/// <inheritdoc />
@@ -337,7 +337,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <summary>
-		///     Processes as many pending modifications as are available, invalidates existing indices if necessary and
+		///     Processes as many pending modifications as are available, removes existing indices if necessary and
 		///     establishes the boundaries of the source log file.
 		/// </summary>
 		/// <param name="token"></param>
@@ -345,28 +345,28 @@ namespace Tailviewer.Core.Sources
 		private bool ProcessModifications(CancellationToken token)
 		{
 			bool performedWork = false;
-			while (_pendingModifications.TryDequeue(out var section) && !token.IsCancellationRequested)
+			while (_pendingModifications.TryDequeue(out var modification) && !token.IsCancellationRequested)
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 				{
 					Clear();
 					_lastLogBuffer.Clear();
 					_currentSourceIndex = 0;
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
-					LogLineIndex startIndex = section.Index;
-					_fullSourceSection = new LogFileSection(0, (int) startIndex);
+					LogLineIndex startIndex = removedSection.Index;
+					_fullSourceSection = new LogSourceSection(0, (int) startIndex);
 
 					if (_currentSourceIndex > _fullSourceSection.LastIndex)
-						_currentSourceIndex = (int) section.Index;
+						_currentSourceIndex = (int) removedSection.Index;
 
-					Invalidate(_currentSourceIndex);
-					RemoveInvalidatedLines(_lastLogBuffer, _currentSourceIndex);
+					RemoveFrom(_currentSourceIndex);
+					RemoveLinesFrom(_lastLogBuffer, _currentSourceIndex);
 				}
-				else
+				else if(modification.IsAppended(out var appendedSection))
 				{
-					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
+					_fullSourceSection = LogSourceSection.MinimumBoundingLine(_fullSourceSection, appendedSection);
 				}
 
 				performedWork = true;
@@ -385,7 +385,7 @@ namespace Tailviewer.Core.Sources
 			{
 				int remaining = _fullSourceSection.Index + _fullSourceSection.Count - _currentSourceIndex;
 				int nextCount = Math.Min(remaining, BatchSize);
-				var nextSection = new LogFileSection(_currentSourceIndex, nextCount);
+				var nextSection = new LogSourceSection(_currentSourceIndex, nextCount);
 				_source.GetEntries(nextSection, _array);
 
 				for (int i = 0; i < nextCount; ++i)
@@ -468,7 +468,7 @@ namespace Tailviewer.Core.Sources
 			return totalPercentage;
 		}
 
-		private static void RemoveInvalidatedLines(LogBufferList lastLogBuffer, int currentSourceIndex)
+		private static void RemoveLinesFrom(LogBufferList lastLogBuffer, int currentSourceIndex)
 		{
 			while (lastLogBuffer.Count > 0)
 			{
@@ -485,7 +485,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		private void Invalidate(int currentSourceIndex)
+		private void RemoveFrom(int currentSourceIndex)
 		{
 			int numRemoved = 0;
 			lock (_indices)
@@ -496,8 +496,7 @@ namespace Tailviewer.Core.Sources
 					int sourceIndex = _indices[i];
 					if (sourceIndex >= currentSourceIndex)
 					{
-						int previousLogEntryIndex;
-						if (_logEntryIndices.TryGetValue(sourceIndex, out previousLogEntryIndex))
+						if (_logEntryIndices.TryGetValue(sourceIndex, out var previousLogEntryIndex))
 						{
 							_currentLogEntryIndex = previousLogEntryIndex;
 						}
@@ -512,12 +511,12 @@ namespace Tailviewer.Core.Sources
 					}
 				}
 			}
-			Listeners.Invalidate(_indices.Count, numRemoved);
+			Listeners.Remove(_indices.Count, numRemoved);
 		}
 
 		private void Clear()
 		{
-			_fullSourceSection = new LogFileSection();
+			_fullSourceSection = new LogSourceSection();
 			lock (_indices)
 			{
 				_indices.Clear();

@@ -304,7 +304,7 @@ namespace Tailviewer.Ui.LogView
 			set { SetValue(SettingsProperty, value); }
 		}
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			var width = _textSettings.EstimateWidthUpperLimit(logSource.GetProperty(TextProperties.MaxCharactersInLine));
 			var upperWidth = (int) Math.Ceiling(width);
@@ -536,7 +536,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void TextCanvasOnVisibleSectionChanged(LogFileSection section)
+		private void TextCanvasOnVisibleSectionChanged(LogSourceSection section)
 		{
 			CurrentLine = section.Index;
 		}
@@ -730,7 +730,7 @@ namespace Tailviewer.Ui.LogView
 		///     The section of the log file that is currently visible.
 		/// </summary>
 		[Pure]
-		public LogFileSection CalculateVisibleSection()
+		public LogSourceSection CalculateVisibleSection()
 		{
 			return PartTextCanvas.CalculateVisibleSection();
 		}

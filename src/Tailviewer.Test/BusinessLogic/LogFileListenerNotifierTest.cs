@@ -16,13 +16,13 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			_logFile = new Mock<ILogSource>();
 			_listener = new Mock<ILogSourceListener>();
-			_changes = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogSource file, LogFileSection section) => _changes.Add(section));
+			_modifications = new List<LogSourceModification>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			         .Callback((ILogSource file, LogSourceModification modification) => _modifications.Add(modification));
 		}
 
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _changes;
+		private List<LogSourceModification> _modifications;
 		private Mock<ILogSource> _logFile;
 
 		[Test]
@@ -34,13 +34,13 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(3);
 			notifier.OnRead(4);
 
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1),
-					new LogFileSection(1, 1),
-					new LogFileSection(2, 1),
-					new LogFileSection(3, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1),
+					LogSourceModification.Appended(1, 1),
+					LogSourceModification.Appended(2, 1),
+					LogSourceModification.Appended(3, 1)
 				});
 		}
 
@@ -48,19 +48,19 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestCurrentLineChanged2()
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
-			_changes.Clear();
+			_modifications.Clear();
 
 			notifier.OnRead(1);
-			_changes.Should().BeEmpty();
+			_modifications.Should().BeEmpty();
 			notifier.OnRead(2);
-			_changes.Should().BeEmpty();
+			_modifications.Should().BeEmpty();
 			notifier.OnRead(3);
-			_changes.Should().BeEmpty();
+			_modifications.Should().BeEmpty();
 
 			notifier.OnRead(4);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					new LogFileSection(0, 4)
+					LogSourceModification.Appended(0, 4)
 				});
 		}
 
@@ -69,10 +69,10 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
 			notifier.OnRead(4);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 4)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 4)
 				});
 		}
 
@@ -81,17 +81,17 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(1000);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1000)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1000)
 				});
 			notifier.OnRead(2000);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1000),
-					new LogFileSection(1000, 1000)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1000),
+					LogSourceModification.Appended(1000, 1000)
 				});
 		}
 
@@ -100,11 +100,11 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(2000);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1000),
-					new LogFileSection(1000, 1000)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1000),
+					LogSourceModification.Appended(1000, 1000)
 				});
 		}
 
@@ -113,9 +113,9 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(-1);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset
+					LogSourceModification.Reset()
 				});
 		}
 
@@ -124,12 +124,12 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
 			notifier.OnRead(1);
-			notifier.Invalidate(0, 1);
-			_changes.Should().Equal(new[]
+			notifier.Remove(0, 1);
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1),
-					LogFileSection.Invalidate(0, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1),
+					LogSourceModification.Removed(0, 1)
 				});
 			notifier.LastNumberOfLines.Should().Be(0);
 		}
@@ -142,12 +142,12 @@ namespace Tailviewer.Test.BusinessLogic
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
 			notifier.OnRead(10);
 			notifier.OnRead(12);
-			notifier.Invalidate(0, 12);
-			_changes.Should().Equal(new[]
+			notifier.Remove(0, 12);
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 10),
-					LogFileSection.Invalidate(0, 10)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 10),
+					LogSourceModification.Removed(0, 10)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
@@ -163,13 +163,13 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(10);
 			notifier.OnRead(20);
 			notifier.OnRead(22);
-			notifier.Invalidate(0, 22);
-			_changes.Should().Equal(new[]
+			notifier.Remove(0, 22);
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 10),
-					new LogFileSection(10, 10),
-					LogFileSection.Invalidate(0, 20)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 10),
+					LogSourceModification.Appended(10, 10),
+					LogSourceModification.Removed(0, 20)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
@@ -185,18 +185,18 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(9);
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			notifier.OnRead(9);
-			_changes.Should().Equal(new[]
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 9)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 9)
 				});
 
 			notifier.OnRead(35);
-			notifier.Invalidate(10, 25);
-			_changes.Should().Equal(new[]
+			notifier.Remove(10, 25);
+			_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 9)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 9)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
@@ -210,11 +210,11 @@ namespace Tailviewer.Test.BusinessLogic
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
 			notifier.OnRead(1);
 			notifier.OnRead(-1);
-			_changes.Should().Equal(new[] {LogFileSection.Reset});
+			_modifications.Should().Equal(new[] {LogSourceModification.Reset()});
 			notifier.OnRead(-1);
-			_changes.Should().Equal(new[] {LogFileSection.Reset});
+			_modifications.Should().Equal(new[] {LogSourceModification.Reset()});
 			notifier.OnRead(-1);
-			_changes.Should().Equal(new[] {LogFileSection.Reset});
+			_modifications.Should().Equal(new[] {LogSourceModification.Reset()});
 		}
 	}
 }

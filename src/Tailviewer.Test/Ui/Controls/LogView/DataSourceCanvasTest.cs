@@ -28,7 +28,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestUpdateLineNumbers1()
 		{
 			var canvas = new DataSourceCanvas(TextSettings.Default);
-			canvas.UpdateDataSources(null, new LogFileSection(0, 0), 0);
+			canvas.UpdateDataSources(null, new LogSourceSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
 		}
 
@@ -37,7 +37,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		{
 			var canvas = new DataSourceCanvas(TextSettings.Default);
 			var dataSource = new Mock<IDataSource>();
-			canvas.UpdateDataSources(dataSource.Object, new LogFileSection(0, 0), 0);
+			canvas.UpdateDataSources(dataSource.Object, new LogSourceSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
 		}
 
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			});
 			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);
 
-			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
+			canvas.UpdateDataSources(multiDataSource.Object, new LogSourceSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
 			canvas.DataSources[0].Text.Should().Be("a really long file nam");
@@ -105,7 +105,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			});
 			multiDataSource.Setup(x => x.FilteredLogSource).Returns(mergedLogFile);
 
-			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
+			canvas.UpdateDataSources(multiDataSource.Object, new LogSourceSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
 			canvas.DataSources[0].Text.Should().Be("TH");
@@ -125,7 +125,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var dataSource = new Mock<IDataSource>();
 			folderDataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>{dataSource.Object});
 
-			new Action(() => canvas.UpdateDataSources(folderDataSource.Object, new LogFileSection(0, 2), 0))
+			new Action(() => canvas.UpdateDataSources(folderDataSource.Object, new LogSourceSection(0, 2), 0))
 				.Should().NotThrow();
 		}
 	}

@@ -167,7 +167,7 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 					   // Removing them. Waiting on the OnLogFileModified() call simulates exactly that...
 				       var task = new Task(() =>
 				       {
-					       collection.OnLogFileModified(logFile.Object, LogFileSection.Invalidate(0, 10));
+					       collection.OnLogFileModified(logFile.Object, LogSourceModification.Removed(0, 10));
 				       }, TaskCreationOptions.LongRunning);
 
 					   task.Start();

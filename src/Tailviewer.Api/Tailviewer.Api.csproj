@@ -64,6 +64,7 @@
     <Compile Include="ILogFileFormatRepository.cs" />
     <Compile Include="IPropertyDescriptor.cs" />
     <Compile Include="LogEntriesExtensions.cs" />
+    <Compile Include="LogSourceModification.cs" />
     <Compile Include="LogSourceQueryMode.cs" />
     <Compile Include="LogSourceQueryOptions.cs" />
     <Compile Include="NoSuchServiceException.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="ErrorFlags.cs" />
     <Compile Include="ILogSource.cs" />
     <Compile Include="ILogSourceListener.cs" />
-    <Compile Include="LogFileSection.cs" />
+    <Compile Include="LogSourceSection.cs" />
     <Compile Include="LogLine.cs" />
     <Compile Include="LogLineIndex.cs" />
     <Compile Include="Plugins\IPlugin.cs" />

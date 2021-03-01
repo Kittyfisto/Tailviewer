@@ -175,7 +175,7 @@ namespace Tailviewer.Core.Sources
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetColumn<T>(LogSourceSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -203,7 +203,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetEntries(LogSourceSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
@@ -304,7 +304,7 @@ namespace Tailviewer.Core.Sources
 				var available = _logBuffer.Count - index;
 				_logBuffer.RemoveRange((int)index, available);
 				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
-				_listeners.Invalidate((int)index, available);
+				_listeners.Remove((int)index, available);
 				Touch();
 			}
 		}

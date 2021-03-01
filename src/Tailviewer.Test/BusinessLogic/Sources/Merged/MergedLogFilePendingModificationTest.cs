@@ -21,12 +21,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			var source = new Mock<ILogSource>();
 			var input = new[]
 			{
-				new MergedLogSourcePendingModification(source.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Reset())
 			};
 			MergedLogSourcePendingModification.Optimize(input).Should().Equal(new object[]
 			{
-				new MergedLogSourcePendingModification(source.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Reset())
 			});
 		}
 
@@ -36,14 +36,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			var source = new Mock<ILogSource>();
 			var input = new[]
 			{
-				new MergedLogSourcePendingModification(source.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source.Object, LogFileSection.Reset),
-				new MergedLogSourcePendingModification(source.Object, new LogFileSection(0, 100)),
-				new MergedLogSourcePendingModification(source.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Reset()),
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Appended(0, 100)),
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Reset())
 			};
 			MergedLogSourcePendingModification.Optimize(input).Should().Equal(new object[]
 			{
-				new MergedLogSourcePendingModification(source.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source.Object, LogSourceModification.Reset())
 			});
 		}
 
@@ -54,13 +54,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			var source2 = new Mock<ILogSource>();
 			var input = new[]
 			{
-				new MergedLogSourcePendingModification(source1.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source2.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source1.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source2.Object, LogSourceModification.Reset())
 			};
 			MergedLogSourcePendingModification.Optimize(input).Should().Equal(new object[]
 			{
-				new MergedLogSourcePendingModification(source1.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source2.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source1.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source2.Object, LogSourceModification.Reset())
 			});
 		}
 
@@ -71,14 +71,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			var source2 = new Mock<ILogSource>();
 			var input = new[]
 			{
-				new MergedLogSourcePendingModification(source1.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source2.Object, new LogFileSection(0, 42)),
-				new MergedLogSourcePendingModification(source2.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source1.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source2.Object, LogSourceModification.Appended(0, 42)),
+				new MergedLogSourcePendingModification(source2.Object, LogSourceModification.Reset())
 			};
 			MergedLogSourcePendingModification.Optimize(input).Should().Equal(new object[]
 			{
-				new MergedLogSourcePendingModification(source1.Object, new LogFileSection(1, 2)),
-				new MergedLogSourcePendingModification(source2.Object, LogFileSection.Reset)
+				new MergedLogSourcePendingModification(source1.Object, LogSourceModification.Appended(1, 2)),
+				new MergedLogSourcePendingModification(source2.Object, LogSourceModification.Reset())
 			});
 		}
 	}

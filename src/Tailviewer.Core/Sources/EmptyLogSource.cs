@@ -46,7 +46,7 @@ namespace Tailviewer.Core.Sources
 		{
 			if (_listeners.Add(listener))
 			{
-				listener.OnLogFileModified(this, LogFileSection.Reset);
+				listener.OnLogFileModified(this, LogSourceModification.Reset());
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace Tailviewer.Core.Sources
 			_properties.CopyAllValuesTo(destination);
 		}
 
-		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetColumn<T>(LogSourceSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
@@ -100,7 +100,7 @@ namespace Tailviewer.Core.Sources
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(LogFileSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
+		public void GetEntries(LogSourceSection sourceSection, ILogBuffer destination, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}

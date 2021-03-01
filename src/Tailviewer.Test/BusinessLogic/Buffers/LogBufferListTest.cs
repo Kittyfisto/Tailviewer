@@ -612,7 +612,7 @@ namespace Tailviewer.Test.BusinessLogic.Buffers
 			logFile.AddEntry("Hello", LevelFlags.Debug);
 			logFile.AddEntry("World!", LevelFlags.Info);
 
-			entries.CopyFrom(GeneralColumns.RawContent, 3, logFile, new LogFileSection(0, 2));
+			entries.CopyFrom(GeneralColumns.RawContent, 3, logFile, new LogSourceSection(0, 2));
 			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
 			entries[0].RawContent.Should().Be("I", "because the first entry's raw content should not have been overwritten");
 			entries[1].RawContent.Should().Be("want", "because the second entry's raw content should not have been overwritten");

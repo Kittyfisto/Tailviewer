@@ -5,7 +5,7 @@ namespace Tailviewer.BusinessLogic.Searches
 	/// <summary>
 	///     Represents a section in the list of search matches.
 	/// </summary>
-	public struct LogMatchSection
+	public readonly struct LogMatchSection
 	{
 		public static readonly LogMatchSection Reset;
 		public readonly int Count;

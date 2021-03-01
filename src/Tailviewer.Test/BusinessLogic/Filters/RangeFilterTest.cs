@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 		[Test]
 		public void Test()
 		{
-			var filter = new RangeFilter(new LogFileSection(42, 101));
+			var filter = new RangeFilter(new LogSourceSection(42, 101));
 			filter.PassesFilter(CreateLine(0)).Should().BeTrue();
 			filter.PassesFilter(CreateLine(41)).Should().BeTrue();
 			filter.PassesFilter(CreateLine(42)).Should().BeFalse();

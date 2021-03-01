@@ -76,14 +76,14 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 			}
 		}
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			lock (_syncRoot)
 			{
 				if (!_dataSourcesByLogFile.ContainsKey(logSource))
 					return;
 
-				if (!section.IsReset)
+				if (!modification.IsReset())
 					return;
 
 				var toRemove = _bookmarks.Keys.Where(x => x.DataSource.UnfilteredLogSource == logSource).ToList();

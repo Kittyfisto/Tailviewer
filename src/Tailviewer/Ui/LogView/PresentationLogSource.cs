@@ -111,21 +111,21 @@ namespace Tailviewer.Ui.LogView
 
 		public int LineCount => _lineCount;
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			_pendingModifications.Enqueue(new PendingModification(logSource, section));
+			_pendingModifications.Enqueue(new PendingModification(logSource, modification));
 		}
 
-		private void Update(ILogSource logSource, LogFileSection section)
+		private void Update(ILogSource logSource, LogSourceModification modification)
 		{
 			try
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 					Clear(logSource);
-				else if (section.IsInvalidate)
-					InvalidateFrom(logSource, section.Index);
-				else
-					Add(logSource, section);
+				else if (modification.IsRemoved(out var removedSection))
+					Remove(logSource, removedSection.Index);
+				else if (modification.IsAppended(out var appendedSection))
+					Add(logSource, appendedSection);
 			}
 			catch (Exception e)
 			{
@@ -157,7 +157,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void InvalidateFrom(ILogSource logSource, LogLineIndex index)
+		private void Remove(ILogSource logSource, LogLineIndex index)
 		{
 			lock (_syncRoot)
 			{
@@ -182,7 +182,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void Add(ILogSource logSource, LogFileSection section)
+		private void Add(ILogSource logSource, LogSourceSection section)
 		{
 			// !!!We deliberately retrieve this section OUTSIDE of our own lock!!!
 			logSource.GetEntries(section, _array);
@@ -258,17 +258,17 @@ namespace Tailviewer.Ui.LogView
 		private struct PendingModification
 		{
 			public readonly ILogSource LogSource;
-			public readonly LogFileSection Section;
+			public readonly LogSourceModification Modification;
 
-			public PendingModification(ILogSource logSource, LogFileSection section)
+			public PendingModification(ILogSource logSource, LogSourceModification modification)
 			{
 				LogSource = logSource;
-				Section = section;
+				Modification = modification;
 			}
 
 			public override string ToString()
 			{
-				return string.Format("{0}: {1}", LogSource, Section);
+				return string.Format("{0}: {1}", LogSource, Modification);
 			}
 		}
 
@@ -309,11 +309,11 @@ namespace Tailviewer.Ui.LogView
 				if (pendingModification.LogSource != _source)
 				{
 					Log.WarnFormat("Ignoring log file modification '{0}, {1}': It's probably from a previous log file",
-					               pendingModification.LogSource, pendingModification.Section);
+					               pendingModification.LogSource, pendingModification.Modification);
 				}
 				else
 				{
-					Update(pendingModification.LogSource, pendingModification.Section);
+					Update(pendingModification.LogSource, pendingModification.Modification);
 				}
 
 				performedWork = true;

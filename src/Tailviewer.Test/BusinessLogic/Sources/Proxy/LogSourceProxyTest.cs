@@ -18,7 +18,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		private Mock<ILogSource> _logFile;
 		private LogSourceListenerCollection _listeners;
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _modifications;
+		private List<LogSourceModification> _modifications;
 		private ManualTaskScheduler _taskScheduler;
 
 		[SetUp]
@@ -34,9 +34,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			        .Callback((ILogSourceListener listener) => _listeners.RemoveListener(listener));
 
 			_listener = new Mock<ILogSourceListener>();
-			_modifications = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogSource logFile, LogFileSection section) => _modifications.Add(section));
+			_modifications = new List<LogSourceModification>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			         .Callback((ILogSource logFile, LogSourceModification modification) => _modifications.Add(modification));
 		}
 
 		[Test]
@@ -119,7 +119,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			source.AddEntry("1987");
 			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, source))
 			{
-				var entries = proxy.GetEntries(new LogFileSection(1, 2));
+				var entries = proxy.GetEntries(new LogSourceSection(1, 2));
 				entries[0].Index.Should().Be(1);
 				entries[0].RawContent.Should().Be("I'm an english man in new york");
 				entries[1].Index.Should().Be(2);
@@ -274,9 +274,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					new LogFileSection(500, 100)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Appended(500, 100)
 				});
 			}
 		}
@@ -296,10 +296,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					LogFileSection.Reset,
-					new LogFileSection(0, 600)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 600)
 				});
 			}
 		}
@@ -312,17 +312,17 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
 				_listeners.OnRead(500);
-				_listeners.Invalidate(400, 100);
+				_listeners.Remove(400, 100);
 				_listeners.OnRead(550);
 
 				_taskScheduler.RunOnce();
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					LogFileSection.Invalidate(400, 100),
-					new LogFileSection(400, 150)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Removed(400, 100),
+					LogSourceModification.Appended(400, 150)
 				});
 			}
 		}
@@ -335,11 +335,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
-				new Action(() => proxy.OnLogFileModified(new Mock<ILogSource>().Object, new LogFileSection(0, 1))).Should().NotThrow();
-				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+				new Action(() => proxy.OnLogFileModified(new Mock<ILogSource>().Object, LogSourceModification.Appended(0, 1))).Should().NotThrow();
+				_modifications.Should().Equal(new[] { LogSourceModification.Reset() }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 
-				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).Should().NotThrow();
-				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+				new Action(() => proxy.OnLogFileModified(null, LogSourceModification.Appended(0, 1))).Should().NotThrow();
+				_modifications.Should().Equal(new[] { LogSourceModification.Reset() }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 			}
 		}
 
@@ -371,13 +371,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		[Test]
 		public void TestGetColumn1()
 		{
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new string[142];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
 			var destinationIndex = 42;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			logFile.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions);
-			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
+			_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == section),
 			                                 GeneralColumns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
@@ -388,7 +388,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		[Test]
 		public void TestGetColumn2()
 		{
-			var section = new LogFileSection(42, 100);
+			var section = new LogSourceSection(42, 100);
 			var buffer = new string[100];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
 			logFile.GetColumn(section, GeneralColumns.RawContent, buffer);
@@ -443,13 +443,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 				var destinationIndex = 47;
 				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
-				proxy.GetColumn(new LogFileSection(1, 42),
+				proxy.GetColumn(new LogSourceSection(1, 42),
 				                GeneralColumns.OriginalIndex,
 				                buffer,
 				                destinationIndex,
 				                queryOptions);
 
-				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
+				_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == new LogSourceSection(1, 42)),
 				                                 GeneralColumns.OriginalIndex,
 				                                 buffer,
 				                                 destinationIndex,

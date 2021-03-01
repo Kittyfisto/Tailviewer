@@ -85,7 +85,7 @@ namespace Tailviewer.Test.Ui
 
 			logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.GetProperty(GeneralProperties.Size)).Returns(Size.Zero);
-			listener.OnLogFileModified(logFile.Object, new LogFileSection(0, 0));
+			listener.OnLogFileModified(logFile.Object, LogSourceModification.Appended(0, 0));
 			model.Update();
 
 			model.NoEntriesExplanation.Should().Be("Data source is empty");

@@ -31,8 +31,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FromSource);
-			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
-			_source.Verify(x => x.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions),
+			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
+			_source.Verify(x => x.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions),
 			               Times.Once);
 		}
 
@@ -43,8 +43,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromSource);
-			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
-			_source.Verify(x => x.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions),
+			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
+			_source.Verify(x => x.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions),
 			               Times.Once);
 		}
 
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			buffer.GetEntries(new LogFileSection(10, 4), destination, 0, queryOptions);
+			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Never, "because we didn't allow the data to be retrieved from the source under any circumstances");
 		}
@@ -68,15 +68,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
-			buffer.OnLogFileModified(_source.Object, new LogFileSection(0, 10));
+			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));
 
-			var sectionToQuery = new LogFileSection(2, 4);
+			var sectionToQuery = new LogSourceSection(2, 4);
 			buffer.GetEntries(sectionToQuery, destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Never, "Because we didn't allow data to be retrieved on the calling thread");
 
 			_taskScheduler.RunOnce();
-			_source.Verify(x => x.GetEntries(new LogFileSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
+			_source.Verify(x => x.GetEntries(new LogSourceSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Once, "Because the buffer should have tried to retrieve the page for the entire page which was accessed");
 		}
 
@@ -89,20 +89,20 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
-			buffer.OnLogFileModified(_source.Object, new LogFileSection(0, 10));
+			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));
 
-			var section1ToQuery = new LogFileSection(2, 4);
+			var section1ToQuery = new LogSourceSection(2, 4);
 			buffer.GetEntries(section1ToQuery, destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Never, "Because we didn't allow data to be retrieved on the calling thread");
 
-			var section2ToQuery = new LogFileSection(7, 3);
+			var section2ToQuery = new LogSourceSection(7, 3);
 			buffer.GetEntries(section2ToQuery, destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Never, "Because we didn't allow data to be retrieved on the calling thread");
 
 			_taskScheduler.RunOnce();
-			_source.Verify(x => x.GetEntries(new LogFileSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
+			_source.Verify(x => x.GetEntries(new LogSourceSection(0, pageSize), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
 			               Times.Once, "Because the buffer should avoid reading the same data for the same page multiple times in a row");
 		}
 	}
