@@ -202,7 +202,6 @@
     <Compile Include="Properties\WellKnownReadOnlyProperty.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Parsers\DateTimeParser.cs" />
-    <Compile Include="Parsers\NoThrowTimestampParser.cs" />
     <Compile Include="Parsers\TimeOfDaySecondsSinceStartParser.cs" />
     <Compile Include="Parsers\TimestampParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

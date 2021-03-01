@@ -13,7 +13,7 @@ namespace Tailviewer.Core.Parsers
 		private readonly string _format;
 
 		/// <summary>
-		///     Intitializes this parser with the given format,
+		///     Initializes this parser with the given format,
 		///     <see
 		///         cref="DateTime.TryParseExact(string,string,System.IFormatProvider,System.Globalization.DateTimeStyles,out System.DateTime)" />
 		///     for possible format strings to use.

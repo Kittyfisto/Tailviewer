@@ -2,7 +2,7 @@
 using System.Reflection;
 using log4net;
 
-namespace Tailviewer.Core.Parsers
+namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
 	///     This class is responsible for ensuring that if a given <see cref="ITimestampParser" />
@@ -21,10 +21,7 @@ namespace Tailviewer.Core.Parsers
 		/// <param name="parser"></param>
 		public NoThrowTimestampParser(ITimestampParser parser)
 		{
-			if (parser == null)
-				throw new ArgumentNullException(nameof(parser));
-
-			_parser = parser;
+			_parser = parser ?? throw new ArgumentNullException(nameof(parser));
 		}
 
 		/// <inheritdoc />
