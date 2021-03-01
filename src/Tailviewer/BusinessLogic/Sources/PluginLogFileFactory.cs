@@ -24,11 +24,8 @@ namespace Tailviewer.BusinessLogic.Sources
 		public PluginLogFileFactory(IServiceContainer services,
 		                            IPluginWithDescription<ICustomDataSourcePlugin>[] dataSourcePlugins)
 		{
-			if (services == null)
-				throw new ArgumentNullException(nameof(services));
-
-			_services = services;
-			_dataSourcePlugins = new List<IPluginWithDescription<ICustomDataSourcePlugin>>(dataSourcePlugins);
+			_services = services ?? throw new ArgumentNullException(nameof(services));
+			_dataSourcePlugins = new List<IPluginWithDescription<ICustomDataSourcePlugin>>(dataSourcePlugins ?? new IPluginWithDescription<ICustomDataSourcePlugin>[0]);
 		}
 
 		public PluginLogFileFactory(IServiceContainer services,

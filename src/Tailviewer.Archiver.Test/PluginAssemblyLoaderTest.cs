@@ -47,7 +47,7 @@ namespace Tailviewer.Archiver.Test
 				File.Delete(plugin);
 
 			var builder = new PluginBuilder("Simon", "sql", "sql", "SMI", "none of your business", "go away");
-			builder.ImplementInterface<IFileFormatPlugin>("sql.LogFilePlugin");
+			builder.ImplementInterface<ILogEntryParserPlugin>("sql.LogFilePlugin");
 			builder.Save();
 
 			var scanner = new PluginAssemblyLoader();
@@ -56,11 +56,11 @@ namespace Tailviewer.Archiver.Test
 			description.Website.Should().Be(new Uri("none of your business", UriKind.RelativeOrAbsolute));
 			description.Description.Should().Be("go away");
 			description.PluginImplementations.Should().HaveCount(1);
-			description.PluginImplementations.Should().Contain(x => x.InterfaceType == typeof(IFileFormatPlugin));
+			description.PluginImplementations.Should().Contain(x => x.InterfaceType == typeof(ILogEntryParserPlugin));
 			var implementationDescription = description.PluginImplementations[0];
 			implementationDescription.FullTypeName.Should().Be("sql.LogFilePlugin");
 			implementationDescription
-				.Version.Should().Be(PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)));
+				.Version.Should().Be(PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(ILogEntryParserPlugin)));
 		}
 
 		[Test]
@@ -291,17 +291,17 @@ namespace Tailviewer.Archiver.Test
 		public void TestReflectTwoPluginImplementations()
 		{
 			var builder = new PluginBuilder("Kittyfisto", "TestReflectTwoPluginImplementations", "TestReflectTwoPluginImplementations");
-			builder.ImplementInterface<IFileFormatPlugin>("A");
-			builder.ImplementInterface<IFileFormatPlugin>("B");
+			builder.ImplementInterface<ILogEntryParserPlugin>("A");
+			builder.ImplementInterface<ILogEntryParserPlugin>("B");
 			builder.Save();
 
 			var assemblyLoader = new PluginAssemblyLoader();
 			var description = assemblyLoader.ReflectPlugin(builder.FileName);
 			description.PluginImplementations.Should().HaveCount(2, "because we've implemented the IFileFormatPlugin twice");
-			description.PluginImplementations[0].InterfaceType.Should().Be<IFileFormatPlugin>();
+			description.PluginImplementations[0].InterfaceType.Should().Be<ILogEntryParserPlugin>();
 			description.PluginImplementations[0].FullTypeName.Should().Be("A");
 
-			description.PluginImplementations[1].InterfaceType.Should().Be<IFileFormatPlugin>();
+			description.PluginImplementations[1].InterfaceType.Should().Be<ILogEntryParserPlugin>();
 			description.PluginImplementations[1].FullTypeName.Should().Be("B");
 		}
 
@@ -320,20 +320,20 @@ namespace Tailviewer.Archiver.Test
 				File.Delete(assemblyFileName);
 
 			var builder = new PluginBuilder("Simon", "Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
-			builder.ImplementInterface<IFileFormatPlugin>("Foo1.MyAwesomePlugin");
+			builder.ImplementInterface<ILogEntryParserPlugin>("Foo1.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
 				PluginImplementations = new []
 				{
-					new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))
+					new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(ILogEntryParserPlugin))
 				}
 			};
 
 			using (var scanner = new PluginAssemblyLoader())
 			{
-				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
+				var plugin = scanner.Load<ILogEntryParserPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo1.MyAwesomePlugin");
 			}
@@ -347,20 +347,20 @@ namespace Tailviewer.Archiver.Test
 				File.Delete(assemblyFileName);
 
 			var builder = new PluginBuilder("Simon", "Foo2", "Foo2", "Simon", "None of your business", "Get of my lawn");
-			builder.ImplementInterface<IFileFormatPlugin>("Foo2.MyAwesomePlugin");
+			builder.ImplementInterface<ILogEntryParserPlugin>("Foo2.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
 				PluginImplementations = new List<IPluginImplementationDescription>
 				{
-					new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(IFileFormatPlugin))
+					new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(ILogEntryParserPlugin))
 				}
 			};
 
 			using (var scanner = new PluginAssemblyLoader())
 			{
-				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
+				var plugin = scanner.Load<ILogEntryParserPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo2.MyAwesomePlugin");
 			}
@@ -377,11 +377,11 @@ namespace Tailviewer.Archiver.Test
 					File.Delete(assemblyFileName);
 
 				var builder = new PluginBuilder("Simon", "Foo3", "Foo3", "Simon", "None of your business", "Get of my lawn");
-				builder.ImplementInterface<IFileFormatPlugin>("Foo3.MyAwesomePlugin");
+				builder.ImplementInterface<ILogEntryParserPlugin>("Foo3.MyAwesomePlugin");
 				builder.Save();
 
 				var description = scanner.ReflectPlugin(assemblyFileName);
-				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
+				var plugin = scanner.Load<ILogEntryParserPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo3.MyAwesomePlugin");
 			}

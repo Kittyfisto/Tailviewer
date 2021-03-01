@@ -8,7 +8,6 @@ using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 
@@ -126,7 +125,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				var builder = new PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
 				builder.PluginVersion = new Version(1, 4, 12034);
-				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+				builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 				builder.Save();
 
 				packer.AddPluginAssembly(builder.FileName);
@@ -294,7 +293,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				var builder = new PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
 				builder.PluginVersion = new Version(1, 4, 12034);
-				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin", TypeAttributes.NotPublic | TypeAttributes.Sealed);
+				builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin", TypeAttributes.NotPublic | TypeAttributes.Sealed);
 				builder.Save();
 
 				new Action(() => packer.AddPluginAssembly(builder.FileName))

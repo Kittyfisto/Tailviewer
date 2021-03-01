@@ -5,7 +5,6 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 using Tailviewer.Test;
 
@@ -99,7 +98,7 @@ namespace Tailviewer.Archiver.Test
 				using (var packer = PluginPacker.Create(stream, true))
 				{
 					var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "My very own plugin", "Simon", "http://google.com", "get of my lawn");
-					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
 					packer.AddPluginAssembly(builder.FileName);
@@ -155,8 +154,8 @@ namespace Tailviewer.Archiver.Test
 			using (var packer = PluginPacker.Create(stream, true))
 			{
 				var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "MyAwesomePlugin");
-				builder.ImplementInterface<IFileFormatPlugin>("A");
-				builder.ImplementInterface<IFileFormatPlugin>("B");
+				builder.ImplementInterface<ILogEntryParserPlugin>("A");
+				builder.ImplementInterface<ILogEntryParserPlugin>("B");
 				builder.Save();
 
 				packer.AddPluginAssembly(builder.FileName);
@@ -170,10 +169,10 @@ namespace Tailviewer.Archiver.Test
 				loader.Plugins.Should().HaveCount(1, "because one plugin should've been loaded");
 				var description = loader.Plugins.First();
 				description.PluginImplementations.Should().HaveCount(2, "because we've implemented the IFileFormatPlugin twice");
-				description.PluginImplementations[0].InterfaceType.Should().Be<IFileFormatPlugin>();
+				description.PluginImplementations[0].InterfaceType.Should().Be<ILogEntryParserPlugin>();
 				description.PluginImplementations[0].FullTypeName.Should().Be("A");
 
-				description.PluginImplementations[1].InterfaceType.Should().Be<IFileFormatPlugin>();
+				description.PluginImplementations[1].InterfaceType.Should().Be<ILogEntryParserPlugin>();
 				description.PluginImplementations[1].FullTypeName.Should().Be("B");
 			}
 		}
@@ -186,7 +185,7 @@ namespace Tailviewer.Archiver.Test
 				using (var packer = PluginPacker.Create(stream, true))
 				{
 					var builder = new PluginBuilder("Kittyfisto", "Simon", "none of your business", "get of my lawn");
-					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
 					packer.AddPluginAssembly(builder.FileName);
@@ -198,7 +197,7 @@ namespace Tailviewer.Archiver.Test
 
 				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
+					var plugins = loader.LoadAllOfType<ILogEntryParserPlugin>();
 					plugins.Should().HaveCount(1, "because we've added one plugin which implements the IFileFormatPlugin interface");
 				}
 			}
@@ -212,7 +211,7 @@ namespace Tailviewer.Archiver.Test
 				using (var packer = PluginPacker.Create(stream, true))
 				{
 					var builder = new PluginBuilder("Kittyfisto", "Simon", "none of your business", "get of my lawn");
-					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
 					packer.AddPluginAssembly(builder.FileName);
@@ -224,7 +223,7 @@ namespace Tailviewer.Archiver.Test
 
 				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+					var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>();
 					pluginsWithDescription.Should().HaveCount(1, "because we've added one plugin which implements the IFileFormatPlugin interface");
 					var description = pluginsWithDescription[0].Description;
 					description.Should().NotBeNull();
@@ -246,7 +245,7 @@ namespace Tailviewer.Archiver.Test
 				loader.Plugins.Should().HaveCount(1);
 				loader.Plugins.First().Version.Should().Be(new Version(1, 1));
 
-				var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
+				var plugins = loader.LoadAllOfType<ILogEntryParserPlugin>();
 				plugins.Should().HaveCount(1);
 			}
 		}
@@ -259,7 +258,7 @@ namespace Tailviewer.Archiver.Test
 				using (var packer = PluginPacker.Create(stream, true))
 				{
 					var builder = new PluginBuilder("Kittyfisto", "SomePlugin", "none of your business", "get of my lawn");
-					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
 					packer.AddPluginAssembly(builder.FileName);
@@ -270,7 +269,7 @@ namespace Tailviewer.Archiver.Test
 
 				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var plugins = loader.LoadAllOfType<IFileFormatPlugin>()?.ToList();
+					var plugins = loader.LoadAllOfType<ILogEntryParserPlugin>()?.ToList();
 					plugins.Should().NotBeNull();
 					plugins.Should().HaveCount(1);
 					plugins[0].Should().NotBeNull();
@@ -300,17 +299,17 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that the plugin archive loader will use the plugin id of the archive over the id extracted from the file name, when possible")]
 		public void TestUsePluginIdFromArchive()
 		{
-			CreatePlugin<IFileFormatPlugin>(new PluginId("Kittyfisto.Simon"),
-			                                new Version(4, 3, 2),
-			                                fakeId: new PluginId("Another.Plugin"),
-			                                fakeVersion: new Version(2, 5, 42, 421));
+			CreatePlugin<ILogEntryParserPlugin>(new PluginId("Kittyfisto.Simon"),
+			                                    new Version(4, 3, 2),
+			                                    fakeId: new PluginId("Another.Plugin"),
+			                                    fakeVersion: new Version(2, 5, 42, 421));
 
-			CreatePlugin<IFileFormatPlugin>(new PluginId("Another.Plugin"),
-			                                new Version(2, 4, 12));
+			CreatePlugin<ILogEntryParserPlugin>(new PluginId("Another.Plugin"),
+			                                    new Version(2, 4, 12));
 
 			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 			{
-				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>();
 				pluginsWithDescription.Should().HaveCount(2, "because there a two different plugins implementing that interface");
 
 				var plugin1 =
@@ -332,8 +331,8 @@ namespace Tailviewer.Archiver.Test
 		{
 			var id = new PluginId("Kittyfisto.Simon");
 			var version = new Version(4, 3, 2);
-			CreatePlugin<IFileFormatPlugin>(Constants.PluginPath, id, version);
-			CreatePlugin<IFileFormatPlugin>(Constants.DownloadedPluginsPath, id, version);
+			CreatePlugin<ILogEntryParserPlugin>(Constants.PluginPath, id, version);
+			CreatePlugin<ILogEntryParserPlugin>(Constants.DownloadedPluginsPath, id, version);
 
 			using (var loader = new PluginArchiveLoader(_filesystem, new []
 			{
@@ -341,7 +340,7 @@ namespace Tailviewer.Archiver.Test
 				Constants.DownloadedPluginsPath
 			}))
 			{
-				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>();
 				pluginsWithDescription.Should().HaveCount(1, "because only one instance of that plugin should've been loaded");
 
 				var plugin1 =
@@ -397,7 +396,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				var builder = new PluginBuilder(@namespace, name, "My very own plugin", "Simon", "http://google.com",
 				                                "get of my lawn");
-				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+				builder.ImplementInterface<ILogEntryParserPlugin>("Plugin.FileFormatPlugin");
 				builder.Save();
 
 				packer.AddPluginAssembly(builder.FileName);
@@ -414,7 +413,7 @@ namespace Tailviewer.Archiver.Test
 				using (var packer = PluginPacker.Create(stream, leaveOpen: true))
 				{
 					var builder = new PluginBuilder(@namespace, name, "dawawdwdaaw") { PluginVersion = version };
-					builder.ImplementInterface<IFileFormatPlugin>("dwwwddwawa");
+					builder.ImplementInterface<ILogEntryParserPlugin>("dwwwddwawa");
 					builder.Save();
 					packer.AddPluginAssembly(builder.FileName);
 				}
