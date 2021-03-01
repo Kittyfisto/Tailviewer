@@ -189,7 +189,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		}
 
 		[Test]
-		[FlakyTest(3)]
 		public void TestLive1()
 		{
 			string fname = GetUniqueNonExistingFileName();
@@ -254,13 +253,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 			}
 			finally
 			{
-				if (logSource != null)
-					logSource.Dispose();
+				logSource?.Dispose();
 			}
 		}
 
 		[Test]
-		public void TestReadAll2()
+		[FlakyTest(3)]
+		public virtual void TestReadAll2()
 		{
 			using (var file = Create(File20Mb))
 			{
@@ -278,6 +277,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				for (int i = 1; i < sections.Count; ++i)
 				{
 					LogFileSection change = sections[i];
+					change.IsInvalidate.Should().BeFalse();
+					change.IsReset.Should().BeFalse();
 					change.Index.Should().Be((LogLineIndex) (i - 1));
 					change.Count.Should().Be(1);
 				}
