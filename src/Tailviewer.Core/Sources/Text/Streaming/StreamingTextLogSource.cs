@@ -15,7 +15,6 @@ using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Properties;
-using Exception = System.Exception;
 
 namespace Tailviewer.Core.Sources.Text.Streaming
 {

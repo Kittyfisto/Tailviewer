@@ -40,7 +40,7 @@ namespace Tailviewer.Core.Parsers
 				return LevelFlags.Other;
 			}
 
-			var comparison = StringComparison.InvariantCultureIgnoreCase;
+			var comparison = StringComparison.InvariantCulture;
 			var idx = line.IndexOf("FATAL", comparison);
 			if (idx != -1)
 			{

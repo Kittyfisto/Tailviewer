@@ -33,12 +33,12 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestDetermineLevelsFromLine3()
 		{
 			var parser = new LogLevelParser();
-			parser.DetermineLevelFromLine("trace").Should().Be(LevelFlags.Trace);
-			parser.DetermineLevelFromLine("debug").Should().Be(LevelFlags.Debug);
-			parser.DetermineLevelFromLine("info").Should().Be(LevelFlags.Info);
-			parser.DetermineLevelFromLine("warn").Should().Be(LevelFlags.Warning);
-			parser.DetermineLevelFromLine("error").Should().Be(LevelFlags.Error);
-			parser.DetermineLevelFromLine("fatal").Should().Be(LevelFlags.Fatal);
+			parser.DetermineLevelFromLine("trace").Should().Be(LevelFlags.Other);
+			parser.DetermineLevelFromLine("debug").Should().Be(LevelFlags.Other);
+			parser.DetermineLevelFromLine("info").Should().Be(LevelFlags.Other);
+			parser.DetermineLevelFromLine("warn").Should().Be(LevelFlags.Other);
+			parser.DetermineLevelFromLine("error").Should().Be(LevelFlags.Other);
+			parser.DetermineLevelFromLine("fatal").Should().Be(LevelFlags.Other);
 		}
 
 		[Test]

@@ -9,7 +9,7 @@ namespace Tailviewer.Core.Sources.Text.Simple
 	///     removing newline characters from the string, allowing
 	///     to differentiate between EoF with / and without newline.
 	/// </summary>
-	public sealed class StreamReaderEx
+	internal sealed class StreamReaderEx
 		: IDisposable
 	{
 		private readonly StringBuilder _contentBuffer;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Metrolib;
 
 namespace Tailviewer.Core.Sources.Text
 {
