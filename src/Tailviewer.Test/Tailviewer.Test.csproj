@@ -173,7 +173,7 @@
     <Compile Include="BusinessLogic\Sources\Text\GenericTextLogEntryParserTest.cs" />
     <Compile Include="BusinessLogic\Columns\WellKnownColumnDescriptorTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
-    <Compile Include="BusinessLogic\LogLineTest.cs" />
+    <Compile Include="BusinessLogic\LogLevelParserTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
     <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />

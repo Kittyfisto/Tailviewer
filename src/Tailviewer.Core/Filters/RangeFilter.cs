@@ -3,7 +3,7 @@
 namespace Tailviewer.Core.Filters
 {
 	/// <summary>
-	/// Responsible for filtering a range of log entries based on their <see cref="LogLine.LineIndex"/>.
+	/// Responsible for filtering a range of log entries based on their <see cref="IReadOnlyLogEntry.Index"/>.
 	/// </summary>
 	public sealed class RangeFilter
 		: ILogEntryFilter

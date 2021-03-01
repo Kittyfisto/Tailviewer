@@ -21,11 +21,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 		public void SetUp()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogSource>();
 			_logFile.SetupGet(x => x.Columns).Returns(GeneralColumns.Minimum);
 			_logFile.SetupGet(x => x.Properties).Returns(new IReadOnlyPropertyDescriptor[]{GeneralProperties.LogEntryCount, GeneralProperties.PercentageProcessed});
-			_logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => 0);
 			_logFile.Setup(x => x.GetProperty(GeneralProperties.PercentageProcessed)).Returns(Percentage.HundredPercent);
 			_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			        .Callback((IPropertiesBuffer destination) =>
@@ -43,7 +42,6 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 		}
 
 		private Mock<ILogSource> _logFile;
-		private List<LogLine> _entries;
 		private List<LogFileSection> _sections;
 		private Mock<ILogSourceListener> _listener;
 		private ManualTaskScheduler _taskScheduler;

@@ -14,7 +14,7 @@ namespace Tailviewer.Core.Sources.Merged
 {
 	/// <summary>
 	///     Responsible for merging two or more <see cref="ILogSource" /> instances into one coherent view.
-	///     <see cref="LogLine" />s which have no <see cref="LogLine.Timestamp" /> set (or who's parent doesn't)
+	///     <see cref="IReadOnlyLogEntry" />s which have no <see cref="IReadOnlyLogEntry.Timestamp" /> set (or who's parent doesn't)
 	///     are discarded from this representation.
 	/// </summary>
 	/// <remarks>

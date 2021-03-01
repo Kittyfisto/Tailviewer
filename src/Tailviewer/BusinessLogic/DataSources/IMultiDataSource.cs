@@ -30,7 +30,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		///     The data sources which make up this merged data source.
 		/// </summary>
 		/// <remarks>
-		///     Data sources are ordered in a way to match <see cref="LogLine.SourceId" />:
+		///     Data sources are ordered in a way to match <see cref="IReadOnlyLogEntry.SourceId" />:
 		///     If a line has been provided by source 4, then that source is the fourth
 		///     entry in this list.
 		/// </remarks>

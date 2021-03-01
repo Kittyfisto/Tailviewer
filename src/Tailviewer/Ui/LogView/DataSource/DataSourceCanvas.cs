@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.LogView.DataSource
 {
 	/// <summary>
 	///     A "canvas" which draws the data source name in the same vertical alignment as <see cref="TextCanvas" />
-	///     draws the <see cref="LogLine.Message" />.
+	///     draws the <see cref="IReadOnlyLogEntry.RawContent" />.
 	/// </summary>
 	public sealed class DataSourceCanvas
 		: FrameworkElement

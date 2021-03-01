@@ -88,6 +88,7 @@
     <Compile Include="Buffers\SingleColumnLogBufferView.cs" />
     <Compile Include="FixedSizeList.cs" />
     <Compile Include="Int32Range.cs" />
+    <Compile Include="Parsers\LogLevelParser.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
     <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
     <Compile Include="Sources\AbstractProcessingLogSource.cs" />

@@ -6,7 +6,7 @@ namespace Tailviewer.Ui.LogView.DeltaTimes
 {
 	/// <summary>
 	///     A "canvas" which draws the elapsed time to the previous log entry in the same vertical alignment as <see cref="TextCanvas" />
-	///     draws the <see cref="LogLine.Message" />.
+	///     draws the <see cref="IReadOnlyLogEntry.RawContent" />.
 	/// </summary>
 	public sealed class DeltaTimeColumnPresenter
 		: AbstractLogColumnPresenter<TimeSpan?>

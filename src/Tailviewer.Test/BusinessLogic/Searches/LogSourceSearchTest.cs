@@ -13,7 +13,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 	[TestFixture]
 	public sealed class LogSourceSearchTest
 	{
-		private List<LogLine> _entries;
 		private List<LogMatch> _matches;
 		private Mock<ILogFileSearchListener> _listener;
 		private ManualTaskScheduler _scheduler;
@@ -22,7 +21,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_entries = new List<LogLine>();
 
 			_matches = new List<LogMatch>();
 			_listener = new Mock<ILogFileSearchListener>();
