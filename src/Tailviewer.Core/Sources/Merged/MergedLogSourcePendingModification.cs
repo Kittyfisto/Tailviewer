@@ -3,20 +3,20 @@ using System.Diagnostics.Contracts;
 
 namespace Tailviewer.Core.Sources.Merged
 {
-	internal struct MergedLogSourcePendingModification
+	internal readonly struct MergedLogSourcePendingModification
 	{
 		public readonly ILogSource LogSource;
-		public readonly LogFileSection Section;
+		public readonly LogSourceModification Modification;
 
-		public MergedLogSourcePendingModification(ILogSource logSource, LogFileSection section)
+		public MergedLogSourcePendingModification(ILogSource logSource, LogSourceModification modification)
 		{
 			LogSource = logSource;
-			Section = section;
+			Modification = modification;
 		}
 
 		public override string ToString()
 		{
-			return $"{Section} ({LogSource})";
+			return $"{Modification} ({LogSource})";
 		}
 
 		/// <summary>
@@ -44,8 +44,8 @@ namespace Tailviewer.Core.Sources.Merged
 			foreach(var modification in pendingModifications)
 			{
 				var logFile = modification.LogSource;
-				var section = modification.Section;
-				if (section.IsReset)
+				var section = modification.Modification;
+				if (section.IsReset())
 				{
 					modifications.RemoveAll(x => x.LogSource == logFile);
 				}

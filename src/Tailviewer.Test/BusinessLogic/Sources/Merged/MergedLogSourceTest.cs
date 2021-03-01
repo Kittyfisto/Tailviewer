@@ -21,36 +21,36 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 	{
 		private ManualTaskScheduler _taskScheduler;
 
-		private static List<LogFileSection> ListenToChanges(ILogSource logSource, int maximumLineCount)
+		private static List<LogSourceModification> ListenToChanges(ILogSource logSource, int maximumLineCount)
 		{
-			var changes = new List<LogFileSection>();
+			var modifications = new List<LogSourceModification>();
 			var listener = new Mock<ILogSourceListener>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource file, LogFileSection section) => { changes.Add(section); });
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource file, LogSourceModification modification) => { modifications.Add(modification); });
 			logSource.AddListener(listener.Object, TimeSpan.Zero, maximumLineCount);
-			return changes;
+			return modifications;
 		}
 
 		private static ILogBuffer Listen(ILogSource logSource)
 		{
 			var data = new LogBufferList(logSource.Columns);
 			var listener = new Mock<ILogSourceListener>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogSource file, LogFileSection section) =>
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			        .Callback((ILogSource file, LogSourceModification modification) =>
 				        {
-					        if (section.IsReset)
+					        if (modification.IsReset())
 					        {
 						        data.Clear();
 					        }
-					        else if (section.IsInvalidate)
+					        else if (modification.IsRemoved(out var removedSection))
 					        {
-						        data.RemoveRange((int) section.Index, section.Count);
+						        data.RemoveRange((int) removedSection.Index, removedSection.Count);
 					        }
-					        else
+					        else if (modification.IsAppended(out var appendedSection))
 					        {
 						        var destinationIndex = data.Count;
-								data.Resize(data.Count + section.Count);
-						        file.GetEntries(section, data, destinationIndex);
+								data.Resize(data.Count + appendedSection.Count);
+						        file.GetEntries(appendedSection, data, destinationIndex);
 					        }
 				        });
 			logSource.AddListener(listener.Object, TimeSpan.Zero, 1);
@@ -347,15 +347,15 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 
 			var merged = new MergedLogSource(_taskScheduler, TimeSpan.Zero, source0, source1);
 			var entries = Listen(merged);
-			var changes = ListenToChanges(merged, 1);
+			var modifications = ListenToChanges(merged, 1);
 
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source0, LogFileSection.Reset);
-			merged.OnLogFileModified(source1, LogFileSection.Reset);
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source0, LogSourceModification.Reset());
+			merged.OnLogFileModified(source1, LogSourceModification.Reset());
 
 			DateTime timestamp = DateTime.Now;
 			source1.AddEntry("Hello World", LevelFlags.Info, timestamp);
@@ -371,9 +371,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(timestamp);
 
-			int count = changes.Count;
-			changes.ElementAt(count - 2).Should().Equal(LogFileSection.Reset);
-			changes.ElementAt(count - 1).Should().Equal(new LogFileSection(0, 1));
+			int count = modifications.Count;
+			modifications.ElementAt(count - 2).Should().Be(LogSourceModification.Reset());
+			modifications.ElementAt(count - 1).Should().Be(LogSourceModification.Appended(0, 1));
 		}
 
 		[Test]
@@ -395,13 +395,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			_taskScheduler.RunOnce();
 			merged.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			entries.Count.Should().Be(3);
-			changes.Should().Equal(new object[]{LogFileSection.Reset, new LogFileSection(0, 3)});
+			changes.Should().Equal(new object[]{LogSourceModification.Reset(), LogSourceModification.Appended(0, 3)});
 
 
 			source1.Clear();
 			_taskScheduler.RunOnce();
 			entries.Count.Should().Be(2, "because the one entry from source should have been removed from the merged source");
-			changes.Should().Equal(new object[]{LogFileSection.Reset, new LogFileSection(0, 3), LogFileSection.Invalidate(1, 2), new LogFileSection(1, 1)});
+			changes.Should().Equal(new object[]{LogSourceModification.Reset(), LogSourceModification.Appended(0, 3), LogSourceModification.Removed(1, 2), LogSourceModification.Appended(1, 1)});
 		}
 
 		[Test]
@@ -626,8 +626,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			// But then it should also have fired as few changes as possible!
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, sourceCount)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, sourceCount)
 			});
 		}
 
@@ -672,8 +672,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			// But then it should also have fired as few changes as possible!
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, sourceCount)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, sourceCount)
 			});
 		}
 

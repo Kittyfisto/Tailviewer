@@ -29,19 +29,19 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 				.Callback((ILogSourceListener listener, TimeSpan unused1, int unused2) =>
 				{
 					listener.OnLogFileModified(_source.Object,
-						LogFileSection.Reset);
+						LogSourceModification.Reset());
 				});
 
-			_changes = new List<LogFileSection>();
+			_modifications = new List<LogSourceModification>();
 			_listener = new Mock<ILogSourceListener>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-					 .Callback((ILogSource l, LogFileSection s) => _changes.Add(s));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+					 .Callback((ILogSource l, LogSourceModification s) => _modifications.Add(s));
 
 		}
 
 		private Mock<ILogSource> _source;
 		private ManualTaskScheduler _taskScheduler;
-		private List<LogFileSection> _changes;
+		private List<LogSourceModification> _modifications;
 		private Mock<ILogSourceListener> _listener;
 		private LogBufferList _entries;
 
@@ -107,7 +107,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 
 			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			logFile.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 1));
 			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
@@ -131,7 +131,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			       });
 			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			logFile.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 1));
 			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
@@ -157,7 +157,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 
 			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			logFile.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 1));
 			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
@@ -183,7 +183,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			logFile.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 1));
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
@@ -200,7 +200,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			_taskScheduler.RunOnce();
 
 			_entries.Clear();
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
+			logFile.OnLogFileModified(_source.Object, LogSourceModification.Reset());
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the source is completely empty");
@@ -250,11 +250,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			source.Clear();
 			_taskScheduler.RunOnce();
 
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1),
-				LogFileSection.Reset
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Reset()
 			});
 		}
 
@@ -297,7 +297,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			source.AddEntry("INFO: Hello ", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
+			_modifications.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)});
 
 			source.RemoveFrom(0);
 			_taskScheduler.RunOnce();
@@ -306,12 +306,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			source.AddEntry("Hello World!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1),
-				LogFileSection.Invalidate(0, 1),
-				new LogFileSection(0, 1)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Removed(0, 1),
+				LogSourceModification.Appended(0, 1)
 			});
 
 			var entry = logFile.GetEntry(0);
@@ -400,14 +400,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 
 			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
+			_modifications.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)});
 
-			_changes.Clear();
+			_modifications.Clear();
 			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				new LogFileSection(1, 1)
+				LogSourceModification.Appended(1, 1)
 			});
 		}
 
@@ -424,19 +424,19 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1),
-				new LogFileSection(1, 1)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Appended(1, 1)
 			});
 
-			_changes.Clear();
+			_modifications.Clear();
 			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				new LogFileSection(2, 1)
+				LogSourceModification.Appended(2, 1)
 			});
 		}
 
@@ -669,10 +669,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			source.AddEntry("C", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
-			_changes.Should().Equal(LogFileSection.Reset,
-				new LogFileSection(0, 1),
-				new LogFileSection(1, 1),
-				new LogFileSection(2, 1));
+			_modifications.Should().Equal(LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Appended(1, 1),
+				LogSourceModification.Appended(2, 1));
 		}
 
 		[Test]

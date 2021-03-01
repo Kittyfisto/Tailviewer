@@ -46,7 +46,7 @@ namespace Tailviewer.Core.Sources
 		{
 			if (_listeners.Add(listener))
 			{
-				listener.OnLogFileModified(this, LogFileSection.Reset);
+				listener.OnLogFileModified(this, LogSourceModification.Reset());
 			}
 		}
 

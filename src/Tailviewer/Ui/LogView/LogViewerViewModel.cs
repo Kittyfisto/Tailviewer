@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -29,7 +28,7 @@ namespace Tailviewer.Ui.LogView
 
 		private readonly IDataSourceViewModel _dataSource;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly List<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
+		private readonly List<KeyValuePair<ILogSource, LogSourceModification>> _pendingSections;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
 
@@ -51,7 +50,7 @@ namespace Tailviewer.Ui.LogView
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
-			_pendingSections = new List<KeyValuePair<ILogSource, LogFileSection>>();
+			_pendingSections = new List<KeyValuePair<ILogSource, LogSourceModification>>();
 
 			LogSource = _dataSource.DataSource.FilteredLogSource;
 			LogSource.AddListener(this, _maximumWaitTime, 1000);
@@ -210,14 +209,14 @@ namespace Tailviewer.Ui.LogView
 			_actionCenter.Add(action);
 		}
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			lock (_pendingSections)
 			{
-				if (section == LogFileSection.Reset)
+				if (modification.IsReset())
 					_pendingSections.Clear();
 
-				_pendingSections.Add(new KeyValuePair<ILogSource, LogFileSection>(_logSource, section));
+				_pendingSections.Add(new KeyValuePair<ILogSource, LogSourceModification>(_logSource, modification));
 			}
 		}
 

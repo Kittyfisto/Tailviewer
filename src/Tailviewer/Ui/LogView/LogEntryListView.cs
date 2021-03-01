@@ -304,7 +304,7 @@ namespace Tailviewer.Ui.LogView
 			set { SetValue(SettingsProperty, value); }
 		}
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			var width = _textSettings.EstimateWidthUpperLimit(logSource.GetProperty(TextProperties.MaxCharactersInLine));
 			var upperWidth = (int) Math.Ceiling(width);

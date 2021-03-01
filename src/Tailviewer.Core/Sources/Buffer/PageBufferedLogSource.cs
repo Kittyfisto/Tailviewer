@@ -182,21 +182,21 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		#region Implementation of ILogSourceListener
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			lock (_syncRoot)
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 				{
 					_buffer.Clear();
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
-					_buffer.ResizeTo((int) section.Index);
+					_buffer.ResizeTo((int) removedSection.Index);
 				}
-				else
+				else if (modification.IsAppended(out var appendedSection))
 				{
-					_buffer.ResizeTo((int) (section.Index + section.Count));
+					_buffer.ResizeTo((int) (appendedSection.Index + appendedSection.Count));
 				}
 			}
 		}

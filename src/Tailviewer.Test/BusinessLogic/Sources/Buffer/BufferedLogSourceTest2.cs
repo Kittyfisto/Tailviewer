@@ -68,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
-			buffer.OnLogFileModified(_source.Object, new LogFileSection(0, 10));
+			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));
 
 			var sectionToQuery = new LogFileSection(2, 4);
 			buffer.GetEntries(sectionToQuery, destination, 0, queryOptions);
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Buffer
 			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
-			buffer.OnLogFileModified(_source.Object, new LogFileSection(0, 10));
+			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));
 
 			var section1ToQuery = new LogFileSection(2, 4);
 			buffer.GetEntries(section1ToQuery, destination, 0, queryOptions);

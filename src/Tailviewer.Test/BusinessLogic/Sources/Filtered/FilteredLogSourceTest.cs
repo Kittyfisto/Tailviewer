@@ -35,14 +35,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				                             _logFile.Object.GetProperty(GeneralProperties.PercentageProcessed));
 			        });
 
-			_sections = new List<LogFileSection>();
+			_modifications = new List<LogSourceModification>();
 			_listener = new Mock<ILogSourceListener>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogSource l, LogFileSection s) => _sections.Add(s));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			         .Callback((ILogSource l, LogSourceModification s) => _modifications.Add(s));
 		}
 
 		private Mock<ILogSource> _logFile;
-		private List<LogFileSection> _sections;
+		private List<LogSourceModification> _modifications;
 		private Mock<ILogSourceListener> _listener;
 		private ManualTaskScheduler _taskScheduler;
 
@@ -237,14 +237,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
-				_sections.Should().Equal(new[]
+				_modifications.Should().Equal(new[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(0, 1),
-						new LogFileSection(1, 1),
-						new LogFileSection(2, 1),
-						new LogFileSection(3, 1),
-						LogFileSection.Invalidate(2, 2)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(0, 1),
+						LogSourceModification.Appended(1, 1),
+						LogSourceModification.Appended(2, 1),
+						LogSourceModification.Appended(3, 1),
+						LogSourceModification.Removed(2, 2)
 					});
 			}
 		}
@@ -274,14 +274,14 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "Because the filtered log file should be finished");
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
 
-				_sections.Should().Equal(new[]
+				_modifications.Should().Equal(new[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(0, 1),
-						new LogFileSection(1, 1),
-						new LogFileSection(2, 1),
-						new LogFileSection(3, 1),
-						LogFileSection.Invalidate(2, 2)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(0, 1),
+						LogSourceModification.Appended(1, 1),
+						LogSourceModification.Appended(2, 1),
+						LogSourceModification.Appended(3, 1),
+						LogSourceModification.Removed(2, 2)
 					});
 			}
 		}
@@ -335,26 +335,26 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
-				var sections = new List<LogFileSection>();
+				var modifications = new List<LogSourceModification>();
 				var listener = new Mock<ILogSourceListener>();
 
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource l, LogFileSection s) => sections.Add(s));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource l, LogSourceModification s) => modifications.Add(s));
 				// We deliberately set the batchSize to be greater than the amount of entries that will be matched.
 				// If the FilteredLogFile is implemented correctly, then it will continously notifiy the listener until
 				// the maximum wait time is elapsed.
 				const int batchSize = 10;
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), batchSize);
-				file.OnLogFileModified(source, new LogFileSection(0, 2));
+				file.OnLogFileModified(source, LogSourceModification.Appended(0, 2));
 
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
-				sections.Should().Equal(new[]
+				modifications.Should().Equal(new[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(0, 2)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(0, 2)
 					});
 			}
 		}
@@ -418,20 +418,20 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			var source = new InMemoryLogSource();
 			using (var file = new FilteredLogSource(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				var sections = new List<LogFileSection>();
+				var modifications = new List<LogSourceModification>();
 				var listener = new Mock<ILogSourceListener>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource logFile, LogFileSection section) => sections.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
 
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-				sections.Should().Equal(new object[]
+				modifications.Should().Equal(new object[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(new LogLineIndex(0), 2)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(new LogLineIndex(0), 2)
 					});
 			}
 		}
@@ -445,7 +445,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 			{
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				source.AddEntry("Yikes", LevelFlags.Info);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 2));
 
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
@@ -606,13 +606,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("More stuff", LevelFlags.Debug);
 				source.AddEntry("", LevelFlags.Debug);
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 4));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Reset);
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Reset());
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 1));
 				_taskScheduler.RunOnce();
 
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because only one line remains in the source");
@@ -633,13 +633,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("", LevelFlags.Debug);
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
-				file.OnLogFileModified(source, new LogFileSection(0, 5));
+				file.OnLogFileModified(source, LogSourceModification.Appended(0, 5));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(source, LogFileSection.Invalidate(3, 2));
+				file.OnLogFileModified(source, LogSourceModification.Removed(3, 2));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(source, new LogFileSection(3, 2));
+				file.OnLogFileModified(source, LogSourceModification.Appended(3, 2));
 				_taskScheduler.RunOnce();
 				
 				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
@@ -679,7 +679,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("This is a test", LevelFlags.Info);
 				source.AddEntry("This is a test", LevelFlags.Error);
 				source.AddEntry("This is a test", LevelFlags.Info);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 4));
 				_taskScheduler.RunOnce();
 
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
@@ -704,7 +704,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("This is a test", LevelFlags.Info);
 				source.AddEntry("This is a test", LevelFlags.Error);
 				source.AddEntry("This is a test", LevelFlags.Info);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 4));
 				_taskScheduler.RunOnce();
 
 				var originalIndices = file.GetColumn(new LogFileSection(0, 2), GeneralColumns.OriginalIndex);
@@ -725,7 +725,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				source.AddEntry("This is a test", LevelFlags.Info);
 				source.AddEntry("This is a test", LevelFlags.Error);
 				source.AddEntry("This is a test", LevelFlags.Info);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
+				file.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 6));
 				_taskScheduler.RunOnce();
 
 				var originalIndices = file.GetColumn(new LogLineIndex[] {0, 2}, GeneralColumns.OriginalIndex);
@@ -968,12 +968,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Filtered
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because even though the filter doesn't have anything to do just yet - it's because its own source hasn't even started");
 
 				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.FromPercent(42));
-				file.OnLogFileModified(source.Object, new LogFileSection(0, 84));
+				file.OnLogFileModified(source.Object, LogSourceModification.Appended(0, 84));
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.FromPercent(42), "because now the filtered log file has processed 100% of the data the source sent it, but the original data source is still only at 42%");
 
 				sourceProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
-				file.OnLogFileModified(source.Object, new LogFileSection(84, 200));
+				file.OnLogFileModified(source.Object, LogSourceModification.Appended(84, 200));
 				_taskScheduler.RunOnce();
 				file.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			}

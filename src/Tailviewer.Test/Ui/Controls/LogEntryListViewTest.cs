@@ -264,7 +264,7 @@ namespace Tailviewer.Test.Ui.Controls
 				{GeneralColumns.RawContent, "Foobar" },
 				{GeneralColumns.LogLevel, LevelFlags.Info }
 			}));
-			_control.OnLogFileModified(_logSource, new LogFileSection(0, _logSource.Count));
+			_control.OnLogFileModified(_logSource, LogSourceModification.Appended(0, _logSource.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 

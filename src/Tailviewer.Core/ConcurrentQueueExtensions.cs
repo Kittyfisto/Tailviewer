@@ -54,17 +54,17 @@ namespace Tailviewer.Core
 		/// <param name="maxLogEntries"></param>
 		/// <param name="logFileSections"></param>
 		/// <returns></returns>
-		public static bool TryDequeueUpTo(this ConcurrentQueue<LogFileSection> queue, int maxLogEntries,
-		                                  out IReadOnlyList<LogFileSection> logFileSections)
+		public static bool TryDequeueUpTo(this ConcurrentQueue<LogSourceModification> queue, int maxLogEntries,
+		                                  out IReadOnlyList<LogSourceModification> logFileSections)
 		{
-			var tmp = new List<LogFileSection>();
+			var tmp = new List<LogSourceModification>();
 			int count = 0;
 
 			while (queue.TryDequeue(out var modification))
 			{
 				tmp.Add(modification);
-				if (!modification.IsInvalidate)
-					count += modification.Count;
+				if (modification.IsAppended(out var appendedSection))
+					count += appendedSection.Count;
 
 				if (count >= maxLogEntries)
 					break;
@@ -81,17 +81,17 @@ namespace Tailviewer.Core
 		/// <param name="maxLogEntries"></param>
 		/// <param name="logFileSections"></param>
 		/// <returns></returns>
-		public static bool TryDequeueUpTo(this ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> queue, int maxLogEntries,
-		                                  out IReadOnlyList<KeyValuePair<ILogSource, LogFileSection>> logFileSections)
+		public static bool TryDequeueUpTo(this ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>> queue, int maxLogEntries,
+		                                  out IReadOnlyList<KeyValuePair<ILogSource, LogSourceModification>> logFileSections)
 		{
-			var tmp = new List<KeyValuePair<ILogSource, LogFileSection>>();
+			var tmp = new List<KeyValuePair<ILogSource, LogSourceModification>>();
 			int count = 0;
 
 			while (queue.TryDequeue(out var pair))
 			{
 				tmp.Add(pair);
-				if (!pair.Value.IsInvalidate)
-					count += pair.Value.Count;
+				if (pair.Value.IsAppended(out var appendedSection))
+					count += appendedSection.Count;
 
 				if (count >= maxLogEntries)
 					break;

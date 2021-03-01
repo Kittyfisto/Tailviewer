@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			changes.Append(101, 5);
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(101, 5)
+				LogSourceModification.Appended(101, 5)
 			});
 
 			changes.TryGetFirstInvalidationIndex(out var index).Should().BeFalse();
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			changes.Append(107, 10);
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(101, 16)
+				LogSourceModification.Appended(101, 16)
 			});
 		}
 
@@ -50,7 +50,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			changes.Append(1, 2);
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 3)
+				LogSourceModification.Appended(0, 3)
 			});
 		}
 
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			changes.Append(1, 2);
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 3)
+				LogSourceModification.Appended(0, 3)
 			});
 		}
 
@@ -70,11 +70,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestInvalidate()
 		{
 			var changes = new MergedLogSourceChanges(42);
-			changes.InvalidateFrom(10);
+			changes.RemoveFrom(10);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(10, 32)
+				LogSourceModification.Removed(10, 32)
 			});
 
 			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
@@ -85,12 +85,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestInvalidateTwice()
 		{
 			var changes = new MergedLogSourceChanges(13);
-			changes.InvalidateFrom(7);
-			changes.InvalidateFrom(5);
+			changes.RemoveFrom(7);
+			changes.RemoveFrom(5);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(5, 8)
+				LogSourceModification.Removed(5, 8)
 			});
 
 
@@ -102,12 +102,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestInvalidateTwiceSuperfluous()
 		{
 			var changes = new MergedLogSourceChanges(13);
-			changes.InvalidateFrom(5);
-			changes.InvalidateFrom(7);
+			changes.RemoveFrom(5);
+			changes.RemoveFrom(7);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(5, 8)
+				LogSourceModification.Removed(5, 8)
 			});
 
 			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
@@ -118,13 +118,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestInvalidateThenAppend()
 		{
 			var changes = new MergedLogSourceChanges(10);
-			changes.InvalidateFrom(5);
+			changes.RemoveFrom(5);
 			changes.Append(5, 6);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(5, 5),
-				new LogFileSection(5, 6)
+				LogSourceModification.Removed(5, 5),
+				LogSourceModification.Appended(5, 6)
 			});
 
 			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
@@ -135,13 +135,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		public void TestInvalidateThenAppendWithGap()
 		{
 			var changes = new MergedLogSourceChanges(10);
-			changes.InvalidateFrom(5);
+			changes.RemoveFrom(5);
 			changes.Append(7, 10);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(5, 5),
-				new LogFileSection(5, 12)
+				LogSourceModification.Removed(5, 5),
+				LogSourceModification.Appended(5, 12)
 			});
 		}
 
@@ -150,11 +150,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		{
 			var changes = new MergedLogSourceChanges(0);
 			changes.Append(0, 42);
-			changes.InvalidateFrom(20);
+			changes.RemoveFrom(20);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 20)
+				LogSourceModification.Appended(0, 20)
 			});
 		}
 
@@ -163,12 +163,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		{
 			var changes = new MergedLogSourceChanges(0);
 			changes.Append(0, 2);
-			changes.InvalidateFrom(1);
+			changes.RemoveFrom(1);
 			changes.Append(1, 1);
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 2)
+				LogSourceModification.Appended(0, 2)
 			});
 		}
 	}

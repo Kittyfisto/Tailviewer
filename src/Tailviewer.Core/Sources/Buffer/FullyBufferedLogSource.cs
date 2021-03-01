@@ -98,7 +98,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		protected override void OnInvalidateSection(int totalCount)
+		protected override void OnSectionRemoved(int totalCount)
 		{
 			lock (_syncRoot)
 			{
@@ -106,7 +106,7 @@ namespace Tailviewer.Core.Sources.Buffer
 			}
 		}
 
-		protected override void OnAppendSection(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
+		protected override void OnSectionAppended(LogFileSection section, IReadOnlyLogBuffer data, int totalLogEntryCount)
 		{
 			lock (_syncRoot)
 			{

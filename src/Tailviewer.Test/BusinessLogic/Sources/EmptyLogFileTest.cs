@@ -32,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			var logFile = new EmptyLogSource();
 			var listener = new Mock<ILogSourceListener>();
 			logFile.AddListener(listener.Object, TimeSpan.Zero, 0);
-			listener.Verify(x => x.OnLogFileModified(logFile, LogFileSection.Reset), Times.Once);
+			listener.Verify(x => x.OnLogFileModified(logFile, LogSourceModification.Reset()), Times.Once);
 		}
 	}
 }

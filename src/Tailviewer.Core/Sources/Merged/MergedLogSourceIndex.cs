@@ -102,7 +102,7 @@ namespace Tailviewer.Core.Sources.Merged
 		/// </summary>
 		/// <param name="pendingModifications"></param>
 		/// <returns></returns>
-		public IEnumerable<LogFileSection> Process(params MergedLogSourcePendingModification[] pendingModifications)
+		public IEnumerable<LogSourceModification> Process(params MergedLogSourcePendingModification[] pendingModifications)
 		{
 			return Process((IEnumerable<MergedLogSourcePendingModification>) pendingModifications);
 		}
@@ -113,7 +113,7 @@ namespace Tailviewer.Core.Sources.Merged
 		/// </summary>
 		/// <param name="pendingModifications"></param>
 		/// <returns></returns>
-		public IEnumerable<LogFileSection> Process(IEnumerable<MergedLogSourcePendingModification> pendingModifications)
+		public IEnumerable<LogSourceModification> Process(IEnumerable<MergedLogSourcePendingModification> pendingModifications)
 		{
 			var optimizedModifications = MergedLogSourcePendingModification.Optimize(pendingModifications);
 			var entries = GetEntries(optimizedModifications);
@@ -237,7 +237,7 @@ namespace Tailviewer.Core.Sources.Merged
 			return sourceIndices;
 		}
 
-		private IReadOnlyList<LogFileSection> Process(IReadOnlyList<MergedLogSourceSection> pendingModifications)
+		private IReadOnlyList<LogSourceModification> Process(IReadOnlyList<MergedLogSourceSection> pendingModifications)
 		{
 			// This method keeps track of the changes made
 			// to the index structure in this object and then returns
@@ -262,7 +262,7 @@ namespace Tailviewer.Core.Sources.Merged
 				stopwatch.Stop();
 				if (Log.IsDebugEnabled)
 				{
-					int lineCount = pendingModifications.Sum(x => x.Section.IsInvalidate ? 0 : x.Section.Count);
+					int lineCount = pendingModifications.Sum(x => x.Modification.IsAppended(out var appendedSection) ? appendedSection.Count : 0);
 					Log.DebugFormat("MergedLogFileIndex::Process(#{0} modifications, #{1} lines): {2}ms", pendingModifications.Count, lineCount, stopwatch.ElapsedMilliseconds);
 				}
 
@@ -276,7 +276,7 @@ namespace Tailviewer.Core.Sources.Merged
 
 			foreach (var pendingModification in pendingModifications)
 			{
-				if (pendingModification.Section.IsReset)
+				if (pendingModification.Modification.IsReset())
 				{
 					var logFileIndex = GetLogFileIndex(pendingModification.LogSource);
 					bool Predicate(MergedLogLineIndex x) => x.SourceId == logFileIndex;
@@ -290,7 +290,7 @@ namespace Tailviewer.Core.Sources.Merged
 						}
 						else
 						{
-							changes.InvalidateFrom(firstIndex);
+							changes.RemoveFrom(firstIndex);
 
 							var appendCount = _indices.Count - firstIndex;
 							if (appendCount > 0)
@@ -309,10 +309,10 @@ namespace Tailviewer.Core.Sources.Merged
 
 			foreach (var pendingModification in pendingModifications)
 			{
-				if (pendingModification.Section.IsInvalidate)
+				if (pendingModification.Modification.IsRemoved(out var removedSection))
 				{
 					var logFileIndex = GetLogFileIndex(pendingModification.LogSource);
-					bool Predicate(MergedLogLineIndex x) => x.SourceId == logFileIndex && x.SourceLineIndex >= pendingModification.Section.Index;
+					bool Predicate(MergedLogLineIndex x) => x.SourceId == logFileIndex && x.SourceLineIndex >= removedSection.Index;
 					var firstIndex = _indices.FindIndex(Predicate);
 					if (firstIndex >= 0)
 					{
@@ -323,7 +323,7 @@ namespace Tailviewer.Core.Sources.Merged
 						}
 						else
 						{
-							changes.InvalidateFrom(firstIndex);
+							changes.RemoveFrom(firstIndex);
 
 							var appendCount = _indices.Count - firstIndex;
 							if (appendCount > 0)
@@ -362,7 +362,7 @@ namespace Tailviewer.Core.Sources.Merged
 						if (appendCount > 0)
 							changes.Append(appendStartingIndex, appendCount);
 
-						changes.InvalidateFrom(insertionIndex);
+						changes.RemoveFrom(insertionIndex);
 						invalidated = true;
 					}
 
@@ -507,16 +507,15 @@ namespace Tailviewer.Core.Sources.Merged
 			foreach (var pendingModification in pendingModifications)
 			{
 				var logFile = pendingModification.LogSource;
-				var section = pendingModification.Section;
-				if (!section.IsInvalidate &&
-				    !section.IsReset)
+				var modification = pendingModification.Modification;
+				if (modification.IsAppended(out var appendSection))
 				{
-					var entries = logFile.GetEntries(section, columns);
-					sections.Add(new MergedLogSourceSection(logFile, section, entries));
+					var entries = logFile.GetEntries(appendSection, columns);
+					sections.Add(new MergedLogSourceSection(logFile, modification, entries));
 				}
 				else
 				{
-					sections.Add(new MergedLogSourceSection(logFile, section));
+					sections.Add(new MergedLogSourceSection(logFile, modification));
 				}
 			}
 
@@ -527,7 +526,7 @@ namespace Tailviewer.Core.Sources.Merged
 		///     Creates a sorted list of <see cref="MergedLogLineIndex" />s concerning the given modifications.
 		/// </summary>
 		/// <remarks>
-		///     This method skips both <see cref="LogFileSection.IsReset" /> and <see cref="LogFileSection.IsInvalidate" />.
+		///     This method skips both <see cref="LogSourceModification.IsReset()" /> and <see cref="LogSourceModification.IsRemoved" />.
 		/// </remarks>
 		/// <param name="pendingModifications"></param>
 		/// <returns></returns>
@@ -579,11 +578,6 @@ namespace Tailviewer.Core.Sources.Merged
 			}
 
 			return indices;
-		}
-
-		private void RepairLogEntryIndices(int firstIndexToRepair)
-		{
-			
 		}
 	}
 }

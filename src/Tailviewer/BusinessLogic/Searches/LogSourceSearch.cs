@@ -29,7 +29,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly List<LogMatch> _matches;
 		private readonly List<LogLineMatch> _matchesBuffer;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingModifications;
 		private readonly IPeriodicTask _task;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
@@ -54,7 +54,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			_matches = new List<LogMatch>();
 			_syncRoot = new object();
 			_listeners = new LogFileSearchListenerCollection(this);
-			_pendingModifications = new ConcurrentQueue<LogFileSection>();
+			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_scheduler = taskScheduler;
 
 			const int maximumLineCount = 1000;
@@ -89,9 +89,9 @@ namespace Tailviewer.BusinessLogic.Searches
 			_isDisposed = true;
 		}
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			_pendingModifications.Enqueue(section);
+			_pendingModifications.Enqueue(modification);
 		}
 
 		public IEnumerable<LogMatch> Matches
@@ -133,9 +133,9 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		private void FilterAllPending()
 		{
-			while (_pendingModifications.TryDequeue(out var section))
+			while (_pendingModifications.TryDequeue(out var modification))
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 				{
 					lock (_syncRoot)
 					{
@@ -144,14 +144,14 @@ namespace Tailviewer.BusinessLogic.Searches
 
 					_listeners.EmitSearchChanged(_matches);
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
 					lock (_syncRoot)
 					{
 						int lastIndexInValidRange;
 						for (lastIndexInValidRange = _matches.Count - 1; lastIndexInValidRange >= 0; --lastIndexInValidRange)
 						{
-							if (_matches[lastIndexInValidRange].Index < section.Index)
+							if (_matches[lastIndexInValidRange].Index < removedSection.Index)
 								break;
 						}
 
@@ -161,9 +161,9 @@ namespace Tailviewer.BusinessLogic.Searches
 
 					_listeners.EmitSearchChanged(_matches);
 				}
-				else
+				else if (modification.IsAppended(out var appendedSection))
 				{
-					AppendMatches(section);
+					AppendMatches(appendedSection);
 				}
 			}
 		}

@@ -64,6 +64,7 @@
     <Compile Include="ILogFileFormatRepository.cs" />
     <Compile Include="IPropertyDescriptor.cs" />
     <Compile Include="LogEntriesExtensions.cs" />
+    <Compile Include="LogSourceModification.cs" />
     <Compile Include="LogSourceQueryMode.cs" />
     <Compile Include="LogSourceQueryOptions.cs" />
     <Compile Include="NoSuchServiceException.cs" />

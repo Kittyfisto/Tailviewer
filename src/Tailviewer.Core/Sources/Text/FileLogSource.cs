@@ -48,7 +48,7 @@ namespace Tailviewer.Core.Sources.Text
 
 		#region Processing
 
-		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>> _pendingSections;
+		private readonly ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>> _pendingSections;
 		private readonly LogBufferArray _buffer;
 		private IReadOnlyList<ILogSource> _logSources;
 		private ILogSource _finalLogSource;
@@ -77,7 +77,7 @@ namespace Tailviewer.Core.Sources.Text
 			_formatDetector = new FileFormatDetector(formatMatcher);
 
 			_buffer = new LogBufferArray(MaximumLineCount, GeneralColumns.RawContent);
-			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogFileSection>>();
+			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>>();
 
 			_propertiesBuffer = new PropertiesBufferList();
 			_propertiesBuffer.SetValue(GeneralProperties.Name, _fullFilename);
@@ -396,24 +396,24 @@ namespace Tailviewer.Core.Sources.Text
 				if (!Equals(pair.Key, _finalLogSource))
 					continue;
 
-				var section = pair.Value;
-				if (section.IsReset)
+				var modification = pair.Value;
+				if (modification.IsReset())
 				{
 					Listeners.Reset();
 					_count = 0;
 					_maxCharactersInLine = 0;
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
-					Listeners.Invalidate((int) section.Index, section.Count);
-					_count = (int) section.Index;
+					Listeners.Invalidate((int) removedSection.Index, removedSection.Count);
+					_count = (int) removedSection.Index;
 					// TODO: What about max width?
 				}
-				else
+				else if (modification.IsAppended(out var appendedSection))
 				{
-					Listeners.OnRead(section.LastIndex);
-					_count = (int) (section.Index + section.Count);
-					UpdateMaxWidth(section, pair.Key);
+					Listeners.OnRead(appendedSection.LastIndex);
+					_count = (int) (appendedSection.Index + appendedSection.Count);
+					UpdateMaxWidth(appendedSection, pair.Key);
 				}
 
 				workDone = true;
@@ -440,9 +440,9 @@ namespace Tailviewer.Core.Sources.Text
 
 		#region Implementation of ILogFileListener
 
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogFileSection>(logSource, section));
+			_pendingSections.Enqueue(new KeyValuePair<ILogSource, LogSourceModification>(logSource, modification));
 		}
 
 		#endregion

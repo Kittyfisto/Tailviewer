@@ -72,9 +72,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			using (var logFile = Create(fname))
 			{
 				var listener = new Mock<ILogSourceListener>();
-				var sections = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource log, LogFileSection section) => sections.Add(section));
+				var modifications = new List<LogSourceModification>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource log, LogSourceModification modification) => modifications.Add(modification));
 				logFile.AddListener(listener.Object, TimeSpan.Zero, 2);
 
 				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
@@ -84,7 +84,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 					stream.SetLength(0);
 
 					logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
-					sections.Should().EndWith(LogFileSection.Reset);
+					modifications.Should().EndWith(LogSourceModification.Reset());
 				}
 			}
 		}
@@ -95,18 +95,18 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			using (var file = Create(File2Lines))
 			{
 				var listener = new Mock<ILogSourceListener>();
-				var changes = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource logFile, LogFileSection section) => changes.Add(section));
+				var modifications = new List<LogSourceModification>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 
-				changes.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(3);
-				changes.Should().Equal(new[]
+				modifications.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(3);
+				modifications.Should().Equal(new[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(0, 1),
-						new LogFileSection(1, 1)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(0, 1),
+						LogSourceModification.Appended(1, 1)
 					});
 			}
 		}
@@ -117,23 +117,23 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			using (var file = Create( File2Entries))
 			{
 				var listener = new Mock<ILogSourceListener>();
-				var changes = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				        .Callback((ILogSource logFile, LogFileSection section) => changes.Add(section));
+				var modifications = new List<LogSourceModification>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				        .Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 
-				changes.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(7);
+				modifications.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(7);
 
-				changes.Should().Equal(new[]
+				modifications.Should().Equal(new[]
 					{
-						LogFileSection.Reset,
-						new LogFileSection(0, 1),
-						new LogFileSection(1, 1),
-						new LogFileSection(2, 1),
-						new LogFileSection(3, 1),
-						new LogFileSection(4, 1),
-						new LogFileSection(5, 1)
+						LogSourceModification.Reset(),
+						LogSourceModification.Appended(0, 1),
+						LogSourceModification.Appended(1, 1),
+						LogSourceModification.Appended(2, 1),
+						LogSourceModification.Appended(3, 1),
+						LogSourceModification.Appended(4, 1),
+						LogSourceModification.Appended(5, 1)
 					});
 
 

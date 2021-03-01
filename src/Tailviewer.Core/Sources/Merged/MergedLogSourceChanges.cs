@@ -10,30 +10,35 @@ namespace Tailviewer.Core.Sources.Merged
 	///     <see cref="MergedLogSourceIndex.Process(MergedLogSourcePendingModification[])" />
 	///     call.
 	/// </summary>
+	/// <remarks>
+	///    TODO: Rename to MergedLogSourceModifications
+	/// </remarks>
 	internal sealed class MergedLogSourceChanges
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly List<LogFileSection> _changes;
+		private readonly List<LogSourceModification> _modifications;
 		private readonly int _initialCount;
-		private int _invalidationIndex;
+		private int _removeIndex;
 		private int _count;
 
 		public MergedLogSourceChanges(int initialCount)
 		{
 			_initialCount = initialCount;
 			_count = initialCount;
-			_changes = new List<LogFileSection>();
-			_invalidationIndex = -1;
+			_modifications = new List<LogSourceModification>();
+			_removeIndex = -1;
 		}
 
-		public IReadOnlyList<LogFileSection> Sections => _changes;
+		public IReadOnlyList<LogSourceModification> Sections => _modifications;
 
 		public bool TryGetFirstInvalidationIndex(out LogLineIndex index)
 		{
-			if (_invalidationIndex != -1)
+			if (_removeIndex != -1)
 			{
-				index = _changes[_invalidationIndex].Index;
+				var modification = _modifications[_removeIndex];
+				modification.IsRemoved(out var removedSection);
+				index = removedSection.Index;
 				return true;
 			}
 
@@ -41,7 +46,7 @@ namespace Tailviewer.Core.Sources.Merged
 			return false;
 		}
 
-		public void InvalidateFrom(LogLineIndex firstInvalidIndex)
+		public void RemoveFrom(LogLineIndex firstInvalidIndex)
 		{
 			if (firstInvalidIndex >= _count)
 			{
@@ -54,14 +59,14 @@ namespace Tailviewer.Core.Sources.Merged
 				// We do not need to add an invalidation, rather we can simply clamp an existing previous append
 				if (firstInvalidIndex > 0)
 				{
-					var previous = _changes[_changes.Count - 1];
-					if (!previous.IsInvalidate && !previous.IsReset)
+					var previous = _modifications[_modifications.Count - 1];
+					if (previous.IsAppended(out var appendedSection))
 					{
-						var gap = previous.Index + previous.Count - firstInvalidIndex;
+						var gap = appendedSection.Index + appendedSection.Count - firstInvalidIndex;
 						if (gap > 0)
 						{
-							previous.Count -= gap;
-							_changes[_changes.Count - 1] = previous;
+							appendedSection.Count -= gap;
+							_modifications[_modifications.Count - 1] = LogSourceModification.Appended(appendedSection);
 						}
 					}
 				}
@@ -69,18 +74,19 @@ namespace Tailviewer.Core.Sources.Merged
 			else
 			{
 				var invalidationCount = _count - firstInvalidIndex;
-				if (_invalidationIndex != -1)
+				if (_removeIndex != -1)
 				{
-					var invalidation = _changes[_invalidationIndex];
-					if (invalidation.Index <= firstInvalidIndex)
+					var invalidation = _modifications[_removeIndex];
+					invalidation.IsRemoved(out var removedSection);
+					if (removedSection.Index <= firstInvalidIndex)
 						return; //< Nothing to do
 
-					_changes[_invalidationIndex] = LogFileSection.Invalidate(firstInvalidIndex, invalidationCount);
+					_modifications[_removeIndex] = LogSourceModification.Removed(firstInvalidIndex, invalidationCount);
 				}
 				else
 				{
-					_invalidationIndex = _changes.Count;
-					_changes.Add(LogFileSection.Invalidate(firstInvalidIndex, invalidationCount));
+					_removeIndex = _modifications.Count;
+					_modifications.Add(LogSourceModification.Removed(firstInvalidIndex, invalidationCount));
 				}
 			}
 		}
@@ -92,65 +98,66 @@ namespace Tailviewer.Core.Sources.Merged
 
 			if (TryGetLast(out var lastSection))
 			{
-				if (lastSection.IsInvalidate)
+				if (lastSection.IsRemoved(out var removedSection))
 				{
-					var gap = index - lastSection.Index;
+					var gap = index - removedSection.Index;
 					if (gap >= 0)
 					{
-						_changes.Add(new LogFileSection(lastSection.Index, count + gap));
+						_modifications.Add(LogSourceModification.Appended(removedSection.Index, count + gap));
 					}
 					else
 					{
 						throw new NotImplementedException();
 					}
 				}
-				else if (lastSection.IsReset)
+				else if (lastSection.IsReset())
 				{
 					throw new NotImplementedException();
 				}
-				else
+				else if (lastSection.IsAppended(out var appendedSection))
 				{
-					var gap = index - (lastSection.LastIndex + 1);
+					var gap = index - (appendedSection.LastIndex + 1);
 					if (gap > 0)
 					{
 						Log.WarnFormat("Inconsistency detected: Last change affects from '{0}' to '{1}' and the next one would leave a gap because it starts at '{2}'!",
-							lastSection.Index, lastSection.LastIndex, index);
+						               appendedSection.Index, appendedSection.LastIndex, index);
 					}
 					else if (gap < 0)
 					{
 						Log.WarnFormat("Inconsistency detected: Last change affects from '{0}' to '{1}' and the next one would overlap because it starts at '{2}'!",
-							lastSection.Index, lastSection.LastIndex, index);
+						               appendedSection.Index, appendedSection.LastIndex, index);
 					}
 
-					_changes[_changes.Count - 1] = new LogFileSection(lastSection.Index, lastSection.Count + gap + count);
+					_modifications[_modifications.Count - 1] = LogSourceModification.Appended(appendedSection.Index, appendedSection.Count + gap + count);
 				}
 			}
 			else
 			{
-				_changes.Add(new LogFileSection(index, count));
+				_modifications.Add(LogSourceModification.Appended(index, count));
 			}
 
-			var last = _changes[_changes.Count - 1];
-			_count = (int) (last.Index + last.Count);
+			var last = _modifications[_modifications.Count - 1];
+			last.IsAppended(out var appendedSection2);
+			_count = (int) (appendedSection2.Index + appendedSection2.Count);
 		}
 
-		private bool TryGetLast(out LogFileSection lastSection)
+		private bool TryGetLast(out LogSourceModification lastModification)
 		{
-			if (_changes.Count > 0)
+			if (_modifications.Count > 0)
 			{
-				lastSection = _changes[_changes.Count - 1];
+				lastModification = _modifications[_modifications.Count - 1];
 				return true;
 			}
 
-			lastSection = new LogFileSection();
+			lastModification = default;
 			return false;
 		}
 
 		public void Reset()
 		{
-			_changes.Clear();
-			_changes.Add(LogFileSection.Reset);
-			_invalidationIndex = -1;
+			_modifications.Clear();
+			_modifications.Add(LogSourceModification.Reset());
+			_removeIndex = -1;
 		}
 	}
 }

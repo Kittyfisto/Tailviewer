@@ -145,12 +145,12 @@ namespace Tailviewer.Core.Sources.Merged
 		}
 
 		/// <inheritdoc />
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			if (Log.IsDebugEnabled)
-				Log.DebugFormat("OnLogFileModified({0}, {1})", logSource, section);
+				Log.DebugFormat("OnLogFileModified({0}, {1})", logSource, modification);
 
-			_pendingModifications.Enqueue(new MergedLogSourcePendingModification(logSource, section));
+			_pendingModifications.Enqueue(new MergedLogSourcePendingModification(logSource, modification));
 		}
 
 		/// <inheritdoc />
@@ -346,8 +346,8 @@ namespace Tailviewer.Core.Sources.Merged
 			while (_pendingModifications.TryDequeue(out var modification))
 			{
 				tmp.Add(modification);
-				if (!modification.Section.IsInvalidate)
-					count += modification.Section.Count;
+				if (modification.Modification.IsAppended(out var section))
+					count += section.Count;
 
 				if (count >= maxLineCount)
 					break;
@@ -357,21 +357,21 @@ namespace Tailviewer.Core.Sources.Merged
 			return tmp.Count > 0;
 		}
 
-		private void NotifyListeners(IEnumerable<LogFileSection> changes)
+		private void NotifyListeners(IEnumerable<LogSourceModification> changes)
 		{
 			foreach (var section in changes)
 			{
-				if (section.IsInvalidate)
+				if (section.IsRemoved(out var removedSection))
 				{
-					Listeners.Invalidate((int) section.Index, section.Count);
+					Listeners.Invalidate((int) removedSection.Index, removedSection.Count);
 				}
-				else if (section.IsReset)
+				else if (section.IsReset())
 				{
 					Listeners.Reset();
 				}
-				else
+				else if (section.IsAppended(out var appendedSection))
 				{
-					Listeners.OnRead((int) (section.Index + section.Count));
+					Listeners.OnRead((int) (appendedSection.Index + appendedSection.Count));
 				}
 			}
 		}

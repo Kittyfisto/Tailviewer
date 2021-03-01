@@ -36,7 +36,7 @@ namespace Tailviewer.Core.Sources
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
 		private readonly Dictionary<int, int> _logEntryIndices;
-		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingModifications;
 		private readonly ILogSource _source;
 		private readonly LogBufferArray _array;
 		private readonly TimeSpan _maximumWaitTime;
@@ -69,7 +69,7 @@ namespace Tailviewer.Core.Sources
 
 			_logLineFilter = logLineFilter ?? new NoFilter();
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
-			_pendingModifications = new ConcurrentQueue<LogFileSection>();
+			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_indices = new List<int>();
 			_logEntryIndices = new Dictionary<int, int>();
 			_array = new LogBufferArray(BatchSize, GeneralColumns.Minimum);
@@ -133,11 +133,11 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			Log.DebugFormat("OnLogFileModified({0})", section);
+			Log.DebugFormat("OnLogFileModified({0})", modification);
 
-			_pendingModifications.Enqueue(section);
+			_pendingModifications.Enqueue(modification);
 		}
 
 		/// <inheritdoc />
@@ -345,28 +345,28 @@ namespace Tailviewer.Core.Sources
 		private bool ProcessModifications(CancellationToken token)
 		{
 			bool performedWork = false;
-			while (_pendingModifications.TryDequeue(out var section) && !token.IsCancellationRequested)
+			while (_pendingModifications.TryDequeue(out var modification) && !token.IsCancellationRequested)
 			{
-				if (section.IsReset)
+				if (modification.IsReset())
 				{
 					Clear();
 					_lastLogBuffer.Clear();
 					_currentSourceIndex = 0;
 				}
-				else if (section.IsInvalidate)
+				else if (modification.IsRemoved(out var removedSection))
 				{
-					LogLineIndex startIndex = section.Index;
+					LogLineIndex startIndex = removedSection.Index;
 					_fullSourceSection = new LogFileSection(0, (int) startIndex);
 
 					if (_currentSourceIndex > _fullSourceSection.LastIndex)
-						_currentSourceIndex = (int) section.Index;
+						_currentSourceIndex = (int) removedSection.Index;
 
 					Invalidate(_currentSourceIndex);
 					RemoveInvalidatedLines(_lastLogBuffer, _currentSourceIndex);
 				}
-				else
+				else if(modification.IsAppended(out var appendedSection))
 				{
-					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
+					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, appendedSection);
 				}
 
 				performedWork = true;

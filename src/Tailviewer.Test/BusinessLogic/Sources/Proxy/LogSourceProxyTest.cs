@@ -18,7 +18,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 		private Mock<ILogSource> _logFile;
 		private LogSourceListenerCollection _listeners;
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _modifications;
+		private List<LogSourceModification> _modifications;
 		private ManualTaskScheduler _taskScheduler;
 
 		[SetUp]
@@ -34,9 +34,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			        .Callback((ILogSourceListener listener) => _listeners.RemoveListener(listener));
 
 			_listener = new Mock<ILogSourceListener>();
-			_modifications = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-			         .Callback((ILogSource logFile, LogFileSection section) => _modifications.Add(section));
+			_modifications = new List<LogSourceModification>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+			         .Callback((ILogSource logFile, LogSourceModification modification) => _modifications.Add(modification));
 		}
 
 		[Test]
@@ -274,9 +274,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					new LogFileSection(500, 100)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Appended(500, 100)
 				});
 			}
 		}
@@ -296,10 +296,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					LogFileSection.Reset,
-					new LogFileSection(0, 600)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 600)
 				});
 			}
 		}
@@ -319,10 +319,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 500),
-					LogFileSection.Invalidate(400, 100),
-					new LogFileSection(400, 150)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 500),
+					LogSourceModification.Removed(400, 100),
+					LogSourceModification.Appended(400, 150)
 				});
 			}
 		}
@@ -335,11 +335,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
-				new Action(() => proxy.OnLogFileModified(new Mock<ILogSource>().Object, new LogFileSection(0, 1))).Should().NotThrow();
-				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+				new Action(() => proxy.OnLogFileModified(new Mock<ILogSource>().Object, LogSourceModification.Appended(0, 1))).Should().NotThrow();
+				_modifications.Should().Equal(new[] { LogSourceModification.Reset() }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 
-				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).Should().NotThrow();
-				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+				new Action(() => proxy.OnLogFileModified(null, LogSourceModification.Appended(0, 1))).Should().NotThrow();
+				_modifications.Should().Equal(new[] { LogSourceModification.Reset() }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 			}
 		}
 

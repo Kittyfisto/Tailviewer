@@ -25,7 +25,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 		private StreamWriter _streamWriter;
 		private TextLogSource _source;
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _changes;
+		private List<LogSourceModification> _modifications;
 		private BinaryWriter _binaryWriter;
 
 		[SetUp]
@@ -43,9 +43,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			_source = Create(_fname);
 
 			_listener = new Mock<ILogSourceListener>();
-			_changes = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				.Callback((ILogSource unused, LogFileSection section) => _changes.Add(section));
+			_modifications = new List<LogSourceModification>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				.Callback((ILogSource unused, LogSourceModification modification) => _modifications.Add(modification));
 
 			_source.AddListener(_listener.Object, TimeSpan.Zero, 10);
 		}
@@ -183,14 +183,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Simple
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_changes.Should().Equal(new object[]
+			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1),
-				LogFileSection.Invalidate(0, 1),
-				new LogFileSection(0, 1),
-				LogFileSection.Invalidate(0, 1),
-				new LogFileSection(0, 1)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Removed(0, 1),
+				LogSourceModification.Appended(0, 1),
+				LogSourceModification.Removed(0, 1),
+				LogSourceModification.Appended(0, 1)
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
 			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);

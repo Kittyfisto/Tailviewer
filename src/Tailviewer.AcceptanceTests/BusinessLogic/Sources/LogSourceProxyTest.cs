@@ -15,7 +15,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 		private Mock<ILogSource> _logFile;
 		private LogSourceListenerCollection _listeners;
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _modifications;
+		private List<LogSourceModification> _modifications;
 
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
@@ -40,9 +40,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 					.Callback((ILogSourceListener listener) => _listeners.RemoveListener(listener));
 
 			_listener = new Mock<ILogSourceListener>();
-			_modifications = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-					 .Callback((ILogSource logFile, LogFileSection section) => _modifications.Add(section));
+			_modifications = new List<LogSourceModification>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+					 .Callback((ILogSource logFile, LogSourceModification modification) => _modifications.Add(modification));
 		}
 
 		[Test]
@@ -52,13 +52,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources
 			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
-				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				proxy.OnLogFileModified(_logFile.Object, LogSourceModification.Appended(0, 1));
 
 				_modifications.Property(x => x.Count).ShouldEventually().Be(2);
 				_modifications.Should().Equal(new[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1)
 				});
 			}
 		}

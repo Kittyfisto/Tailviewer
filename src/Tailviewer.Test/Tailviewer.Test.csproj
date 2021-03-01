@@ -151,6 +151,7 @@
     <Compile Include="BusinessLogic\Properties\GeneralPropertiesTest.cs" />
     <Compile Include="BusinessLogic\Properties\PropertiesBufferListTest.cs" />
     <Compile Include="BusinessLogic\Sources\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\Sources\LogSourceModificationTest.cs" />
     <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest2.cs" />
     <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileChangesTest.cs" />
     <Compile Include="BusinessLogic\Sources\Merged\MergedLogFileIndexTest.cs" />

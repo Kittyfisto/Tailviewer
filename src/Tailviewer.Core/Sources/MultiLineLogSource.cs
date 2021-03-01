@@ -38,7 +38,7 @@ namespace Tailviewer.Core.Sources
 		private readonly HashSet<IColumnDescriptor> _specialColumns;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
+		private readonly ConcurrentQueue<LogSourceModification> _pendingModifications;
 		private readonly ILogSource _source;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly PropertiesBufferList _propertiesBuffer;
@@ -64,7 +64,7 @@ namespace Tailviewer.Core.Sources
 				throw new ArgumentNullException(nameof(source));
 
 			_maximumWaitTime = maximumWaitTime;
-			_pendingModifications = new ConcurrentQueue<LogFileSection>();
+			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_syncRoot = new object();
 			_specialColumns = new HashSet<IColumnDescriptor>{GeneralColumns.LogEntryIndex, GeneralColumns.Timestamp, GeneralColumns.LogLevel};
 			_indices = new List<LogEntryInfo>();
@@ -121,11 +121,11 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <inheritdoc />
-		public void OnLogFileModified(ILogSource logSource, LogFileSection section)
+		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
-			Log.DebugFormat("OnLogFileModified({0})", section);
+			Log.DebugFormat("OnLogFileModified({0})", modification);
 
-			_pendingModifications.EnqueueMany(section.Split(MaximumBatchSize));
+			_pendingModifications.EnqueueMany(modification.Split(MaximumBatchSize));
 		}
 
 		/// <inheritdoc />
@@ -222,19 +222,19 @@ namespace Tailviewer.Core.Sources
 			const int maxLineCount = 10000;
 			if (_pendingModifications.TryDequeueUpTo(maxLineCount, out var modifications))
 			{
-				foreach (var nextSection in modifications)
+				foreach (var modification in modifications)
 				{
-					if (nextSection.IsReset)
+					if (modification.IsReset())
 					{
 						Clear();
 					}
-					else if (nextSection.IsInvalidate)
+					else if (modification.IsRemoved(out var removedSection))
 					{
-						Invalidate(nextSection);
+						Invalidate(removedSection);
 					}
-					else
+					else if (modification.IsAppended(out var appendedSection))
 					{
-						Append(nextSection);
+						Append(appendedSection);
 					}
 
 					performedWork = true;

@@ -17,17 +17,17 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		: AbstractLogSourceTest
 	{
 		private Mock<ILogSourceListener> _listener;
-		private List<LogFileSection> _modifications;
+		private List<LogSourceModification> _modifications;
 
 		[SetUp]
 		public void Setup()
 		{
-			_modifications = new List<LogFileSection>();
+			_modifications = new List<LogSourceModification>();
 			_listener = new Mock<ILogSourceListener>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogFileSection>()))
-				.Callback((ILogSource logFile, LogFileSection section) =>
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
+				.Callback((ILogSource logFile, LogSourceModification modification) =>
 				{
-					_modifications.Add(section);
+					_modifications.Add(modification);
 				});
 		}
 
@@ -124,8 +124,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			_modifications.Should()
 				.Equal(new object[]
 				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
+					LogSourceModification.Reset(),
+					LogSourceModification.Appended(0, 1)
 				});
 		}
 
@@ -268,8 +268,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 
 			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 2)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 2)
 			});
 		}
 
@@ -279,7 +279,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 		{
 			var logFile = new InMemoryLogSource();
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
-			_modifications.Should().Equal(new object[] {LogFileSection.Reset});
+			_modifications.Should().Equal(new object[] {LogSourceModification.Reset()});
 		}
 
 		[Test]
@@ -292,8 +292,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
 			_modifications.Should().Equal(new object[]
 			{
-				LogFileSection.Reset,
-				new LogFileSection(0, 1)
+				LogSourceModification.Reset(),
+				LogSourceModification.Appended(0, 1)
 			});
 		}
 
@@ -345,7 +345,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources
 
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
 			logFile.Clear();
-			_modifications.Should().EndWith(LogFileSection.Reset);
+			_modifications.Should().EndWith(LogSourceModification.Reset());
 		}
 
 		[Test]

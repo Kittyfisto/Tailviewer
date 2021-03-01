@@ -5,7 +5,7 @@ namespace Tailviewer.Core.Sources
 {
 	/// <summary>
 	///     Replaces the log source which is forwarded to every
-	///     <see cref="ILogSourceListener.OnLogFileModified(ILogSource, LogFileSection)" /> invocation
+	///     <see cref="ILogSourceListener.OnLogFileModified(ILogSource, LogSourceModification)" /> invocation
 	///     with the proxy reference, given during construction.
 	/// </summary>
 	internal sealed class ProxyLogListenerCollection

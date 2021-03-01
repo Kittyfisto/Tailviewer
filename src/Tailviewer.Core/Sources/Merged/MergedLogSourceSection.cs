@@ -2,29 +2,29 @@
 
 namespace Tailviewer.Core.Sources.Merged
 {
-	internal struct MergedLogSourceSection
+	internal readonly struct MergedLogSourceSection
 	{
 		public readonly ILogSource LogSource;
-		public readonly LogFileSection Section;
+		public readonly LogSourceModification Modification;
 		public readonly IReadOnlyLogBuffer Buffer;
 
-		public MergedLogSourceSection(ILogSource logSource, LogFileSection section)
+		public MergedLogSourceSection(ILogSource logSource, LogSourceModification modification)
 		{
 			LogSource = logSource;
-			Section = section;
+			Modification = modification;
 			Buffer = null;
 		}
 
-		public MergedLogSourceSection(ILogSource logSource, LogFileSection section, IReadOnlyLogBuffer buffer)
+		public MergedLogSourceSection(ILogSource logSource, LogSourceModification modification, IReadOnlyLogBuffer buffer)
 		{
 			LogSource = logSource;
-			Section = section;
+			Modification = modification;
 			Buffer = buffer;
 		}
 
 		public override string ToString()
 		{
-			return String.Format("{0} ({1})", Section, LogSource);
+			return String.Format("{0} ({1})", Modification, LogSource);
 		}
 	}
 }

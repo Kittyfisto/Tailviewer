@@ -18,12 +18,6 @@ namespace Tailviewer
 		, IReadOnlyList<LogLineIndex>
 	{
 		/// <summary>
-		/// This value is used to represent a section which does not exist.
-		/// Is used when a log file's source no longer exists, for example.
-		/// </summary>
-		public static readonly LogFileSection Reset;
-
-		/// <summary>
 		/// The number of lines in this section
 		/// </summary>
 		public int Count;
@@ -32,44 +26,6 @@ namespace Tailviewer
 		/// The index of the first line in this section.
 		/// </summary>
 		public readonly LogLineIndex Index;
-
-		/// <summary>
-		/// Whether or not this section represents an addition (=False)
-		/// or an invalidation (i.e. Removal, True).
-		/// </summary>
-		/// <remarks>
-		///    TODO: Rename to IsRemove because that's what it's supposed to imply
-		/// </remarks>
-		public readonly bool IsInvalidate;
-
-		static LogFileSection()
-		{
-			Reset = new LogFileSection(LogLineIndex.Invalid, 0);
-		}
-
-		/// <summary>
-		///     Creates a new section which represents an invalidation of the given
-		///     section [<paramref name="index" />, <paramref name="index" /> + <paramref name="count" />).
-		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="count"></param>
-		/// <returns></returns>
-		[DebuggerStepThrough]
-		public static LogFileSection Invalidate(LogLineIndex index, int count)
-		{
-			return new LogFileSection(index, count, true);
-		}
-
-		[DebuggerStepThrough]
-		private LogFileSection(LogLineIndex index, int count, bool isInvalidate)
-		{
-			if (count < 0)
-				throw new ArgumentOutOfRangeException(nameof(count));
-
-			Index = index;
-			Count = count;
-			IsInvalidate = isInvalidate;
-		}
 
 		/// <summary>
 		///     Creates a new section which represents the given
@@ -85,13 +41,7 @@ namespace Tailviewer
 
 			Index = index;
 			Count = count;
-			IsInvalidate = false;
 		}
-
-		/// <summary>
-		///     Whether or not this section represents a complete reset of the source.
-		/// </summary>
-		public bool IsReset => this == Reset;
 
 		/// <summary>
 		///     The last valid index of this section.
@@ -141,13 +91,7 @@ namespace Tailviewer
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			if (Index == LogLineIndex.Invalid && Count == 0)
-				return "Reset";
-
-			if (IsInvalidate)
-				return string.Format("Invalidated [{0}, #{1}]", Index, Count);
-
-			return string.Format("Changed [{0}, #{1}]", Index, Count);
+			return $"[{Index}, #{Count}]";
 		}
 
 		/// <summary>
@@ -284,44 +228,6 @@ namespace Tailviewer
 					throw new IndexOutOfRangeException();
 
 				return Index + index;
-			}
-		}
-
-		/// <summary>
-		/// Splits up this section into multiple ones if it:
-		/// - Is neither reset, nor invalidates
-		/// - Appends more than the given amount of rows
-		/// </summary>
-		/// <param name="maxCount"></param>
-		/// <returns></returns>
-		public IEnumerable<LogFileSection> Split(int maxCount)
-		{
-			if (maxCount <= 0)
-				throw new ArgumentException("You need to specify a maximum count greater than 0!");
-
-			if (IsInvalidate || IsReset || Count == 0)
-			{
-				return new[] {this};
-			}
-
-			return SplitAppend(maxCount);
-		}
-
-		private IEnumerable<LogFileSection> SplitAppend(int maxCount)
-		{
-			var nextIndex = Index;
-			var remainingCount = Count;
-			while (remainingCount > maxCount)
-			{
-				yield return new LogFileSection(nextIndex, maxCount);
-
-				nextIndex += maxCount;
-				remainingCount -= maxCount;
-			}
-
-			if (remainingCount > 0)
-			{
-				yield return new LogFileSection(nextIndex, remainingCount);
 			}
 		}
 	}

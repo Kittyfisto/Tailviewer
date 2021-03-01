@@ -26,7 +26,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("Hello, World!", LevelFlags.Other, new DateTime(2019, 5, 28, 0, 53, 0));
 
 			var index = new MergedLogSourceIndex(source);
-			index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 1)));
+			index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 1)));
 
 			index.Get(new LogFileSection(0, 2)).Should().Equal(new object[]
 			{
@@ -42,10 +42,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("Hello, World!", LevelFlags.Other, new DateTime(2019, 5, 28, 19, 55, 10));
 
 			var index = new MergedLogSourceIndex(source);
-			var changes = index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1)
+				LogSourceModification.Appended(0, 1)
 			});
 
 			var indices = index.Get(new LogFileSection(0, 1));
@@ -64,17 +64,17 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("Hello,", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 37, 0));
 
 			var index = new MergedLogSourceIndex(source);
-			var changes = index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1)
+				LogSourceModification.Appended(0, 1)
 			});
 
 			source.AddEntry("Hello,", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 38, 0));
-			changes = index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(1, 1)));
+			changes = index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(1, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(1, 1)
+				LogSourceModification.Appended(1, 1)
 			});
 
 			var indices = index.Get(new LogFileSection(0, 2));
@@ -101,11 +101,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source2.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 09, 0));
 
 			var index = new MergedLogSourceIndex(source1, source2);
-			var changes = index.Process(new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)),
-			                            new MergedLogSourcePendingModification(source2, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1)),
+			                            new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 2)
+				LogSourceModification.Appended(0, 2)
 			});
 
 			var indices = index.Get(new LogFileSection(0, 2));
@@ -132,17 +132,17 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source2.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 09, 0));
 
 			var index = new MergedLogSourceIndex(source1, source2);
-			var changes = index.Process(new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1)
+				LogSourceModification.Appended(0, 1)
 			});
 
-			changes = index.Process(new MergedLogSourcePendingModification(source2, new LogFileSection(0, 1)));
+			changes = index.Process(new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(0, 1),
-				new LogFileSection(0, 2)
+				LogSourceModification.Removed(0, 1),
+				LogSourceModification.Appended(0, 2)
 			});
 
 			var indices = index.Get(new LogFileSection(0, 2));
@@ -171,17 +171,17 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source2.AddEntry("D", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 37, 0));
 
 			var index = new MergedLogSourceIndex(source1, source2);
-			var changes = index.Process(new MergedLogSourcePendingModification(source1, new LogFileSection(0, 2)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 2)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 2)
+				LogSourceModification.Appended(0, 2)
 			});
 
-			changes = index.Process(new MergedLogSourcePendingModification(source2, new LogFileSection(0, 2)));
+			changes = index.Process(new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 2)));
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(1, 1),
-				new LogFileSection(1, 3)
+				LogSourceModification.Removed(1, 1),
+				LogSourceModification.Appended(1, 3)
 			});
 		}
 
@@ -197,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("E", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 8));
 
 			var index = new MergedLogSourceIndex(source);
-			index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 6)));
+			index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 6)));
 
 			var indices = index.Get(new LogFileSection(0, 6));
 			indices[0].SourceId.Should().Be(0);
@@ -236,8 +236,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source2.AddEntry("5", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 9));
 
 			var index = new MergedLogSourceIndex(source1, source2);
-			index.Process(new MergedLogSourcePendingModification(source1, new LogFileSection(0, 5)));
-			index.Process(new MergedLogSourcePendingModification(source2, new LogFileSection(0, 5)));
+			index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 5)));
+			index.Process(new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 5)));
 
 			var indices = index.Get(new LogFileSection(0, 10));
 			indices[0].SourceId.Should().Be(0);
@@ -278,7 +278,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
 
 			var index = new MergedLogSourceIndex(source1);
-			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogFileSection.Reset));
+			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Reset()));
 			changes.Should().BeEmpty("because the index itself is empty and thus its source resetting itself doesn't require any change");
 		}
 
@@ -289,16 +289,16 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
 
 			var index = new MergedLogSourceIndex(source1);
-			var changes = index.Process(new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1)));
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1)
+				LogSourceModification.Appended(0, 1)
 			});
 
-			changes = index.Process(new MergedLogSourcePendingModification(source1, LogFileSection.Reset));
+			changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Reset()));
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Reset
+				LogSourceModification.Reset()
 			});
 			index.Count.Should().Be(0);
 			index.Get(new LogFileSection(0, 1)).Should().Equal(new object[]
@@ -315,13 +315,13 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 
 			var index = new MergedLogSourceIndex(source1);
 			var changes = index.Process(
-				new MergedLogSourcePendingModification(source1, new LogFileSection(0, 2)),
-				new MergedLogSourcePendingModification(source1, LogFileSection.Reset),
-				new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1))
+				new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 2)),
+				new MergedLogSourcePendingModification(source1, LogSourceModification.Reset()),
+				new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1))
 				);
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1)
+				LogSourceModification.Appended(0, 1)
 			}, "because the index shouldn't process changes belonging to source1 prior to the last reset");
 			index.Count.Should().Be(1);
 		}
@@ -337,12 +337,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 
 			var index = new MergedLogSourceIndex(source1, source2);
 			var changes = index.Process(
-			                            new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)),
-			                            new MergedLogSourcePendingModification(source2, new LogFileSection(0, 2))
+			                            new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1)),
+			                            new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 2))
 			                           );
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 3)
+				LogSourceModification.Appended(0, 3)
 			});
 			index.Count.Should().Be(3);
 			index[0].SourceId.Should().Be(1);
@@ -353,11 +353,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			index[2].MergedLogEntryIndex.Should().Be(2);
 
 
-			changes = index.Process(new MergedLogSourcePendingModification(source1, LogFileSection.Reset));
+			changes = index.Process(new MergedLogSourcePendingModification(source1, LogSourceModification.Reset()));
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(1, 2),
-				new LogFileSection(1, 1)
+				LogSourceModification.Removed(1, 2),
+				LogSourceModification.Appended(1, 1)
 			});
 			index.Count.Should().Be(2);
 			index[0].SourceId.Should().Be(1);
@@ -379,12 +379,12 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 
 			var index = new MergedLogSourceIndex(source1, source2);
 			var changes = index.Process(
-			                            new MergedLogSourcePendingModification(source1, new LogFileSection(0, 1)),
-			                            new MergedLogSourcePendingModification(source2, new LogFileSection(0, 3))
+			                            new MergedLogSourcePendingModification(source1, LogSourceModification.Appended(0, 1)),
+			                            new MergedLogSourcePendingModification(source2, LogSourceModification.Appended(0, 3))
 			                           );
 			changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 4)
+				LogSourceModification.Appended(0, 4)
 			});
 			index.Count.Should().Be(4);
 			index[0].SourceId.Should().Be(1);
@@ -397,11 +397,11 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			index[3].MergedLogEntryIndex.Should().Be(3);
 
 
-			changes = index.Process(new MergedLogSourcePendingModification(source2, LogFileSection.Invalidate(1, 2)));
+			changes = index.Process(new MergedLogSourcePendingModification(source2, LogSourceModification.Removed(1, 2)));
 			changes.Should().Equal(new object[]
 			{
-				LogFileSection.Invalidate(1, 3),
-				new LogFileSection(1, 1)
+				LogSourceModification.Removed(1, 3),
+				LogSourceModification.Appended(1, 1)
 			});
 			index.Count.Should().Be(2);
 			index[0].SourceId.Should().Be(1);
@@ -422,7 +422,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("H", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 115));
 
 			var index = new MergedLogSourceIndex(source);
-			index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 8)));
+			index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 8)));
 
 			var indices = index.Get(new LogFileSection(0, 8));
 			indices[0].SourceLineIndex.Should().Be(0);
@@ -445,7 +445,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("C", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
 
 			var index = new MergedLogSourceIndex(source);
-			index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 3)));
+			index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 3)));
 
 			index.Count.Should().Be(3);
 			var indices = index.Get(new LogFileSection(0, 3));
@@ -471,7 +471,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("Hello, World!", LevelFlags.Other);
 
 			var index = new MergedLogSourceIndex(source);
-			var changes = index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 1)));
+			var changes = index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 1)));
 			changes.Should().BeEmpty("because the only added line doesn't have a timestamp and thus cannot be added to the merged log file");
 
 			index.Count.Should().Be(0);
@@ -491,8 +491,8 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			source.AddEntry("C", LevelFlags.Other, new DateTime(2019, 5, 28, 19, 30, 42));
 
 			var index = new MergedLogSourceIndex(source);
-			var changes = index.Process(new MergedLogSourcePendingModification(source, new LogFileSection(0, 3)));
-			changes.Should().Equal(new object[] {new LogFileSection(0, 2)});
+			var changes = index.Process(new MergedLogSourcePendingModification(source, LogSourceModification.Appended(0, 3)));
+			changes.Should().Equal(new object[] {LogSourceModification.Appended(0, 2)});
 
 			index.Count.Should().Be(2);
 
