@@ -10,7 +10,6 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Core;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
@@ -660,6 +659,58 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				_taskScheduler.RunOnce();
 
 				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), LogFileSection.Invalidate(0, 1), new LogFileSection(0, 1)});
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/324")]
+		public void TestTail_WriteLinesClearWriteLines()
+		{
+			var encoding = new UTF8Encoding(false);
+			var fileName = GetUniqueNonExistingFileName();
+
+			using (var logFile = Create(fileName, encoding))
+			{
+				var line1 = "The sky";
+				var line2 = "Crawlers";
+				using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+				using (var writer = new StreamWriter(stream, encoding))
+				{
+					var changes = AddListener(logFile, 1000);
+					changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+					writer.WriteLine(line1);
+					writer.Flush();
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+					var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(9);
+
+					writer.WriteLine(line2);
+					writer.Flush();
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(9);
+					index[2].Should().Be(19);
+				}
+
+				using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+				using (var writer = new StreamWriter(stream, encoding))
+				{
+					writer.WriteLine("A");
+					writer.WriteLine("B");
+					writer.Flush();
+
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					var index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(3);
+					index[2].Should().Be(6);
+				}
 			}
 		}
 

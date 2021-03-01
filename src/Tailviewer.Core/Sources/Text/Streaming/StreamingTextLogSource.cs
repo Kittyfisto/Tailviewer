@@ -439,6 +439,8 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			lock (_index)
 			{
 				_index.Clear();
+				_lastStreamPosition = 0;
+				_lastLineOffsetStreamPosition = 0;
 			}
 			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
 			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
