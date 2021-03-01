@@ -527,7 +527,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 			var fileName = GetUniqueNonExistingFileName();
 			var logFile = Create(fileName, encoding);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the file doesn't even exist yet");
+			logFile.GetProperty(GeneralProperties.LogEntryCount).Should()
+			       .Be(0, "because the file doesn't even exist yet");
 
 			var line1 = "The sky crawlers";
 			var line2 = "is awesome!";
@@ -562,6 +563,154 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text.Streaming
 				entries[0].RawContent.Should().Be(line1);
 				entries[1].RawContent.Should().Be(line2);
 				entries[2].RawContent.Should().BeNullOrEmpty();
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/324")]
+		public void TestTail_WriteTwoLines_Changes1()
+		{
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+
+			var line1 = "The sky crawlers";
+			var line2 = "is awesome!";
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			using (var logFile = Create(fileName, encoding))
+			{
+				var changes = AddListener(logFile, 1000);
+				changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+				writer.Write(line1 + "\r\n");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)},
+				                       "because the file consists of two lines, one being totally empty");
+
+				writer.Write(line2 + "\r\n");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1), LogFileSection.Invalidate(1, 1), new LogFileSection(1, 2)});
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/324")]
+		public void TestTail_WriteTwoLines_Changes2()
+		{
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+
+			var line1 = "The sky crawlers";
+			var line2 = "is awesome!";
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			using (var logFile = Create(fileName, encoding))
+			{
+				var changes = AddListener(logFile, 1000);
+				changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+				writer.Write(line1);
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)},
+				                       "because the file consists of one line");
+
+				writer.Write("\n" + line2);
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				//changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), new LogFileSection(1, 1)});
+				// The current behavior won't cause wrong behavior in upstream listeners, but it will cause them unnecessary work.
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1),
+					LogFileSection.Invalidate(0, 1), new LogFileSection(0, 2)});
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/324")]
+		public void TestTail_WriteOneLineTwoFlushes_Changes3()
+		{
+			var encoding = Encoding.UTF8;
+			var fileName = GetUniqueNonExistingFileName();
+
+			var linePart1 = "The sky";
+			var linePart2 = " Crawlers";
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			using (var logFile = Create(fileName, encoding))
+			{
+				var changes = AddListener(logFile, 1000);
+				changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+				writer.Write(linePart1);
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)},
+				                       "because the file consists of one line");
+
+				writer.Write(linePart2);
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1), LogFileSection.Invalidate(0, 1), new LogFileSection(0, 1)});
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/324")]
+		public void TestTail_WriteLinesClearWriteLines()
+		{
+			var encoding = new UTF8Encoding(false);
+			var fileName = GetUniqueNonExistingFileName();
+
+			using (var logFile = Create(fileName, encoding))
+			{
+				var line1 = "The sky";
+				var line2 = "Crawlers";
+				using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+				using (var writer = new StreamWriter(stream, encoding))
+				{
+					var changes = AddListener(logFile, 1000);
+					changes.Should().Equal(new object[] {LogFileSection.Reset});
+
+					writer.WriteLine(line1);
+					writer.Flush();
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+					var index = logFile.GetColumn(new LogFileSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(9);
+
+					writer.WriteLine(line2);
+					writer.Flush();
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(9);
+					index[2].Should().Be(19);
+				}
+
+				using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+				using (var writer = new StreamWriter(stream, encoding))
+				{
+					writer.WriteLine("A");
+					writer.WriteLine("B");
+					writer.Flush();
+
+					_taskScheduler.RunOnce();
+					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					var index = logFile.GetColumn(new LogFileSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
+					index[0].Should().Be(0);
+					index[1].Should().Be(3);
+					index[2].Should().Be(6);
+				}
 			}
 		}
 
