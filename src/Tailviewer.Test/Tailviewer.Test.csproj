@@ -179,7 +179,6 @@
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Entries\AbstractLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileIssuesPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileOutlinePluginTest.cs" />

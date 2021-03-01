@@ -4,8 +4,6 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Test
 {

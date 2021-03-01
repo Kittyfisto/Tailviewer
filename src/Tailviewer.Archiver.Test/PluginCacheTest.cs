@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Test
@@ -23,11 +22,11 @@ namespace Tailviewer.Archiver.Test
 			var cache = new PluginCache(_pluginLoader.Object);
 			cache.LoadAllOfType<ILogFileOutlinePlugin>();
 			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogFileOutlinePlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IFileFormatPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>(), Times.Never);
 
-			cache.LoadAllOfType<IFileFormatPlugin>();
+			cache.LoadAllOfType<ILogEntryParserPlugin>();
 			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogFileOutlinePlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IFileFormatPlugin>(), Times.Once);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>(), Times.Once);
 		}
 
 		[Test]
@@ -36,12 +35,12 @@ namespace Tailviewer.Archiver.Test
 			var cache = new PluginCache(_pluginLoader.Object);
 			cache.LoadAllOfType<ILogFileOutlinePlugin>();
 			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogFileOutlinePlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IFileFormatPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>(), Times.Never);
 
 			cache.LoadAllOfType<ILogFileOutlinePlugin>();
 			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogFileOutlinePlugin>(), Times.Once,
 			                     "because the cache should not have queried the plugin loader again");
-			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IFileFormatPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogEntryParserPlugin>(), Times.Never);
 		}
 	}
 }

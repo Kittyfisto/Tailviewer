@@ -200,7 +200,6 @@
     <Compile Include="Sources\Merged\MergedLogSource.cs" />
     <Compile Include="Sources\MultiLineLogSource.cs" />
     <Compile Include="Sources\NoThrowLogSource.cs" />
-    <Compile Include="Sources\NoThrowLogLineTranslator.cs" />
     <Compile Include="Sources\Text\Simple\TextLogSource.cs" />
     <Compile Include="Properties\WellKnownReadOnlyProperty.cs" />
     <Compile Include="MathEx.cs" />

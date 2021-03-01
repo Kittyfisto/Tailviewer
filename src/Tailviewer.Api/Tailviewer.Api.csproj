@@ -95,7 +95,6 @@
     <Compile Include="ITimestampParser.cs" />
     <Compile Include="LogEntrySectionExtensions.cs" />
     <Compile Include="LogEntrySourceId.cs" />
-    <Compile Include="Plugins\IFileFormatPlugin2.cs" />
     <Compile Include="Plugins\ILogSourceIssueAnalyser.cs" />
     <Compile Include="Plugins\ILogFileIssueListener.cs" />
     <Compile Include="Plugins\ILogFileIssuesPlugin.cs" />
@@ -110,7 +109,6 @@
     <Compile Include="ErrorFlags.cs" />
     <Compile Include="ILogSource.cs" />
     <Compile Include="ILogSourceListener.cs" />
-    <Compile Include="ILogLineTranslator.cs" />
     <Compile Include="LogFileSection.cs" />
     <Compile Include="LogLine.cs" />
     <Compile Include="LogLineIndex.cs" />
@@ -120,7 +118,6 @@
     <Compile Include="Plugins\PluginIdAttribute.cs" />
     <Compile Include="Plugins\PluginVersionAttribute.cs" />
     <Compile Include="Plugins\PluginWebsiteAttribute.cs" />
-    <Compile Include="Plugins\IFileFormatPlugin.cs" />
     <Compile Include="IReader.cs" />
     <Compile Include="ISerializableType.cs" />
     <Compile Include="IServiceContainer.cs" />

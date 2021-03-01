@@ -128,7 +128,6 @@ namespace Tailviewer
 		/// <remarks>
 		///     The following types may optionally be registered with this container in order to modify the behaviour of the returned object:
 		///     - <see cref="ITimestampParser"/>
-		///     - <see cref="ILogLineTranslator"/>
 		///     - <see cref="Encoding"/>
 		/// </remarks>
 		/// <param name="fileName"></param>

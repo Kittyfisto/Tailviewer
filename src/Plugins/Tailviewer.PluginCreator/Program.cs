@@ -66,11 +66,7 @@ namespace Tailviewer.PluginCreator
 
             foreach (var type in implementedTypes)
             {
-                if (type == typeof(IFileFormatPlugin))
-                    files.AddRange(new FileFormatPluginCreator().CreateSourceFiles(folder));
-                if (type == typeof(IFileFormatPlugin2))
-                    files.AddRange(new FileFormatPlugin2Creator().CreateSourceFiles(folder));
-                else if (type == typeof(ILogSource))
+                if (type == typeof(ILogSource))
                     files.AddRange(new LogFileCreator().CreateSourceFiles(folder));
                 else
                     throw new ArgumentNullException();

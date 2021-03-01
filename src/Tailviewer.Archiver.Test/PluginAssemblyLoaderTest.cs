@@ -398,12 +398,12 @@ namespace Tailviewer.Archiver.Test
 					FilePath = "some nonexistant assembly",
 					PluginImplementations = new List<IPluginImplementationDescription>
 					{
-						new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))
+						new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(ILogEntryParserPlugin))
 					}
 				};
 
-				new Action(() => scanner.LoadAllOfType<IFileFormatPlugin>()).Should().NotThrow();
-				scanner.LoadAllOfType<IFileFormatPlugin>().Should().BeEmpty();
+				new Action(() => scanner.LoadAllOfType<ILogEntryParserPlugin>()).Should().NotThrow();
+				scanner.LoadAllOfType<ILogEntryParserPlugin>().Should().BeEmpty();
 			}
 		}
 	}
