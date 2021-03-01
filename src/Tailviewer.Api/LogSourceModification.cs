@@ -227,7 +227,7 @@ namespace Tailviewer
 
 		/// <summary>
 		///     Splits up this section into multiple ones if it:
-		///     - Is neither reset, nor invalidates
+		///     - Is neither reset, nor remove
 		///     - Appends more than the given amount of rows
 		/// </summary>
 		/// <param name="maxCount"></param>

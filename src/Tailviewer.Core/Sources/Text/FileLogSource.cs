@@ -405,7 +405,7 @@ namespace Tailviewer.Core.Sources.Text
 				}
 				else if (modification.IsRemoved(out var removedSection))
 				{
-					Listeners.Invalidate((int) removedSection.Index, removedSection.Count);
+					Listeners.Remove((int) removedSection.Index, removedSection.Count);
 					_count = (int) removedSection.Index;
 					// TODO: What about max width?
 				}

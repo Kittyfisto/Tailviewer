@@ -75,7 +75,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <summary>
-		///     Sets <see cref="CurrentLineIndex" /> to the given number of lines read and
+		///     Sets <see cref="CurrentLineIndex" /> to the given number of entries read and
 		///     notifies all listeners (in case their maximumNumberOfLines is reached or maximumWaitTime elapsed).
 		/// </summary>
 		/// <remarks>
@@ -94,19 +94,19 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <summary>
-		///     Invalidates the given region of log lines.
+		///     Removes the given region of log entries.
 		/// </summary>
 		/// <remarks>
 		///     Make sure to always invalidate a section until the very end of the log file.
 		/// </remarks>
 		/// <param name="firstIndex"></param>
 		/// <param name="count"></param>
-		public void Invalidate(int firstIndex, int count)
+		public void Remove(int firstIndex, int count)
 		{
 			lock (_listeners)
 			{
 				foreach (var notifier in _listeners.Values)
-					notifier.Invalidate(firstIndex, count);
+					notifier.Remove(firstIndex, count);
 				CurrentLineIndex = firstIndex;
 			}
 		}

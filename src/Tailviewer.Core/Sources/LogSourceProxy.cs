@@ -112,7 +112,7 @@ namespace Tailviewer.Core.Sources
 						}
 						else if (modification.IsRemoved(out var removedSection))
 						{
-							_listeners.Invalidate((int)removedSection.Index, removedSection.Count);
+							_listeners.Remove((int)removedSection.Index, removedSection.Count);
 						}
 						else if (modification.IsAppended(out var appendedSection))
 						{

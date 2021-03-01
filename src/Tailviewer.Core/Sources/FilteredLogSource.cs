@@ -337,7 +337,7 @@ namespace Tailviewer.Core.Sources
 		}
 
 		/// <summary>
-		///     Processes as many pending modifications as are available, invalidates existing indices if necessary and
+		///     Processes as many pending modifications as are available, removes existing indices if necessary and
 		///     establishes the boundaries of the source log file.
 		/// </summary>
 		/// <param name="token"></param>
@@ -361,8 +361,8 @@ namespace Tailviewer.Core.Sources
 					if (_currentSourceIndex > _fullSourceSection.LastIndex)
 						_currentSourceIndex = (int) removedSection.Index;
 
-					Invalidate(_currentSourceIndex);
-					RemoveInvalidatedLines(_lastLogBuffer, _currentSourceIndex);
+					RemoveFrom(_currentSourceIndex);
+					RemoveLinesFrom(_lastLogBuffer, _currentSourceIndex);
 				}
 				else if(modification.IsAppended(out var appendedSection))
 				{
@@ -468,7 +468,7 @@ namespace Tailviewer.Core.Sources
 			return totalPercentage;
 		}
 
-		private static void RemoveInvalidatedLines(LogBufferList lastLogBuffer, int currentSourceIndex)
+		private static void RemoveLinesFrom(LogBufferList lastLogBuffer, int currentSourceIndex)
 		{
 			while (lastLogBuffer.Count > 0)
 			{
@@ -485,7 +485,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		private void Invalidate(int currentSourceIndex)
+		private void RemoveFrom(int currentSourceIndex)
 		{
 			int numRemoved = 0;
 			lock (_indices)
@@ -496,8 +496,7 @@ namespace Tailviewer.Core.Sources
 					int sourceIndex = _indices[i];
 					if (sourceIndex >= currentSourceIndex)
 					{
-						int previousLogEntryIndex;
-						if (_logEntryIndices.TryGetValue(sourceIndex, out previousLogEntryIndex))
+						if (_logEntryIndices.TryGetValue(sourceIndex, out var previousLogEntryIndex))
 						{
 							_currentLogEntryIndex = previousLogEntryIndex;
 						}
@@ -512,7 +511,7 @@ namespace Tailviewer.Core.Sources
 					}
 				}
 			}
-			Listeners.Invalidate(_indices.Count, numRemoved);
+			Listeners.Remove(_indices.Count, numRemoved);
 		}
 
 		private void Clear()

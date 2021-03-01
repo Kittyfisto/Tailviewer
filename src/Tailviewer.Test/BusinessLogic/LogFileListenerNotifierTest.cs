@@ -124,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
 			notifier.OnRead(1);
-			notifier.Invalidate(0, 1);
+			notifier.Remove(0, 1);
 			_modifications.Should().Equal(new[]
 				{
 					LogSourceModification.Reset(),
@@ -142,7 +142,7 @@ namespace Tailviewer.Test.BusinessLogic
 			var notifier = new LogSourceListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
 			notifier.OnRead(10);
 			notifier.OnRead(12);
-			notifier.Invalidate(0, 12);
+			notifier.Remove(0, 12);
 			_modifications.Should().Equal(new[]
 				{
 					LogSourceModification.Reset(),
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(10);
 			notifier.OnRead(20);
 			notifier.OnRead(22);
-			notifier.Invalidate(0, 22);
+			notifier.Remove(0, 22);
 			_modifications.Should().Equal(new[]
 				{
 					LogSourceModification.Reset(),
@@ -192,7 +192,7 @@ namespace Tailviewer.Test.BusinessLogic
 				});
 
 			notifier.OnRead(35);
-			notifier.Invalidate(10, 25);
+			notifier.Remove(10, 25);
 			_modifications.Should().Equal(new[]
 				{
 					LogSourceModification.Reset(),

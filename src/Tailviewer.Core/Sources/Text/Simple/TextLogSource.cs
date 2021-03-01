@@ -581,7 +581,7 @@ namespace Tailviewer.Core.Sources.Text.Simple
 			{
 				_entries.RemoveAt(index);
 			}
-			Listeners.Invalidate(index, 1);
+			Listeners.Remove(index, 1);
 		}
 	}
 }

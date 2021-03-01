@@ -107,7 +107,7 @@ namespace Tailviewer.Core.Sources
 			}
 
 			SynchronizeProperties();
-			Listeners.Invalidate((int) section.Index, section.Count);
+			Listeners.Remove((int) section.Index, section.Count);
 		}
 
 		private void Reset()

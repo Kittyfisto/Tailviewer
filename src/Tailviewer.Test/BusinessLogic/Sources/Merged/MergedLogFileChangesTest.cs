@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 		{
 			var changes = new MergedLogSourceChanges(count);
 			changes.Sections.Should().BeEmpty();
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeFalse();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeFalse();
 			index.Should().Be(LogLineIndex.Invalid);
 		}
 
@@ -26,7 +26,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 				LogSourceModification.Appended(101, 5)
 			});
 
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeFalse();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeFalse();
 			index.Should().Be(LogLineIndex.Invalid);
 		}
 
@@ -77,7 +77,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 				LogSourceModification.Removed(10, 32)
 			});
 
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeTrue();
 			index.Should().Be(new LogLineIndex(10));
 		}
 
@@ -94,7 +94,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 			});
 
 
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeTrue();
 			index.Should().Be(new LogLineIndex(5));
 		}
 
@@ -110,7 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 				LogSourceModification.Removed(5, 8)
 			});
 
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeTrue();
 			index.Should().Be(new LogLineIndex(5));
 		}
 
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Merged
 				LogSourceModification.Appended(5, 6)
 			});
 
-			changes.TryGetFirstInvalidationIndex(out var index).Should().BeTrue();
+			changes.TryGetFirstRemovedIndex(out var index).Should().BeTrue();
 			index.Should().Be(new LogLineIndex(5));
 		}
 

@@ -123,7 +123,7 @@ namespace Tailviewer.Ui.LogView
 				if (modification.IsReset())
 					Clear(logSource);
 				else if (modification.IsRemoved(out var removedSection))
-					InvalidateFrom(logSource, removedSection.Index);
+					Remove(logSource, removedSection.Index);
 				else if (modification.IsAppended(out var appendedSection))
 					Add(logSource, appendedSection);
 			}
@@ -157,7 +157,7 @@ namespace Tailviewer.Ui.LogView
 			}
 		}
 
-		private void InvalidateFrom(ILogSource logSource, LogLineIndex index)
+		private void Remove(ILogSource logSource, LogLineIndex index)
 		{
 			lock (_syncRoot)
 			{

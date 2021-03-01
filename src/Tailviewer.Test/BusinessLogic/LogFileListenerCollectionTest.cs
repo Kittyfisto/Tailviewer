@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic
 			var collection = new LogSourceListenerCollection(new Mock<ILogSource>().Object);
 			collection.OnRead(1);
 			collection.CurrentLineIndex.Should().Be(1);
-			collection.Invalidate(0, 1);
+			collection.Remove(0, 1);
 			collection.CurrentLineIndex.Should().Be(0);
 		}
 

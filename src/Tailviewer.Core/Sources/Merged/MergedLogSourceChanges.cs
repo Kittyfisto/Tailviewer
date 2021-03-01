@@ -32,7 +32,7 @@ namespace Tailviewer.Core.Sources.Merged
 
 		public IReadOnlyList<LogSourceModification> Sections => _modifications;
 
-		public bool TryGetFirstInvalidationIndex(out LogLineIndex index)
+		public bool TryGetFirstRemovedIndex(out LogLineIndex index)
 		{
 			if (_removeIndex != -1)
 			{

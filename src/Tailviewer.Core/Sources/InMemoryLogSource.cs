@@ -304,7 +304,7 @@ namespace Tailviewer.Core.Sources
 				var available = _logBuffer.Count - index;
 				_logBuffer.RemoveRange((int)index, available);
 				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
-				_listeners.Invalidate((int)index, available);
+				_listeners.Remove((int)index, available);
 				Touch();
 			}
 		}

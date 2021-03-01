@@ -77,7 +77,7 @@ namespace Tailviewer.Core.Sources
 			}
 		}
 
-		public void Invalidate(int firstIndex, int count)
+		public void Remove(int firstIndex, int count)
 		{
 			int lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
 			int invalidateCount = lastIndex - firstIndex;

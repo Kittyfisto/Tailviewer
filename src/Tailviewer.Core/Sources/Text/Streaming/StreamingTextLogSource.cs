@@ -409,7 +409,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			}
 
 			if (lineIndexToInvalidate != null)
-				_listeners.Invalidate(lineIndexToInvalidate.Value, 1);
+				_listeners.Remove(lineIndexToInvalidate.Value, 1);
 
 			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, percentageProcessed);
 			UpdateLineCount(count);

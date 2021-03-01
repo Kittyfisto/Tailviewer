@@ -176,7 +176,7 @@ namespace Tailviewer.Core.Sources.Adorner
 				{
 					_count = (int) removedSection.Index;
 					SynchronizeProperties();
-					Listeners.Invalidate((int) removedSection.Index, removedSection.Count);
+					Listeners.Remove((int) removedSection.Index, removedSection.Count);
 				}
 				else if (modification.IsAppended(out var appendedSection))
 				{

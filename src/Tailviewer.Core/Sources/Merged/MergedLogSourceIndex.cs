@@ -342,14 +342,14 @@ namespace Tailviewer.Core.Sources.Merged
 
 			var indices = CreateIndices(pendingModifications);
 
-			var invalidated = false;
+			var removed = false;
 			var appendStartingIndex = _indices.Count;
 
 			foreach (var index in indices)
 			{
 				var insertionIndex = FindInsertionIndexNoLock(index);
 				if (insertionIndex < _indices.Count)
-					if (!invalidated)
+					if (!removed)
 					{
 						// Here's the awesome thing: We're inserting a "pre-sorted" list of indices
 						// into our index buffer. Therefore, the very first index which requires an invalidation
@@ -363,7 +363,7 @@ namespace Tailviewer.Core.Sources.Merged
 							changes.Append(appendStartingIndex, appendCount);
 
 						changes.RemoveFrom(insertionIndex);
-						invalidated = true;
+						removed = true;
 					}
 
 				var actualIndex = index;
@@ -382,9 +382,9 @@ namespace Tailviewer.Core.Sources.Merged
 
 			// We only need to re-calculate those indices if there was an invalidation or a portion
 			// of this index. If there wasn't, then ProcessAppendsNoLock() already does its job as required...
-			if (changes.TryGetFirstInvalidationIndex(out var firstInvalidatedIndex))
+			if (changes.TryGetFirstRemovedIndex(out var firstRemovedIndex))
 			{
-				for (int i = firstInvalidatedIndex.Value; i < _indices.Count; ++i)
+				for (int i = firstRemovedIndex.Value; i < _indices.Count; ++i)
 				{
 					var index = _indices[i];
 					index.MergedLogEntryIndex = (int) CalculateLogEntryIndexFor(i, index);
@@ -565,8 +565,7 @@ namespace Tailviewer.Core.Sources.Merged
 				var timestamp = entry.GetValue(GeneralColumns.Timestamp);
 
 				if (index.IsValid &&
-				    entryIndex
-					    .IsValid && //< Invalid values are possible if the file has been invalidated in between it sending us a change and us having retrieved the corresponding data
+				    entryIndex.IsValid && //< Invalid values are possible if the file has been invalidated in between it sending us a change and us having retrieved the corresponding data
 				    timestamp != null) //< Not every line has a timestamp
 				{
 					indices.Add(new MergedLogLineIndex(index.Value,

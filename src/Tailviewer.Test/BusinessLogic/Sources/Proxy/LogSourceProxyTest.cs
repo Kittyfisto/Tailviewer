@@ -312,7 +312,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.Proxy
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
 				_listeners.OnRead(500);
-				_listeners.Invalidate(400, 100);
+				_listeners.Remove(400, 100);
 				_listeners.OnRead(550);
 
 				_taskScheduler.RunOnce();

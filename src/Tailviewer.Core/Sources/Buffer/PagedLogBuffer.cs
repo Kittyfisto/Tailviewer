@@ -310,7 +310,7 @@ namespace Tailviewer.Core.Sources.Buffer
 		{
 			// The section of log sources *actually* currently buffered
 			// by pages is incredibly small compared to the section which
-			// may be invalidated. Therefore it is faster to iterate over all pages
+			// may be removed. Therefore it is faster to iterate over all pages
 			// (which are only ever a few handful) and see if they are part of
 			// the evicted region
 			for (int i = 0; i < _pages.Count;)

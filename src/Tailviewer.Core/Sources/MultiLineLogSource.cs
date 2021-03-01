@@ -230,7 +230,7 @@ namespace Tailviewer.Core.Sources
 					}
 					else if (modification.IsRemoved(out var removedSection))
 					{
-						Invalidate(removedSection);
+						Remove(removedSection);
 					}
 					else if (modification.IsAppended(out var appendedSection))
 					{
@@ -307,14 +307,14 @@ namespace Tailviewer.Core.Sources
 			_fullSourceSection = new LogSourceSection(0, _currentSourceIndex.Value);
 		}
 
-		private void Invalidate(LogSourceSection sectionToInvalidate)
+		private void Remove(LogSourceSection sectionToRemove)
 		{
-			var firstInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToInvalidate.Index);
-			var lastInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToInvalidate.LastIndex);
-			var invalidateCount = lastInvalidIndex - firstInvalidIndex + 1;
+			var firstRemovedIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToRemove.Index);
+			var lastRemovedIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, sectionToRemove.LastIndex);
+			var removedCount = lastRemovedIndex - firstRemovedIndex + 1;
 			var previousSourceIndex = _currentSourceIndex;
 
-			_fullSourceSection = new LogSourceSection(0, (int)firstInvalidIndex);
+			_fullSourceSection = new LogSourceSection(0, (int)firstRemovedIndex);
 			if (_fullSourceSection.Count > 0)
 			{
 				// It's possible (likely) that we've received an invalidation for a region of the source
@@ -333,11 +333,11 @@ namespace Tailviewer.Core.Sources
 
 			lock (_syncRoot)
 			{
-				var toRemove = _indices.Count - lastInvalidIndex;
+				var toRemove = _indices.Count - lastRemovedIndex;
 				if (toRemove > 0)
 				{
-					_indices.RemoveRange((int)firstInvalidIndex, toRemove);
-					_currentLogEntry = new LogEntryInfo(firstInvalidIndex - 1, 0);
+					_indices.RemoveRange((int)firstRemovedIndex, toRemove);
+					_currentLogEntry = new LogEntryInfo(firstRemovedIndex - 1, 0);
 				}
 				if (previousSourceIndex != _currentSourceIndex)
 				{
@@ -351,11 +351,11 @@ namespace Tailviewer.Core.Sources
 					_currentSourceIndex);
 			}
 
-			Listeners.Invalidate((int)firstInvalidIndex, invalidateCount);
+			Listeners.Remove((int)firstRemovedIndex, removedCount);
 
-			if (_fullSourceSection.Count > firstInvalidIndex)
+			if (_fullSourceSection.Count > firstRemovedIndex)
 			{
-				_fullSourceSection = new LogSourceSection(0, firstInvalidIndex.Value);
+				_fullSourceSection = new LogSourceSection(0, firstRemovedIndex.Value);
 			}
 		}
 

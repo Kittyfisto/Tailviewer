@@ -363,7 +363,7 @@ namespace Tailviewer.Core.Sources.Merged
 			{
 				if (section.IsRemoved(out var removedSection))
 				{
-					Listeners.Invalidate((int) removedSection.Index, removedSection.Count);
+					Listeners.Remove((int) removedSection.Index, removedSection.Count);
 				}
 				else if (section.IsReset())
 				{
