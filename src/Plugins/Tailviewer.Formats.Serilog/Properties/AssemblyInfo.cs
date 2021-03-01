@@ -32,4 +32,5 @@ using Tailviewer.Plugins;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: PluginId("Tailviewer.Formats", "Serilog")]
+[assembly: PluginVersion(1, 0, 0, 0)]
 [assembly: PluginAuthor("Simon Mießler")]

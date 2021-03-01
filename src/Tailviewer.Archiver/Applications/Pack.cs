@@ -43,6 +43,7 @@ namespace Tailviewer.Archiver.Applications
 
 				using (var pluginStream = new MemoryStream())
 				{
+					string pluginId;
 					string pluginVersion;
 					using (var packer = PluginPacker.Create(pluginStream, leaveOpen: true))
 					{
@@ -88,13 +89,14 @@ namespace Tailviewer.Archiver.Applications
 							packer.SetChanges(_options.ChangeListFileName);
 						}
 
+						pluginId = packer.Id;
 						pluginVersion = packer.Version;
 					}
 
 					var archiveFilename = Path.Combine(Directory.GetCurrentDirectory(), string.Format("{0}.{1}.{2}",
-						Path.GetFileNameWithoutExtension(_options.InputFileName),
-						pluginVersion,
-						PluginArchive.PluginExtension));
+						                                   pluginId,
+						                                   pluginVersion,
+						                                   PluginArchive.PluginExtension));
 
 					pluginStream.Position = 0;
 					Log.InfoFormat("Saving plugin => {0}... ", archiveFilename);
