@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Buffers\CombinedLogBufferView.cs" />
     <Compile Include="Buffers\LogBufferExtensions.cs" />
     <Compile Include="ConcurrentQueueExtensions.cs" />

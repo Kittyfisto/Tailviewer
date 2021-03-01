@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
@@ -13,7 +12,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogSource _originalLogSource;
 		private readonly LogSourceProxy _unfilteredLogSource;
-		private readonly IPluginDescription _pluginDescription;
+		//private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogSource _multiLineLogSource;
 
 		public FileDataSource(ILogSourceFactory logSourceFactory, ITaskScheduler taskScheduler, DataSource settings)
@@ -47,7 +46,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			OnUnfilteredLogFileChanged();
 		}
 
-		public override IPluginDescription TranslationPlugin => _pluginDescription;
+		//public override IPluginDescription TranslationPlugin => _pluginDescription;
+		public override IPluginDescription TranslationPlugin => null;
 
 		public override ILogSource OriginalLogSource => _originalLogSource;
 
