@@ -54,6 +54,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 		private readonly ConcurrentQueue<IReadRequest> _pendingReadRequests;
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 		private FileFingerprint _lastFingerprint;
+		private long _lastLineOffsetStreamPosition;
 		private long _lastStreamPosition;
 
 		private const int BufferSize = 4096 * 4;
@@ -308,9 +309,17 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			                                   FileShare.ReadWrite | FileShare.Delete))
 			{
 				_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
-				AddFirstLineIfNecessary(stream);
 
-				stream.Position = _lastStreamPosition;
+				var startOffset = _lastLineOffsetStreamPosition;
+				if (startOffset == 0)
+				{
+					AddFirstLineIfNecessary(stream);
+				}
+				else
+				{
+					stream.Position = startOffset;
+				}
+
 				var detector = new LineOffsetDetector(stream, _encoding);
 				var buffer = new FixedSizeList<long>(1000);
 
@@ -322,12 +331,13 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 
 					if (!buffer.TryAdd(lineOffset))
 					{
-						AddLines(buffer, Percentage.Of(stream.Position, currentFingerprint.Size));
+						AddLines(buffer, Percentage.Of(stream.Position, currentFingerprint.Size), startOffset);
 						buffer.TryAdd(lineOffset);
 					}
 				}
 
-				AddLines(buffer, Percentage.HundredPercent);
+				AddLines(buffer, Percentage.HundredPercent, startOffset);
+				_lastStreamPosition = stream.Position;
 			}
 
 			if (Log.IsDebugEnabled)
@@ -367,23 +377,44 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			}
 		}
 
-		private void AddLines(FixedSizeList<long> buffer, Percentage percentageProcessed)
+		private void AddLines(FixedSizeList<long> buffer, Percentage percentageProcessed, long lastLineOffsetStreamPosition)
 		{
+			int? lineIndexToInvalidate = null;
 			int count;
 			lock (_index)
 			{
+				if (_index.Count > 0)
+				{
+					var lastLineIndex = _index.Count - 1;
+					if (_index[lastLineIndex].GetValue(LineOffsetInBytes) == lastLineOffsetStreamPosition)
+					{
+						lineIndexToInvalidate = lastLineIndex;
+					}
+				}
+
 				if (buffer.Count > 0)
 				{
+					//if (buffer.Buffer[0] != lastLineOffsetStreamPosition)
+					//{
+					//	var lastLineIndex = _index.Count - 1;
+					//	lineIndexToInvalidate = lastLineIndex;
+					//}
+
 					for (int i = 0; i < buffer.Count; ++i)
 					{
 						_index.Add(CreateLogEntry(buffer.Buffer[i]));
 					}
-					_lastStreamPosition = buffer.Buffer[buffer.Count -1 ];
+
+					_lastLineOffsetStreamPosition = buffer.Buffer[buffer.Count -1 ];
+
 					buffer.Clear();
 				}
 
 				count = _index.Count;
 			}
+
+			if (lineIndexToInvalidate != null)
+				_listeners.Invalidate(lineIndexToInvalidate.Value, 1);
 
 			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, percentageProcessed);
 			UpdateLineCount(count);
@@ -396,7 +427,7 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			{
 				_index.Add(CreateLogEntry(offsetInBytes));
 
-				_lastStreamPosition = offsetInBytes;
+				_lastLineOffsetStreamPosition = offsetInBytes;
 				count = _index.Count;
 			}
 
@@ -421,7 +452,6 @@ namespace Tailviewer.Core.Sources.Text.Streaming
 			_propertiesBuffer.SetValue(TextProperties.LineCount, count);
 			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
 			SynchronizeProperties();
-			_listeners.OnRead(count);
 		}
 
 		[Pure]
