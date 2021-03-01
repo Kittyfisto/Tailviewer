@@ -35,9 +35,9 @@ namespace Tailviewer.Test.Ui
 			_bookmarks = new Bookmarks("aawdwa");
 			_dispatcher = new ManualDispatcher();
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
@@ -72,7 +72,7 @@ namespace Tailviewer.Test.Ui
 		private Mock<IAutoUpdater> _updater;
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactoryEx _logSourceFactory;
 		private Bookmarks _bookmarks;
 		private InMemoryFilesystem _filesystem;
 		private ServiceContainer _services;

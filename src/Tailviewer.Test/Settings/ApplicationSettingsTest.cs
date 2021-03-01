@@ -6,7 +6,6 @@ using System.Text;
 using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;

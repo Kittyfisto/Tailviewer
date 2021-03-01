@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Core.Sources.Text.Streaming;
 
 namespace Tailviewer.Test.BusinessLogic.Sources.Text

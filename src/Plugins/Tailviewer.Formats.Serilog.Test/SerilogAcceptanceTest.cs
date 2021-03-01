@@ -24,7 +24,7 @@ namespace Tailviewer.Serilog.Test
 		private Mock<ILogFileFormatRepository> _repository;
 		private List<SerilogFileFormat> _formats;
 		private PluginRegistry _plugins;
-		private PluginLogFileFactory _logSourceFactory;
+		private PluginLogSourceFactory _logSourceFactory;
 
 		[SetUp]
 		public void Setup()
@@ -42,7 +42,7 @@ namespace Tailviewer.Serilog.Test
 			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_taskScheduler));
 			_services.RegisterInstance<IPluginLoader>(_plugins);
 			_services.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(_services));
-			_logSourceFactory = new PluginLogFileFactory(_services, null);
+			_logSourceFactory = new PluginLogSourceFactory(_services, null);
 		}
 
 		[TearDown]

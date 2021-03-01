@@ -6,7 +6,6 @@ using System.Text;
 using System.Windows.Media;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;

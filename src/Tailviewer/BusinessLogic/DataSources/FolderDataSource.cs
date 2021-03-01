@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly MergedDataSource _mergedDataSource;
 		private readonly IFilesystem _filesystem;
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly ILogFileFactory _logFileFactory;
+		private readonly ILogSourceFactory _logSourceFactory;
 		private readonly DataSource _settings;
 		private readonly LogSourceProxy _unfilteredLogSourceProxy;
 		private readonly LogSourceProxy _filteredLogSourceProxy;
@@ -50,21 +50,21 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private bool _isDisposed;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
-								ILogFileFactory logFileFactory,
+								ILogSourceFactory logSourceFactory,
 								IFilesystem filesystem,
 								DataSource settings)
-			: this(taskScheduler, logFileFactory, filesystem, settings, TimeSpan.FromMilliseconds(value: 10))
+			: this(taskScheduler, logSourceFactory, filesystem, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
-								ILogFileFactory logFileFactory,
+								ILogSourceFactory logSourceFactory,
 								IFilesystem filesystem,
 								DataSource settings,
 								TimeSpan maximumWaitTime)
 		{
 			_taskScheduler = taskScheduler;
-			_logFileFactory = logFileFactory;
+			_logSourceFactory = logSourceFactory;
 			_filesystem = filesystem;
 			_settings = settings;
 			_syncRoot = new object();
@@ -489,7 +489,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 							{
 								Id = DataSourceId.CreateNew()
 							};
-							dataSource = new FileDataSource(_logFileFactory,
+							dataSource = new FileDataSource(_logSourceFactory,
 															  _taskScheduler,
 															  settings);
 							_dataSources.Add(file, dataSource);

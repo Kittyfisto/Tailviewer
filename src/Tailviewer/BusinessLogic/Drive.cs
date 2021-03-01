@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using log4net;
 
-namespace Tailviewer.Core
+namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
 	///     "Namespace" to collect methods related to drives.

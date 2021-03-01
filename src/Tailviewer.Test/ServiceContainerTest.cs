@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Settings;
-using Tailviewer.Plugins;
-using Tailviewer.Settings;
 
 namespace Tailviewer.Test
 {

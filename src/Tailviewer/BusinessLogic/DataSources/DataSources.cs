@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ILogFileFactory _logFileFactory;
+		private readonly ILogSourceFactoryEx _logSourceFactory;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<IDataSource> _dataSources;
 		private readonly HashSet<DataSourceId> _dataSourceIds;
@@ -32,13 +32,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly BookmarkCollection _bookmarks;
 		private readonly IFilesystem _filesystem;
 
-		public DataSources(ILogFileFactory logFileFactory,
+		public DataSources(ILogSourceFactoryEx logSourceFactory,
 		                   ITaskScheduler taskScheduler,
 						   IFilesystem filesystem,
 		                   IDataSourcesSettings settings,
 		                   IBookmarks bookmarks)
 		{
-			_logFileFactory = logFileFactory ?? throw new ArgumentNullException(nameof(logFileFactory));
+			_logSourceFactory = logSourceFactory ?? throw new ArgumentNullException(nameof(logSourceFactory));
 			_taskScheduler = taskScheduler;
 			_filesystem = filesystem ?? throw new ArgumentNullException(nameof(filesystem));
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
@@ -113,7 +113,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources
 		{
-			get { return _logFileFactory.CustomDataSources; }
+			get { return _logSourceFactory.CustomDataSources; }
 		}
 
 		public bool Contains(DataSourceId id)
@@ -163,15 +163,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 				IDataSource dataSource;
 				if (!string.IsNullOrEmpty(settings.LogFileFolderPath))
 				{
-					dataSource = new FolderDataSource(_taskScheduler, _logFileFactory, _filesystem, settings);
+					dataSource = new FolderDataSource(_taskScheduler, _logSourceFactory, _filesystem, settings);
 				}
 				else if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
+					dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
 				else if (settings.CustomDataSourceConfiguration != null)
 				{
-					dataSource = new CustomDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
+					dataSource = new CustomDataSource(_logSourceFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
 				else
 				{
@@ -210,7 +210,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			CustomDataSource dataSource;
 
-			var plugin = _logFileFactory.CustomDataSources.First(x => x.Id == id);
+			var plugin = _logSourceFactory.CustomDataSources.First(x => x.Id == id);
 
 			lock (_syncRoot)
 			{

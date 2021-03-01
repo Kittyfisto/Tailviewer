@@ -63,16 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayExtensions.cs" />
-    <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Buffers\CombinedLogBufferView.cs" />
     <Compile Include="Buffers\LogBufferExtensions.cs" />
-    <Compile Include="ColoringConsoleAppender.cs" />
     <Compile Include="ConcurrentQueueExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="Drive.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="FileEx.cs" />
     <Compile Include="Filters\ExpressionEngine\AndExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\BinaryExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\BinaryOperation.cs" />
@@ -98,6 +94,7 @@
     <Compile Include="Sources\Buffer\PagedLogBuffer.cs" />
     <Compile Include="Sources\Adorner\LogSourceColumnAdorner.cs" />
     <Compile Include="Sources\Buffer\FullyBufferedLogSource.cs" />
+    <Compile Include="Sources\ILogSourceFactory.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
@@ -203,7 +200,6 @@
     <Compile Include="Sources\Text\Simple\TextLogSource.cs" />
     <Compile Include="Properties\WellKnownReadOnlyProperty.cs" />
     <Compile Include="MathEx.cs" />
-    <Compile Include="NullToNotAvailableConverter.cs" />
     <Compile Include="Parsers\DateTimeParser.cs" />
     <Compile Include="Parsers\NoThrowTimestampParser.cs" />
     <Compile Include="Parsers\TimeOfDaySecondsSinceStartParser.cs" />

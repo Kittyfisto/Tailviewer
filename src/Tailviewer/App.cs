@@ -190,7 +190,7 @@ namespace Tailviewer
 					services.RegisterInstance<ILogSourceParserPlugin>(parsingLogSourceFactory);
 
 					var customDataSourcePlugins = pluginSystem.LoadAllOfTypeWithDescription<ICustomDataSourcePlugin>();
-					var logFileFactory = new PluginLogFileFactory(services, customDataSourcePlugins);
+					var logFileFactory = new PluginLogSourceFactory(services, customDataSourcePlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					{

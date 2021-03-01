@@ -9,14 +9,9 @@ namespace Tailviewer.Core.Sources
 	/// <summary>
 	///     This class implements one of the layers of isolation between a third-party plugin
 	///     and tailviewer: The ILogFile interface prohibits exceptions to occur, however we cannot
-	///     rely on that to never happen. This implementation guarantuees the nothrow contract and also
+	///     rely on that to never happen. This implementation guarantees the nothrow contract and also
 	///     writes warnings to the log file.
 	/// </summary>
-	/// <remarks>
-	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
-	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateNoThrowLogFile"/>
-	///    who's signature is guaranteed to never change.
-	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
 	internal sealed class NoThrowLogSource
 		: ILogSource

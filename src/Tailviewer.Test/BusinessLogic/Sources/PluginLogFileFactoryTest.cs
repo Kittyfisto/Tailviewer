@@ -1,11 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using System.Threading;
-using FluentAssertions;
-using Moq;
+﻿using System.Threading;
 using NUnit.Framework;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Sources;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.Sources
 {

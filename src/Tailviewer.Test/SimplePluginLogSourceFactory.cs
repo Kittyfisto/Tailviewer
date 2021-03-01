@@ -7,10 +7,10 @@ using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
 {
-	public sealed class SimplePluginLogFileFactory
-		: PluginLogFileFactory
+	public sealed class SimplePluginLogSourceFactory
+		: PluginLogSourceFactory
 	{
-		public SimplePluginLogFileFactory(ITaskScheduler scheduler)
+		public SimplePluginLogSourceFactory(ITaskScheduler scheduler)
 			: base(CreateServiceContainer(scheduler), null)
 		{}
 

@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core;
 using Tailviewer.Settings;
 

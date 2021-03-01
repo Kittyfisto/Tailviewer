@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Core.Sources;
+using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Plugins;
 
@@ -14,22 +16,22 @@ namespace Tailviewer.BusinessLogic.Sources
 	/// <summary>
 	/// 
 	/// </summary>
-	public class PluginLogFileFactory
-		: ILogFileFactory
+	public class PluginLogSourceFactory
+		: ILogSourceFactoryEx
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IReadOnlyList<IPluginWithDescription<ICustomDataSourcePlugin>> _dataSourcePlugins;
 		private readonly IServiceContainer _services;
 
-		public PluginLogFileFactory(IServiceContainer services,
+		public PluginLogSourceFactory(IServiceContainer services,
 		                            IPluginWithDescription<ICustomDataSourcePlugin>[] dataSourcePlugins)
 		{
 			_services = services ?? throw new ArgumentNullException(nameof(services));
 			_dataSourcePlugins = new List<IPluginWithDescription<ICustomDataSourcePlugin>>(dataSourcePlugins ?? new IPluginWithDescription<ICustomDataSourcePlugin>[0]);
 		}
 
-		public PluginLogFileFactory(IServiceContainer services,
+		public PluginLogSourceFactory(IServiceContainer services,
 		                            IEnumerable<IPluginWithDescription<ICustomDataSourcePlugin>> dataSourcePlugins)
 			: this(services,
 			       dataSourcePlugins?.ToArray() ?? new IPluginWithDescription<ICustomDataSourcePlugin>[0])
@@ -46,6 +48,11 @@ namespace Tailviewer.BusinessLogic.Sources
 			get { return _dataSourcePlugins.Select(x => x.Plugin).ToList(); }
 		}
 
+		public ILogSource CreateCustom(CustomDataSourceId id, ICustomDataSourceConfiguration configuration)
+		{
+			return CreateCustom(id, configuration, out _);
+		}
+
 		public ILogSource CreateCustom(CustomDataSourceId id, ICustomDataSourceConfiguration configuration,
 		                               out IPluginDescription pluginDescription)
 		{
@@ -53,6 +60,40 @@ namespace Tailviewer.BusinessLogic.Sources
 			pluginDescription = pair.Description;
 			var logFile = TryCreateCustomWith(pair.Plugin, configuration);
 			return new NoThrowLogSource(logFile, pluginDescription.Name);
+		}
+
+		/// <inheritdoc />
+		public ILogSource CreateEventLogFile(string fileName)
+		{
+			return new EventLogSource(_services.Retrieve<ITaskScheduler>(), fileName);
+		}
+
+		/// <inheritdoc />
+		public ILogSource CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogSource source, ILogEntryFilter filter)
+		{
+			return new FilteredLogSource(_services.Retrieve<ITaskScheduler>(), maximumWaitTime, source,
+			                             null,
+			                             filter);
+		}
+
+		/// <inheritdoc />
+		public ILogSourceProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogSource source)
+		{
+			return new LogSourceProxy(_services.Retrieve<ITaskScheduler>(), maximumWaitTime, source);
+		}
+
+		/// <inheritdoc />
+		public IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogSource> sources)
+		{
+			return new MergedLogSource(_services.Retrieve<ITaskScheduler>(),
+			                           maximumWaitTime,
+			                           sources);
+		}
+
+		/// <inheritdoc />
+		public ILogSource CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogSource source)
+		{
+			return new MultiLineLogSource(_services.Retrieve<ITaskScheduler>(), source, maximumWaitTime);
 		}
 
 		private ILogSource TryCreateCustomWith(ICustomDataSourcePlugin plugin, ICustomDataSourceConfiguration configuration)

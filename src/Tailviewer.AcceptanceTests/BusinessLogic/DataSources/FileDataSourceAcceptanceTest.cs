@@ -9,13 +9,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 	public sealed class FileDataSourceAcceptanceTest
 	{
 		private ManualTaskScheduler _scheduler;
-		private PluginLogFileFactory _logFileFactory;
+		private PluginLogSourceFactory _logSourceFactory;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 		}
 	}
 }

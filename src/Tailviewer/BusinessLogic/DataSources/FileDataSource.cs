@@ -16,19 +16,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogSource _multiLineLogSource;
 
-		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
-			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
+		public FileDataSource(ILogSourceFactory logSourceFactory, ITaskScheduler taskScheduler, DataSource settings)
+			: this(logSourceFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
-		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings,
+		public FileDataSource(ILogSourceFactory logSourceFactory, ITaskScheduler taskScheduler, DataSource settings,
 			TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			if (logFileFactory == null)
-				throw new ArgumentNullException(nameof(logFileFactory));
+			if (logSourceFactory == null)
+				throw new ArgumentNullException(nameof(logSourceFactory));
 
-			_originalLogSource = logFileFactory.Open(settings.File);
+			_originalLogSource = logSourceFactory.Open(settings.File);
 			_unfilteredLogSource = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();

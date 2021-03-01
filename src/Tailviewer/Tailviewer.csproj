@@ -129,6 +129,8 @@
     <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMultiDataSource.cs" />
+    <Compile Include="BusinessLogic\Drive.cs" />
+    <Compile Include="BusinessLogic\FileEx.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
@@ -138,14 +140,14 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\Sources\RawFileLogSourceFactory.cs" />
-    <Compile Include="BusinessLogic\Sources\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\Sources\ILogSourceFactory.cs" />
     <Compile Include="BusinessLogic\LogFileFormats\ILogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\Sources\LogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\LogFileFormats\LogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\Sources\ParsingLogSourceFactory.cs" />
     <Compile Include="BusinessLogic\Sources\NoThrowLogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Sources\NoThrowLogEntryParser.cs" />
-    <Compile Include="BusinessLogic\Sources\PluginLogFileFactory.cs" />
+    <Compile Include="BusinessLogic\Sources\PluginLogSourceFactory.cs" />
     <Compile Include="BusinessLogic\Sources\GenericTextLogEntryParser.cs" />
     <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
@@ -235,6 +237,7 @@
     <Compile Include="Ui\AboutViewModel.cs" />
     <Compile Include="Ui\Converters\FollowTailTooltipConverter.cs" />
     <Compile Include="Ui\Converters\LevelToggleTooltipConverter.cs" />
+    <Compile Include="Ui\Converters\NullToNotAvailableConverter.cs" />
     <Compile Include="Ui\DataSourceTree\DataSourcesToggleButton.cs" />
     <Compile Include="Ui\EmptyState.cs" />
     <Compile Include="Ui\LogView\ILogViewMainPanelViewModel.cs" />

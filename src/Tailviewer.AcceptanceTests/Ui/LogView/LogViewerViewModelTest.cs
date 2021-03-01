@@ -7,8 +7,8 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 using Tailviewer.Ui.DataSourceTree;
@@ -20,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.Ui.LogView
 	public sealed class LogViewerViewModelTest
 	{
 		private Mock<IActionCenter> _actionCenter;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 		private DefaultTaskScheduler _taskScheduler;
 		private ApplicationSettings _settings;
 
@@ -28,7 +28,7 @@ namespace Tailviewer.AcceptanceTests.Ui.LogView
 		public void TestFixtureSetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_taskScheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_settings = new ApplicationSettings(PathEx.GetTempFileName());
 		}
@@ -55,7 +55,7 @@ namespace Tailviewer.AcceptanceTests.Ui.LogView
 		public void TestSearch1()
 		{
 			using (
-				var dataSource = new FileDataSource(_logFileFactory, _taskScheduler,
+				var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler,
 					new DataSource(AbstractTextLogSourceAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
 			{
 				var dataSourceModel = CreateViewModel(dataSource);

@@ -21,16 +21,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 		}
 
 		private ManualTaskScheduler _scheduler;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 
 		[Test]
 		public void TestConstruction1()
 		{
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") { Id = DataSourceId.CreateNew() }))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);
@@ -47,7 +47,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				Id = DataSourceId.CreateNew(),
 				SelectedLogLines = new HashSet<LogLineIndex> {1, 2}
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				source.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex[] {1, 2});
 			}
@@ -61,7 +61,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				Id = DataSourceId.CreateNew(),
 				ShowDeltaTimes = showDeltaTimes
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				source.ShowDeltaTimes.Should().Be(showDeltaTimes);
 			}
@@ -75,7 +75,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				Id = DataSourceId.CreateNew(),
 				ShowElapsedTime = showElapsedTime
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				source.ShowElapsedTime.Should().Be(showElapsedTime);
 			}
@@ -88,7 +88,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			{
 				Id = DataSourceId.CreateNew()
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				source.ShowElapsedTime = showElapsedTime;
 				settings.ShowElapsedTime.Should().Be(showElapsedTime);
@@ -105,7 +105,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			{
 				Id = DataSourceId.CreateNew()
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				source.ShowDeltaTimes = showDeltaTimes;
 				settings.ShowDeltaTimes.Should().Be(showDeltaTimes);
@@ -126,7 +126,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			LogSourceSearchProxy permanentFindAllSearch;
 
 			FileDataSource source;
-			using (source = new FileDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()}))
+			using (source = new FileDataSource(_logSourceFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()}))
 			{
 				permanentLogSource = (LogSourceProxy) source.FilteredLogSource;
 				permanentLogSource.IsDisposed.Should().BeFalse();
@@ -151,7 +151,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Description("Verifies that the data source stops all periodic tasks upon being disposed of")]
 		public void TestDispose2()
 		{
-			FileDataSource source = new FileDataSource(_logFileFactory, _scheduler,
+			FileDataSource source = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()});
 			_scheduler.PeriodicTaskCount.Should().BeGreaterThan(0);
 			source.Dispose();

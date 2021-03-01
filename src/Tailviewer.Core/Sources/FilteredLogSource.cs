@@ -18,7 +18,7 @@ namespace Tailviewer.Core.Sources
 	/// </summary>
 	/// <remarks>
 	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
-	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateFilteredLogFile"/>
+	///    over time. In order to create an instance of this type, simply call <see cref="ILogSourceFactory.CreateFilteredLogFile"/>
 	///    who's signature is guaranteed to never change.
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
