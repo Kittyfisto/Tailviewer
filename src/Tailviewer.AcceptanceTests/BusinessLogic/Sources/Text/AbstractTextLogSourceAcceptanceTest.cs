@@ -258,7 +258,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		}
 
 		[Test]
-		public void TestReadAll2()
+		[FlakyTest(3)]
+		public virtual void TestReadAll2()
 		{
 			using (var file = Create(File20Mb))
 			{
