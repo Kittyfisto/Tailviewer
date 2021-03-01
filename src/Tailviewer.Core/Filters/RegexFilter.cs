@@ -7,7 +7,7 @@ namespace Tailviewer.Core.Filters
 	///     A filter based on regular expressions:
 	///     A line matches when the regex does.
 	/// </summary>
-	public sealed class RegexFilter
+	internal sealed class RegexFilter
 		: ILogEntryFilter
 	{
 		private readonly Regex _regex;

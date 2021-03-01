@@ -5,7 +5,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class ParseException
+	internal sealed class ParseException
 		: Exception
 	{
 		/// <summary>

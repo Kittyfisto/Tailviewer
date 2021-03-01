@@ -5,7 +5,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	/// Responsible for filtering a range of log entries based on their <see cref="IReadOnlyLogEntry.Index"/>.
 	/// </summary>
-	public sealed class RangeFilter
+	internal sealed class RangeFilter
 		: ILogEntryFilter
 	{
 		private readonly LogFileSection _filteredSection;

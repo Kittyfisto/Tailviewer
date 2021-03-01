@@ -6,7 +6,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A simple wildcard filter.
 	/// </summary>
-	public class WildcardFilter : ILogEntryFilter
+	internal class WildcardFilter : ILogEntryFilter
 	{
 		private readonly Regex _regex;
 

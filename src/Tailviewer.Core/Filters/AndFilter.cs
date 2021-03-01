@@ -7,7 +7,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A simple filter expression which performs a logical AND between all <see cref="ILogEntryFilter"/>s.
 	/// </summary>
-	public sealed class AndFilter
+	internal sealed class AndFilter
 		: ILogEntryFilter
 	{
 		private readonly ILogEntryFilter[] _filters;

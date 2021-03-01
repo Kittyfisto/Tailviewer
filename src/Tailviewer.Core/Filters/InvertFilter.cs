@@ -6,7 +6,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A filter which wraps another filter and simply inverts its result.
 	/// </summary>
-	public sealed class InvertFilter : ILogEntryFilter
+	internal sealed class InvertFilter : ILogEntryFilter
 	{
 		private readonly ILogEntryFilter _filter;
 
