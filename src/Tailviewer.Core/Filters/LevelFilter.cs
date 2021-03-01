@@ -6,7 +6,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A filter that can be used to exclude entries of certain levels.
 	/// </summary>
-	public sealed class LevelFilter
+	internal sealed class LevelFilter
 		: ILogEntryFilter
 	{
 		private  readonly LevelFlags _level;

@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 
@@ -20,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 		}
 
@@ -29,7 +30,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_settings = new DataSourceSettings();
 			_bookmarks = new Mock<IBookmarks>();
-			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
+			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 		}
 
 		[TearDown]
@@ -41,7 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		private DataSourceSettings _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
 		private ManualTaskScheduler _scheduler;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactoryEx _logSourceFactory;
 		private Mock<IBookmarks> _bookmarks;
 		private InMemoryFilesystem _filesystem;
 
@@ -83,7 +84,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAddGroup1()
 		{
 			var settings = new DataSourceSettings();
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				MergedDataSource group = dataSources.AddGroup();
 				group.Should().NotBeNull();
@@ -119,7 +120,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 							Id = DataSourceId.CreateNew()
 						}
 				};
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(1);
 				IDataSource dataSource = dataSources.Sources.First();
@@ -152,7 +153,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[0].ParentId = merged.Id;
 			settings[1].ParentId = merged.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(4, "Because we've loaded 4 data sources");
 				var mergedDataSource = dataSources[3] as MergedDataSource;
@@ -196,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[1].ParentId = merged2.Id;
 			settings[2].ParentId = merged3.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(6, "Because we've loaded 6 data sources");
 				var mergedDataSource1 = dataSources[3] as MergedDataSource;
@@ -229,7 +230,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				}
 			};
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				var group1 = dataSources.Sources.First() as IMergedDataSource;
 				group1.Should().NotBeNull();
@@ -253,7 +254,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				},
 			};
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logSourceFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				var folder = dataSources.Sources.First() as IFolderDataSource;
 				folder.Should().NotBeNull();

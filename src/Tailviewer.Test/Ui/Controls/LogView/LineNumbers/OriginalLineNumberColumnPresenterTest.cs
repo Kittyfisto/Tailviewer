@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;

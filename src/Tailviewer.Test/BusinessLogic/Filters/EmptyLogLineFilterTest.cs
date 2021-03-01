@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 using Tailviewer.Core.Filters;

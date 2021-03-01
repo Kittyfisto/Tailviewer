@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Tailviewer.Plugins;
+﻿using Tailviewer.Plugins;
 
 namespace Tailviewer.Formats.Serilog
 {
@@ -11,11 +9,6 @@ namespace Tailviewer.Formats.Serilog
 		: ILogEntryParserPlugin
 	{
 		#region Implementation of ITextLogFileParserPlugin
-
-		IReadOnlyList<ILogFileFormat> ILogEntryParserPlugin.SupportedFormats
-		{
-			get { return new ILogFileFormat[0]; }
-		}
 
 		public ILogEntryParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{

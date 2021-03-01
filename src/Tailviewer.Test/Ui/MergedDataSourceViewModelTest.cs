@@ -8,6 +8,7 @@ using System.Threading;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.DataSourceTree;
@@ -25,9 +26,9 @@ namespace Tailviewer.Test.Ui
 			_bookmarks = new Mock<IBookmarks>();
 
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 			_actionCenter = new Mock<IActionCenter>();
 			_applicationSettings = new Mock<IApplicationSettings>();
 		}
@@ -47,7 +48,7 @@ namespace Tailviewer.Test.Ui
 		private DataSources _dataSources;
 		private Tailviewer.Settings.DataSourceSettings _settings;
 		private ManualTaskScheduler _scheduler;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactoryEx _logSourceFactory;
 		private Mock<IActionCenter> _actionCenter;
 		private Mock<IApplicationSettings> _applicationSettings;
 		private Mock<IBookmarks> _bookmarks;

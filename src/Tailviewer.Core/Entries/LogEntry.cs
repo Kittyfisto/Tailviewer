@@ -53,6 +53,14 @@ namespace Tailviewer.Core.Entries
 			}
 		}
 
+		/// <summary>
+		/// </summary>
+		public LogEntry(IReadOnlyLogEntry other)
+			: this(other.Columns)
+		{
+			CopyFrom(other);
+		}
+
 		/// <inheritdoc />
 		public override IReadOnlyList<IColumnDescriptor> Columns => _columns;
 

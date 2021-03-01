@@ -2,7 +2,7 @@
 using log4net.Appender;
 using log4net.Core;
 
-namespace Tailviewer.Core
+namespace Tailviewer.Archiver
 {
 	/// <summary>
 	/// 

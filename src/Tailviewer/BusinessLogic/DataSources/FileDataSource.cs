@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
@@ -13,22 +12,22 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogSource _originalLogSource;
 		private readonly LogSourceProxy _unfilteredLogSource;
-		private readonly IPluginDescription _pluginDescription;
+		//private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogSource _multiLineLogSource;
 
-		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
-			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
+		public FileDataSource(ILogSourceFactory logSourceFactory, ITaskScheduler taskScheduler, DataSource settings)
+			: this(logSourceFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
-		public FileDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings,
+		public FileDataSource(ILogSourceFactory logSourceFactory, ITaskScheduler taskScheduler, DataSource settings,
 			TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			if (logFileFactory == null)
-				throw new ArgumentNullException(nameof(logFileFactory));
+			if (logSourceFactory == null)
+				throw new ArgumentNullException(nameof(logSourceFactory));
 
-			_originalLogSource = logFileFactory.Open(settings.File, out _pluginDescription);
+			_originalLogSource = logSourceFactory.Open(settings.File);
 			_unfilteredLogSource = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
@@ -47,7 +46,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			OnUnfilteredLogFileChanged();
 		}
 
-		public override IPluginDescription TranslationPlugin => _pluginDescription;
+		//public override IPluginDescription TranslationPlugin => _pluginDescription;
+		public override IPluginDescription TranslationPlugin => null;
 
 		public override ILogSource OriginalLogSource => _originalLogSource;
 

@@ -7,7 +7,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A filter that looks for a substring in a (possibly) bigger string.
 	/// </summary>
-	public sealed class SubstringFilter
+	internal sealed class SubstringFilter
 		: ILogEntryFilter
 	{
 		private readonly StringComparison _comparison;

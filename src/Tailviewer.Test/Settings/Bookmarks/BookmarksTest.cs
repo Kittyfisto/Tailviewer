@@ -2,7 +2,6 @@
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.Test.Settings.Bookmarks

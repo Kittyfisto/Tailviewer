@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Tailviewer.Core
+namespace Tailviewer.Ui.Converters
 {
 	/// <summary>
 	///     A converter which converts null values to N/A.

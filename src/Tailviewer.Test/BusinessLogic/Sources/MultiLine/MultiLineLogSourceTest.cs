@@ -22,9 +22,9 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 		{
 			_taskScheduler = new ManualTaskScheduler();
 
-			_lines = new List<LogLine>();
+			_entries = new LogBufferList();
 			_source = new Mock<ILogSource>();
-			_source.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => _lines.Count);
+			_source.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(() => _entries.Count);
 			_source.Setup(x => x.AddListener(It.IsAny<ILogSourceListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 				.Callback((ILogSourceListener listener, TimeSpan unused1, int unused2) =>
 				{
@@ -40,10 +40,10 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 		}
 
 		private Mock<ILogSource> _source;
-		private List<LogLine> _lines;
 		private ManualTaskScheduler _taskScheduler;
 		private List<LogFileSection> _changes;
 		private Mock<ILogSourceListener> _listener;
+		private LogBufferList _entries;
 
 		[Test]
 		public void TestCtor1()
@@ -97,7 +97,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			_taskScheduler.RunOnce();
 			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
 
-			_lines.Add(new LogLine());
+			_entries.Add(new LogEntry());
 			_source.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Returns(ErrorFlags.None);
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer properties) =>
@@ -123,7 +123,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue("because the source doesn't exist (yet)");
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
-			_lines.Add(new LogLine());
+			_entries.Add(new LogEntry());
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer properties) =>
 			       {
@@ -147,7 +147,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			logFile.GetProperty(GeneralProperties.LastModified).Should().NotHaveValue("because the source doesn't exist (yet)");
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
-			_lines.Add(new LogLine());
+			_entries.Add(new LogEntry());
 			_source.Setup(x => x.GetProperty(GeneralProperties.LastModified)).Returns(timestamp);
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer properties) =>
@@ -173,7 +173,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the source doesn't exist (yet)");
 
 			var size = Size.FromGigabytes(42);
-			_lines.Add(new LogLine());
+			_entries.Add(new LogEntry());
 			_source.Setup(x => x.GetProperty(GeneralProperties.Size)).Returns(size);
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer properties) =>
@@ -199,7 +199,7 @@ namespace Tailviewer.Test.BusinessLogic.Sources.MultiLine
 			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
-			_lines.Clear();
+			_entries.Clear();
 			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
 			_taskScheduler.RunOnce();
 

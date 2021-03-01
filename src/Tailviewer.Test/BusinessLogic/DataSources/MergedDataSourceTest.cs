@@ -3,7 +3,6 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Columns;
@@ -21,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_taskScheduler);
 			_settings = new DataSource
 				{
 					Id = DataSourceId.CreateNew(),
@@ -34,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		private MergedDataSource _merged;
 		private DataSource _settings;
 		private ManualTaskScheduler _taskScheduler;
-		private PluginLogFileFactory _logFileFactory;
+		private PluginLogSourceFactory _logSourceFactory;
 		private ILogSource _unfilteredLogSource;
 
 		[Pure]
@@ -52,7 +51,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
 			        .Be(_settings.Id, "Because the parent-child relationship should've been declared via ParentId");
@@ -63,7 +62,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd2()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			var mergedLogFile = GetMergedLogFile();
 			mergedLogFile.Sources.Should().Equal(new object[] {dataSource.OriginalLogSource});
@@ -74,7 +73,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd3()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
@@ -88,7 +87,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestMultiline()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			var logFile1 = GetMergedLogFile();
 
 			_merged.Add(dataSource);
@@ -105,7 +104,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			var logFile1 = GetMergedLogFile();
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logSourceFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 			var logFile2 = GetMergedLogFile();
 
@@ -163,7 +162,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose2()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Dispose();
@@ -178,7 +177,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings);
+			var dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Settings.ParentId.Should().Be(DataSourceId.Empty);
@@ -189,11 +188,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove2()
 		{
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new FileDataSource(_logFileFactory, _taskScheduler, settings1);
+			var dataSource1 = new FileDataSource(_logSourceFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 
 			var settings2 = new DataSource("bar") {Id = DataSourceId.CreateNew()};
-			var dataSource2 = new FileDataSource(_logFileFactory, _taskScheduler, settings2);
+			var dataSource2 = new FileDataSource(_logSourceFactory, _taskScheduler, settings2);
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);

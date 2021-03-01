@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
@@ -8,11 +7,11 @@ using Tailviewer.Plugins;
 
 namespace Tailviewer.Test
 {
-	public sealed class SimplePluginLogFileFactory
-		: PluginLogFileFactory
+	public sealed class SimplePluginLogSourceFactory
+		: PluginLogSourceFactory
 	{
-		public SimplePluginLogFileFactory(ITaskScheduler scheduler, params IFileFormatPlugin[] plugins)
-			: base(CreateServiceContainer(scheduler), plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)), null)
+		public SimplePluginLogSourceFactory(ITaskScheduler scheduler)
+			: base(CreateServiceContainer(scheduler), null)
 		{}
 
 		private static IServiceContainer CreateServiceContainer(ITaskScheduler scheduler)
@@ -21,7 +20,7 @@ namespace Tailviewer.Test
 			container.RegisterInstance<ITaskScheduler>(scheduler);
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
-			container.RegisterInstance<IFileLogSourceFactory>(new FileLogSourceFactory(scheduler));
+			container.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(scheduler));
 			container.RegisterInstance<IPluginLoader>(new PluginRegistry());
 			container.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(container));
 			return container;

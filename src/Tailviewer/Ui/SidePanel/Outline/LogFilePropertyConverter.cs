@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Data;
 using Tailviewer.Core;
+using Tailviewer.Ui.Converters;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

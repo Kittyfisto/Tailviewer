@@ -8,8 +8,8 @@ using Tailviewer.Settings;
 namespace Tailviewer.Ui.LogView.LineNumbers
 {
 	/// <summary>
-	///     A "canvas" which draws <see cref="LogLine.OriginalLineIndex"/> in the same vertical alignment as <see cref="TextCanvas" />
-	///     draws the <see cref="LogLine.Message" />.
+	///     A "canvas" which draws <see cref="IReadOnlyLogEntry.OriginalLineNumber"/> in the same vertical alignment as <see cref="TextCanvas" />
+	///     draws the <see cref="IReadOnlyLogEntry.RawContent" />.
 	/// </summary>
 	public sealed class OriginalLineNumberColumnPresenter
 		: AbstractLogColumnPresenter<int>

@@ -3,7 +3,7 @@
 namespace Tailviewer
 {
 	/// <summary>
-	///     This enum describes the possible log levels a <see cref="LogLine" /> may be associated with.
+	///     This enum describes the possible log levels an <see cref="IReadOnlyLogEntry" /> may be associated with.
 	/// </summary>
 	[Flags]
 	public enum LevelFlags : byte

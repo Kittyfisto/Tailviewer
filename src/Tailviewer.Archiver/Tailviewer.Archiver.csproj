@@ -82,6 +82,7 @@
     <Compile Include="Applications\Pack.cs" />
     <Compile Include="Applications\Publish.cs" />
     <Compile Include="Applications\PublishOptions.cs" />
+    <Compile Include="ColoringConsoleAppender.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExitCode.cs" />

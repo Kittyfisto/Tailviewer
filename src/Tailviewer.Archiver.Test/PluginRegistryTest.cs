@@ -24,7 +24,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			var registry = new PluginRegistry();
 			registry.LoadAllOfType<ILogFileOutlinePlugin>().Should().BeEmpty();
-			registry.LoadAllOfType<IFileFormatPlugin>().Should().BeEmpty();
+			registry.LoadAllOfType<ILogEntryParserPlugin>().Should().BeEmpty();
 		}
 
 		[Test]

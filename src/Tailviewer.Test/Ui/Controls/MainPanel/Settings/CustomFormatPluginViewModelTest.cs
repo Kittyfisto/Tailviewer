@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFileFormats;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Plugins;
 using Tailviewer.Settings;

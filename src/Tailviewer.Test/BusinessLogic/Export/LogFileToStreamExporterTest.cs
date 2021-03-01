@@ -4,7 +4,6 @@ using System.Text;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.Core.Sources;
 

@@ -40,7 +40,7 @@ namespace Tailviewer.Core
 		/// <param name="assembly"></param>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		public static DateTime GetLinkerTime(Assembly assembly, TimeZoneInfo target = null)
+		private static DateTime GetLinkerTime(Assembly assembly, TimeZoneInfo target = null)
 		{
 			var filePath = assembly.Location;
 			const int c_PeHeaderOffset = 60;

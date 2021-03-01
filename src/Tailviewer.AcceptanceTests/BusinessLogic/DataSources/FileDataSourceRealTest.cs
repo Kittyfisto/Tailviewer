@@ -4,9 +4,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
@@ -19,12 +19,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_taskScheduler);
 			_settings = new DataSource(AbstractTextLogSourceAcceptanceTest.File20Mb)
 			{
 				Id = DataSourceId.CreateNew()
 			};
-			_dataSource = new FileDataSource(_logFileFactory, _taskScheduler, _settings, TimeSpan.FromMilliseconds(100));
+			_dataSource = new FileDataSource(_logSourceFactory, _taskScheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
 
 		[TearDown]
@@ -37,7 +37,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		private DataSource _settings;
 		private FileDataSource _dataSource;
 		private DefaultTaskScheduler _taskScheduler;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 
 		[Test]
 		public void TestCtor()

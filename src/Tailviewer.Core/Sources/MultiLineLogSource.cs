@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Sources
 	/// </remarks>
 	/// <remarks>
 	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
-	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMultiLineLogFile"/>
+	///    over time. In order to create an instance of this type, simply call <see cref="ILogSourceFactory.CreateMultiLineLogFile"/>
 	///    who's signature is guaranteed to never change.
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogSourceDebuggerVisualization))]
@@ -52,7 +52,7 @@ namespace Tailviewer.Core.Sources
 		/// </summary>
 		/// <remarks>
 		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
-		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMultiLineLogFile"/>.
+		///    over time. In order to create an instance of this type, simply call <see cref="ILogSourceFactory.CreateMultiLineLogFile"/>.
 		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="source"></param>

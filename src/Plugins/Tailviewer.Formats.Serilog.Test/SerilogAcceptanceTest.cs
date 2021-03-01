@@ -24,6 +24,7 @@ namespace Tailviewer.Serilog.Test
 		private Mock<ILogFileFormatRepository> _repository;
 		private List<SerilogFileFormat> _formats;
 		private PluginRegistry _plugins;
+		private PluginLogSourceFactory _logSourceFactory;
 
 		[SetUp]
 		public void Setup()
@@ -38,9 +39,10 @@ namespace Tailviewer.Serilog.Test
 			_services = new ServiceContainer();
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogFileFormatMatcher>(new SerilogFileFormatMatcher(_repository.Object));
-			_services.RegisterInstance<IFileLogSourceFactory>(new FileLogSourceFactory(_taskScheduler));
+			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_taskScheduler));
 			_services.RegisterInstance<IPluginLoader>(_plugins);
 			_services.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(_services));
+			_logSourceFactory = new PluginLogSourceFactory(_services, null);
 		}
 
 		[TearDown]
@@ -49,17 +51,12 @@ namespace Tailviewer.Serilog.Test
 			_taskScheduler.Dispose();
 		}
 
-		private ILogSource Create(string fileName)
-		{
-			return _services.CreateTextLogFile(fileName);
-		}
-
 		[Test]
 		public void Test()
 		{
 			_formats.Add(new SerilogFileFormat("sss", "{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u3}] {Message}", Encoding.Default));
 
-			using (var logSource = Create(@"TestData\Formats\Serilog\Serilog.txt"))
+			using (var logSource = _logSourceFactory.Open(@"TestData\Formats\Serilog\Serilog.txt"))
 			{
 				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);

@@ -7,10 +7,8 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.Sources;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -23,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_taskScheduler);
 			_filesystem = new InMemoryFilesystem();
 			_settings = new DataSource
 			{
@@ -34,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private ManualTaskScheduler _taskScheduler;
 		private DataSource _settings;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 		private InMemoryFilesystem _filesystem;
 
 		[Test]
@@ -48,7 +46,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		                       [Values(true, false)] bool recursive)
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -66,7 +64,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestNoSuchFolder()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -81,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestNoSuchDrive()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -96,7 +94,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestEmptyFolder()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -113,7 +111,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestOneMatchingLogFile()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -135,7 +133,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestMultiplePatterns()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -158,7 +156,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestTooManySources()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -184,7 +182,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestChangeFilter()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -206,7 +204,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestChangeSingleLine()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -228,7 +226,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestChangeLevelFilter()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -264,7 +262,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			filesystem.Setup(x => x.Watchdog).Returns(watchdog.Object);
 
 			var dataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      filesystem.Object,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -283,7 +281,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_settings.LogFileSearchPattern = "*.log";
 
 			var folderDataSource = new FolderDataSource(_taskScheduler,
-			                                      _logFileFactory,
+			                                      _logSourceFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
@@ -306,7 +304,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestClearAllShowAll()
 		{
 			var folderDataSource = new FolderDataSource(_taskScheduler,
-			                                            _logFileFactory,
+			                                            _logSourceFactory,
 			                                            _filesystem,
 			                                            _settings,
 			                                            TimeSpan.Zero);

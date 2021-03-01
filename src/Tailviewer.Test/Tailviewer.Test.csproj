@@ -173,13 +173,12 @@
     <Compile Include="BusinessLogic\Sources\Text\GenericTextLogEntryParserTest.cs" />
     <Compile Include="BusinessLogic\Columns\WellKnownColumnDescriptorTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
-    <Compile Include="BusinessLogic\LogLineTest.cs" />
+    <Compile Include="BusinessLogic\LogLevelParserTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
     <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\Merged\MergedLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Entries\AbstractLogEntryTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileIssuesPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileOutlinePluginTest.cs" />
@@ -223,7 +222,7 @@
     <Compile Include="Settings\TextSettingsTest.cs" />
     <Compile Include="Settings\TimeFilterTest.cs" />
     <Compile Include="SimpleLogFileFormatMatcher.cs" />
-    <Compile Include="SimplePluginLogFileFactory.cs" />
+    <Compile Include="SimplePluginLogSourceFactory.cs" />
     <Compile Include="SimpleLogEntryParserPlugin.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />

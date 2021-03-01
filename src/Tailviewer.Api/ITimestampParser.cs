@@ -6,7 +6,6 @@ namespace Tailviewer
 	///     The interface for a parser that is responsible for determining the timestamp of a message
 	///     of a log line.
 	/// </summary>
-	[Service]
 	public interface ITimestampParser
 	{
 		/// <summary>

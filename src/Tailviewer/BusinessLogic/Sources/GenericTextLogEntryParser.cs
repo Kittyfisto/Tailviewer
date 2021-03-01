@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;
 
@@ -14,6 +13,7 @@ namespace Tailviewer.BusinessLogic.Sources
 	{
 		private static readonly string[] RemovableCharacters;
 		private readonly ITimestampParser _timestampParser;
+		private readonly LogLevelParser _logLevelParser;
 		private int _numTimestampSuccess;
 		private int _numSuccessiveTimestampFailures;
 		private readonly IReadOnlyList<IColumnDescriptor> _columns;
@@ -34,6 +34,7 @@ namespace Tailviewer.BusinessLogic.Sources
 		public GenericTextLogEntryParser(ITimestampParser timestampParser)
 		{
 			_timestampParser = timestampParser ?? throw new ArgumentNullException(nameof(timestampParser));
+			_logLevelParser = new LogLevelParser();
 			_columns = new IColumnDescriptor[] {GeneralColumns.Timestamp, GeneralColumns.LogLevel};
 		}
 
@@ -53,7 +54,7 @@ namespace Tailviewer.BusinessLogic.Sources
 				return null;
 
 			var line = RemoveGarbage(rawContent);
-			var level = LogLine.DetermineLevelFromLine(line);
+			var level = _logLevelParser.DetermineLevelFromLine(line);
 			var timestamp = ParseTimestamp(line);
 			return new ParsedLogEntry(logEntry, line, level, timestamp);
 		}

@@ -20,7 +20,7 @@ namespace Tailviewer.Test.Ui
 	public sealed class DataSourcesViewModelTest
 	{
 		private DataSources _dataSources;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactoryEx _logSourceFactory;
 		private DataSourcesViewModel _model;
 		private ManualTaskScheduler _scheduler;
 		private IApplicationSettings _settings;
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 			_actionCenter = new Mock<IActionCenter>();
 		}
@@ -45,7 +45,7 @@ namespace Tailviewer.Test.Ui
 			_settingsMock.Setup(x => x.DataSources).Returns(new DataSourceSettings());
 			_settings = _settingsMock.Object;
 			_bookmarks = new Mock<IBookmarks>();
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 		}
 
@@ -257,7 +257,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -284,7 +284,7 @@ namespace Tailviewer.Test.Ui
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -680,7 +680,7 @@ namespace Tailviewer.Test.Ui
 			_settings = new ApplicationSettings("foobar");
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 			viewModel.RemoveCommand.Execute(null);
@@ -705,7 +705,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
 			_settings.DataSources.Add(group);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var merged = (MergedDataSourceViewModel) _model.Observable[0];
 			var viewModel1 = merged.Observable.ElementAt(0);
@@ -728,7 +728,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logSourceFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 

@@ -5,7 +5,7 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     An <see cref="ILogLineFilter" /> implementation that passes every log line.
 	/// </summary>
-	public sealed class NoFilter
+	internal sealed class NoFilter
 		: ILogEntryFilter
 	{
 		/// <inheritdoc />

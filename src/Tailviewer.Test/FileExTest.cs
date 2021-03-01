@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core;
+using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Test
 {

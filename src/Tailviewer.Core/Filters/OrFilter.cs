@@ -8,7 +8,7 @@ namespace Tailviewer.Core.Filters
 	///     This filter implements the logical or operation:
 	///     The filter matches if any of its child filter match.
 	/// </summary>
-	public sealed class OrFilter
+	internal sealed class OrFilter
 		: ILogEntryFilter
 	{
 		private readonly ILogEntryFilter[] _filters;

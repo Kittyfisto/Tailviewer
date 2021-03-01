@@ -17,14 +17,14 @@ namespace Tailviewer.BusinessLogic.DataSources.Custom
 		private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogSource _multiLineLogFile;
 
-		public CustomDataSource(ILogFileFactory logFileFactory,
+		public CustomDataSource(ILogSourceFactoryEx logSourceFactory,
 		                        ITaskScheduler taskScheduler,
 		                        DataSource settings,
 		                        TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_originalLogFile =
-				logFileFactory.CreateCustom(settings.CustomDataSourceId, settings.CustomDataSourceConfiguration,
+				logSourceFactory.CreateCustom(settings.CustomDataSourceId, settings.CustomDataSourceConfiguration,
 				                            out _pluginDescription);
 			_unfilteredLogFile = new LogSourceProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();

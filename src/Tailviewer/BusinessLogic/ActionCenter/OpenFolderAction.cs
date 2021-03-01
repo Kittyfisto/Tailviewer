@@ -10,7 +10,7 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 {
 	public sealed class OpenFolderAction
 		: IOpenFolderAction
-			, IProgress<Percentage>
+		, IProgress<Percentage>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private Task _task;

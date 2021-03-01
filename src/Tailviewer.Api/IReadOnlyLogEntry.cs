@@ -19,11 +19,6 @@ namespace Tailviewer
 	///     If a custom implementation isn't avoidable, then the custom implementation should inherit from AbstractLogEntry
 	///     if possible.
 	/// </remarks>
-	/// <remarks>
-	///     This interface is meant to replace <see cref="LogLine" />.
-	///     With its introduction, <see cref="LogLineIndex" /> can be removed and be replaced
-	///     with <see cref="LogEntryIndex" />.
-	/// </remarks>
 	public interface IReadOnlyLogEntry
 	{
 		/// <summary>

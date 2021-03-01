@@ -6,7 +6,7 @@ namespace Tailviewer.Core.Filters
 	/// A filter responsible for filtering out log lines that are completely empty
 	/// (or only have whitespace characters).
 	/// </summary>
-	public sealed class EmptyLogLineFilter
+	internal sealed class EmptyLogLineFilter
 		: ILogEntryFilter
 	{
 		/// <inheritdoc />

@@ -24,7 +24,7 @@ using Tailviewer.Settings;
 namespace Tailviewer.Ui.LogView
 {
 	/// <summary>
-	///     Responsible for drawing the individual <see cref="LogLine" />s of the <see cref="ILogSource" />.
+	///     Responsible for drawing the individual <see cref="IReadOnlyLogEntry" />s of the <see cref="ILogSource" />.
 	/// </summary>
 	public sealed class TextCanvas
 		: FrameworkElement

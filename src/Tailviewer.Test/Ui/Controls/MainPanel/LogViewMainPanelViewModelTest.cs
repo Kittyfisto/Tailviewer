@@ -9,7 +9,6 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;

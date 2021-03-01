@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 namespace Tailviewer
 {
 	/// <summary>
-	/// The interface for a filter that is responsible for deciding whether or not a <see cref="LogLine"/> shall be visible
+	/// The interface for a filter that is responsible for deciding whether or not a <see cref="IReadOnlyLogEntry"/> shall be visible
 	/// or not.
 	/// </summary>
 	public interface ILogLineFilter

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Tailviewer
 {
@@ -71,69 +70,6 @@ namespace Tailviewer
 		T TryRetrieve<T>() where T : class;
 
 		#region Tailviewer specific objects
-
-		/// <summary>
-		///     Creates a new log file object which interprets the given file as a windows event log (ETW) file.
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <returns></returns>
-		ILogSource CreateEventLogFile(string fileName);
-
-		/// <summary>
-		///     Creates a new instance of the Tailviewer.Core.LogFiles.FilteredLogFile type.
-		/// </summary>
-		/// <param name="maximumWaitTime"></param>
-		/// <param name="source"></param>
-		/// <param name="filter"></param>
-		/// <returns></returns>
-		ILogSource CreateFilteredLogFile(TimeSpan maximumWaitTime,
-		                               ILogSource source,
-		                               ILogEntryFilter filter);
-
-		/// <summary>
-		///     Creates a new instance of the Tailviewer.Core.LogFiles.LogFileProxy type.
-		/// </summary>
-		/// <param name="maximumWaitTime"></param>
-		/// <param name="source"></param>
-		/// <returns></returns>
-		ILogSourceProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogSource source);
-
-		/// <summary>
-		///     Creates a new instance of the Tailviewer.Core.LogFiles.MergedLogFile type.
-		/// </summary>
-		/// <param name="maximumWaitTime"></param>
-		/// <param name="sources"></param>
-		/// <returns></returns>
-		IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogSource> sources);
-
-		/// <summary>
-		///     Creates a new instance of the Tailviewer.Core.LogFiles.MultiLineLogFile type.
-		/// </summary>
-		/// <param name="maximumWaitTime"></param>
-		/// <param name="source"></param>
-		/// <returns></returns>
-		ILogSource CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogSource source);
-
-		/// <summary>
-		///     Creates a new instance of the Tailviewer.Core.LogFiles.NoThrowLogFile type.
-		/// </summary>
-		/// <param name="pluginName"></param>
-		/// <param name="source"></param>
-		/// <returns></returns>
-		ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source);
-
-		/// <summary>
-		///     Creates a new log file object which interprets the given file as a text file.
-		/// </summary>
-		/// <remarks>
-		///     The following types may optionally be registered with this container in order to modify the behaviour of the returned object:
-		///     - <see cref="ITimestampParser"/>
-		///     - <see cref="ILogLineTranslator"/>
-		///     - <see cref="Encoding"/>
-		/// </remarks>
-		/// <param name="fileName"></param>
-		/// <returns></returns>
-		ILogSource CreateTextLogFile(string fileName);
 
 		#endregion
 	}

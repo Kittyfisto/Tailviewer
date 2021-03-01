@@ -5,7 +5,6 @@ using System.Threading;
 using log4net;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
-using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer.Core
 {
@@ -88,53 +87,6 @@ namespace Tailviewer.Core
 				return null;
 
 			return service;
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateEventLogFile(string fileName)
-		{
-			return new EventLogSource(Retrieve<ITaskScheduler>(), fileName);
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogSource source, ILogEntryFilter filter)
-		{
-			return new FilteredLogSource(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
-									   null,
-			                           filter);
-		}
-
-		/// <inheritdoc />
-		public ILogSourceProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogSource source)
-		{
-			return new LogSourceProxy(Retrieve<ITaskScheduler>(), maximumWaitTime, source);
-		}
-
-		/// <inheritdoc />
-		public IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogSource> sources)
-		{
-			return new MergedLogSource(Retrieve<ITaskScheduler>(),
-			                         maximumWaitTime,
-			                         sources);
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogSource source)
-		{
-			return new MultiLineLogSource(Retrieve<ITaskScheduler>(), source, maximumWaitTime);
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateNoThrowLogFile(string pluginName, ILogSource source)
-		{
-			return new NoThrowLogSource(source, pluginName);
-		}
-
-		/// <inheritdoc />
-		public ILogSource CreateTextLogFile(string fileName)
-		{
-			return new FileLogSource(this, fileName);
-			//return new TextLogSource(this, fileName);
 		}
 
 		/// <inheritdoc />

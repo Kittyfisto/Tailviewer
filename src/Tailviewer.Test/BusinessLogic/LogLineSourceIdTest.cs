@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Test.BusinessLogic
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Parsers;
 using Tailviewer.Plugins;

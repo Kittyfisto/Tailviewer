@@ -6,9 +6,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.SidePanel.QuickFilters;
@@ -20,7 +20,7 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class QuickFiltersSidePanelViewModelTest
 	{
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 		private QuickFilters _quickFilters;
 		private ManualTaskScheduler _scheduler;
 		private ApplicationSettings _settings;
@@ -31,7 +31,7 @@ namespace Tailviewer.Test.Ui
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_applicationSettings = new Mock<IApplicationSettings>();
 		}
@@ -116,7 +116,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAdd()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("sw") {Id = DataSourceId.CreateNew()});
 			model.CurrentDataSource = CreateViewModel(dataSource);
 			var filter = model.AddQuickFilter();
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("sw") {Id = DataSourceId.CreateNew()});
 			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
@@ -142,7 +142,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeFilterType1()
 		{
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 			                                    new DataSource("adw") {Id = DataSourceId.CreateNew()});
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
 			{
@@ -204,7 +204,7 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor2()
 		{
 			var filter1 = _quickFilters.AddQuickFilter();
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
@@ -220,7 +220,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove1()
 		{
 			var filter1 = _quickFilters.AddQuickFilter();
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
@@ -243,7 +243,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove2()
 		{
 			var filter1 = _quickFilters.AddQuickFilter();
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
@@ -269,7 +269,7 @@ namespace Tailviewer.Test.Ui
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			model.QuickInfo.Should().BeNull();
 
-			var dataSource = new FileDataSource(_logFileFactory, _scheduler,
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
 				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			model.CurrentDataSource = CreateViewModel(dataSource);
 			model.QuickFilters.ElementAt(0).IsActive = true;

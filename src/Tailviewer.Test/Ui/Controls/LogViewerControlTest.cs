@@ -8,8 +8,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Properties;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
@@ -23,7 +23,7 @@ namespace Tailviewer.Test.Ui.Controls
 		private Mock<IActionCenter> _actionCenter;
 		private LogViewerControl _control;
 		private FileDataSourceViewModel _dataSource;
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 		private ManualTaskScheduler _scheduler;
 		private Mock<IApplicationSettings> _settings;
 
@@ -31,7 +31,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 		}
 
@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_settings = new Mock<IApplicationSettings>();
 			_dataSource =
 				CreateViewModel(
-				                new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
+				                new FileDataSource(_logSourceFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			_control = new LogViewerControl
 			{
 				DataSource = _dataSource,
@@ -389,7 +389,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			var source =
 				CreateViewModel(
-					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
+					new FileDataSource(_logSourceFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl

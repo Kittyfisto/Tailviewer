@@ -2,7 +2,6 @@
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.Core.Sources;
 

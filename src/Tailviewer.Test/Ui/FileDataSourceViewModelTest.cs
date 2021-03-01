@@ -9,8 +9,8 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.Menu;
@@ -20,7 +20,7 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class FileDataSourceViewModelTest
 	{
-		private ILogFileFactory _logFileFactory;
+		private ILogSourceFactory _logSourceFactory;
 		private ManualTaskScheduler _scheduler;
 		private Mock<IActionCenter> _actionCenter;
 		private Mock<IApplicationSettings> _settings;
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
+			_logSourceFactory = new SimplePluginLogSourceFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_settings = new Mock<IApplicationSettings>();
 		}
@@ -53,7 +53,7 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = DataSourceId.CreateNew()
 			};
-			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				var model = CreateFileViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
@@ -178,7 +178,7 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new FileDataSource(_logFileFactory, _scheduler,
+					new FileDataSource(_logSourceFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
 				var model = CreateFileViewModel(source);
@@ -193,7 +193,7 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new FileDataSource(_logFileFactory, _scheduler,
+					new FileDataSource(_logSourceFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
 				var model = CreateFileViewModel(source);
@@ -212,7 +212,7 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = DataSourceId.CreateNew()
 			};
-			using (var dataSource = new FileDataSource(_logFileFactory, _scheduler, settings))
+			using (var dataSource = new FileDataSource(_logSourceFactory, _scheduler, settings))
 			{
 				var model = CreateFileViewModel(dataSource);
 				var chain = new[] {new SubstringFilter("foobar", true)};

@@ -5,12 +5,12 @@ namespace Tailviewer.BusinessLogic.Searches
 	public struct LogMatch : IEquatable<LogMatch>
 	{
 		/// <summary>
-		///     The index of the <see cref="LogLine" /> where the match occured.
+		///     The index of the <see cref="IReadOnlyLogEntry.RawContent" /> where the match occured.
 		/// </summary>
 		public readonly LogLineIndex Index;
 
 		/// <summary>
-		///     The match, i.e. the portion of the <see cref="LogLine" /> that matched the search/filter term.
+		///     The match, i.e. the portion of the <see cref="IReadOnlyLogEntry.RawContent" /> that matched the search/filter term.
 		/// </summary>
 		public readonly LogLineMatch Match;
 

@@ -24,7 +24,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 		private DefaultTaskScheduler _taskScheduler;
 		private Mock<ILogSourceParserPlugin> _parser;
 		private Mock<ILogFileFormatMatcher> _formatMatcher;
-		private IFileLogSourceFactory _fileLogSourceFactory;
+		private IRawFileLogSourceFactory _rawFileLogSourceFactory;
 
 		[SetUp]
 		public void Setup()
@@ -38,10 +38,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Sources.Text
 				       return new GenericTextLogSource(source, new GenericTextLogEntryParser());
 			       });
 
-			_fileLogSourceFactory = new FileLogSourceFactory(_taskScheduler);
+			_rawFileLogSourceFactory = new RawFileLogSourceFactory(_taskScheduler);
 			_formatMatcher = new Mock<ILogFileFormatMatcher>();
 
-			_services.RegisterInstance<IFileLogSourceFactory>(_fileLogSourceFactory);
+			_services.RegisterInstance<IRawFileLogSourceFactory>(_rawFileLogSourceFactory);
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogSourceParserPlugin>(_parser.Object);
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher.Object);

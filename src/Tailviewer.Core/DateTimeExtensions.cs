@@ -6,7 +6,7 @@ namespace Tailviewer.Core
 	/// <summary>
 	/// 
 	/// </summary>
-	public static class DateTimeExtensions
+	internal static class DateTimeExtensions
 	{
 		/// <summary>
 		/// Returns the start of the week of the given date.

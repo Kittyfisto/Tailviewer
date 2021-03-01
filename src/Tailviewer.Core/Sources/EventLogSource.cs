@@ -18,7 +18,7 @@ namespace Tailviewer.Core.Sources
 	/// </summary>
 	/// <remarks>
 	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
-	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateEventLogFile"/>
+	///    over time. In order to create an instance of this type, simply call <see cref="ILogSourceFactory.CreateEventLogFile"/>
 	///    who's signature is guaranteed to never change.
 	/// </remarks>
 	internal sealed class EventLogSource
