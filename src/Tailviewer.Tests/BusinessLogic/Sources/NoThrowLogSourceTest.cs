@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Tests.Sources;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources
 {

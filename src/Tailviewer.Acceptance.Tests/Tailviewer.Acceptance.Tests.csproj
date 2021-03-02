@@ -134,6 +134,10 @@
       <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
       <Name>Tailviewer.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core.Tests\Tailviewer.Core.Tests.csproj">
+      <Project>{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}</Project>
+      <Name>Tailviewer.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
       <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
       <Name>Tailviewer.Core</Name>

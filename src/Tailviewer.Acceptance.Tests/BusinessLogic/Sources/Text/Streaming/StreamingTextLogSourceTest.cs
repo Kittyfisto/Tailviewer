@@ -12,8 +12,9 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.Core;
+using Tailviewer.Core.Tests;
+using Tailviewer.Core.Tests.Sources.Text.Streaming;
 using Tailviewer.Tests;
-using Tailviewer.Tests.BusinessLogic.Sources.Text;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 {

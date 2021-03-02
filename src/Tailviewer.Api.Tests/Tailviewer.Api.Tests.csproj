@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -64,6 +66,7 @@
     <Compile Include="LevelFlagsTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="LogEntryIndexTest.cs" />
+    <Compile Include="LogEntrySourceIdTest.cs" />
     <Compile Include="LogLineIndexTest.cs" />
     <Compile Include="LogSourceModificationTest.cs" />
     <Compile Include="LogSourceSectionTest.cs" />

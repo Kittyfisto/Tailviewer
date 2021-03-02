@@ -26,7 +26,7 @@ namespace Tailviewer.Api.Tests
 			if (failingTypes.Any())
 			{
 				Assert.Fail("The following types should be located directly in the {0} namespace but are not:\r\n{1}",
-				            "Tailviewer.Api",
+				            expectedNamespace,
 				            string.Join("\r\n", failingTypes.Select(x => x.FullName)));
 			}
 		}

@@ -3,6 +3,7 @@ using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Core.Tests;
 
 namespace Tailviewer.Tests
 {

@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api.Tests", "src\Tailviewer.Api.Tests\Tailviewer.Api.Tests.csproj", "{0933775D-327D-4EE6-95FC-33140858666F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core.Tests", "src\Tailviewer.Core.Tests\Tailviewer.Core.Tests.csproj", "{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{0933775D-327D-4EE6-95FC-33140858666F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0933775D-327D-4EE6-95FC-33140858666F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0933775D-327D-4EE6-95FC-33140858666F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +179,7 @@ Global
 		{9997F434-58B2-4C26-B622-5CA411A82BF7} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
 		{B132CF5C-8555-4D0F-A55A-F870C003EB59} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
 		{0933775D-327D-4EE6-95FC-33140858666F} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
+		{8DB58C51-AFFA-47AD-9D8D-D3473AEC66FC} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0BB6C40-85F7-419C-8CBC-89473DC30B16}

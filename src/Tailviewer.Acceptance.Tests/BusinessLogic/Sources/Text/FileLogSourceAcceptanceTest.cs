@@ -11,7 +11,7 @@ using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Tests;
+using Tailviewer.Core.Tests;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 {
