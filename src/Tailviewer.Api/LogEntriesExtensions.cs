@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///    Provides overloaded methods for <see cref="ILogBuffer"/> for convenience.

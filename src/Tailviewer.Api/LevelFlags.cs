@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This enum describes the possible log levels an <see cref="IReadOnlyLogEntry" /> may be associated with.

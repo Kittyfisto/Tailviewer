@@ -1,4 +1,5 @@
 using System;
+using Tailviewer.Api;
 
 namespace Tailviewer.BusinessLogic.ActionCenter
 {

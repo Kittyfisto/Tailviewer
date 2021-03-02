@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Sources
 {

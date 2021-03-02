@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings.Bookmarks;
 

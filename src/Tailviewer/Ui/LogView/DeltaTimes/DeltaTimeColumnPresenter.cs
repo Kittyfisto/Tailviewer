@@ -1,4 +1,5 @@
 ﻿using System;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 

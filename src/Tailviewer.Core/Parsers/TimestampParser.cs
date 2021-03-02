@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Parsers
 {

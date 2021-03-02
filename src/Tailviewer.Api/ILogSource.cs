@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This interface represents a log file (which doesn't have to be a file on disk) and allows the rest of Tailviewer to access the contents thereof.

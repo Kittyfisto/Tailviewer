@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Provides read/write access to a list of <see cref="IReadOnlyPropertyDescriptor" />s and their corresponding values.

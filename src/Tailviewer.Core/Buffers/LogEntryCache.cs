@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Buffers

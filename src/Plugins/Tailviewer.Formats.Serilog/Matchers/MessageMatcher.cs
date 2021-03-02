@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 

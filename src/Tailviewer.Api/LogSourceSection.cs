@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Describes a contiguous section of the <see cref="IReadOnlyLogEntry"/>s of an <see cref="ILogSource"/>.

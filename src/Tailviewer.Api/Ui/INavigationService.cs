@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Ui
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This service enables users to navigate tailviewer programmatically.

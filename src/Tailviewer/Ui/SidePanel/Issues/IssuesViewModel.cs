@@ -6,7 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.SidePanel.Issues
 {

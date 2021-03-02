@@ -1,8 +1,8 @@
-﻿namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This exception is thrown when a particular column MIGHT exist, but it hasn't been queried
-	///     from the sourc <see cref="ILogSource" /> and therefore isn't present.
+	///     from the source <see cref="ILogSource" /> and therefore isn't present.
 	/// </summary>
 	public sealed class ColumnNotRetrievedException
 		: NoSuchColumnException

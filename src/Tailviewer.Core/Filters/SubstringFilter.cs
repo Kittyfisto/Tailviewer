@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Filters
 {

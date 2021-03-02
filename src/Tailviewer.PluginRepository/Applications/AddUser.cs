@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using log4net;
 using Tailviewer.PluginRepository.Exceptions;

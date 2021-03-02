@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Sources.Merged

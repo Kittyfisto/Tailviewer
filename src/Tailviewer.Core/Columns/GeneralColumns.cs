@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Columns
 {
@@ -117,7 +118,7 @@ namespace Tailviewer.Core.Columns
 			RawContent = new WellKnownColumnDescriptor<string>("raw_content");
 			Index = new WellKnownColumnDescriptor<LogLineIndex>("index", LogLineIndex.Invalid);
 			OriginalIndex = new WellKnownColumnDescriptor<LogLineIndex>("original_index", LogLineIndex.Invalid);
-			LogEntryIndex = new WellKnownColumnDescriptor<LogEntryIndex>("log_entry_index", Tailviewer.LogEntryIndex.Invalid);
+			LogEntryIndex = new WellKnownColumnDescriptor<LogEntryIndex>("log_entry_index", Api.LogEntryIndex.Invalid);
 			LineNumber = new WellKnownColumnDescriptor<int>("line_number");
 			OriginalLineNumber = new WellKnownColumnDescriptor<int>("original_line_number");
 			OriginalDataSourceName = new WellKnownColumnDescriptor<string>("original_data_source_name");

@@ -2,7 +2,6 @@
 using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Repository;
-using Tailviewer.PluginRepository.Exceptions;
 
 namespace Tailviewer.PluginRepository.Applications
 {

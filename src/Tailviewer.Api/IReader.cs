@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The interface for a reader that allows reading a tree-like structure

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for providing access to all kinds of services.
@@ -13,7 +10,7 @@ namespace Tailviewer
 	/// <remarks>
 	///     If you are a plugin author, then you can typically expect to retrieve the following list of service interfaces
 	///     from this container at runtime:
-	///     - <see cref="Tailviewer.ITypeFactory" />
+	///     - <see cref="ITypeFactory" />
 	///     - <see cref="System.Threading.ITaskScheduler" />
 	///     - <see cref="System.Threading.ISerialTaskScheduler" />
 	///     - <see cref="System.IO.IFilesystem" />

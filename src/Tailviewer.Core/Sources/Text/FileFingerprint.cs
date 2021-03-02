@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Sources.Text
 {

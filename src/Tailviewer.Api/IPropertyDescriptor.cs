@@ -1,4 +1,4 @@
-﻿namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///    Describes a property of an <see cref="ILogSource"/> which may be changed by the end-user.

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.Api;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
 {

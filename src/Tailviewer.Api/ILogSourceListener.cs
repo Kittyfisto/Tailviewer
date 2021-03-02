@@ -1,4 +1,4 @@
-﻿namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The interface for a class that is interested in receiving changes made to the data exposed by a

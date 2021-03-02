@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.BusinessLogic.DataSources.Custom
 {

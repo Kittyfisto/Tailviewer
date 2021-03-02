@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

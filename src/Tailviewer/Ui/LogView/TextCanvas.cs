@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Core.Buffers;

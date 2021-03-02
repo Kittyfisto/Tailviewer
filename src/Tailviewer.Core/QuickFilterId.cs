@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core

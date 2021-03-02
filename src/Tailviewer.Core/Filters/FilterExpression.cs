@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.Api;
 using Tailviewer.Core.Filters.ExpressionEngine;
 
 namespace Tailviewer.Core.Filters

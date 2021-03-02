@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Parsers
 {

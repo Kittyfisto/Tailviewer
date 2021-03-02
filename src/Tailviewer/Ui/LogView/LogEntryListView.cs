@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using log4net;
 using Metrolib.Controls;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Columns;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Tailviewer.Api;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Properties;
 

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.SidePanel.Outline

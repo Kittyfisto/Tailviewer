@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Tailviewer.Api;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter

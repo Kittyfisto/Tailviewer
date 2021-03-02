@@ -4,8 +4,8 @@ using System.Reflection;
 using System.Xml;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Settings
 {

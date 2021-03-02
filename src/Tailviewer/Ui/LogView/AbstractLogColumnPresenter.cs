@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Api;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 

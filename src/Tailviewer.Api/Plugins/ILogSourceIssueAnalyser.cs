@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for analysing a log file for a list of issues.

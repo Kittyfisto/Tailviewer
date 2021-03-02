@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Plugins;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Settings.CustomFormats

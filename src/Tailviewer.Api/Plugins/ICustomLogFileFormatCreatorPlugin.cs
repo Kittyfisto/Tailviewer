@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Plugins
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This plugin, once implemented, allows users to dynamically add custom log formats to Tailviewer.

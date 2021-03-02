@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This interface is implemented by tailviewer and expected to be used

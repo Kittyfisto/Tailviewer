@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Properties
 {

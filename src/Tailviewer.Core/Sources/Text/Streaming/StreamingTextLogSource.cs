@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;

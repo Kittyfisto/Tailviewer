@@ -8,12 +8,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Adorner;
 using Tailviewer.Core.Sources.Buffer;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Core.Sources.Text
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 

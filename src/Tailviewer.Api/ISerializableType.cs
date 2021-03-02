@@ -1,4 +1,4 @@
-﻿namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The interface for a serializable type.

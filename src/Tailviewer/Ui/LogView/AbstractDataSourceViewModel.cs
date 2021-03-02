@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;

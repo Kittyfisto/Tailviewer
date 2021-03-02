@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Describes the version of an <see cref="IPlugin" /> specialization.

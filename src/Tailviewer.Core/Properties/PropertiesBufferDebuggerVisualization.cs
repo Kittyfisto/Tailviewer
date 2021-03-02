@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Properties
 {

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Metrolib;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.LogView
 {

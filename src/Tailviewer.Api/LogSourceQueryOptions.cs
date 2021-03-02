@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Describes how data is to be retrieved from an <see cref="ILogSource" />.

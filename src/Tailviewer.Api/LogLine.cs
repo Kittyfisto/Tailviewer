@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using log4net;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Represents a single line (terminated by \n or \r\n) of the data source (log file).

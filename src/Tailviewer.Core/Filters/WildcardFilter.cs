@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Filters
 {

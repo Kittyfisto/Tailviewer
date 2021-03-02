@@ -1,4 +1,5 @@
-﻿using Tailviewer.Core.Columns;
+﻿using Tailviewer.Api;
+using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView.Messages

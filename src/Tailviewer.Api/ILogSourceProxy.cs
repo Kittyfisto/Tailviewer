@@ -1,4 +1,4 @@
-﻿namespace Tailviewer
+﻿namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Fully represents another <see cref="ILogSource" /> which can be replaced over the lifetime

@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer", "src\Tailviewe
 		{9997F434-58B2-4C26-B622-5CA411A82BF7} = {9997F434-58B2-4C26-B622-5CA411A82BF7}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Test", "src\Tailviewer.Test\Tailviewer.Test.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Tests", "src\Tailviewer.Tests\Tailviewer.Tests.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{790E58D1-E0A7-4B82-B617-3A5D442B8CC0}"
 EndProject
@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "src\Installer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "src\Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "src\Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Acceptance.Tests", "src\Tailviewer.Acceptance.Tests\Tailviewer.Acceptance.Tests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0A1431F6-8548-44D4-B82B-049B94A7F57D} = {0A1431F6-8548-44D4-B82B-049B94A7F57D}
 	EndProjectSection
@@ -46,17 +46,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "src\Tail
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver", "src\Tailviewer.Archiver\Tailviewer.Archiver.csproj", "{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Test", "src\Tailviewer.Archiver.Test\Tailviewer.Archiver.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Tests", "src\Tailviewer.Archiver.Tests\Tailviewer.Archiver.Tests.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.SystemTests", "src\Tailviewer.SystemTests\Tailviewer.SystemTests.csproj", "{DC744DCE-69A8-41DF-80E4-D51ECF536A4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.System.Tests", "src\Tailviewer.System.Tests\Tailviewer.System.Tests.csproj", "{DC744DCE-69A8-41DF-80E4-D51ECF536A4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginCreator", "src\Plugins\Tailviewer.PluginCreator\Tailviewer.PluginCreator.csproj", "{A251BAFB-A13C-4749-B38E-B183DA32BF21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository", "src\Tailviewer.PluginRepository\Tailviewer.PluginRepository.csproj", "{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository.Test", "src\Tailviewer.PluginRepository.Test\Tailviewer.PluginRepository.Test.csproj", "{1A2286EE-866B-487F-98E7-C05CC4100107}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository.Tests", "src\Tailviewer.PluginRepository.Tests\Tailviewer.PluginRepository.Tests.csproj", "{1A2286EE-866B-487F-98E7-C05CC4100107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository.Service", "src\Tailviewer.PluginRepository.Service\Tailviewer.PluginRepository.Service.csproj", "{2AB7F119-2DC7-476B-829C-DB291DFEA973}"
 EndProject
@@ -71,7 +71,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog"
 		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.Test", "src\Plugins\Tailviewer.Formats.Serilog.Test\Tailviewer.Formats.Serilog.Test.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.Tests", "src\Plugins\Tailviewer.Formats.Serilog.Tests\Tailviewer.Formats.Serilog.Tests.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api.Tests", "src\Tailviewer.Api.Tests\Tailviewer.Api.Tests.csproj", "{0933775D-327D-4EE6-95FC-33140858666F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +145,10 @@ Global
 		{B132CF5C-8555-4D0F-A55A-F870C003EB59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B132CF5C-8555-4D0F-A55A-F870C003EB59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B132CF5C-8555-4D0F-A55A-F870C003EB59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0933775D-327D-4EE6-95FC-33140858666F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0933775D-327D-4EE6-95FC-33140858666F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0933775D-327D-4EE6-95FC-33140858666F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0933775D-327D-4EE6-95FC-33140858666F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +172,7 @@ Global
 		{A628892A-4BE2-4726-983E-CCE47C716CC1} = {3E228233-3DBD-48B5-85B3-BEAD0C65F084}
 		{9997F434-58B2-4C26-B622-5CA411A82BF7} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
 		{B132CF5C-8555-4D0F-A55A-F870C003EB59} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
+		{0933775D-327D-4EE6-95FC-33140858666F} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0BB6C40-85F7-419C-8CBC-89473DC30B16}

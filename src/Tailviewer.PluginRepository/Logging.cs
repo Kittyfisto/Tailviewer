@@ -9,7 +9,6 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver;
-using Tailviewer.Core;
 
 namespace Tailviewer.PluginRepository
 {

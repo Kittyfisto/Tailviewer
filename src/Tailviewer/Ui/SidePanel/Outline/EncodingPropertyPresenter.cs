@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Ui.Settings;
 
 namespace Tailviewer.Ui.SidePanel.Outline

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Tailviewer.Api;
 using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Formats.Serilog

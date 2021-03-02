@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	/// </summary>

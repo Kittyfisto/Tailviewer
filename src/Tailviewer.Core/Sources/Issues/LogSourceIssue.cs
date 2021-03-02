@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Sources.Issues
 {

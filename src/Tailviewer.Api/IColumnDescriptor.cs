@@ -1,6 +1,6 @@
 using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Describes a column of a log file.

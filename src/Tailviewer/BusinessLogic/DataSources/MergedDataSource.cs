@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;

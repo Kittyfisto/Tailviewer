@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.Core.Sources
+﻿using Tailviewer.Api;
+
+namespace Tailviewer.Core.Sources
 {
 	internal sealed class ListenerProxy
 		: ILogSourceListener

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;

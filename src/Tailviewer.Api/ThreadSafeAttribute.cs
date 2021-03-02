@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This attribute indicates to users of an interface that a method is thread-safe and may be safely called from

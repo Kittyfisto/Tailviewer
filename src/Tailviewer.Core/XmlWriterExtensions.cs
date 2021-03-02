@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using System.Xml;
 using Metrolib;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

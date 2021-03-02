@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This interface may be implemented to present a list of issues (extracted from the log file)

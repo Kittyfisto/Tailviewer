@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Tailviewer.Ui
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This interface should be implemented by plugins to allow a user to view / edit the configuration

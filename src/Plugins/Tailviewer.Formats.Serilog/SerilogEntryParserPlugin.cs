@@ -1,4 +1,4 @@
-﻿using Tailviewer.Plugins;
+﻿using Tailviewer.Api;
 
 namespace Tailviewer.Formats.Serilog
 {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using log4net;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Merged;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

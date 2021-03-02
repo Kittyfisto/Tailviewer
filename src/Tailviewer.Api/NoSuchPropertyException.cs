@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	/// This exception is thrown when one tries to change the property of a log file which doesn't even have that property.

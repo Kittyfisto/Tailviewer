@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 

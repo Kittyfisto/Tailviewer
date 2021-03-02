@@ -1,6 +1,6 @@
 using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///    Controls how data is supposed to be retrieved from a source.

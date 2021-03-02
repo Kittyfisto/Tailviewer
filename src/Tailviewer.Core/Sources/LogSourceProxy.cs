@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Properties;
 

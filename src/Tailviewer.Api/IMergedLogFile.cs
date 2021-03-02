@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The interface for a log file which aggregates the contents of one or more individual <see cref="ILogSource" />s.

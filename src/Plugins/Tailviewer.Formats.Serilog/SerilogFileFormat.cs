@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Tailviewer.Api;
 
 namespace Tailviewer.Formats.Serilog
 {

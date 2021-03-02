@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Api;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView.LogLevels

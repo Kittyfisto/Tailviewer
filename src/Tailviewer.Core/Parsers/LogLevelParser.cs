@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core.Parsers
 {

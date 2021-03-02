@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Plugins
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for allowing tailviewer to detect additional log file formats.

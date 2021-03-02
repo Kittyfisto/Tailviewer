@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Exporter;
 
 namespace Tailviewer.BusinessLogic.ActionCenter
