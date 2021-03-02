@@ -228,6 +228,7 @@
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\AvailablePluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
     <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
