@@ -66,7 +66,7 @@ namespace Tailviewer.LogLevelPlugin
 
 		public IEnumerable<IColumnDescriptor> Columns
 		{
-			get { return new IColumnDescriptor[] {GeneralColumns.LogLevel}; }
+			get { return new IColumnDescriptor[] {Core.Columns.LogLevel}; }
 		}
 
 		#endregion

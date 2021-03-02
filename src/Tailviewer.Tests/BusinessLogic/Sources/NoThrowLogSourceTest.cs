@@ -37,42 +37,42 @@ namespace Tailviewer.Tests.BusinessLogic.Sources
 		[Test]
 		public void TestStartTimestamp()
 		{
-			_logFile.Setup(x => x.GetProperty(GeneralProperties.StartTimestamp)).Throws<SystemException>();
-			_proxy.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			_logFile.Verify(x => x.GetProperty(GeneralProperties.StartTimestamp), Times.Once);
+			_logFile.Setup(x => x.GetProperty(Properties.StartTimestamp)).Throws<SystemException>();
+			_proxy.GetProperty(Properties.StartTimestamp).Should().BeNull();
+			_logFile.Verify(x => x.GetProperty(Properties.StartTimestamp), Times.Once);
 		}
 
 		[Test]
 		public void TestLastModified()
 		{
-			_logFile.Setup(x => x.GetProperty(GeneralProperties.LastModified)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(Properties.LastModified)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(GeneralProperties.LastModified);
+				var unused = _proxy.GetProperty(Properties.LastModified);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(GeneralProperties.LastModified), Times.Once);
+			_logFile.Verify(x => x.GetProperty(Properties.LastModified), Times.Once);
 		}
 
 		[Test]
 		public void TestExists()
 		{
-			_logFile.Setup(x => x.GetProperty(GeneralProperties.EmptyReason)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(Properties.EmptyReason)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(GeneralProperties.EmptyReason);
+				var unused = _proxy.GetProperty(Properties.EmptyReason);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(GeneralProperties.EmptyReason), Times.Once);
+			_logFile.Verify(x => x.GetProperty(Properties.EmptyReason), Times.Once);
 		}
 
 		[Test]
 		public void TestCount()
 		{
-			_logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetProperty(GeneralProperties.LogEntryCount);
+				var unused = _proxy.GetProperty(Properties.LogEntryCount);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetProperty(GeneralProperties.LogEntryCount), Times.Once);
+			_logFile.Verify(x => x.GetProperty(Properties.LogEntryCount), Times.Once);
 		}
 
 		[Test]
@@ -115,10 +115,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources
 			var buffer = new string[9101];
 			var destinationIndex = 9001;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			new Action(() => _proxy.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
+			new Action(() => _proxy.GetColumn(section, Columns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == section),
-			                                 GeneralColumns.RawContent,
+			                                 Columns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
 			                                 queryOptions),
@@ -133,10 +133,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			new Action(() => _proxy.GetColumn(indices, GeneralColumns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
+			new Action(() => _proxy.GetColumn(indices, Columns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<IColumnDescriptor<string>>(y => Equals(y, GeneralColumns.RawContent)),
+			                                 It.Is<IColumnDescriptor<string>>(y => Equals(y, Columns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 101),
 			                                 queryOptions),
@@ -182,8 +182,8 @@ namespace Tailviewer.Tests.BusinessLogic.Sources
 		[Test]
 		public void TestGetColumns1()
 		{
-			_logFile.Setup(x => x.Columns).Returns(new[] {GeneralColumns.DeltaTime, GeneralColumns.ElapsedTime});
-			_proxy.Columns.Should().Equal(GeneralColumns.DeltaTime, GeneralColumns.ElapsedTime);
+			_logFile.Setup(x => x.Columns).Returns(new[] {Columns.DeltaTime, Columns.ElapsedTime});
+			_proxy.Columns.Should().Equal(Columns.DeltaTime, Columns.ElapsedTime);
 			_logFile.Verify(x => x.Columns, Times.Once);
 		}
 

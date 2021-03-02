@@ -48,15 +48,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.RawContent))
-					throw new NoSuchColumnException(GeneralColumns.RawContent);
+				if (!_columns.Contains(Core.Columns.RawContent))
+					throw new NoSuchColumnException(Core.Columns.RawContent);
 
 				return _logEntry.RawContent;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.RawContent))
-					throw new NoSuchColumnException(GeneralColumns.RawContent);
+				if (!_columns.Contains(Core.Columns.RawContent))
+					throw new NoSuchColumnException(Core.Columns.RawContent);
 
 				_logEntry.RawContent = value;
 			}
@@ -67,15 +67,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.Index))
-					throw new NoSuchColumnException(GeneralColumns.Index);
+				if (!_columns.Contains(Core.Columns.Index))
+					throw new NoSuchColumnException(Core.Columns.Index);
 
 				return _logEntry.Index;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.Index))
-					throw new NoSuchColumnException(GeneralColumns.Index);
+				if (!_columns.Contains(Core.Columns.Index))
+					throw new NoSuchColumnException(Core.Columns.Index);
 
 				_logEntry.Index = value;
 			}
@@ -86,15 +86,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalIndex))
-					throw new NoSuchColumnException(GeneralColumns.OriginalIndex);
+				if (!_columns.Contains(Core.Columns.OriginalIndex))
+					throw new NoSuchColumnException(Core.Columns.OriginalIndex);
 
 				return _logEntry.OriginalIndex;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalIndex))
-					throw new NoSuchColumnException(GeneralColumns.OriginalIndex);
+				if (!_columns.Contains(Core.Columns.OriginalIndex))
+					throw new NoSuchColumnException(Core.Columns.OriginalIndex);
 
 				_logEntry.OriginalIndex = value;
 			}
@@ -105,15 +105,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.LogEntryIndex))
-					throw new NoSuchColumnException(GeneralColumns.LogEntryIndex);
+				if (!_columns.Contains(Core.Columns.LogEntryIndex))
+					throw new NoSuchColumnException(Core.Columns.LogEntryIndex);
 
 				return _logEntry.LogEntryIndex;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.LogEntryIndex))
-					throw new NoSuchColumnException(GeneralColumns.LogEntryIndex);
+				if (!_columns.Contains(Core.Columns.LogEntryIndex))
+					throw new NoSuchColumnException(Core.Columns.LogEntryIndex);
 
 				_logEntry.LogEntryIndex = value;
 			}
@@ -124,15 +124,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.LineNumber))
-					throw new NoSuchColumnException(GeneralColumns.LineNumber);
+				if (!_columns.Contains(Core.Columns.LineNumber))
+					throw new NoSuchColumnException(Core.Columns.LineNumber);
 
 				return _logEntry.LineNumber;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.LineNumber))
-					throw new NoSuchColumnException(GeneralColumns.LineNumber);
+				if (!_columns.Contains(Core.Columns.LineNumber))
+					throw new NoSuchColumnException(Core.Columns.LineNumber);
 
 				_logEntry.LineNumber = value;
 			}
@@ -143,15 +143,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(GeneralColumns.OriginalLineNumber);
+				if (!_columns.Contains(Core.Columns.OriginalLineNumber))
+					throw new NoSuchColumnException(Core.Columns.OriginalLineNumber);
 
 				return _logEntry.OriginalLineNumber;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(GeneralColumns.OriginalLineNumber);
+				if (!_columns.Contains(Core.Columns.OriginalLineNumber))
+					throw new NoSuchColumnException(Core.Columns.OriginalLineNumber);
 
 				_logEntry.OriginalLineNumber = value;
 			}
@@ -162,15 +162,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(GeneralColumns.OriginalDataSourceName);
+				if (!_columns.Contains(Core.Columns.OriginalDataSourceName))
+					throw new NoSuchColumnException(Core.Columns.OriginalDataSourceName);
 
 				return _logEntry.OriginalDataSourceName;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(GeneralColumns.OriginalDataSourceName);
+				if (!_columns.Contains(Core.Columns.OriginalDataSourceName))
+					throw new NoSuchColumnException(Core.Columns.OriginalDataSourceName);
 
 				_logEntry.OriginalDataSourceName = value;
 			}
@@ -181,15 +181,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.SourceId))
-					throw new NoSuchColumnException(GeneralColumns.SourceId);
+				if (!_columns.Contains(Core.Columns.SourceId))
+					throw new NoSuchColumnException(Core.Columns.SourceId);
 
 				return _logEntry.SourceId;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.SourceId))
-					throw new NoSuchColumnException(GeneralColumns.SourceId);
+				if (!_columns.Contains(Core.Columns.SourceId))
+					throw new NoSuchColumnException(Core.Columns.SourceId);
 
 				_logEntry.SourceId = value;
 			}
@@ -200,15 +200,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.LogLevel))
-					throw new NoSuchColumnException(GeneralColumns.LogLevel);
+				if (!_columns.Contains(Core.Columns.LogLevel))
+					throw new NoSuchColumnException(Core.Columns.LogLevel);
 
 				return _logEntry.LogLevel;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.LogLevel))
-					throw new NoSuchColumnException(GeneralColumns.LogLevel);
+				if (!_columns.Contains(Core.Columns.LogLevel))
+					throw new NoSuchColumnException(Core.Columns.LogLevel);
 
 				_logEntry.LogLevel = value;
 			}
@@ -219,15 +219,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.Timestamp))
-					throw new NoSuchColumnException(GeneralColumns.Timestamp);
+				if (!_columns.Contains(Core.Columns.Timestamp))
+					throw new NoSuchColumnException(Core.Columns.Timestamp);
 
 				return _logEntry.Timestamp;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.Timestamp))
-					throw new NoSuchColumnException(GeneralColumns.Timestamp);
+				if (!_columns.Contains(Core.Columns.Timestamp))
+					throw new NoSuchColumnException(Core.Columns.Timestamp);
 
 				_logEntry.Timestamp = value;
 			}
@@ -238,15 +238,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.ElapsedTime))
-					throw new NoSuchColumnException(GeneralColumns.ElapsedTime);
+				if (!_columns.Contains(Core.Columns.ElapsedTime))
+					throw new NoSuchColumnException(Core.Columns.ElapsedTime);
 
 				return _logEntry.ElapsedTime;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.ElapsedTime))
-					throw new NoSuchColumnException(GeneralColumns.ElapsedTime);
+				if (!_columns.Contains(Core.Columns.ElapsedTime))
+					throw new NoSuchColumnException(Core.Columns.ElapsedTime);
 
 				_logEntry.ElapsedTime = value;
 			}
@@ -257,15 +257,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.DeltaTime))
-					throw new NoSuchColumnException(GeneralColumns.DeltaTime);
+				if (!_columns.Contains(Core.Columns.DeltaTime))
+					throw new NoSuchColumnException(Core.Columns.DeltaTime);
 
 				return _logEntry.DeltaTime;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.DeltaTime))
-					throw new NoSuchColumnException(GeneralColumns.DeltaTime);
+				if (!_columns.Contains(Core.Columns.DeltaTime))
+					throw new NoSuchColumnException(Core.Columns.DeltaTime);
 
 				_logEntry.DeltaTime = value;
 			}
@@ -276,15 +276,15 @@ namespace Tailviewer.Core
 		{
 			get
 			{
-				if (!_columns.Contains(GeneralColumns.Message))
-					throw new NoSuchColumnException(GeneralColumns.Message);
+				if (!_columns.Contains(Core.Columns.Message))
+					throw new NoSuchColumnException(Core.Columns.Message);
 
 				return _logEntry.Message;
 			}
 			set
 			{
-				if (!_columns.Contains(GeneralColumns.Message))
-					throw new NoSuchColumnException(GeneralColumns.Message);
+				if (!_columns.Contains(Core.Columns.Message))
+					throw new NoSuchColumnException(Core.Columns.Message);
 
 				_logEntry.Message = value;
 			}

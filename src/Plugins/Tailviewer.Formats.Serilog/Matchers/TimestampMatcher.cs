@@ -91,7 +91,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 
 		public IColumnDescriptor Column
 		{
-			get { return GeneralColumns.Timestamp; }
+			get { return Columns.Timestamp; }
 		}
 
 		public void MatchInto(Match match, LogEntry logEntry)

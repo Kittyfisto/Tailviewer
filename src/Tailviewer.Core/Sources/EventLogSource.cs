@@ -60,7 +60,7 @@ namespace Tailviewer.Core
 			_fileName = fileName;
 
 			_buffer = new InMemoryLogSource();
-			_buffer.SetValue(GeneralProperties.Created, DateTime.Now);
+			_buffer.SetValue(Core.Properties.Created, DateTime.Now);
 
 			_cancellationTokenSource = new CancellationTokenSource();
 
@@ -176,7 +176,7 @@ namespace Tailviewer.Core
 				{
 					if (!_setStartTimestamp && eventRecord.TimeCreated != null)
 					{
-						_buffer.SetValue(GeneralProperties.StartTimestamp, eventRecord.TimeCreated);
+						_buffer.SetValue(Core.Properties.StartTimestamp, eventRecord.TimeCreated);
 						_setStartTimestamp = true;
 					}
 
@@ -189,10 +189,10 @@ namespace Tailviewer.Core
 					{
 						var values = new Dictionary<IColumnDescriptor, object>
 						{
-							{GeneralColumns.RawContent, FormatLine(line, first)},
-							{GeneralColumns.LogLevel, logLevel},
-							{GeneralColumns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
-							{GeneralColumns.Timestamp, eventRecord.TimeCreated}
+							{Core.Columns.RawContent, FormatLine(line, first)},
+							{Core.Columns.LogLevel, logLevel},
+							{Core.Columns.LogEntryIndex, new LogEntryIndex(logEntryIndex)},
+							{Core.Columns.Timestamp, eventRecord.TimeCreated}
 						};
 						_buffer.Add(new ReadOnlyLogEntry(values));
 						first = false;
@@ -220,7 +220,7 @@ namespace Tailviewer.Core
 				{
 					Log.ErrorFormat("Unable to create event log reader: {0}", e);
 
-					_buffer.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					_buffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 
 					_loggedException = true;
 				}

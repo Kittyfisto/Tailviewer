@@ -15,58 +15,58 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestGetSetValue()
 		{
-			var buffer = Create(new[] {new LogEntry(GeneralColumns.RawContent, GeneralColumns.LogLevel) {RawContent = "Hello, World!", LogLevel = LevelFlags.Error}});
+			var buffer = Create(new[] {new LogEntry(Core.Columns.RawContent, Core.Columns.LogLevel) {RawContent = "Hello, World!", LogLevel = LevelFlags.Error}});
 			buffer.Count.Should().Be(1);
 			var logEntry = buffer[0];
-			logEntry.GetValue(GeneralColumns.RawContent).Should().Be("Hello, World!");
+			logEntry.GetValue(Core.Columns.RawContent).Should().Be("Hello, World!");
 
-			logEntry.SetValue(GeneralColumns.RawContent, "Foobar 2000");
-			logEntry.GetValue((IColumnDescriptor) GeneralColumns.RawContent).Should().Be("Foobar 2000");
-			logEntry.TryGetValue(GeneralColumns.RawContent, out var rawContent).Should().BeTrue();
+			logEntry.SetValue(Core.Columns.RawContent, "Foobar 2000");
+			logEntry.GetValue((IColumnDescriptor) Core.Columns.RawContent).Should().Be("Foobar 2000");
+			logEntry.TryGetValue(Core.Columns.RawContent, out var rawContent).Should().BeTrue();
 			rawContent.Should().Be("Foobar 2000");
-			logEntry.TryGetValue((IColumnDescriptor)GeneralColumns.RawContent, out var rawContent2).Should().BeTrue();
+			logEntry.TryGetValue((IColumnDescriptor)Core.Columns.RawContent, out var rawContent2).Should().BeTrue();
 			rawContent2.Should().Be("Foobar 2000");
 
-			logEntry.SetValue((IColumnDescriptor) GeneralColumns.RawContent, "Sup?");
-			logEntry.GetValue(GeneralColumns.RawContent).Should().Be("Sup?");
+			logEntry.SetValue((IColumnDescriptor) Core.Columns.RawContent, "Sup?");
+			logEntry.GetValue(Core.Columns.RawContent).Should().Be("Sup?");
 		}
 
 		[Test]
 		public void TestGetValue_NoSuchColumn()
 		{
-			var buffer = Create(new[] {new LogEntry(GeneralColumns.Message, GeneralColumns.LogLevel) {Message = "Hello, World!", LogLevel = LevelFlags.Error}});
+			var buffer = Create(new[] {new LogEntry(Core.Columns.Message, Core.Columns.LogLevel) {Message = "Hello, World!", LogLevel = LevelFlags.Error}});
 			buffer.Count.Should().Be(1);
 			var logEntry = buffer[0];
-			new Action(() => logEntry.GetValue(GeneralColumns.RawContent)).Should().Throw<ColumnNotRetrievedException>();
-			new Action(() => logEntry.GetValue((IColumnDescriptor)GeneralColumns.RawContent)).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => logEntry.GetValue(Core.Columns.RawContent)).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => logEntry.GetValue((IColumnDescriptor)Core.Columns.RawContent)).Should().Throw<ColumnNotRetrievedException>();
 			
-			new Action(() => logEntry.GetValue(GeneralColumns.OriginalDataSourceName)).Should().Throw<ColumnNotRetrievedException>();
-			new Action(() => logEntry.GetValue((IColumnDescriptor)GeneralColumns.OriginalDataSourceName)).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => logEntry.GetValue(Core.Columns.OriginalDataSourceName)).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => logEntry.GetValue((IColumnDescriptor)Core.Columns.OriginalDataSourceName)).Should().Throw<ColumnNotRetrievedException>();
 
-			logEntry.TryGetValue(GeneralColumns.Index, out var indexValue).Should().BeFalse();
-			indexValue.Should().Be(GeneralColumns.Index.DefaultValue);
+			logEntry.TryGetValue(Core.Columns.Index, out var indexValue).Should().BeFalse();
+			indexValue.Should().Be(Core.Columns.Index.DefaultValue);
 
-			logEntry.TryGetValue((IColumnDescriptor)GeneralColumns.Index, out var indexValue2).Should().BeFalse();
-			indexValue2.Should().Be(GeneralColumns.Index.DefaultValue);
+			logEntry.TryGetValue((IColumnDescriptor)Core.Columns.Index, out var indexValue2).Should().BeFalse();
+			indexValue2.Should().Be(Core.Columns.Index.DefaultValue);
 		}
 
 		[Test]
 		public void TestSetValue_NoSuchColumn()
 		{
-			var buffer = Create(new[] {new LogEntry(GeneralColumns.Message, GeneralColumns.LogLevel) {Message = "Hello, World!", LogLevel = LevelFlags.Error}});
+			var buffer = Create(new[] {new LogEntry(Core.Columns.Message, Core.Columns.LogLevel) {Message = "Hello, World!", LogLevel = LevelFlags.Error}});
 			buffer.Count.Should().Be(1);
 			var logEntry = buffer[0];
-			new Action(() => logEntry.SetValue(GeneralColumns.RawContent, "Foo")).Should().Throw<NoSuchColumnException>();
-			new Action(() => logEntry.SetValue((IColumnDescriptor)GeneralColumns.RawContent, "bar")).Should().Throw<NoSuchColumnException>();
+			new Action(() => logEntry.SetValue(Core.Columns.RawContent, "Foo")).Should().Throw<NoSuchColumnException>();
+			new Action(() => logEntry.SetValue((IColumnDescriptor)Core.Columns.RawContent, "bar")).Should().Throw<NoSuchColumnException>();
 			
-			new Action(() => logEntry.SetValue(GeneralColumns.OriginalDataSourceName, "logs.log")).Should().Throw<NoSuchColumnException>();
-			new Action(() => logEntry.SetValue((IColumnDescriptor)GeneralColumns.OriginalDataSourceName, "logs.log")).Should().Throw<NoSuchColumnException>();
+			new Action(() => logEntry.SetValue(Core.Columns.OriginalDataSourceName, "logs.log")).Should().Throw<NoSuchColumnException>();
+			new Action(() => logEntry.SetValue((IColumnDescriptor)Core.Columns.OriginalDataSourceName, "logs.log")).Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
 		public void TestFillDefault_OneColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -81,23 +81,23 @@ namespace Tailviewer.Core.Tests.Buffers
 			buffer[0].LogLevel.Should().Be(LevelFlags.Fatal);
 			buffer[1].LogLevel.Should().Be(LevelFlags.Info);
 
-			buffer.FillDefault(GeneralColumns.Message, 0, 1);
-			buffer[0].Message.Should().Be(GeneralColumns.Message.DefaultValue);
+			buffer.FillDefault(Core.Columns.Message, 0, 1);
+			buffer[0].Message.Should().Be(Core.Columns.Message.DefaultValue);
 			buffer[1].Message.Should().Be("Bar");
 			buffer[0].LogLevel.Should().Be(LevelFlags.Fatal, "because the log level may not have been modified");
 			buffer[1].LogLevel.Should().Be(LevelFlags.Info, "because the log level may not have been modified");
 
-			buffer.FillDefault(GeneralColumns.LogLevel, 1, 1);
-			buffer[0].Message.Should().Be(GeneralColumns.Message.DefaultValue);
+			buffer.FillDefault(Core.Columns.LogLevel, 1, 1);
+			buffer[0].Message.Should().Be(Core.Columns.Message.DefaultValue);
 			buffer[1].Message.Should().Be("Bar");
 			buffer[0].LogLevel.Should().Be(LevelFlags.Fatal, "because the log level may not have been modified");
-			buffer[1].LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
+			buffer[1].LogLevel.Should().Be(Core.Columns.LogLevel.DefaultValue);
 		}
 
 		[Test]
 		public void TestFillDefault_NoSuchColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -107,7 +107,7 @@ namespace Tailviewer.Core.Tests.Buffers
 			var buffer = Create(entries);
 			buffer.Count.Should().Be(2);
 
-			new Action(() => buffer.FillDefault(GeneralColumns.RawContent, 0, 2))
+			new Action(() => buffer.FillDefault(Core.Columns.RawContent, 0, 2))
 				.Should().Throw<NoSuchColumnException>();
 
 			buffer[0].Message.Should().Be("Foo", "because the message may not have been modified");
@@ -119,7 +119,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestFillDefault()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -134,16 +134,16 @@ namespace Tailviewer.Core.Tests.Buffers
 			buffer[0].Message.Should().Be("Foo", "because we wanted to fill everything from log entry 1 onwards with default values - 0 should have been spared");
 			buffer[0].LogLevel.Should().Be(LevelFlags.Fatal, "because we wanted to fill everything from log entry 1 onwards with default values - 0 should have been spared");
 
-			buffer[1].Message.Should().Be(GeneralColumns.Message.DefaultValue);
-			buffer[1].LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
-			buffer[2].Message.Should().Be(GeneralColumns.Message.DefaultValue);
-			buffer[2].LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
+			buffer[1].Message.Should().Be(Core.Columns.Message.DefaultValue);
+			buffer[1].LogLevel.Should().Be(Core.Columns.LogLevel.DefaultValue);
+			buffer[2].Message.Should().Be(Core.Columns.Message.DefaultValue);
+			buffer[2].LogLevel.Should().Be(Core.Columns.LogLevel.DefaultValue);
 		}
 
 		[Test]
 		public void TestFillDefault_InvalidOffset()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -166,7 +166,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestFillDefault_InvalidOffsetPlusCount()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -189,7 +189,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_OneColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -208,7 +208,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				"much",
 				"work"
 			};
-			buffer.CopyFrom(GeneralColumns.Message, 1, source, 1, 2);
+			buffer.CopyFrom(Core.Columns.Message, 1, source, 1, 2);
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
 			buffer[0].Message.Should().Be("Foo", "because the data may not have been modified");
@@ -222,7 +222,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_NoSuchColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -241,7 +241,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				"much",
 				"work"
 			};
-			new Action(() => buffer.CopyFrom(GeneralColumns.RawContent, 0, source, 1, 3)).Should()
+			new Action(() => buffer.CopyFrom(Core.Columns.RawContent, 0, source, 1, 3)).Should()
 				.Throw<NoSuchColumnException>();
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
@@ -256,7 +256,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_NullColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -290,7 +290,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_InvalidDestinationIndex()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -309,7 +309,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				"much",
 				"work"
 			};
-			new Action(() => buffer.CopyFrom(GeneralColumns.Message, -1, source, 1, 3)).Should()
+			new Action(() => buffer.CopyFrom(Core.Columns.Message, -1, source, 1, 3)).Should()
 			                                                        .Throw<ArgumentOutOfRangeException>();
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
@@ -324,7 +324,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_InvalidDestinationLength()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -343,7 +343,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				"much",
 				"work"
 			};
-			new Action(() => buffer.CopyFrom(GeneralColumns.Message, 0, source, 1, 4)).Should()
+			new Action(() => buffer.CopyFrom(Core.Columns.Message, 0, source, 1, 4)).Should()
 				.Throw<ArgumentOutOfRangeException>();
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
@@ -358,7 +358,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFrom_InvalidSourceLength()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal },
@@ -374,7 +374,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				"This",
 				"is"
 			};
-			new Action(() => buffer.CopyFrom(GeneralColumns.Message, 1, source, 0, 3)).Should()
+			new Action(() => buffer.CopyFrom(Core.Columns.Message, 1, source, 0, 3)).Should()
 				.Throw<ArgumentOutOfRangeException>();
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
@@ -389,7 +389,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFromLogBuffer_OneColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel, GeneralColumns.LineNumber};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel, Core.Columns.LineNumber};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal, LineNumber = 2},
@@ -407,7 +407,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				new LogEntry(columns) {Message = "What", LogLevel = LevelFlags.Warning, LineNumber = 8},
 				new LogEntry(columns) {Message = "Goes?", LogLevel = LevelFlags.None, LineNumber = 9}
 			};
-			buffer.CopyFrom(GeneralColumns.LineNumber, 1, source, new[] {3, 1});
+			buffer.CopyFrom(Core.Columns.LineNumber, 1, source, new[] {3, 1});
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();
 			buffer[0].Message.Should().Be("Foo", "because the data may not have been modified");
@@ -424,7 +424,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		[Test]
 		public void TestCopyFromLogBuffer_NoSuchColumn()
 		{
-			var columns = new IColumnDescriptor[] {GeneralColumns.Message, GeneralColumns.LogLevel};
+			var columns = new IColumnDescriptor[] {Core.Columns.Message, Core.Columns.LogLevel};
 			var entries = new[]
 			{
 				new LogEntry(columns) { Message = "Foo", LogLevel = LevelFlags.Fatal},
@@ -435,14 +435,14 @@ namespace Tailviewer.Core.Tests.Buffers
 			var buffer = Create(entries);
 			buffer.Count.Should().Be(3);
 
-			var source = new LogBufferList(GeneralColumns.Message, GeneralColumns.LogLevel, GeneralColumns.LineNumber)
+			var source = new LogBufferList(Core.Columns.Message, Core.Columns.LogLevel, Core.Columns.LineNumber)
 			{
 				new LogEntry(columns) {Message = "Hello", LogLevel = LevelFlags.Trace, LineNumber = 4},
 				new LogEntry(columns) {Message = "World", LogLevel = LevelFlags.Trace, LineNumber = 5},
 				new LogEntry(columns) {Message = "What", LogLevel = LevelFlags.Warning, LineNumber = 8},
 				new LogEntry(columns) {Message = "Goes?", LogLevel = LevelFlags.None, LineNumber = 9}
 			};
-			new Action(() => buffer.CopyFrom(GeneralColumns.LineNumber, 1, source, new[] {3, 1}))
+			new Action(() => buffer.CopyFrom(Core.Columns.LineNumber, 1, source, new[] {3, 1}))
 				.Should().Throw<NoSuchColumnException>();
 
 			new Action(() => buffer.FillDefault(1, 3)).Should().Throw<ArgumentException>();

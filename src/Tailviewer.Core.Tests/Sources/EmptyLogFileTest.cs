@@ -21,7 +21,7 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.Count.Should().Be(0);
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
 			logFile.GetProperty((IReadOnlyPropertyDescriptor)TextProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.Columns.Should().BeEquivalentTo(GeneralColumns.Minimum);
+			logFile.Columns.Should().BeEquivalentTo(Core.Columns.Minimum);
 		}
 
 		[Test]

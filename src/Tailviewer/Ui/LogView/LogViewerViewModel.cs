@@ -248,8 +248,8 @@ namespace Tailviewer.Ui.LogView
 
 		private void UpdateCounts()
 		{
-			LogEntryCount = _logSource.GetProperty(GeneralProperties.LogEntryCount);
-			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount);
+			LogEntryCount = _logSource.GetProperty(Properties.LogEntryCount);
+			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogSource.GetProperty(Properties.LogEntryCount);
 			UpdateNoEntriesExplanation();
 		}
 
@@ -260,10 +260,10 @@ namespace Tailviewer.Ui.LogView
 			ILogSource source = dataSource.UnfilteredLogSource;
 			ILogSource filtered = dataSource.FilteredLogSource;
 
-			if (filtered.GetProperty(GeneralProperties.LogEntryCount) == 0)
+			if (filtered.GetProperty(Properties.LogEntryCount) == 0)
 			{
 				ILogEntryFilter filter = dataSource.LogEntryFilter;
-				var emptyReason = source.GetProperty(GeneralProperties.EmptyReason);
+				var emptyReason = source.GetProperty(Properties.EmptyReason);
 				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
 					NoEntriesIcon = Icons.FileRemove;
@@ -288,7 +288,7 @@ namespace Tailviewer.Ui.LogView
 					NoEntriesExplanation = $"The folder \"{Path.GetFileName(dataSource.FullFileName)}\" does not contain any file matching \"{folderDataSource.LogFileSearchPattern}\"";
 					NoEntriesAction = dataSource.FullFileName;
 				}
-				else if (source.GetProperty(GeneralProperties.Size) == Size.Zero)
+				else if (source.GetProperty(Properties.Size) == Size.Zero)
 				{
 					NoEntriesIcon = Icons.File;
 					NoEntriesExplanation = "Data source is empty";

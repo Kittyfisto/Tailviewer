@@ -534,7 +534,7 @@ namespace Tailviewer.Ui.LogView
 					var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
 					if (index.IsValid)
 					{
-						var entry = _dataSource.FindAllLogSource.GetEntries(new[] {index}, new[]{GeneralColumns.OriginalIndex});
+						var entry = _dataSource.FindAllLogSource.GetEntries(new[] {index}, new[]{Columns.OriginalIndex});
 						var originalIndex = entry[0].OriginalIndex;
 						if (originalIndex.IsValid)
 						{
@@ -781,11 +781,11 @@ namespace Tailviewer.Ui.LogView
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			Exists = _dataSource.UnfilteredLogSource?.GetProperty(GeneralProperties.EmptyReason) == ErrorFlags.None;
+			Exists = _dataSource.UnfilteredLogSource?.GetProperty(Properties.EmptyReason) == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			_search.Update();
-			Progress = _dataSource.FilteredLogSource?.GetProperty(GeneralProperties.PercentageProcessed).RelativeValue ?? 1;
+			Progress = _dataSource.FilteredLogSource?.GetProperty(Properties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)
 			{

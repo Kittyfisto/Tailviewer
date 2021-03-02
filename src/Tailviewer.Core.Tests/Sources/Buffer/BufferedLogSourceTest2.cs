@@ -19,7 +19,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		{
 			_taskScheduler = new ManualTaskScheduler();
 			_source = new Mock<ILogSource>();
-			_source.Setup(x => x.Columns).Returns(new[] {GeneralColumns.RawContent});
+			_source.Setup(x => x.Columns).Returns(new[] {Core.Columns.RawContent});
 		}
 
 		[Test]
@@ -27,7 +27,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		public void TestFetchFromSourceWhenNotCached()
 		{
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
-			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {Core.Columns.Index, Core.Columns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FromSource);
 			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions),
@@ -39,7 +39,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		public void TestFetchFromSourceWhenNotAllowedFromCache()
 		{
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
-			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {Core.Columns.Index, Core.Columns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromSource);
 			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions),
@@ -51,7 +51,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		public void TestSkipSourceIfNotAllowed()
 		{
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
-			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {Core.Columns.Index, Core.Columns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 			buffer.GetEntries(new LogSourceSection(10, 4), destination, 0, queryOptions);
 			_source.Verify(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()),
@@ -63,7 +63,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		public void TestPrefetchAsync([Values(10, 100, 1000)] int pageSize)
 		{
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
-			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {Core.Columns.Index, Core.Columns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
 			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));
@@ -84,7 +84,7 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 		{
 			var pageSize = 100;
 			var buffer = new PageBufferedLogSource(_taskScheduler, _source.Object, TimeSpan.Zero, pageSize: pageSize);
-			var destination = new LogBufferArray(4, new IColumnDescriptor[] {GeneralColumns.Index, GeneralColumns.RawContent});
+			var destination = new LogBufferArray(4, new IColumnDescriptor[] {Core.Columns.Index, Core.Columns.RawContent});
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache | LogSourceQueryMode.FetchForLater);
 
 			buffer.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 10));

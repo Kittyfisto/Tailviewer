@@ -14,7 +14,7 @@ namespace Tailviewer.Core.Tests.Filters
 		{
 			var filter = new SubstringFilter("Foobar", true);
 			var matches = new List<LogLineMatch>();
-			new Action(() => filter.Match(new LogEntry(GeneralColumns.Minimum){RawContent = null}, matches)).Should().NotThrow();
+			new Action(() => filter.Match(new LogEntry(Core.Columns.Minimum){RawContent = null}, matches)).Should().NotThrow();
 			matches.Should().BeEmpty();
 		}
 
@@ -23,7 +23,7 @@ namespace Tailviewer.Core.Tests.Filters
 		{
 			var filter = new SubstringFilter("a", true);
 			var matches = new List<LogLineMatch>();
-			filter.Match(new LogEntry(GeneralColumns.Minimum){RawContent = "Foobar"}, matches);
+			filter.Match(new LogEntry(Core.Columns.Minimum){RawContent = "Foobar"}, matches);
 			matches.Count.Should().Be(1);
 			matches[0].Index.Should().Be(4);
 			matches[0].Count.Should().Be(1);
@@ -33,7 +33,7 @@ namespace Tailviewer.Core.Tests.Filters
 		public void TestPassesFilter()
 		{
 			var filter = new SubstringFilter("a", true);
-			filter.PassesFilter(new LogEntry(GeneralColumns.Minimum){RawContent = null}).Should().BeFalse();
+			filter.PassesFilter(new LogEntry(Core.Columns.Minimum){RawContent = null}).Should().BeFalse();
 		}
 
 		[Test]

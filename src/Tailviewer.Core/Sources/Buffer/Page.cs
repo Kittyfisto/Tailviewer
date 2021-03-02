@@ -44,7 +44,7 @@ namespace Tailviewer.Core
 			}
 
 			// We neither need, nor want the source buffer to have to supply the indices - we know them ourselves
-			_buffer.CopyFrom(GeneralColumns.Index, pageDestinationIndex, new LogSourceSection(_section.Index + pageDestinationIndex, count), 0, count);
+			_buffer.CopyFrom(Columns.Index, pageDestinationIndex, new LogSourceSection(_section.Index + pageDestinationIndex, count), 0, count);
 			_buffer.Fill(PageBufferedLogSource.RetrievalState, RetrievalState.Retrieved, pageDestinationIndex, count);
 		}
 
@@ -65,7 +65,7 @@ namespace Tailviewer.Core
 
 			if (requiresValidityCheck)
 			{
-				if (_buffer.ContainsAnyDefault(GeneralColumns.Index, range))
+				if (_buffer.ContainsAnyDefault(Columns.Index, range))
 					return false;
 			}
 

@@ -18,7 +18,7 @@ namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Represents a text file as a collection of log entries where every line is a single log entry.
-	///     The contents of the line are stored in the <see cref="GeneralColumns.RawContent"/> column.
+	///     The contents of the line are stored in the <see cref="Core.Columns.RawContent"/> column.
 	/// </summary>
 	/// <remarks>
 	///     A allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
@@ -81,16 +81,16 @@ namespace Tailviewer.Core
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_index = new LogBufferList(StreamingTextLogSource.LineOffsetInBytes);
 			_propertiesBuffer = new PropertiesBufferList();
-			_propertiesBuffer.SetValue(GeneralProperties.Name, _fileName);
-			_propertiesBuffer.SetValue(GeneralProperties.Format, format);
+			_propertiesBuffer.SetValue(Core.Properties.Name, _fileName);
+			_propertiesBuffer.SetValue(Core.Properties.Format, format);
 			_propertiesBuffer.SetValue(TextProperties.RequiresBuffer, true);
 			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
 
-			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
+			_properties = new ConcurrentPropertiesList(Core.Properties.Minimum);
 			SynchronizeProperties();
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			_columns = new IColumnDescriptor[] {GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent};
+			_columns = new IColumnDescriptor[] {Core.Columns.Index, StreamingTextLogSource.LineOffsetInBytes, Core.Columns.RawContent};
 
 			_pendingReadRequests = new ConcurrentQueue<IReadRequest>();
 
@@ -166,12 +166,12 @@ namespace Tailviewer.Core
 		                         int destinationIndex,
 		                         LogSourceQueryOptions queryOptions)
 		{
-			if (ReferenceEquals(column, GeneralColumns.RawContent))
+			if (ReferenceEquals(column, Core.Columns.RawContent))
 			{
 				var view = new SingleColumnLogBufferView<T>(column, destination, destinationIndex, sourceIndices.Count);
 				ReadRawData(sourceIndices, view, 0, queryOptions);
 			}
-			else if (ReferenceEquals(column, GeneralColumns.Index))
+			else if (ReferenceEquals(column, Core.Columns.Index))
 			{
 				GetIndices(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 			}
@@ -301,7 +301,7 @@ namespace Tailviewer.Core
 			                                   FileAccess.Read,
 			                                   FileShare.ReadWrite | FileShare.Delete))
 			{
-				_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
+				_propertiesBuffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
 
 				var startOffset = _lastLineOffsetStreamPosition;
 				if (startOffset == 0)
@@ -409,7 +409,7 @@ namespace Tailviewer.Core
 			if (lineIndexToInvalidate != null)
 				_listeners.Remove(lineIndexToInvalidate.Value, 1);
 
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, percentageProcessed);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, percentageProcessed);
 			UpdateLineCount(count);
 		}
 
@@ -435,9 +435,9 @@ namespace Tailviewer.Core
 				_lastStreamPosition = 0;
 				_lastLineOffsetStreamPosition = 0;
 			}
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.Zero);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, Percentage.Zero);
 			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, 0);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, 0);
 			SynchronizeProperties();
 			_listeners.Reset();
 		}
@@ -445,7 +445,7 @@ namespace Tailviewer.Core
 		private void UpdateLineCount(int count)
 		{
 			_propertiesBuffer.SetValue(TextProperties.LineCount, count);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, count);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, count);
 			SynchronizeProperties();
 		}
 
@@ -482,23 +482,23 @@ namespace Tailviewer.Core
 				return false;
 
 			_lastFingerprint = currentFingerprint;
-			_propertiesBuffer.SetValue(GeneralProperties.LastModified, currentFingerprint.LastModified);
-			_propertiesBuffer.SetValue(GeneralProperties.Created, currentFingerprint.Created);
-			_propertiesBuffer.SetValue(GeneralProperties.Size, Size.FromBytes(currentFingerprint.Size));
+			_propertiesBuffer.SetValue(Core.Properties.LastModified, currentFingerprint.LastModified);
+			_propertiesBuffer.SetValue(Core.Properties.Created, currentFingerprint.Created);
+			_propertiesBuffer.SetValue(Core.Properties.Size, Size.FromBytes(currentFingerprint.Size));
 			return true;
 		}
 
 		private void SetError(ErrorFlags error)
 		{
-			_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
-			_propertiesBuffer.SetValue(GeneralProperties.Created, null);
-			_propertiesBuffer.SetValue(GeneralProperties.Size, null);
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
-			_propertiesBuffer.SetValue(GeneralProperties.LastModified, null);
-			_propertiesBuffer.SetValue(GeneralProperties.Created, null);
-			_propertiesBuffer.SetValue(GeneralProperties.Size, null);
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, error);
+			_propertiesBuffer.SetValue(Core.Properties.Created, null);
+			_propertiesBuffer.SetValue(Core.Properties.Size, null);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
+			_propertiesBuffer.SetValue(Core.Properties.LastModified, null);
+			_propertiesBuffer.SetValue(Core.Properties.Created, null);
+			_propertiesBuffer.SetValue(Core.Properties.Size, null);
 			_propertiesBuffer.SetValue(TextProperties.LineCount, 0);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, 0);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, 0);
 
 			ResetIndex();
 		}
@@ -808,9 +808,9 @@ namespace Tailviewer.Core
 						return;
 					}
 
-					_destination.CopyFrom(GeneralColumns.RawContent, _destinationIndex, lines, 0, linesRead);
-					if (_destination.Contains(GeneralColumns.Index))
-						_destination.CopyFrom(GeneralColumns.Index, _destinationIndex, sourceIndices, 0, linesRead);
+					_destination.CopyFrom(Core.Columns.RawContent, _destinationIndex, lines, 0, linesRead);
+					if (_destination.Contains(Core.Columns.Index))
+						_destination.CopyFrom(Core.Columns.Index, _destinationIndex, sourceIndices, 0, linesRead);
 				}
 			}
 
@@ -970,7 +970,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						line = GeneralColumns.RawContent.DefaultValue;
+						line = Core.Columns.RawContent.DefaultValue;
 					}
 
 					destination[i] = line;

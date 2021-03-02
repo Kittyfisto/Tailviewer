@@ -133,7 +133,7 @@ namespace Tailviewer.Core
 		[Pure]
 		public static IReadOnlyLogBuffer GetEntries(this ILogSource logSource, IReadOnlyList<IColumnDescriptor> columns)
 		{
-			var count = logSource.GetProperty(GeneralProperties.LogEntryCount);
+			var count = logSource.GetProperty(Properties.LogEntryCount);
 			var buffer = new LogBufferArray(count, columns);
 			GetEntries(logSource, new LogSourceSection(0, count), buffer);
 			return buffer;

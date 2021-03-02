@@ -83,27 +83,27 @@ namespace Tailviewer.Core
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
-			_entries = new LogBufferList(GeneralColumns.RawContent);
+			_entries = new LogBufferList(Core.Columns.RawContent);
 			_columns = new IColumnDescriptor[]
 			{
-				GeneralColumns.Index,
-				GeneralColumns.OriginalIndex,
-				GeneralColumns.LogEntryIndex,
-				GeneralColumns.LineNumber,
-				GeneralColumns.OriginalLineNumber,
-				GeneralColumns.OriginalDataSourceName,
-				GeneralColumns.RawContent,
+				Core.Columns.Index,
+				Core.Columns.OriginalIndex,
+				Core.Columns.LogEntryIndex,
+				Core.Columns.LineNumber,
+				Core.Columns.OriginalLineNumber,
+				Core.Columns.OriginalDataSourceName,
+				Core.Columns.RawContent,
 				PageBufferedLogSource.RetrievalState
 			};
 
-			_localProperties = new PropertiesBufferList(GeneralProperties.Minimum);
-			_localProperties.SetValue(GeneralProperties.Name, _fileName);
+			_localProperties = new PropertiesBufferList(Core.Properties.Minimum);
+			_localProperties.SetValue(Core.Properties.Name, _fileName);
 			_localProperties.Add(TextProperties.LineCount);
-			_localProperties.SetValue(GeneralProperties.Format, format);
+			_localProperties.SetValue(Core.Properties.Format, format);
 			_localProperties.SetValue(TextProperties.LineCount, 0);
 			_localProperties.SetValue(TextProperties.RequiresBuffer, false);
 
-			_properties = new ConcurrentPropertiesList(GeneralProperties.Minimum);
+			_properties = new ConcurrentPropertiesList(Core.Properties.Minimum);
 			SynchronizePropertiesWithUser();
 			_syncRoot = new object();
 			_properties.SetValue(TextProperties.AutoDetectedEncoding, encoding);
@@ -174,25 +174,25 @@ namespace Tailviewer.Core
 
 			lock (_syncRoot)
 			{
-				if (Equals(column, GeneralColumns.Index) ||
-				    Equals(column, GeneralColumns.OriginalIndex))
+				if (Equals(column, Core.Columns.Index) ||
+				    Equals(column, Core.Columns.OriginalIndex))
 				{
 					GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, GeneralColumns.LogEntryIndex))
+				else if (Equals(column, Core.Columns.LogEntryIndex))
 				{
 					GetIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, GeneralColumns.LineNumber) ||
-				         Equals(column, GeneralColumns.OriginalLineNumber))
+				else if (Equals(column, Core.Columns.LineNumber) ||
+				         Equals(column, Core.Columns.OriginalLineNumber))
 				{
 					GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 				}
-				else if (Equals(column, GeneralColumns.OriginalDataSourceName))
+				else if (Equals(column, Core.Columns.OriginalDataSourceName))
 				{
 					GetDataSourceName(sourceIndices, (string[]) (object) destination, destinationIndex);
 				}
-				else if (Equals(column, GeneralColumns.RawContent))
+				else if (Equals(column, Core.Columns.RawContent))
 				{
 					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
 				}
@@ -231,9 +231,9 @@ namespace Tailviewer.Core
 				{
 					var info = new FileInfo(_fileName);
 					var fileSize = info.Length;
-					_localProperties.SetValue(GeneralProperties.LastModified, info.LastWriteTimeUtc);
-					_localProperties.SetValue(GeneralProperties.Created, info.CreationTimeUtc);
-					_localProperties.SetValue(GeneralProperties.Size, Size.FromBytes(fileSize));
+					_localProperties.SetValue(Core.Properties.LastModified, info.LastWriteTimeUtc);
+					_localProperties.SetValue(Core.Properties.Created, info.CreationTimeUtc);
+					_localProperties.SetValue(Core.Properties.Size, Size.FromBytes(fileSize));
 					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
 					SynchronizePropertiesWithUser();
 
@@ -249,7 +249,7 @@ namespace Tailviewer.Core
 							// not allowed to access the file (in which case a different
 							// error must be set).
 
-							_localProperties.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
+							_localProperties.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
 							if (stream.Length >= _lastStreamPosition)
 							{
 								stream.Position = _lastStreamPosition;
@@ -304,7 +304,7 @@ namespace Tailviewer.Core
 
 							_lastStreamPosition = stream.Position;
 							_localProperties.SetValue(TextProperties.LineCount, _entries.Count);
-							_localProperties.SetValue(GeneralProperties.LogEntryCount, _entries.Count);
+							_localProperties.SetValue(Core.Properties.LogEntryCount, _entries.Count);
 						}
 					}
 
@@ -363,7 +363,7 @@ namespace Tailviewer.Core
 			// of ALL changes (even if they didn't want them yet) before we enter the
 			// EndOfSourceReached state.
 			Listeners.Flush();
-			_localProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+			_localProperties.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
 			SynchronizePropertiesWithUser();
 		}
 
@@ -389,7 +389,7 @@ namespace Tailviewer.Core
 			var processed = Percentage.Of(streamPosition, fileSize).Clamped();
 			if (processed >= Percentage.FromPercent(99) && !allow100Percent)
 				processed = Percentage.FromPercent(99);
-			_localProperties.SetValue(GeneralProperties.PercentageProcessed, processed);
+			_localProperties.SetValue(Core.Properties.PercentageProcessed, processed);
 		}
 
 		private void GetIndex(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
@@ -405,7 +405,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						buffer[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
+						buffer[destinationIndex + i] = Core.Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -424,7 +424,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						buffer[destinationIndex + i] = GeneralColumns.LogEntryIndex.DefaultValue;
+						buffer[destinationIndex + i] = Core.Columns.LogEntryIndex.DefaultValue;
 					}
 				}
 			}
@@ -434,7 +434,7 @@ namespace Tailviewer.Core
 		{
 			lock (_syncRoot)
 			{
-				_entries.CopyTo(GeneralColumns.RawContent, indices, destination, destinationIndex);
+				_entries.CopyTo(Core.Columns.RawContent, indices, destination, destinationIndex);
 			}
 		}
 
@@ -471,7 +471,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						buffer[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
+						buffer[destinationIndex + i] = Core.Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -479,17 +479,17 @@ namespace Tailviewer.Core
 
 		private void SetDoesNotExist()
 		{
-			_localProperties.SetValue(GeneralProperties.Created, null);
-			_localProperties.SetValue(GeneralProperties.Size, null);
+			_localProperties.SetValue(Core.Properties.Created, null);
+			_localProperties.SetValue(Core.Properties.Size, null);
 			_localProperties.SetValue(TextProperties.AutoDetectedEncoding, null);
-			_localProperties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+			_localProperties.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
 			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 
 		private void SetError(ErrorFlags error)
 		{
-			_localProperties.SetValue(GeneralProperties.EmptyReason, error);
+			_localProperties.SetValue(Core.Properties.EmptyReason, error);
 			SynchronizePropertiesWithUser();
 			SetEndOfSourceReached();
 		}
@@ -563,8 +563,8 @@ namespace Tailviewer.Core
 		private void SynchronizePropertiesWithUser()
 		{
 			_localProperties.SetValue(TextProperties.LineCount, _entries.Count);
-			_localProperties.SetValue(GeneralProperties.LogEntryCount, _entries.Count);
-			_localProperties.SetValue(GeneralProperties.LogEntryCount, _entries.Count);
+			_localProperties.SetValue(Core.Properties.LogEntryCount, _entries.Count);
+			_localProperties.SetValue(Core.Properties.LogEntryCount, _entries.Count);
 
 			// We want to update the user-facing properties in a single synchronized OP
 			// so that the properties as retrieved by the user are in sync

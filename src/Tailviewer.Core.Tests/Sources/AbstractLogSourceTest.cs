@@ -24,7 +24,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Test]
 		public void TestDebuggerVisualization1()
 		{
-			var content = new LogBufferArray(2, GeneralColumns.Minimum);
+			var content = new LogBufferArray(2, Core.Columns.Minimum);
 			content[0].Timestamp = new DateTime(2017, 12, 20, 13, 22, 0);
 			content[1].Timestamp = new DateTime(2017, 12, 20, 13, 23, 0);
 			var logFile = CreateFromContent(content);
@@ -38,32 +38,32 @@ namespace Tailviewer.Core.Tests.Sources
 		public void TestStartEndTimestampEmptyLogFile()
 		{
 			var logFile = CreateEmpty();
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.EndTimestamp).Should().BeNull();
 		}
 
 		[Test]
 		public void TestStartEndTimestamp1()
 		{
-			var content = new LogBufferList(GeneralColumns.Timestamp);
+			var content = new LogBufferList(Core.Columns.Timestamp);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
 			var logFile = CreateFromContent(content);
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
-			logFile.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(Core.Properties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
 		}
 
 		[Test]
 		public void TestStartEndTimestamp2()
 		{
-			var content = new LogBufferList(GeneralColumns.Timestamp);
+			var content = new LogBufferList(Core.Columns.Timestamp);
 			content.Add(ReadOnlyLogEntry.Empty);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 12, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			var logFile = CreateFromContent(content);
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
-			logFile.GetProperty(GeneralProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
+			logFile.GetProperty(Core.Properties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
 		}
 
 		#region Well Known Columns
@@ -79,21 +79,21 @@ namespace Tailviewer.Core.Tests.Sources
 		public void TestGetColumnNullIndices()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(null, GeneralColumns.Index, new LogLineIndex[0], 0)).Should().Throw<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(null, Core.Columns.Index, new LogLineIndex[0], 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestGetColumnNullBuffer1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogSourceSection(), GeneralColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogSourceSection(), Core.Columns.Index, null, 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestGetColumnNullBuffer2()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogLineIndex[0], GeneralColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogLineIndex[0], Core.Columns.Index, null, 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[9])).Should().Throw<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
 		}
 
@@ -110,7 +110,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[9])).Should().Throw<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
 		}
 
@@ -119,7 +119,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[10],
 			                                   -1)).Should().Throw<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
 		}
@@ -129,7 +129,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[10],
 			                                   -1)).Should().Throw<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
 		}
@@ -139,7 +139,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogSourceSection(1, 10),
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[15],
 			                                   6)).Should().Throw<ArgumentException>("because the given length and offset are greater than the buffer length");
 		}
@@ -149,7 +149,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
-			                                   GeneralColumns.OriginalLineNumber,
+			                                   Core.Columns.OriginalLineNumber,
 			                                   new int[15],
 			                                   6)).Should().Throw<ArgumentException>("because the given length and offset are greater than the buffer length");
 		}
@@ -167,7 +167,7 @@ namespace Tailviewer.Core.Tests.Sources
 			//
 			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
 			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -176,7 +176,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 			using (var logFile = CreateFromContent(content))
 			{
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+				logFile.GetProperty(Core.Properties.LogEntryCount).Should().Be(3);
 
 				const int offset = 2;
 				const int count = 3;
@@ -189,7 +189,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.Index,
+				                  Core.Columns.Index,
 				                  buffer,
 				                  offset);
 
@@ -200,7 +200,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].Index, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].Index, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.Index.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.Index.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -224,7 +224,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.Index, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.Index, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -256,7 +256,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.Index, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.Index, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -287,7 +287,7 @@ namespace Tailviewer.Core.Tests.Sources
 			//
 			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
 			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
-			var content = new LogBufferList(GeneralColumns.OriginalIndex, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.OriginalIndex, Core.Columns.Timestamp)
 			{
 				new LogEntry {OriginalIndex = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {OriginalIndex = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -307,7 +307,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.OriginalIndex,
+				                  Core.Columns.OriginalIndex,
 				                  buffer,
 				                  offset);
 
@@ -318,7 +318,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].OriginalIndex, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].OriginalIndex, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.OriginalIndex.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.OriginalIndex.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -342,7 +342,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.OriginalIndex, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.OriginalIndex, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -374,7 +374,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.OriginalIndex, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.OriginalIndex, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -393,7 +393,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Test]
 		public void TestGetOriginalIndicesBySection()
 		{
-			var content = new LogBufferList(GeneralColumns.Timestamp);
+			var content = new LogBufferList(Core.Columns.Timestamp);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
@@ -404,7 +404,7 @@ namespace Tailviewer.Core.Tests.Sources
 			indices[0] = new LogLineIndex(42);
 			indices[4] = new LogLineIndex(9001);
 
-			logFile.GetColumn(new LogSourceSection(1, 3), GeneralColumns.OriginalIndex, indices, 1);
+			logFile.GetColumn(new LogSourceSection(1, 3), Core.Columns.OriginalIndex, indices, 1);
 			indices[0].Should().Be(42, "because the original value shouldn't have been written over");
 			indices[1].Should().Be(1);
 			indices[2].Should().Be(2);
@@ -415,7 +415,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Test]
 		public void TestGetOriginalIndicesByIndices()
 		{
-			var content = new LogBufferList(GeneralColumns.Timestamp);
+			var content = new LogBufferList(Core.Columns.Timestamp);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
@@ -426,7 +426,7 @@ namespace Tailviewer.Core.Tests.Sources
 			indices[0] = new LogLineIndex(42);
 			indices[4] = new LogLineIndex(9001);
 
-			logFile.GetColumn(new LogLineIndex[] {3,1,2}, GeneralColumns.OriginalIndex, indices, 1);
+			logFile.GetColumn(new LogLineIndex[] {3,1,2}, Core.Columns.OriginalIndex, indices, 1);
 			indices[0].Should().Be(42, "because the original value shouldn't have been written over");
 			indices[1].Should().Be(3);
 			indices[2].Should().Be(1);
@@ -449,7 +449,7 @@ namespace Tailviewer.Core.Tests.Sources
 			//
 			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
 			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.LineNumber, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.LineNumber, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, LineNumber = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, LineNumber = 2, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -469,7 +469,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.LineNumber,
+				                  Core.Columns.LineNumber,
 				                  buffer,
 				                  offset);
 
@@ -480,7 +480,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].LineNumber, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].LineNumber, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.LineNumber.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.LineNumber.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -504,7 +504,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.LineNumber, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.LineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -536,7 +536,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.LineNumber, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.LineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -567,7 +567,7 @@ namespace Tailviewer.Core.Tests.Sources
 			//
 			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
 			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.OriginalLineNumber, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.OriginalLineNumber, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, OriginalLineNumber = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, OriginalLineNumber = 2, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -587,7 +587,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.OriginalLineNumber,
+				                  Core.Columns.OriginalLineNumber,
 				                  buffer,
 				                  offset);
 
@@ -598,7 +598,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].OriginalLineNumber, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].OriginalLineNumber, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.OriginalLineNumber.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.OriginalLineNumber.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -622,7 +622,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = 42;
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.OriginalLineNumber, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.OriginalLineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -654,7 +654,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.OriginalLineNumber, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.OriginalLineNumber, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -680,7 +680,7 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
 			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp, GeneralColumns.RawContent, GeneralColumns.LogLevel)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.Timestamp, Core.Columns.RawContent, Core.Columns.LogLevel)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41), RawContent = "INFO: A", LogLevel = LevelFlags.Info},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59), RawContent = "WARNING: B", LogLevel = LevelFlags.Warning},
@@ -700,7 +700,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.LogLevel,
+				                  Core.Columns.LogLevel,
 				                  buffer,
 				                  offset);
 
@@ -711,7 +711,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].LogLevel, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].LogLevel, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.LogLevel.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.LogLevel.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -735,7 +735,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = LevelFlags.Fatal;
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.LogLevel, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.LogLevel, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -767,7 +767,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.LogLevel, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.LogLevel, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -794,7 +794,7 @@ namespace Tailviewer.Core.Tests.Sources
 			// The ElapsedTime column values are computed by subtracting the timestamps of neighboring log entries,
 			// therefore in order to create a log file which offers the ElapsedTime column to us, we have to fill it
 			// with log entries containing a timestamp.
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 47, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 47, 59)},
@@ -813,7 +813,7 @@ namespace Tailviewer.Core.Tests.Sources
 					buffer[i] = TimeSpan.FromDays(1);
 				}
 
-				logFile.GetColumn(new LogSourceSection(1, count), GeneralColumns.ElapsedTime, buffer, offset);
+				logFile.GetColumn(new LogSourceSection(1, count), Core.Columns.ElapsedTime, buffer, offset);
 
 				for (int i = 0; i < offset; ++i)
 				{
@@ -822,7 +822,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(TimeSpan.FromSeconds(18), "because we wanted to copy the elapsed difference between the second and first log entry");
 				buffer[offset + 1].Should().Be(TimeSpan.FromSeconds(87), "because we wanted to copy the time difference between the third and first entry of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.DeltaTime.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.DeltaTime.DefaultValue,
 				                               "because source doesn't have a fourth entry and the buffer should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -846,7 +846,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = TimeSpan.FromDays(1);
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.ElapsedTime, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.ElapsedTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -878,7 +878,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.ElapsedTime, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.ElapsedTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -897,8 +897,8 @@ namespace Tailviewer.Core.Tests.Sources
 		[Test]
 		public void TestGetElapsedTimesBySection()
 		{
-			var content = new LogBufferArray(5, GeneralColumns.Timestamp);
-			content.CopyFrom(GeneralColumns.Timestamp, new DateTime?[]
+			var content = new LogBufferArray(5, Core.Columns.Timestamp);
+			content.CopyFrom(Core.Columns.Timestamp, new DateTime?[]
 			{
 				new DateTime(2017, 12, 19, 15, 49, 1),
 				new DateTime(2017, 12, 19, 15, 49, 3),
@@ -907,7 +907,7 @@ namespace Tailviewer.Core.Tests.Sources
 				new DateTime(2017, 12, 19, 15, 49, 17)
 			});
 			var logFile = CreateFromContent(content);
-			var values = logFile.GetColumn(new LogSourceSection(0, 5), GeneralColumns.ElapsedTime);
+			var values = logFile.GetColumn(new LogSourceSection(0, 5), Core.Columns.ElapsedTime);
 			values.Should().Equal(new object[]
 			{
 				TimeSpan.FromSeconds(0),
@@ -929,7 +929,7 @@ namespace Tailviewer.Core.Tests.Sources
 			// The DeltaTime column values are computed by subtracting the timestamps of neighboring log entries,
 			// therefore in order to create a log file which offers the DeltaTime column to us, we have to fill it
 			// with log entries containing a timestamp.
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 41, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 41, 59)},
@@ -948,7 +948,7 @@ namespace Tailviewer.Core.Tests.Sources
 					buffer[i] = TimeSpan.FromDays(1);
 				}
 
-				logFile.GetColumn(new LogSourceSection(1, count), GeneralColumns.DeltaTime, buffer, offset);
+				logFile.GetColumn(new LogSourceSection(1, count), Core.Columns.DeltaTime, buffer, offset);
 
 				for (int i = 0; i < offset; ++i)
 				{
@@ -957,7 +957,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(TimeSpan.FromSeconds(18), "because we wanted to copy the time difference between the first and second entry of the source");
 				buffer[offset + 1].Should().Be(TimeSpan.FromSeconds(9), "because we wanted to copy the time difference between the third and second entry of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.DeltaTime.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.DeltaTime.DefaultValue,
 				                               "because source doesn't have a fourth entry and the buffer should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -981,7 +981,7 @@ namespace Tailviewer.Core.Tests.Sources
 				buffer[i] = TimeSpan.FromDays(1);
 			}
 
-			logFile.GetColumn(new LogSourceSection(0, count), GeneralColumns.DeltaTime, buffer, offset);
+			logFile.GetColumn(new LogSourceSection(0, count), Core.Columns.DeltaTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -1013,7 +1013,7 @@ namespace Tailviewer.Core.Tests.Sources
 			}
 
 			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex) x).ToArray();
-			logFile.GetColumn(indices, GeneralColumns.DeltaTime, buffer, offset);
+			logFile.GetColumn(indices, Core.Columns.DeltaTime, buffer, offset);
 
 			for (int i = 0; i < offset; ++i)
 			{
@@ -1037,7 +1037,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
 		public void TestGetTimestampPartiallyInvalidBySection()
 		{
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -1057,7 +1057,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
-				                  GeneralColumns.Timestamp,
+				                  Core.Columns.Timestamp,
 				                  buffer,
 				                  offset);
 
@@ -1068,7 +1068,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				buffer[offset + 0].Should().Be(content[1].Timestamp, "because we wanted to copy the entry at index 1 of the source");
 				buffer[offset + 1].Should().Be(content[2].Timestamp, "because we wanted to copy the entry at index 2 of the source");
-				buffer[offset + 2].Should().Be(GeneralColumns.Timestamp.DefaultValue,
+				buffer[offset + 2].Should().Be(Core.Columns.Timestamp.DefaultValue,
 				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
 
 				for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -1094,7 +1094,7 @@ namespace Tailviewer.Core.Tests.Sources
 				}
 
 				logFile.GetColumn(new LogSourceSection(invalidStartIndex, count),
-				                  GeneralColumns.Timestamp,
+				                  Core.Columns.Timestamp,
 				                  buffer,
 				                  offset);
 
@@ -1129,7 +1129,7 @@ namespace Tailviewer.Core.Tests.Sources
 
 				var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex) x).ToArray();
 				logFile.GetColumn(indices,
-				                  GeneralColumns.Timestamp,
+				                  Core.Columns.Timestamp,
 				                  buffer,
 				                  offset);
 
@@ -1172,7 +1172,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Description("Verifies that the log file implementation appears totally empty after Dispose() has been called")]
 		public virtual void TestDisposeData()
 		{
-			var content = new LogBufferList(GeneralColumns.Index, GeneralColumns.RawContent, GeneralColumns.Timestamp)
+			var content = new LogBufferList(Core.Columns.Index, Core.Columns.RawContent, Core.Columns.Timestamp)
 			{
 				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
 				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
@@ -1181,10 +1181,10 @@ namespace Tailviewer.Core.Tests.Sources
 
 			using (var logFile = CreateFromContent(content))
 			{
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+				logFile.GetProperty(Core.Properties.LogEntryCount).Should().Be(3);
 
 				logFile.Dispose();
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+				logFile.GetProperty(Core.Properties.LogEntryCount).Should().Be(0);
 				var entries = logFile.GetEntries(new LogSourceSection(0, 3));
 				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
@@ -1194,8 +1194,8 @@ namespace Tailviewer.Core.Tests.Sources
 				var values = logFile.GetAllProperties();
 				values.Properties.Should().BeEmpty();
 
-				logFile.GetProperty(GeneralProperties.PercentageProcessed).Should()
-				       .Be(GeneralProperties.PercentageProcessed.DefaultValue);
+				logFile.GetProperty(Core.Properties.PercentageProcessed).Should()
+				       .Be(Core.Properties.PercentageProcessed.DefaultValue);
 			}
 		}
 	}

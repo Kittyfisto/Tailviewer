@@ -44,12 +44,12 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			{
 				proxy.InnerLogSource.Should().BeNull();
 				proxy.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
-				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
-				proxy.GetProperty(GeneralProperties.Size).Should().BeNull();
-				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue();
-				proxy.GetProperty(GeneralProperties.EndTimestamp).Should().NotHaveValue();
-				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
-				proxy.Columns.Should().Equal(GeneralColumns.Minimum);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+				proxy.GetProperty(Core.Properties.Size).Should().BeNull();
+				proxy.GetProperty(Core.Properties.StartTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(Core.Properties.EndTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(Core.Properties.LogEntryCount).Should().Be(0);
+				proxy.Columns.Should().Equal(Core.Columns.Minimum);
 
 				proxy.GetEntry(0).Index.Should().Be(LogLineIndex.Invalid);
 			}
@@ -58,10 +58,10 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 		[Test]
 		public void TestConstruction()
 		{
-			_logFile.Setup(x => x.Columns).Returns(new[] { GeneralColumns.RawContent });
+			_logFile.Setup(x => x.Columns).Returns(new[] { Core.Columns.RawContent });
 			using (var proxy = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				proxy.Columns.Should().Equal(GeneralColumns.RawContent);
+				proxy.Columns.Should().Equal(Core.Columns.RawContent);
 			}
 		}
 
@@ -133,18 +133,18 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.EmptyReason, ErrorFlags.None);
+					        destination.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.None);
 
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					        destination.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 			}
 		}
 
@@ -156,18 +156,18 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.Size, Size.FromBytes(12));
+					        destination.SetValue(Core.Properties.Size, Size.FromBytes(12));
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(12));
+				proxy.GetProperty(Core.Properties.Size).Should().Be(Size.FromBytes(12));
 
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.Size, Size.OneMegabyte);
+					        destination.SetValue(Core.Properties.Size, Size.OneMegabyte);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.Size).Should().Be(Size.OneMegabyte);
+				proxy.GetProperty(Core.Properties.Size).Should().Be(Size.OneMegabyte);
 			}
 		}
 
@@ -178,15 +178,15 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			{
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
-					                  destination.SetValue(GeneralProperties.LogEntryCount, 42));
+					                  destination.SetValue(Core.Properties.LogEntryCount, 42));
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(42);
+				proxy.GetProperty(Core.Properties.LogEntryCount).Should().Be(42);
 
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
-					                  destination.SetValue(GeneralProperties.LogEntryCount, 9001));
+					                  destination.SetValue(Core.Properties.LogEntryCount, 9001));
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.LogEntryCount).Should().Be(9001);
+				proxy.GetProperty(Core.Properties.LogEntryCount).Should().Be(9001);
 			}
 		}
 
@@ -198,18 +198,18 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.StartTimestamp, new DateTime(2016, 10, 7, 14, 46, 00));
+					        destination.SetValue(Core.Properties.StartTimestamp, new DateTime(2016, 10, 7, 14, 46, 00));
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
+				proxy.GetProperty(Core.Properties.StartTimestamp).Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
 				
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(GeneralProperties.StartTimestamp, null);
+					        destination.SetValue(Core.Properties.StartTimestamp, null);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(GeneralProperties.StartTimestamp).Should().NotHaveValue();
+				proxy.GetProperty(Core.Properties.StartTimestamp).Should().NotHaveValue();
 			}
 		}
 
@@ -374,9 +374,9 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object);
 			var destinationIndex = 42;
 			var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
-			logFile.GetColumn(section, GeneralColumns.RawContent, buffer, destinationIndex, queryOptions);
+			logFile.GetColumn(section, Core.Columns.RawContent, buffer, destinationIndex, queryOptions);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == section),
-			                                 GeneralColumns.RawContent,
+			                                 Core.Columns.RawContent,
 			                                 buffer,
 			                                 destinationIndex,
 			                                 queryOptions),
@@ -389,7 +389,7 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			var section = new LogSourceSection(42, 100);
 			var buffer = new string[100];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetColumn(section, GeneralColumns.RawContent, buffer);
+			logFile.GetColumn(section, Core.Columns.RawContent, buffer);
 			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
 		}
 
@@ -399,7 +399,7 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			var indices = new LogLineIndex[] {1, 2};
 			var buffer = new string[2];
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetColumn(indices, GeneralColumns.RawContent, buffer);
+			logFile.GetColumn(indices, Core.Columns.RawContent, buffer);
 			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
 		}
 
@@ -407,7 +407,7 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 		public void TestProgress1()
 		{
 			var logFile = new LogSourceProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+			logFile.GetProperty(Core.Properties.PercentageProcessed).Should().Be(Percentage.Zero);
 		}
 
 		[Test]
@@ -418,15 +418,15 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			        .Callback((IPropertiesBuffer destination) =>
 			        {
-				        destination.SetValue(GeneralProperties.PercentageProcessed, Percentage.FiftyPercent);
+				        destination.SetValue(Core.Properties.PercentageProcessed, Percentage.FiftyPercent);
 			        });
 
 			logFile.InnerLogSource = _logFile.Object;
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should()
+			logFile.GetProperty(Core.Properties.PercentageProcessed).Should()
 			       .Be(Percentage.Zero, "because the proxy didn't process anything just yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should()
+			logFile.GetProperty(Core.Properties.PercentageProcessed).Should()
 			       .Be(Percentage.FiftyPercent, "because while the proxy is done, its source is only half finished");
 		}
 
@@ -442,13 +442,13 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 				var queryOptions = new LogSourceQueryOptions(LogSourceQueryMode.FromCache);
 
 				proxy.GetColumn(new LogSourceSection(1, 42),
-				                GeneralColumns.OriginalIndex,
+				                Core.Columns.OriginalIndex,
 				                buffer,
 				                destinationIndex,
 				                queryOptions);
 
 				_logFile.Verify(x => x.GetColumn(It.Is<LogSourceSection>(y => y == new LogSourceSection(1, 42)),
-				                                 GeneralColumns.OriginalIndex,
+				                                 Core.Columns.OriginalIndex,
 				                                 buffer,
 				                                 destinationIndex,
 				                                 queryOptions),

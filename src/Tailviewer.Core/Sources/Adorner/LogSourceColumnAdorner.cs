@@ -29,13 +29,13 @@ namespace Tailviewer.Core
 		{
 			MaxAdornedColumns = new IColumnDescriptor[]
 			{
-				GeneralColumns.Index,
-				GeneralColumns.OriginalIndex,
-				GeneralColumns.LogEntryIndex,
-				GeneralColumns.LineNumber,
-				GeneralColumns.OriginalLineNumber,
-				GeneralColumns.ElapsedTime,
-				GeneralColumns.DeltaTime,
+				Core.Columns.Index,
+				Core.Columns.OriginalIndex,
+				Core.Columns.LogEntryIndex,
+				Core.Columns.LineNumber,
+				Core.Columns.OriginalLineNumber,
+				Core.Columns.ElapsedTime,
+				Core.Columns.DeltaTime,
 			};
 		}
 
@@ -117,27 +117,27 @@ namespace Tailviewer.Core
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, GeneralColumns.Index) || Equals(column, GeneralColumns.OriginalIndex))
+			if (Equals(column, Core.Columns.Index) || Equals(column, Core.Columns.OriginalIndex))
 			{
 				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, GeneralColumns.LogEntryIndex))
+			else if (Equals(column, Core.Columns.LogEntryIndex))
 			{
 				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, GeneralColumns.LineNumber))
+			else if (Equals(column, Core.Columns.LineNumber))
 			{
 				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, GeneralColumns.OriginalLineNumber))
+			else if (Equals(column, Core.Columns.OriginalLineNumber))
 			{
 				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 			}
-			else if (IsAdorned(column, GeneralColumns.ElapsedTime))
+			else if (IsAdorned(column, Core.Columns.ElapsedTime))
 			{
 				GetElapsedTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (IsAdorned(column, GeneralColumns.DeltaTime))
+			else if (IsAdorned(column, Core.Columns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
@@ -158,7 +158,7 @@ namespace Tailviewer.Core
 
 		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex)
 		{
-			var count = _source?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
+			var count = _source?.GetProperty(Core.Properties.LogEntryCount) ?? 0;
 			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
 				var sourceIndex = sourceIndices[i].Value;
@@ -168,14 +168,14 @@ namespace Tailviewer.Core
 				}
 				else
 				{
-					destination[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
+					destination[destinationIndex + i] = Core.Columns.Index.DefaultValue;
 				}
 			}
 		}
 
 		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex)
 		{
-			var count = _source?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
+			var count = _source?.GetProperty(Core.Properties.LogEntryCount) ?? 0;
 			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
 				var sourceIndex = sourceIndices[i].Value;
@@ -185,14 +185,14 @@ namespace Tailviewer.Core
 				}
 				else
 				{
-					destination[destinationIndex + i] = GeneralColumns.LogEntryIndex.DefaultValue;
+					destination[destinationIndex + i] = Core.Columns.LogEntryIndex.DefaultValue;
 				}
 			}
 		}
 
 		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex)
 		{
-			var count = _source?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
+			var count = _source?.GetProperty(Core.Properties.LogEntryCount) ?? 0;
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var index = indices[i];
@@ -203,7 +203,7 @@ namespace Tailviewer.Core
 				}
 				else
 				{
-					destination[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
+					destination[destinationIndex + i] = Core.Columns.LineNumber.DefaultValue;
 				}
 			}
 		}
@@ -211,23 +211,23 @@ namespace Tailviewer.Core
 		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex,
 		                            LogSourceQueryOptions queryOptions)
 		{
-			var startTimestamp = _source.GetProperty(GeneralProperties.StartTimestamp);
+			var startTimestamp = _source.GetProperty(Core.Properties.StartTimestamp);
 			if (startTimestamp != null)
 			{
-				var timestamps = _source.GetColumn(indices, GeneralColumns.Timestamp, queryOptions);
+				var timestamps = _source.GetColumn(indices, Core.Columns.Timestamp, queryOptions);
 				for (int i = 0; i < indices.Count; ++i)
 				{
 					var timestamp = timestamps[i];
 					buffer[destinationIndex + i] = timestamp != null
 						? timestamp.Value - startTimestamp
-						: GeneralColumns.ElapsedTime.DefaultValue;
+						: Core.Columns.ElapsedTime.DefaultValue;
 				}
 			}
 			else
 			{
 				for (int i = 0; i < indices.Count; ++i)
 				{
-					buffer[destinationIndex + i] = GeneralColumns.ElapsedTime.DefaultValue;
+					buffer[destinationIndex + i] = Core.Columns.ElapsedTime.DefaultValue;
 				}
 			}
 		}
@@ -247,7 +247,7 @@ namespace Tailviewer.Core
 				actualIndices[i * 2 + 1] = index;
 			}
 
-			var timestamps = _source.GetColumn(actualIndices, GeneralColumns.Timestamp, queryOptions);
+			var timestamps = _source.GetColumn(actualIndices, Core.Columns.Timestamp, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];

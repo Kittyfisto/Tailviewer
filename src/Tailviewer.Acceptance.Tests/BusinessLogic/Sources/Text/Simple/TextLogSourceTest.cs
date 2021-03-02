@@ -70,13 +70,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		{
 			_source.Columns.Should().Equal(new IColumnDescriptor[]
 			{
-				GeneralColumns.Index,
-				GeneralColumns.OriginalIndex,
-				GeneralColumns.LogEntryIndex,
-				GeneralColumns.LineNumber,
-				GeneralColumns.OriginalLineNumber,
-				GeneralColumns.OriginalDataSourceName,
-				GeneralColumns.RawContent,
+				Columns.Index,
+				Columns.OriginalIndex,
+				Columns.LogEntryIndex,
+				Columns.LineNumber,
+				Columns.OriginalLineNumber,
+				Columns.OriginalDataSourceName,
+				Columns.RawContent,
 				PageBufferedLogSource.RetrievalState
 			});
 
@@ -86,8 +86,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 			var info = new FileInfo(_fname);
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(GeneralProperties.LastModified).Should().Be(info.LastWriteTimeUtc);
-			_source.GetProperty(GeneralProperties.Created).Should().Be(info.CreationTimeUtc);
+			_source.GetProperty(Properties.LastModified).Should().Be(info.LastWriteTimeUtc);
+			_source.GetProperty(Properties.Created).Should().Be(info.CreationTimeUtc);
 		}
 
 		[Test]
@@ -95,16 +95,16 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		{
 			_source = Create(_fname);
 			_taskScheduler.RunOnce();
-			_source.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
-			_source.GetProperty(GeneralProperties.Created).Should().NotBe(DateTime.MinValue);
+			_source.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None);
+			_source.GetProperty(Properties.Created).Should().NotBe(DateTime.MinValue);
 
 			_streamWriter?.Dispose();
 			_stream?.Dispose();
 			File.Delete(_fname);
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
-			_source.GetProperty(GeneralProperties.Created).Should().BeNull();
+			_source.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+			_source.GetProperty(Properties.Created).Should().BeNull();
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 			_streamWriter.Flush();
 
 			_taskScheduler.RunOnce();
-			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+			_source.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			var entry = _source.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -133,7 +133,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+			_source.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			var entry = _source.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -156,7 +156,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+			_source.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			var entry = _source.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -189,7 +189,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 				LogSourceModification.Appended(0, 1)
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
-			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+			_source.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			var entry = _source.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -199,19 +199,19 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		[Test]
 		public void TestReadTwoLines1()
 		{
-			_source.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+			_source.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
 
 			_streamWriter.Write("Hello\r\n");
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
-			_source.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
+			_source.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
 
 			_streamWriter.Write("World!\r\n");
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
-			_source.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
+			_source.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
 
-			_source.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+			_source.GetProperty(Properties.LogEntryCount).Should().Be(2);
 			var entries = _source.GetEntries(new LogSourceSection(0, 2));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -225,7 +225,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		[Test]
 		public void Test()
 		{
-			_source.GetProperty(GeneralProperties.Name).Should().Be(_fname);
+			_source.GetProperty(Properties.Name).Should().Be(_fname);
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Tailviewer.Ui.LogView.LogLevels
 		: AbstractLogColumnPresenter<LevelFlags>
 	{
 		public LogLevelColumnPresenter(TextSettings textSettings)
-			: base(GeneralColumns.LogLevel, textSettings)
+			: base(Columns.LogLevel, textSettings)
 		{}
 
 		#region Overrides of AbstractLogColumnPresenter<LevelFlags>

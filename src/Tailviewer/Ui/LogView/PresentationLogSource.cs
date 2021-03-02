@@ -27,7 +27,7 @@ namespace Tailviewer.Ui.LogView
 		const int MaximumLineCount = 1000;
 
 		/// <summary>
-		///     The maximum width (in pixels) of the <see cref="GeneralColumns.RawContent"/> column content.
+		///     The maximum width (in pixels) of the <see cref="Core.Columns.RawContent"/> column content.
 		/// </summary>
 		public static readonly IColumnDescriptor<float> RawContentMaxPresentationWidth;
 
@@ -80,7 +80,7 @@ namespace Tailviewer.Ui.LogView
 
 			_indices = new LogBufferList(IndexedColumns);
 
-			_array = new LogBufferArray(MaximumLineCount, GeneralColumns.RawContent);
+			_array = new LogBufferArray(MaximumLineCount, Core.Columns.RawContent);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_syncRoot = new object();
 			
@@ -321,7 +321,7 @@ namespace Tailviewer.Ui.LogView
 				: _maximumWaitTime;
 		}
 
-		public override IReadOnlyList<IColumnDescriptor> Columns => GeneralColumns.Combine(_source.Columns, IndexedColumns);
+		public override IReadOnlyList<IColumnDescriptor> Columns => Core.Columns.Combine(_source.Columns, IndexedColumns);
 
 		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _source.Properties;
 

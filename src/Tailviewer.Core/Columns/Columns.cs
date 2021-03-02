@@ -10,7 +10,7 @@ namespace Tailviewer.Core
 	///     Provides access to well-known columns which are provided by all log files:
 	///     Every column has a well-defined meaning which will never change.
 	/// </summary>
-	public static class GeneralColumns
+	public static class Columns
 	{
 		/// <summary>
 		///     The minimum list of columns which every log file must provide.
@@ -114,7 +114,7 @@ namespace Tailviewer.Core
 		/// </summary>
 		public static readonly IColumnDescriptor<string> Message;
 
-		static GeneralColumns()
+		static Columns()
 		{
 			RawContent = new WellKnownColumnDescriptor<string>("raw_content");
 			Index = new WellKnownColumnDescriptor<LogLineIndex>("index", LogLineIndex.Invalid);

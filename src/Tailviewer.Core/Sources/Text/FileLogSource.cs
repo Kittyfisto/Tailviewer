@@ -72,11 +72,11 @@ namespace Tailviewer.Core
 			_encodingDetector = new EncodingDetector();
 			_formatDetector = new FileFormatDetector(formatMatcher);
 
-			_buffer = new LogBufferArray(MaximumLineCount, GeneralColumns.RawContent);
+			_buffer = new LogBufferArray(MaximumLineCount, Core.Columns.RawContent);
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>>();
 
 			_propertiesBuffer = new PropertiesBufferList();
-			_propertiesBuffer.SetValue(GeneralProperties.Name, _fullFilename);
+			_propertiesBuffer.SetValue(Core.Properties.Name, _fullFilename);
 
 			_properties = new ConcurrentPropertiesList();
 
@@ -216,10 +216,10 @@ namespace Tailviewer.Core
 								var defaultEncoding = _services.TryRetrieve<Encoding>() ?? Encoding.Default;
 								var format = _formatDetector.TryDetermineFormat(_fullFilename, stream, overwrittenEncoding ?? autoDetectedEncoding ?? defaultEncoding);
 								var encoding = PickEncoding(overwrittenEncoding, format, autoDetectedEncoding, defaultEncoding);
-								var formatChanged = _propertiesBuffer.SetValue(GeneralProperties.Format, format);
+								var formatChanged = _propertiesBuffer.SetValue(Core.Properties.Format, format);
 								_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, autoDetectedEncoding);
 								_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, autoDetectedEncoding != null);
-								_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
+								_propertiesBuffer.SetValue(Core.Properties.EmptyReason, error);
 								var encodingChanged = _propertiesBuffer.SetValue(TextProperties.Encoding, encoding);
 								var currentLogSources = _logSources;
 
@@ -286,14 +286,14 @@ namespace Tailviewer.Core
 
 		private void SetError(ErrorFlags error)
 		{
-			_propertiesBuffer.SetValue(GeneralProperties.Format, null);
+			_propertiesBuffer.SetValue(Core.Properties.Format, null);
 			_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
 			_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_propertiesBuffer.SetValue(TextProperties.Encoding, null);
 			_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine = 0);
-			_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, error);
-			_propertiesBuffer.SetValue(GeneralProperties.Created, _lastFingerprint?.Created);
-			_propertiesBuffer.SetValue(GeneralProperties.LastModified, _lastFingerprint?.LastModified);
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, error);
+			_propertiesBuffer.SetValue(Core.Properties.Created, _lastFingerprint?.Created);
+			_propertiesBuffer.SetValue(Core.Properties.LastModified, _lastFingerprint?.LastModified);
 		}
 
 		private bool DetectFileChange(out Encoding overwrittenEncoding)
@@ -371,12 +371,12 @@ namespace Tailviewer.Core
 		{
 			if (_finalLogSource != null)
 			{
-				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(TextProperties.AutoDetectedEncoding, GeneralProperties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
+				_finalLogSource.GetAllProperties(_propertiesBuffer.Except(TextProperties.AutoDetectedEncoding, Core.Properties.Format)); //< We don't want the log source to overwrite the encoding we just found out...
 				_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine);
 			}
 			else
 			{
-				_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+				_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
 			}
 
 			_properties.CopyFrom(_propertiesBuffer);

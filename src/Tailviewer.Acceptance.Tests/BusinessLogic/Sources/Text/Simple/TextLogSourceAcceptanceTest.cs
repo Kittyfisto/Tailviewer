@@ -33,22 +33,22 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 
 			using (var logFile = Create(fname))
 			{
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
 
 				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 				using (var writer = new StreamWriter(stream))
 				{
 					stream.SetLength(0);
 
-					logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
-					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+					logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 
 					writer.WriteLine("Hello World!");
 					writer.Flush();
 
-					logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+					logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 					var entries = logFile.GetEntries();
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
@@ -76,13 +76,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 				        .Callback((ILogSource log, LogSourceModification modification) => modifications.Add(modification));
 				logFile.AddListener(listener.Object, TimeSpan.Zero, 2);
 
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 				{
 					stream.SetLength(0);
 
-					logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
 					modifications.Should().EndWith(LogSourceModification.Reset());
 				}
 			}
@@ -168,7 +168,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 
 				var entries = file.GetEntries();
 				entries.Count.Should().Be(165342);

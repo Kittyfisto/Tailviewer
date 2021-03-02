@@ -17,7 +17,7 @@ namespace Tailviewer.Core.Tests.Sources.Adorner
 			source.Add(new LogEntry {Timestamp = new DateTime(2021, 02, 20, 16, 46, 05)});
 
 			var adorner = new LogSourceColumnAdorner(source);
-			var entries = adorner.GetEntries(new IColumnDescriptor[] {GeneralColumns.ElapsedTime});
+			var entries = adorner.GetEntries(new IColumnDescriptor[] {Core.Columns.ElapsedTime});
 			entries.Should().HaveCount(3);
 			entries[0].ElapsedTime.Should().Be(TimeSpan.Zero);
 			entries[1].ElapsedTime.Should().Be(TimeSpan.FromSeconds(61));
@@ -33,7 +33,7 @@ namespace Tailviewer.Core.Tests.Sources.Adorner
 			source.Add(new LogEntry {Timestamp = new DateTime(2021, 02, 20, 16, 46, 05)});
 
 			var adorner = new LogSourceColumnAdorner(source);
-			var entries = adorner.GetEntries(new IColumnDescriptor[] {GeneralColumns.DeltaTime});
+			var entries = adorner.GetEntries(new IColumnDescriptor[] {Core.Columns.DeltaTime});
 			entries.Should().HaveCount(3);
 			entries[0].DeltaTime.Should().Be(null);
 			entries[1].DeltaTime.Should().Be(TimeSpan.FromSeconds(61));

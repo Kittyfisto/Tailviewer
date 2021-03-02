@@ -16,6 +16,7 @@ using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
+using Properties = Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.LogView
 {
@@ -64,7 +65,7 @@ namespace Tailviewer.Ui.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
-			_visibleBufferBuffer = new LogBufferList(GeneralColumns.Index, GeneralColumns.LogEntryIndex, PageBufferedLogSource.RetrievalState, GeneralColumns.LogLevel, GeneralColumns.RawContent);
+			_visibleBufferBuffer = new LogBufferList(Columns.Index, Columns.LogEntryIndex, PageBufferedLogSource.RetrievalState, Columns.LogLevel, Columns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -457,7 +458,7 @@ namespace Tailviewer.Ui.LogView
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			var logLineCount = LogSource.GetProperty(GeneralProperties.LogEntryCount);
+			var logLineCount = LogSource.GetProperty(Properties.LogEntryCount);
 			// Somebody may have specified that he wants to view line X, but if the source
 			// doesn't offer this line (yet), then we must show something else...
 			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, logLineCount - maxCount) : _currentLine;
@@ -546,7 +547,7 @@ namespace Tailviewer.Ui.LogView
 		{
 			try
 			{
-				int count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
+				int count = _logSource.GetProperty(Properties.LogEntryCount);
 				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
 				{
 					LogLineIndex newIndex;
@@ -621,7 +622,7 @@ namespace Tailviewer.Ui.LogView
 				return;
 
 			var next = last + 1;
-			if (next >= _logSource.GetProperty(GeneralProperties.LogEntryCount))
+			if (next >= _logSource.GetProperty(Properties.LogEntryCount))
 				return;
 
 			var indices = LogLineIndex.Range(first, next);
@@ -639,7 +640,7 @@ namespace Tailviewer.Ui.LogView
 		{
 			try
 			{
-				if (_selectedIndices.Count > 0 && _lastSelection < _logSource.GetProperty(GeneralProperties.LogEntryCount) - 1)
+				if (_selectedIndices.Count > 0 && _lastSelection < _logSource.GetProperty(Properties.LogEntryCount) - 1)
 				{
 					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
@@ -671,7 +672,7 @@ namespace Tailviewer.Ui.LogView
 				ILogSource logSource = _logSource;
 				if (logSource != null)
 				{
-					var count = logSource.GetProperty(GeneralProperties.LogEntryCount);
+					var count = logSource.GetProperty(Properties.LogEntryCount);
 					if (count > 0)
 					{
 						var newIndex = new LogLineIndex(count - 1);
@@ -699,7 +700,7 @@ namespace Tailviewer.Ui.LogView
 					sortedIndices.Sort();
 					// TODO: What do we do if some mad man has 1 million lines selected?
 					// TODO: Request in batches
-					var buffer = new LogBufferArray(_selectedIndices.Count, GeneralColumns.RawContent);
+					var buffer = new LogBufferArray(_selectedIndices.Count, Columns.RawContent);
 					logSource.GetEntries(sortedIndices, buffer);
 
 					for (int i = 0; i < sortedIndices.Count; ++i)

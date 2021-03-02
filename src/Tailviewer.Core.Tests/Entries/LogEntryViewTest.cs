@@ -13,8 +13,8 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestConstruction()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.RawContent, GeneralColumns.Index);
-			view.Columns.Should().Equal(new object[] {GeneralColumns.RawContent, GeneralColumns.Index});
+			var view = new LogEntryView(entry.Object, Core.Columns.RawContent, Core.Columns.Index);
+			view.Columns.Should().Equal(new object[] {Core.Columns.RawContent, Core.Columns.Index});
 			entry.VerifyGet(x => x.Columns, Times.Never);
 		}
 
@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestRawContent_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.RawContent);
+			var view = new LogEntryView(entry.Object, Core.Columns.RawContent);
 
 			entry.SetupProperty(x => x.RawContent);
 			entry.Object.RawContent = "I want a clondyke bar, I'm hungry";
@@ -36,7 +36,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestRawContent_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -52,7 +52,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Index);
+			var view = new LogEntryView(entry.Object, Core.Columns.Index);
 
 			entry.SetupProperty(x => x.Index);
 			entry.Object.Index = new LogLineIndex(101);
@@ -66,7 +66,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -82,7 +82,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.OriginalIndex);
+			var view = new LogEntryView(entry.Object, Core.Columns.OriginalIndex);
 
 			entry.SetupProperty(x => x.OriginalIndex);
 			entry.Object.OriginalIndex = new LogLineIndex(101);
@@ -96,7 +96,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -112,7 +112,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalDataSourceName_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.OriginalDataSourceName);
+			var view = new LogEntryView(entry.Object, Core.Columns.OriginalDataSourceName);
 
 			entry.SetupProperty(x => x.OriginalDataSourceName);
 			entry.Object.OriginalDataSourceName = "F:\\important.txt";
@@ -126,7 +126,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalDataSourceName_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -142,7 +142,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestSourceId_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.SourceId);
+			var view = new LogEntryView(entry.Object, Core.Columns.SourceId);
 
 			entry.SetupProperty(x => x.SourceId);
 			entry.Object.SourceId = new LogEntrySourceId(101);
@@ -156,7 +156,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestSourceId_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -172,7 +172,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogEntryIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.LogEntryIndex);
+			var view = new LogEntryView(entry.Object, Core.Columns.LogEntryIndex);
 
 			entry.SetupProperty(x => x.LogEntryIndex);
 			entry.Object.LogEntryIndex = new LogEntryIndex(101);
@@ -186,7 +186,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogEntryIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -202,7 +202,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.LineNumber);
+			var view = new LogEntryView(entry.Object, Core.Columns.LineNumber);
 
 			entry.SetupProperty(x => x.LineNumber);
 			entry.Object.LineNumber = 101;
@@ -216,7 +216,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -232,7 +232,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.OriginalLineNumber);
+			var view = new LogEntryView(entry.Object, Core.Columns.OriginalLineNumber);
 
 			entry.SetupProperty(x => x.OriginalLineNumber);
 			entry.Object.OriginalLineNumber = 101;
@@ -246,7 +246,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -262,7 +262,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogLevel_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.LogLevel);
+			var view = new LogEntryView(entry.Object, Core.Columns.LogLevel);
 
 			entry.SetupProperty(x => x.LogLevel);
 			entry.Object.LogLevel = LevelFlags.Error;
@@ -276,7 +276,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogLevel_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -292,7 +292,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestTimestamp_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Timestamp);
+			var view = new LogEntryView(entry.Object, Core.Columns.Timestamp);
 
 			entry.SetupProperty(x => x.Timestamp);
 			entry.Object.Timestamp = new DateTime(2021, 02, 11, 15, 42, 1);
@@ -306,7 +306,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestTimestamp_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -322,7 +322,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestElapsedTime_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.ElapsedTime);
+			var view = new LogEntryView(entry.Object, Core.Columns.ElapsedTime);
 
 			entry.SetupProperty(x => x.ElapsedTime);
 			entry.Object.ElapsedTime = TimeSpan.FromSeconds(42);
@@ -336,7 +336,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestElapsedTime_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -352,7 +352,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestDeltaTime_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.DeltaTime);
+			var view = new LogEntryView(entry.Object, Core.Columns.DeltaTime);
 
 			entry.SetupProperty(x => x.DeltaTime);
 			entry.Object.DeltaTime = TimeSpan.FromSeconds(42);
@@ -366,7 +366,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestDeltaTime_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new LogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{

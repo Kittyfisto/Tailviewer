@@ -21,92 +21,92 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public string RawContent
 		{
-			get { return GetValue(GeneralColumns.RawContent); }
-			set { SetValue(GeneralColumns.RawContent, value); }
+			get { return GetValue(Core.Columns.RawContent); }
+			set { SetValue(Core.Columns.RawContent, value); }
 		}
 
 		/// <inheritdoc />
 		public LogLineIndex Index
 		{
-			get { return GetValue(GeneralColumns.Index); }
-			set { SetValue(GeneralColumns.Index, value); }
+			get { return GetValue(Core.Columns.Index); }
+			set { SetValue(Core.Columns.Index, value); }
 		}
 
 		/// <inheritdoc />
 		public LogLineIndex OriginalIndex
 		{
-			get { return GetValue(GeneralColumns.OriginalIndex); }
-			set { SetValue(GeneralColumns.OriginalIndex, value); }
+			get { return GetValue(Core.Columns.OriginalIndex); }
+			set { SetValue(Core.Columns.OriginalIndex, value); }
 		}
 
 		/// <inheritdoc />
 		public LogEntryIndex LogEntryIndex
 		{
-			get { return GetValue(GeneralColumns.LogEntryIndex); }
-			set { SetValue(GeneralColumns.LogEntryIndex, value); }
+			get { return GetValue(Core.Columns.LogEntryIndex); }
+			set { SetValue(Core.Columns.LogEntryIndex, value); }
 		}
 
 		/// <inheritdoc />
 		public int LineNumber
 		{
-			get { return GetValue(GeneralColumns.LineNumber); }
-			set { SetValue(GeneralColumns.LineNumber, value); }
+			get { return GetValue(Core.Columns.LineNumber); }
+			set { SetValue(Core.Columns.LineNumber, value); }
 		}
 
 		/// <inheritdoc />
 		public int OriginalLineNumber
 		{
-			get { return GetValue(GeneralColumns.OriginalLineNumber); }
-			set { SetValue(GeneralColumns.OriginalLineNumber, value); }
+			get { return GetValue(Core.Columns.OriginalLineNumber); }
+			set { SetValue(Core.Columns.OriginalLineNumber, value); }
 		}
 
 		/// <inheritdoc />
 		public string OriginalDataSourceName
 		{
-			get { return GetValue(GeneralColumns.OriginalDataSourceName); }
-			set { SetValue(GeneralColumns.OriginalDataSourceName, value); }
+			get { return GetValue(Core.Columns.OriginalDataSourceName); }
+			set { SetValue(Core.Columns.OriginalDataSourceName, value); }
 		}
 
 		/// <inheritdoc />
 		public LogEntrySourceId SourceId
 		{
-			get { return GetValue(GeneralColumns.SourceId); }
-			set { SetValue(GeneralColumns.SourceId, value); }
+			get { return GetValue(Core.Columns.SourceId); }
+			set { SetValue(Core.Columns.SourceId, value); }
 		}
 
 		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
-			get { return GetValue(GeneralColumns.LogLevel); }
-			set { SetValue(GeneralColumns.LogLevel, value); }
+			get { return GetValue(Core.Columns.LogLevel); }
+			set { SetValue(Core.Columns.LogLevel, value); }
 		}
 
 		/// <inheritdoc />
 		public DateTime? Timestamp
 		{
-			get { return GetValue(GeneralColumns.Timestamp); }
-			set { SetValue(GeneralColumns.Timestamp, value); }
+			get { return GetValue(Core.Columns.Timestamp); }
+			set { SetValue(Core.Columns.Timestamp, value); }
 		}
 
 		/// <inheritdoc />
 		public TimeSpan? ElapsedTime
 		{
-			get { return GetValue(GeneralColumns.ElapsedTime); }
-			set { SetValue(GeneralColumns.ElapsedTime, value); }
+			get { return GetValue(Core.Columns.ElapsedTime); }
+			set { SetValue(Core.Columns.ElapsedTime, value); }
 		}
 
 		/// <inheritdoc />
 		public TimeSpan? DeltaTime
 		{
-			get { return GetValue(GeneralColumns.DeltaTime); }
-			set { SetValue(GeneralColumns.DeltaTime, value); }
+			get { return GetValue(Core.Columns.DeltaTime); }
+			set { SetValue(Core.Columns.DeltaTime, value); }
 		}
 
 		/// <inheritdoc />
 		public string Message
 		{
-			get { return GetValue(GeneralColumns.Message); }
-			set { SetValue(GeneralColumns.Message, value); }
+			get { return GetValue(Core.Columns.Message); }
+			set { SetValue(Core.Columns.Message, value); }
 		}
 
 		/// <inheritdoc />

@@ -65,15 +65,15 @@ namespace Tailviewer.Core
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_syncRoot = new object();
-			_specialColumns = new HashSet<IColumnDescriptor>{GeneralColumns.LogEntryIndex, GeneralColumns.Timestamp, GeneralColumns.LogLevel};
+			_specialColumns = new HashSet<IColumnDescriptor>{Core.Columns.LogEntryIndex, Core.Columns.Timestamp, Core.Columns.LogLevel};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
-			_propertiesBuffer = new PropertiesBufferList(GeneralProperties.CombineWithMinimum(source.Properties));
-			_propertiesBuffer.SetValue(GeneralProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_propertiesBuffer = new PropertiesBufferList(Core.Properties.CombineWithMinimum(source.Properties));
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
-			_properties = new ConcurrentPropertiesList(GeneralProperties.CombineWithMinimum(source.Properties));
+			_properties = new ConcurrentPropertiesList(Core.Properties.CombineWithMinimum(source.Properties));
 			_properties.CopyFrom(_propertiesBuffer);
 
 			_currentLogEntry = new LogEntryInfo(-1, 0);
@@ -250,7 +250,7 @@ namespace Tailviewer.Core
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_properties.GetValue(GeneralProperties.PercentageProcessed) == Percentage.HundredPercent)
+			if (_properties.GetValue(Core.Properties.PercentageProcessed) == Percentage.HundredPercent)
 			{
 				Listeners.Flush();
 			}
@@ -266,15 +266,15 @@ namespace Tailviewer.Core
 			// Now we can perform a block-copy of all properties and then update our own as desired..
 			_source.GetAllProperties(_propertiesBuffer);
 
-			var sourceProcessed = _propertiesBuffer.GetValue(GeneralProperties.PercentageProcessed);
-			var sourceCount = _propertiesBuffer.GetValue(GeneralProperties.LogEntryCount);
+			var sourceProcessed = _propertiesBuffer.GetValue(Core.Properties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(Core.Properties.LogEntryCount);
 			var ownProgress = sourceCount > 0
 				? Percentage.Of(_indices.Count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
 
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, totalProgress);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, (int)_currentSourceIndex);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, (int)_currentSourceIndex);
 
 			// We want to update all properties at once, hence we modify _sourceProperties where necessary and then
 			// move them to our properties in a single call
@@ -283,7 +283,7 @@ namespace Tailviewer.Core
 
 		private void Append(LogSourceSection section)
 		{
-			var buffer = new LogBufferArray(section.Count, GeneralColumns.Index, GeneralColumns.Timestamp, GeneralColumns.LogLevel);
+			var buffer = new LogBufferArray(section.Count, Core.Columns.Index, Core.Columns.Timestamp, Core.Columns.LogLevel);
 			_source.GetEntries(section, buffer);
 
 			lock (_syncRoot)
@@ -372,15 +372,15 @@ namespace Tailviewer.Core
 
 		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, IColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogSourceQueryOptions queryOptions)
 		{
-			if (Equals(column, GeneralColumns.Timestamp) ||
-			    Equals(column, GeneralColumns.LogLevel))
+			if (Equals(column, Core.Columns.Timestamp) ||
+			    Equals(column, Core.Columns.LogLevel))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);
 				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex, queryOptions);
 				return true;
 			}
 
-			if (Equals(column, GeneralColumns.LogEntryIndex))
+			if (Equals(column, Core.Columns.LogEntryIndex))
 			{
 				GetLogEntryIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 				return true;

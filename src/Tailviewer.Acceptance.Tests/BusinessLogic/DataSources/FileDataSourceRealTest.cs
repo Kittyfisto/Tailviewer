@@ -41,13 +41,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
-			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			_dataSource.UnfilteredLogSource.Should().NotBeNull();
 			_dataSource.FilteredLogSource.Should().NotBeNull();
 
-			_dataSource.Property(x => x.UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
-			_dataSource.Property(x => x.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
+			_dataSource.Property(x => x.UnfilteredLogSource.GetProperty(Properties.LogEntryCount)).ShouldEventually().Be(165342);
+			_dataSource.Property(x => x.FilteredLogSource.GetProperty(Properties.LogEntryCount)).ShouldEventually().Be(165342);
 		}
 
 		[Test]
@@ -56,27 +56,27 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 		{
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogSource.Should().NotBeNull();
-			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			// TODO: Find the bug in the EndOfSourceReached implementation!!!!
 			Thread.Sleep(1000);
 
-			_dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
+			_dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(5);
 		}
 
 		[Test]
 		[Ignore("I've slowed down filtering with the new streaming implementation, needs to be fixed eventually")]
 		public void TestStringFilter1()
 		{
-			_dataSource.UnfilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed))
+			_dataSource.UnfilteredLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed))
 					   .ShouldEventually().Be(Percentage.HundredPercent);
 
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogSource.Should().NotBeNull();
 
-			_dataSource.FilteredLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
-			_dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(5);
+			_dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(5);
 		}
 	}
 }
