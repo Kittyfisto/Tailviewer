@@ -42,13 +42,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
+				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
 
 				using (FilteredLogSource filtered = file.AsFiltered(_taskScheduler, null, Filter.Create("info")))
 				{
-					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
-					filtered.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+					filtered.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
+					filtered.GetProperty(Properties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 					var entries = filtered.GetEntries(new LogSourceSection(0, 5));
 					entries[0].Index.Should().Be(0);
@@ -81,7 +81,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
+				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
 
 				using (FilteredLogSource filtered = file.AsFiltered(_taskScheduler, null, Filter.Create("info")))
 				{
@@ -90,7 +90,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogSource>(), It.IsAny<LogSourceModification>()))
 							.Callback((ILogSource logFile, LogSourceModification modification) => modifications.Add(modification));
 
-					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
+					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 
 					filtered.AddListener(listener.Object, TimeSpan.Zero, 1);
 
@@ -121,9 +121,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 
 			using (var file = Create(fname))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				file.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
-				file.Property(x=> x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				file.Property(x=> x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				using (FilteredLogSource filtered = file.AsFiltered(_taskScheduler, null, Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
 				{
@@ -133,8 +133,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 							.Callback((ILogSource logFile, LogSourceModification section) => modifications.Add(section));
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
-					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-					var entries = filtered.GetEntries(new LogSourceSection(0, filtered.GetProperty(GeneralProperties.LogEntryCount)));
+					filtered.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+					var entries = filtered.GetEntries(new LogSourceSection(0, filtered.GetProperty(Properties.LogEntryCount)));
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
 					entries[0].RawContent.Should().Be("INFO - Test");
@@ -145,8 +145,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 						stream.SetLength(0);
 					}
 
-					filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
-					filtered.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+					filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					filtered.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
 					modifications.Should().EndWith(LogSourceModification.Reset());
 				}
 			}

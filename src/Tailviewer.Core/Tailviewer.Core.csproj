@@ -87,6 +87,7 @@
     <Compile Include="Int32Range.cs" />
     <Compile Include="Parsers\LogLevelParser.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
+    <Compile Include="SourceCannotBeAccessed.cs" />
     <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
     <Compile Include="Sources\AbstractProcessingLogSource.cs" />
     <Compile Include="Sources\Buffer\PageBufferedLogSource.cs" />
@@ -182,7 +183,7 @@
     <Compile Include="Buffers\LogBufferList.cs" />
     <Compile Include="Int32View.cs" />
     <Compile Include="Columns\ColumnDescriptorExtensions.cs" />
-    <Compile Include="Properties\GeneralProperties.cs" />
+    <Compile Include="Properties\Properties.cs" />
     <Compile Include="Properties\PropertiesBufferDebuggerVisualization.cs" />
     <Compile Include="Properties\ReadOnlyPropertyDescriptorExtensions.cs" />
     <Compile Include="Properties\PropertiesBufferList.cs" />
@@ -190,7 +191,7 @@
     <Compile Include="Buffers\ReadOnlyLogBufferEnumerator.cs" />
     <Compile Include="Entries\ReadOnlyLogEntry.cs" />
     <Compile Include="Columns\WellKnownColumnDescriptor.cs" />
-    <Compile Include="Columns\GeneralColumns.cs" />
+    <Compile Include="Columns\Columns.cs" />
     <Compile Include="Sources\LogSourceExtensions.cs" />
     <Compile Include="Sources\LogSourceListenerCollection.cs" />
     <Compile Include="Sources\LogSourceListenerNotifier.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
+    <Compile Include="SourceDoesNotExist.cs" />
     <Compile Include="Writer.cs" />
     <Compile Include="XmlReaderExtensions.cs" />
     <Compile Include="XmlWriterExtensions.cs" />

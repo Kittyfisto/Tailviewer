@@ -25,10 +25,10 @@ namespace Tailviewer.Tests.Ui.Controls
 		{
 			return new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.Index, (LogLineIndex)lineIndex },
-				{GeneralColumns.LogEntryIndex, (LogEntryIndex)logEntryIndex },
-				{GeneralColumns.RawContent, message },
-				{GeneralColumns.LogLevel, flags }
+				{Columns.Index, (LogLineIndex)lineIndex },
+				{Columns.LogEntryIndex, (LogEntryIndex)logEntryIndex },
+				{Columns.RawContent, message },
+				{Columns.LogLevel, flags }
 			});
 		}
 

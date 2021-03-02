@@ -174,15 +174,15 @@ namespace Tailviewer.Core
 		{
 			_source.GetAllProperties(_propertiesBufferView);
 
-			var sourceProcessed = _propertiesBuffer.GetValue(GeneralProperties.PercentageProcessed);
-			var sourceCount = _propertiesBuffer.GetValue(GeneralProperties.LogEntryCount);
+			var sourceProcessed = _propertiesBuffer.GetValue(Core.Properties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(Core.Properties.LogEntryCount);
 			var ownProgress = sourceCount > 0
 				? Percentage.Of(_count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
 
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, totalProgress);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, _count);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, _count);
 
 			GetOverwrittenProperties(_propertiesBuffer);
 

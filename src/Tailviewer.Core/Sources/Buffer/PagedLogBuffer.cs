@@ -44,7 +44,7 @@ namespace Tailviewer.Core
 			_pageSize = pageSize;
 			_maxPageCount = maxPageCount;
 			// This buffer only makes sense when it offers the index and retrieval state column, as otherwise one just doesn't know which data is present
-			var calculatedColumns = new IColumnDescriptor[] {GeneralColumns.Index, PageBufferedLogSource.RetrievalState};
+			var calculatedColumns = new IColumnDescriptor[] {Columns.Index, PageBufferedLogSource.RetrievalState};
 			_allColumns = calculatedColumns.Concat(columns).Distinct().ToList();
 			// Since we calculate the retrieval state ourselves, we don't require log entries to have it..
 			_requiredColumns = _allColumns.Except(calculatedColumns).ToList();

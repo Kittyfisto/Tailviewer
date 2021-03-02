@@ -9,7 +9,7 @@ namespace Tailviewer.Core
 	/// <summary>
 	///     Maintains a collection of well-known log file properties which are applicable to most sources.
 	/// </summary>
-	public static class GeneralProperties
+	public static class Properties
 	{
 		/// <summary>
 		///     The number of log entries in the log source.
@@ -108,7 +108,7 @@ namespace Tailviewer.Core
 		/// <summary>
 		///     The error, if any, which describes why this log file is empty.
 		/// </summary>
-		public static readonly IReadOnlyPropertyDescriptor<ErrorFlags> EmptyReason;
+		public static readonly IReadOnlyPropertyDescriptor<IEmptyReason> EmptyReason;
 
 		/// <summary>
 		///     The format of the log file, as determined by a <see cref="ILogFileFormatMatcher"/>.
@@ -127,7 +127,7 @@ namespace Tailviewer.Core
 		/// </summary>
 		public static readonly IReadOnlyList<IReadOnlyPropertyDescriptor> Minimum;
 
-		static GeneralProperties()
+		static Properties()
 		{
 			var category = "general";
 
@@ -150,7 +150,7 @@ namespace Tailviewer.Core
 			Size = new WellKnownReadOnlyProperty<Size?>(new []{category, "size"});
 
 			PercentageProcessed = new WellKnownReadOnlyProperty<Percentage>(new []{category, "percentage_processed"}, Percentage.Zero);
-			EmptyReason = new WellKnownReadOnlyProperty<ErrorFlags>(new []{category, "empty_reason"});
+			EmptyReason = new WellKnownReadOnlyProperty<IEmptyReason>(new []{category, "empty_reason"});
 			Format = new WellKnownReadOnlyProperty<ILogFileFormat>(new []{category, "format"});
 			FormatDetectionCertainty = new WellKnownReadOnlyProperty<Certainty>(new []{category, "format_detection_certainty"});
 

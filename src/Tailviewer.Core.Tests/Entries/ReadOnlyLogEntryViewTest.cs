@@ -13,8 +13,8 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestConstruction()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.RawContent, GeneralColumns.Index);
-			view.Columns.Should().Equal(new object[] {GeneralColumns.RawContent, GeneralColumns.Index});
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.RawContent, Core.Columns.Index);
+			view.Columns.Should().Equal(new object[] {Core.Columns.RawContent, Core.Columns.Index});
 			entry.VerifyGet(x => x.Columns, Times.Never);
 		}
 
@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestRawContent_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.RawContent);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.RawContent);
 
 			entry.SetupGet(x => x.RawContent).Returns("I want a clondyke bar, I'm hungry");
 			view.RawContent.Should().Be("I want a clondyke bar, I'm hungry");
@@ -32,7 +32,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestRawContent_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -45,7 +45,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestIndex_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Index);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Index);
 
 			entry.SetupGet(x => x.Index).Returns(new LogLineIndex(101));
 			view.Index.Should().Be(new LogLineIndex(101));
@@ -55,7 +55,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestIndex_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -68,7 +68,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalIndex_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.OriginalIndex);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.OriginalIndex);
 
 			entry.SetupGet(x => x.OriginalIndex).Returns(new LogLineIndex(101));
 			view.OriginalIndex.Should().Be(new LogLineIndex(101));
@@ -78,7 +78,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalIndex_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -91,7 +91,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogEntryIndex_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.LogEntryIndex);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.LogEntryIndex);
 
 			entry.SetupGet(x => x.LogEntryIndex).Returns(new LogEntryIndex(101));
 			view.LogEntryIndex.Should().Be(new LogEntryIndex(101));
@@ -101,7 +101,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogEntryIndex_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -114,7 +114,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.LineNumber);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.LineNumber);
 
 			entry.SetupGet(x => x.LineNumber).Returns(101);
 			view.LineNumber.Should().Be(101);
@@ -124,7 +124,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -137,7 +137,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.OriginalLineNumber);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.OriginalLineNumber);
 
 			entry.SetupGet(x => x.OriginalLineNumber).Returns(101);
 			view.OriginalLineNumber.Should().Be(101);
@@ -147,7 +147,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestOriginalLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -160,7 +160,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogLevel_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.LogLevel);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.LogLevel);
 
 			entry.SetupGet(x => x.LogLevel).Returns(LevelFlags.Error);
 			view.LogLevel.Should().Be(LevelFlags.Error);
@@ -170,7 +170,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestLogLevel_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -183,7 +183,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestTimestamp_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Timestamp);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Timestamp);
 
 			entry.SetupGet(x => x.Timestamp).Returns(new DateTime(2021, 02, 11, 15, 42, 1));
 			view.Timestamp.Should().Be(new DateTime(2021, 02, 11, 15, 42, 1));
@@ -193,7 +193,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestTimestamp_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -206,7 +206,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestElapsedTime_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.ElapsedTime);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.ElapsedTime);
 
 			entry.SetupGet(x => x.ElapsedTime).Returns(TimeSpan.FromSeconds(42));
 			view.ElapsedTime.Should().Be(TimeSpan.FromSeconds(42));
@@ -216,7 +216,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestElapsedTime_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{
@@ -229,7 +229,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestDeltaTime_ColumnAvailable()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.DeltaTime);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.DeltaTime);
 
 			entry.SetupGet(x => x.DeltaTime).Returns(TimeSpan.FromSeconds(42));
 			view.DeltaTime.Should().Be(TimeSpan.FromSeconds(42));
@@ -239,7 +239,7 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestDeltaTime_NoSuchColumn()
 		{
 			var entry = new Mock<IReadOnlyLogEntry>();
-			var view = new ReadOnlyLogEntryView(entry.Object, GeneralColumns.Message);
+			var view = new ReadOnlyLogEntryView(entry.Object, Core.Columns.Message);
 
 			new Action(() =>
 			{

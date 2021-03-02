@@ -30,7 +30,7 @@ namespace Tailviewer.Tests.Ui.Controls
 		{
 			_mouse = new TestMouse();
 			_keyboard = new TestKeyboard();
-			_columns = GeneralColumns.Minimum.Concat(new[] {PageBufferedLogSource.RetrievalState}).ToList();
+			_columns = Columns.Minimum.Concat(new[] {PageBufferedLogSource.RetrievalState}).ToList();
 
 			_control = new TextCanvas(new ScrollBar(), new ScrollBar(), TextSettings.Default)
 			{
@@ -47,7 +47,7 @@ namespace Tailviewer.Tests.Ui.Controls
 		public void TestOnSizeChanged1()
 		{
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(0);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(0);
 			_control.LogSource = logFile.Object;
 			_control.CurrentLine = 1;
 
@@ -61,7 +61,7 @@ namespace Tailviewer.Tests.Ui.Controls
 		public void TestCalculateVisibleSection1()
 		{
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(1);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(1);
 
 			_control.LogSource = logFile.Object;
 			_control.CurrentLine = 600;
@@ -74,7 +74,7 @@ namespace Tailviewer.Tests.Ui.Controls
 		public void TestUpdateVisibleLine1()
 		{
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(42);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(42);
 			_control.LogSource = logFile.Object;
 
 			logFile.Setup(x => x.GetEntries(It.IsAny<LogSourceSection>(), It.IsAny<ILogBuffer>(), It.IsAny<int>(), It.IsAny<LogSourceQueryOptions>()))

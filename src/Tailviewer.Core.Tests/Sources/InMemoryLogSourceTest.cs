@@ -31,23 +31,23 @@ namespace Tailviewer.Core.Tests.Sources
 		public void TestConstruction1()
 		{
 			var logFile = new InMemoryLogSource();
-			logFile.Columns.Should().Equal(GeneralColumns.Minimum);
-			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.Zero);
+			logFile.Columns.Should().Equal(Core.Columns.Minimum);
+			logFile.GetProperty(Core.Properties.Size).Should().Be(Size.Zero);
 			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.LastModified).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.Duration).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			logFile.GetProperty(Core.Properties.LastModified).Should().BeNull();
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.Duration).Should().BeNull();
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
+			logFile.GetProperty(Core.Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			logFile.Count.Should().Be(0);
 		}
 
 		[Test]
 		public void TestConstruction2()
 		{
-			var logFile = new InMemoryLogSource(GeneralColumns.ElapsedTime);
-			logFile.Columns.Should().Equal(GeneralColumns.Minimum, "because a log file should never offer less columns than the minimum set");
+			var logFile = new InMemoryLogSource(Core.Columns.ElapsedTime);
+			logFile.Columns.Should().Equal(Core.Columns.Minimum, "because a log file should never offer less columns than the minimum set");
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.Count.Should().Be(1);
 			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(13);
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
 
 			var entry = logFile.GetEntry(0);
 			entry.ElapsedTime.Should().BeNull("because this entry doesn't have any timestamp and thus its elapsed time must be null");
@@ -85,8 +85,8 @@ namespace Tailviewer.Core.Tests.Sources
 			entry2.RawContent.Should().Be(" World!");
 			entry2.Timestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 2));
 
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
-			logFile.GetProperty(GeneralProperties.Duration).Should().Be(TimeSpan.FromSeconds(2));
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
+			logFile.GetProperty(Core.Properties.Duration).Should().Be(TimeSpan.FromSeconds(2));
 		}
 
 		[Test]
@@ -128,7 +128,7 @@ namespace Tailviewer.Core.Tests.Sources
 		[Test]
 		public void TestAddEntry6()
 		{
-			var logFile = new InMemoryLogSource(GeneralColumns.LogLevel);
+			var logFile = new InMemoryLogSource(Core.Columns.LogLevel);
 
 			var logEntry = new LogEntry
 			{
@@ -136,7 +136,7 @@ namespace Tailviewer.Core.Tests.Sources
 			};
 			logFile.Add(logEntry);
 
-			var buffer = new LogBufferArray(1, GeneralColumns.LogLevel);
+			var buffer = new LogBufferArray(1, Core.Columns.LogLevel);
 			logFile.GetEntries(new LogSourceSection(0, 1), buffer);
 			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}
@@ -299,13 +299,13 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = new InMemoryLogSource();
 			logFile.Clear();
-			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.Zero);
+			logFile.GetProperty(Core.Properties.Size).Should().Be(Size.Zero);
 			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.LastModified).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.StartTimestamp).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.EndTimestamp).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.Duration).Should().BeNull();
-			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetProperty(Core.Properties.LastModified).Should().BeNull();
+			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(Core.Properties.Duration).Should().BeNull();
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
 			logFile.Count.Should().Be(0);
 		}
 
@@ -382,9 +382,9 @@ namespace Tailviewer.Core.Tests.Sources
 		{
 			var logFile = new InMemoryLogSource();
 			logFile.AddEntry("foobar");
-			var entries = logFile.GetEntries(new LogSourceSection(0, 1), new[]{GeneralColumns.RawContent});
+			var entries = logFile.GetEntries(new LogSourceSection(0, 1), new[]{Core.Columns.RawContent});
 			entries.Count.Should().Be(1);
-			entries.Columns.Should().Equal(new object[] {GeneralColumns.RawContent}, "because we've only retrieved that column");
+			entries.Columns.Should().Equal(new object[] {Core.Columns.RawContent}, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("foobar");
 		}
 
@@ -395,9 +395,9 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("foo");
 			logFile.AddEntry("bar");
 			logFile.AddEntry("some lazy fox");
-			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new[]{GeneralColumns.RawContent});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new[]{Core.Columns.RawContent});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { GeneralColumns.RawContent }, "because we've only retrieved that column");
+			entries.Columns.Should().Equal(new object[] { Core.Columns.RawContent }, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("bar");
 			entries[1].RawContent.Should().Be("some lazy fox");
 		}
@@ -410,9 +410,9 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{Core.Columns.LogLevel, Core.Columns.Timestamp});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] {GeneralColumns.LogLevel, GeneralColumns.Timestamp});
+			entries.Columns.Should().Equal(new object[] {Core.Columns.LogLevel, Core.Columns.Timestamp});
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -427,9 +427,9 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{GeneralColumns.LogLevel, GeneralColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), new IColumnDescriptor[]{Core.Columns.LogLevel, Core.Columns.Timestamp});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { GeneralColumns.LogLevel, GeneralColumns.Timestamp });
+			entries.Columns.Should().Equal(new object[] { Core.Columns.LogLevel, Core.Columns.Timestamp });
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -444,9 +444,9 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogSourceSection(1, 2), GeneralColumns.Minimum);
+			var entries = logFile.GetEntries(new LogSourceSection(1, 2), Core.Columns.Minimum);
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(GeneralColumns.Minimum);
+			entries.Columns.Should().Equal(Core.Columns.Minimum);
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -463,9 +463,9 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 20, 17, 01, 0));
 
-			var entries = logFile.GetEntries(new LogSourceSection(0, 5), new []{GeneralColumns.ElapsedTime});
+			var entries = logFile.GetEntries(new LogSourceSection(0, 5), new []{Core.Columns.ElapsedTime});
 			entries.Count.Should().Be(5);
-			entries.Columns.Should().Equal(GeneralColumns.ElapsedTime);
+			entries.Columns.Should().Equal(Core.Columns.ElapsedTime);
 			entries[0].ElapsedTime.Should().Be(null);
 			entries[1].ElapsedTime.Should().Be(TimeSpan.Zero);
 			entries[2].ElapsedTime.Should().Be(null);

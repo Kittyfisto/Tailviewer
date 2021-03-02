@@ -35,7 +35,7 @@ namespace Tailviewer.Core.Tests.Entries
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.RawContent, "Starbuck"}
+				{Core.Columns.RawContent, "Starbuck"}
 			};
 			var entry = new LogEntry(values);
 			var equalEntry = new LogEntry(values);
@@ -50,11 +50,11 @@ namespace Tailviewer.Core.Tests.Entries
 		{
 			var values = new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.RawContent, "Starbuck"}
+				{Core.Columns.RawContent, "Starbuck"}
 			};
 			var otherValues = new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.RawContent, "Apollo"}
+				{Core.Columns.RawContent, "Apollo"}
 			};
 			var entry = new LogEntry(values);
 			var otherEntry = new LogEntry(otherValues);
@@ -67,11 +67,11 @@ namespace Tailviewer.Core.Tests.Entries
 		[Test]
 		public void TestEqualBothEmpty_DifferentColumns()
 		{
-			var entry = new LogEntry(GeneralColumns.RawContent);
-			var otherEntry = new LogEntry(GeneralColumns.RawContent, GeneralColumns.Timestamp);
+			var entry = new LogEntry(Core.Columns.RawContent);
+			var otherEntry = new LogEntry(Core.Columns.RawContent, Core.Columns.Timestamp);
 			Equals(entry, otherEntry).Should().BeFalse();
 
-			var equalReadOnlyEntry = new ReadOnlyLogEntry(GeneralColumns.RawContent, GeneralColumns.Timestamp);
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(Core.Columns.RawContent, Core.Columns.Timestamp);
 			Equals(entry, equalReadOnlyEntry).Should().BeFalse();
 		}
 	}

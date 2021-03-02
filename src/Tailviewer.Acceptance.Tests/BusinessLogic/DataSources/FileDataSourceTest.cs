@@ -218,15 +218,15 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 			using (var dataSource = new FileDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
 				_scheduler.Run(3);
-				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+				dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(2);
 
 				dataSource.ClearScreen();
 				_scheduler.Run(3);
-				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
+				dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				logFile.AddEntry("Hello!");
 				_scheduler.Run(3);
-				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because newer log entries should still appear");
+				dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(1, "because newer log entries should still appear");
 				dataSource.FilteredLogSource.GetEntry(0).RawContent.Should().Be("Hello!");
 			}
 		}
@@ -246,11 +246,11 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 
 				dataSource.ClearScreen();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
+				dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				dataSource.ShowAll();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2, "because we've just shown everything again");
+				dataSource.FilteredLogSource.GetProperty(Properties.LogEntryCount).Should().Be(2, "because we've just shown everything again");
 			}
 		}
 

@@ -13,43 +13,43 @@ namespace Tailviewer.Core
 		: IReadOnlyLogEntry
 	{
 		/// <inheritdoc />
-		public string RawContent => GetValue(GeneralColumns.RawContent);
+		public string RawContent => GetValue(Core.Columns.RawContent);
 
 		/// <inheritdoc />
-		public LogLineIndex Index => GetValue(GeneralColumns.Index);
+		public LogLineIndex Index => GetValue(Core.Columns.Index);
 
 		/// <inheritdoc />
-		public LogLineIndex OriginalIndex => GetValue(GeneralColumns.OriginalIndex);
+		public LogLineIndex OriginalIndex => GetValue(Core.Columns.OriginalIndex);
 
 		/// <inheritdoc />
-		public LogEntryIndex LogEntryIndex => GetValue(GeneralColumns.LogEntryIndex);
+		public LogEntryIndex LogEntryIndex => GetValue(Core.Columns.LogEntryIndex);
 
 		/// <inheritdoc />
-		public int LineNumber => GetValue(GeneralColumns.LineNumber);
+		public int LineNumber => GetValue(Core.Columns.LineNumber);
 
 		/// <inheritdoc />
-		public int OriginalLineNumber => GetValue(GeneralColumns.OriginalLineNumber);
+		public int OriginalLineNumber => GetValue(Core.Columns.OriginalLineNumber);
 
 		/// <inheritdoc />
-		public string OriginalDataSourceName => GetValue(GeneralColumns.OriginalDataSourceName);
+		public string OriginalDataSourceName => GetValue(Core.Columns.OriginalDataSourceName);
 
 		/// <inheritdoc />
-		public LogEntrySourceId SourceId => GetValue(GeneralColumns.SourceId);
+		public LogEntrySourceId SourceId => GetValue(Core.Columns.SourceId);
 
 		/// <inheritdoc />
-		public LevelFlags LogLevel => GetValue(GeneralColumns.LogLevel);
+		public LevelFlags LogLevel => GetValue(Core.Columns.LogLevel);
 
 		/// <inheritdoc />
-		public DateTime? Timestamp => GetValue(GeneralColumns.Timestamp);
+		public DateTime? Timestamp => GetValue(Core.Columns.Timestamp);
 
 		/// <inheritdoc />
-		public TimeSpan? ElapsedTime => GetValue(GeneralColumns.ElapsedTime);
+		public TimeSpan? ElapsedTime => GetValue(Core.Columns.ElapsedTime);
 
 		/// <inheritdoc />
-		public TimeSpan? DeltaTime => GetValue(GeneralColumns.DeltaTime);
+		public TimeSpan? DeltaTime => GetValue(Core.Columns.DeltaTime);
 
 		/// <inheritdoc />
-		public string Message => GetValue(GeneralColumns.Message);
+		public string Message => GetValue(Core.Columns.Message);
 
 		/// <inheritdoc />
 		public abstract T GetValue<T>(IColumnDescriptor<T> column);

@@ -40,8 +40,8 @@ namespace Tailviewer.BusinessLogic.Exporter
 		public void Export(IProgress<Percentage> progressReporter = null)
 		{
 			const int bufferSize = 1000;
-			var buffer = new LogBufferArray(bufferSize, GeneralColumns.Index, GeneralColumns.RawContent);
-			var count = _logSource.GetProperty(GeneralProperties.LogEntryCount);
+			var buffer = new LogBufferArray(bufferSize, Columns.Index, Columns.RawContent);
+			var count = _logSource.GetProperty(Properties.LogEntryCount);
 			var index = 0;
 
 			using (var writer = new StreamWriter(_stream, Encoding.UTF8, 1024, true))

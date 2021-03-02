@@ -204,7 +204,7 @@ namespace Tailviewer.Tests.Ui.Controls
 			var oldLog = CreateDataSourceViewModel();
 			var oldDataSource = new Mock<IDataSource>();
 			var oldLogFile = new Mock<ILogSource>();
-			oldLogFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(10000);
+			oldLogFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(10000);
 			oldDataSource.Setup(x => x.FilteredLogSource).Returns(oldLogFile.Object);
 			oldDataSource.Setup(x => x.UnfilteredLogSource).Returns(new Mock<ILogSource>().Object);
 			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
@@ -239,7 +239,7 @@ namespace Tailviewer.Tests.Ui.Controls
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = CreateDataSourceViewModel();
@@ -261,7 +261,7 @@ namespace Tailviewer.Tests.Ui.Controls
 
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = CreateDataSourceViewModel();
@@ -283,7 +283,7 @@ namespace Tailviewer.Tests.Ui.Controls
 
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogSource>();
-			logFile.Setup(x => x.GetProperty(GeneralProperties.LogEntryCount)).Returns(100);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(100);
 			dataSource.Setup(x => x.UnfilteredLogSource).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogSource).Returns(logFile.Object);
 			var dataSourceViewModel = CreateDataSourceViewModel();

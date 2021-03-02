@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Certainty.cs" />
+    <Compile Include="IEmptyReason.cs" />
     <Compile Include="ILogEntryFilter.cs" />
     <Compile Include="ILogLineFilter.cs" />
     <Compile Include="ILogFileFormat.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="ColumnNotRetrievedException.cs" />
     <Compile Include="DataSourceId.cs" />
     <Compile Include="LevelFlags.cs" />
-    <Compile Include="ErrorFlags.cs" />
     <Compile Include="ILogSource.cs" />
     <Compile Include="ILogSourceListener.cs" />
     <Compile Include="LogSourceSection.cs" />

@@ -43,7 +43,7 @@ namespace Tailviewer.Tests.Ui.Controls
 			DispatcherExtensions.ExecuteAllEvents();
 
 
-			_logSource = new InMemoryLogSource(GeneralColumns.Minimum.Concat(new[]{PageBufferedLogSource.RetrievalState}));
+			_logSource = new InMemoryLogSource(Columns.Minimum.Concat(new[]{PageBufferedLogSource.RetrievalState}));
 
 			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}
@@ -168,8 +168,8 @@ namespace Tailviewer.Tests.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{GeneralColumns.RawContent, "Foobar" },
-					{GeneralColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logSource.AddRange(entries);
@@ -216,8 +216,8 @@ namespace Tailviewer.Tests.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{GeneralColumns.RawContent, "Foobar" },
-					{GeneralColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logSource.AddRange(entries);
@@ -246,8 +246,8 @@ namespace Tailviewer.Tests.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{GeneralColumns.RawContent, "Foobar" },
-					{GeneralColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logSource.AddRange(entries);
@@ -259,8 +259,8 @@ namespace Tailviewer.Tests.Ui.Controls
 			_control.FollowTail = true;
 			_logSource.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{GeneralColumns.RawContent, "Foobar" },
-				{GeneralColumns.LogLevel, LevelFlags.Info }
+				{Columns.RawContent, "Foobar" },
+				{Columns.LogLevel, LevelFlags.Info }
 			}));
 			_control.OnLogFileModified(_logSource, LogSourceModification.Appended(0, _logSource.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));

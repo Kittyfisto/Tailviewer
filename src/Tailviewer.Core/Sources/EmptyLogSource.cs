@@ -9,13 +9,13 @@ namespace Tailviewer.Core
 	internal sealed class EmptyLogSource
 		: ILogSource
 	{
-		private readonly PropertiesBufferList _properties = new PropertiesBufferList(GeneralProperties.Minimum);
+		private readonly PropertiesBufferList _properties = new PropertiesBufferList(Core.Properties.Minimum);
 		private readonly HashSet<ILogSourceListener> _listeners = new HashSet<ILogSourceListener>();
 
 		public EmptyLogSource()
 		{
-			_properties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
-			_properties.SetValue(GeneralProperties.Size, Size.Zero);
+			_properties.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(Core.Properties.Size, Size.Zero);
 		}
 
 		#region Implementation of IDisposable
@@ -39,7 +39,7 @@ namespace Tailviewer.Core
 
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
-			get { return GeneralColumns.Minimum; }
+			get { return Core.Columns.Minimum; }
 		}
 
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

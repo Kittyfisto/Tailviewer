@@ -70,8 +70,8 @@ namespace Tailviewer.Core
 			_pendingModifications = new ConcurrentQueue<LogSourceModification>();
 			_indices = new List<int>();
 			_logEntryIndices = new Dictionary<int, int>();
-			_array = new LogBufferArray(BatchSize, GeneralColumns.Minimum);
-			_lastLogBuffer = new LogBufferList(GeneralColumns.Minimum);
+			_array = new LogBufferArray(BatchSize, Core.Columns.Minimum);
+			_lastLogBuffer = new LogBufferList(Core.Columns.Minimum);
 			_maximumWaitTime = maximumWaitTime;
 
 			_source.AddListener(this, maximumWaitTime, BatchSize);
@@ -95,7 +95,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<IColumnDescriptor> Columns => GeneralColumns.CombineWithMinimum(_source.Columns);
+		public override IReadOnlyList<IColumnDescriptor> Columns => Core.Columns.CombineWithMinimum(_source.Columns);
 
 		/// <inheritdoc />
 		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
@@ -152,23 +152,23 @@ namespace Tailviewer.Core
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, GeneralColumns.Index))
+			if (Equals(column, Core.Columns.Index))
 			{
 				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, GeneralColumns.LogEntryIndex))
+			else if (Equals(column, Core.Columns.LogEntryIndex))
 			{
 				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, GeneralColumns.DeltaTime))
+			else if (Equals(column, Core.Columns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, GeneralColumns.LineNumber))
+			else if (Equals(column, Core.Columns.LineNumber))
 			{
 				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, GeneralColumns.OriginalIndex))
+			else if (Equals(column, Core.Columns.OriginalIndex))
 			{
 				GetOriginalIndices(sourceIndices, (LogLineIndex[]) (object) destination, destinationIndex);
 			}
@@ -220,7 +220,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
+						destination[destinationIndex + i] = Core.Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -241,7 +241,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.LogEntryIndex.DefaultValue;
+						destination[destinationIndex + i] = Core.Columns.LogEntryIndex.DefaultValue;
 					}
 				}
 			}
@@ -261,7 +261,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
+						destination[destinationIndex + i] = Core.Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -282,7 +282,7 @@ namespace Tailviewer.Core
 				}
 			}
 
-			var timestamps = _source.GetColumn(actualIndices, GeneralColumns.Timestamp);
+			var timestamps = _source.GetColumn(actualIndices, Core.Columns.Timestamp);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];
@@ -421,7 +421,7 @@ namespace Tailviewer.Core
 				UpdateProperties(); //< we need to update our own properties after we've added the last entry, but before we notify listeners...
 				Listeners.OnRead(_indices.Count);
 
-				if (_properties.GetValue(GeneralProperties.PercentageProcessed) == Percentage.HundredPercent)
+				if (_properties.GetValue(Core.Properties.PercentageProcessed) == Percentage.HundredPercent)
 				{
 					Listeners.Flush();
 				}
@@ -438,8 +438,8 @@ namespace Tailviewer.Core
 			_source.GetAllProperties(_propertiesBuffer);
 
 			// Then we'll add / overwrite properties 
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, ComputePercentageProcessed());
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, _indices.Count);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, ComputePercentageProcessed());
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, _indices.Count);
 
 			// And last but not least we'll update our own properties to the new values
 			// It's important we do this in one go so clients can retrieve all those properties
@@ -455,7 +455,7 @@ namespace Tailviewer.Core
 		[Pure]
 		private Percentage ComputePercentageProcessed()
 		{
-			if (!_propertiesBuffer.TryGetValue(GeneralProperties.PercentageProcessed, out var sourcePercentage))
+			if (!_propertiesBuffer.TryGetValue(Core.Properties.PercentageProcessed, out var sourcePercentage))
 				return Percentage.Zero;
 
 			if (_fullSourceSection.Count <= 0)

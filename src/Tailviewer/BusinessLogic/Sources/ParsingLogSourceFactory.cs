@@ -26,7 +26,7 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		public ILogSource CreateParser(IServiceContainer services, ILogSource source)
 		{
-			var format = source.GetProperty(GeneralProperties.Format);
+			var format = source.GetProperty(Properties.Format);
 			var logSourceParserPlugins = _pluginLoader?.LoadAllOfTypeWithDescription<ILogSourceParserPlugin>() ?? Enumerable.Empty<IPluginWithDescription<ILogSourceParserPlugin>>();
 			foreach (var plugin in logSourceParserPlugins)
 			{

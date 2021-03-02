@@ -30,14 +30,14 @@ namespace Tailviewer.Core
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogSource()
-			: this(GeneralColumns.Minimum)
+			: this(Core.Columns.Minimum)
 		{ }
 
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogSource(IReadOnlyDictionary<IReadOnlyPropertyDescriptor, object> properties)
-			: this(GeneralColumns.Minimum, properties)
+			: this(Core.Columns.Minimum, properties)
 		{ }
 
 		/// <summary>
@@ -77,12 +77,12 @@ namespace Tailviewer.Core
 				throw new ArgumentNullException(nameof(columns));
 
 			_syncRoot = new object();
-			_logBuffer = new LogBufferList(GeneralColumns.CombineWithMinimum(columns));
+			_logBuffer = new LogBufferList(Core.Columns.CombineWithMinimum(columns));
 			_listeners = new LogSourceListenerCollection(this);
 
-			_properties = new PropertiesBufferList(GeneralProperties.Minimum);
-			_properties.SetValue(GeneralProperties.Size, Size.Zero);
-			_properties.SetValue(GeneralProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties = new PropertiesBufferList(Core.Properties.Minimum);
+			_properties.SetValue(Core.Properties.Size, Size.Zero);
+			_properties.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
 			foreach (var pair in properties)
 			{
 				_properties.SetValue(pair.Key, pair.Value);
@@ -267,11 +267,11 @@ namespace Tailviewer.Core
 				if (_logBuffer.Count > 0)
 				{
 					_logBuffer.Clear();
-					SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
+					SetValue(Core.Properties.LogEntryCount, _logBuffer.Count);
 					_properties.SetValue(TextProperties.MaxCharactersInLine, 0);
-					_properties.SetValue(GeneralProperties.StartTimestamp, null);
-					_properties.SetValue(GeneralProperties.EndTimestamp, null);
-					_properties.SetValue(GeneralProperties.Size, Size.Zero);
+					_properties.SetValue(Core.Properties.StartTimestamp, null);
+					_properties.SetValue(Core.Properties.EndTimestamp, null);
+					_properties.SetValue(Core.Properties.Size, Size.Zero);
 					Touch();
 
 					_listeners.Reset();
@@ -301,7 +301,7 @@ namespace Tailviewer.Core
 
 				var available = _logBuffer.Count - index;
 				_logBuffer.RemoveRange((int)index, available);
-				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
+				SetValue(Core.Properties.LogEntryCount, _logBuffer.Count);
 				_listeners.Remove((int)index, available);
 				Touch();
 			}
@@ -309,7 +309,7 @@ namespace Tailviewer.Core
 
 		private void Touch()
 		{
-			_properties.SetValue(GeneralProperties.LastModified, DateTime.Now);
+			_properties.SetValue(Core.Properties.LastModified, DateTime.Now);
 		}
 
 		/// <summary>
@@ -389,7 +389,7 @@ namespace Tailviewer.Core
 						DeltaTime = deltaTime
 					};
 					_logBuffer.Add(logEntry);
-					SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
+					SetValue(Core.Properties.LogEntryCount, _logBuffer.Count);
 					SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
@@ -427,7 +427,7 @@ namespace Tailviewer.Core
 		{
 			lock (_syncRoot)
 			{
-				entry.TryGetValue(GeneralColumns.Timestamp, out var timestamp);
+				entry.TryGetValue(Core.Columns.Timestamp, out var timestamp);
 				UpdateTimestampProperties(timestamp);
 				var logEntryIndex = GetLogEntryIndex(timestamp, out var elapsed, out var deltaTime);
 
@@ -455,7 +455,7 @@ namespace Tailviewer.Core
 				finalLogEntry.DeltaTime = deltaTime;
 
 				_logBuffer.Add(finalLogEntry);
-				SetValue(GeneralProperties.LogEntryCount, _logBuffer.Count);
+				SetValue(Core.Properties.LogEntryCount, _logBuffer.Count);
 				SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
 				_listeners.OnRead(_logBuffer.Count);
@@ -492,7 +492,7 @@ namespace Tailviewer.Core
 				logEntryIndex = 0;
 			}
 
-			elapsed = timestamp - _properties.GetValue(GeneralProperties.StartTimestamp);
+			elapsed = timestamp - _properties.GetValue(Core.Properties.StartTimestamp);
 			deltaTime = timestamp - lastTimestamp;
 			return logEntryIndex;
 		}
@@ -501,18 +501,18 @@ namespace Tailviewer.Core
 		{
 			if (timestamp != null)
 			{
-				var startTimestamp = _properties.GetValue(GeneralProperties.StartTimestamp);
+				var startTimestamp = _properties.GetValue(Core.Properties.StartTimestamp);
 				if (startTimestamp == null)
 				{
-					_properties.SetValue(GeneralProperties.StartTimestamp, timestamp);
-					_properties.SetValue(GeneralProperties.Duration, TimeSpan.Zero);
+					_properties.SetValue(Core.Properties.StartTimestamp, timestamp);
+					_properties.SetValue(Core.Properties.Duration, TimeSpan.Zero);
 				}
 				else
 				{
-					_properties.SetValue(GeneralProperties.Duration, timestamp - startTimestamp);
+					_properties.SetValue(Core.Properties.Duration, timestamp - startTimestamp);
 				}
 
-				_properties.SetValue(GeneralProperties.EndTimestamp, timestamp);
+				_properties.SetValue(Core.Properties.EndTimestamp, timestamp);
 			}
 		}
 	}

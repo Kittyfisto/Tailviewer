@@ -76,11 +76,11 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\Encodings\does_not_exist";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-				logSource.GetProperty(GeneralProperties.Format).Should().BeNull("because the file doesn't exist");
-				logSource.GetProperty(GeneralProperties.Created).Should().BeNull("because the file doesn't exist");
-				logSource.GetProperty(GeneralProperties.LastModified).Should().BeNull("because the file doesn't exist");
-				logSource.GetProperty(GeneralProperties.Size).Should().BeNull("because the file doesn't exist");
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.GetProperty(Properties.Format).Should().BeNull("because the file doesn't exist");
+				logSource.GetProperty(Properties.Created).Should().BeNull("because the file doesn't exist");
+				logSource.GetProperty(Properties.LastModified).Should().BeNull("because the file doesn't exist");
+				logSource.GetProperty(Properties.Size).Should().BeNull("because the file doesn't exist");
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because the file doesn't exist");
 				logSource.GetProperty(TextProperties.ByteOrderMark).Should().BeNull("because the file doesn't exist");
 				logSource.GetProperty(TextProperties.OverwrittenEncoding).Should().BeNull("because the file doesn't exist");
@@ -94,13 +94,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\1Mb.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				var info = new FileInfo(fileName);
-				logSource.GetProperty(GeneralProperties.Format).Should().Be(LogFileFormats.GenericText, "because we didn't provide the log file with a working detector");
-				logSource.GetProperty(GeneralProperties.Created).Should().Be(info.CreationTimeUtc);
-				logSource.GetProperty(GeneralProperties.LastModified).Should().Be(info.LastWriteTimeUtc);
-				logSource.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(info.Length));
+				logSource.GetProperty(Properties.Format).Should().Be(LogFileFormats.GenericText, "because we didn't provide the log file with a working detector");
+				logSource.GetProperty(Properties.Created).Should().Be(info.CreationTimeUtc);
+				logSource.GetProperty(Properties.LastModified).Should().Be(info.LastWriteTimeUtc);
+				logSource.GetProperty(Properties.Size).Should().Be(Size.FromBytes(info.Length));
 
 				var entries = logSource.GetEntries();
 				//entries.Should().HaveCount(9996);
@@ -118,7 +118,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\Encodings\utf8_w_bom.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().Be(Encoding.UTF8, "because the source file has a BOM which should have been detected");
 				logSource.GetProperty(TextProperties.ByteOrderMark).Should().Be(true, "because the source contains a byte order mark");
@@ -138,7 +138,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\Encodings\utf16_be_bom.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().Be(Encoding.BigEndianUnicode, "because the source file has a BOM which should have been detected");
 				logSource.GetProperty(TextProperties.ByteOrderMark).Should().Be(true, "because the source contains a byte order mark");
@@ -158,7 +158,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\Encodings\utf16_le_bom.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().Be(Encoding.Unicode, "because the source file has a BOM which should have been detected");
 				logSource.GetProperty(TextProperties.ByteOrderMark).Should().Be(true, "because the source contains a byte order mark");
@@ -185,7 +185,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\Encodings\windows_1252.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because there's no BOM and thus Tailviewer may not have claimed to auto detect the encoding");
 				logSource.GetProperty(TextProperties.OverwrittenEncoding).Should().BeNull("because we didn't overwrite the encoding just yet");
 				logSource.GetProperty(TextProperties.Encoding).Should().Be(Encoding.UTF8, "because we specified at the start that UTF8 should be used as a default encoding");
@@ -197,7 +197,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				var overwrittenEncoding = Encoding.GetEncoding(1252);
 				logSource.SetProperty(TextProperties.OverwrittenEncoding, overwrittenEncoding);
 				logSource.Property(x => x.GetProperty(TextProperties.Encoding)).ShouldEventually().Be(overwrittenEncoding);
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				logSource.GetProperty(TextProperties.AutoDetectedEncoding).Should().BeNull("because there's still no BOM and thus Tailviewer may not have claimed to auto detect the encoding");
 				logSource.GetProperty(TextProperties.Encoding).Should().Be(overwrittenEncoding, "because we've overwritten the encoding for this source");
 
@@ -218,15 +218,15 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\LevelCounts.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(27, "because the data source contains that many lines");
-				logSource.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(6, "because the data source contains six trace lines");
-				logSource.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(1, "because the data source contains one debug line");
-				logSource.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(2, "because the data source contains two info lines");
-				logSource.GetProperty(GeneralProperties.WarningLogEntryCount).Should().Be(3, "because the data source contains three warnings");
-				logSource.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(4, "because the data source contains four errors");
-				logSource.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(5, "because the data source contains five fatal lines");
-				logSource.GetProperty(GeneralProperties.OtherLogEntryCount).Should().Be(6, "because the file is read in singleline mode and 6 lines don't have a recognizable log level");
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.GetProperty(Properties.LogEntryCount).Should().Be(27, "because the data source contains that many lines");
+				logSource.GetProperty(Properties.TraceLogEntryCount).Should().Be(6, "because the data source contains six trace lines");
+				logSource.GetProperty(Properties.DebugLogEntryCount).Should().Be(1, "because the data source contains one debug line");
+				logSource.GetProperty(Properties.InfoLogEntryCount).Should().Be(2, "because the data source contains two info lines");
+				logSource.GetProperty(Properties.WarningLogEntryCount).Should().Be(3, "because the data source contains three warnings");
+				logSource.GetProperty(Properties.ErrorLogEntryCount).Should().Be(4, "because the data source contains four errors");
+				logSource.GetProperty(Properties.FatalLogEntryCount).Should().Be(5, "because the data source contains five fatal lines");
+				logSource.GetProperty(Properties.OtherLogEntryCount).Should().Be(6, "because the file is read in singleline mode and 6 lines don't have a recognizable log level");
 			}
 		}
 
@@ -238,14 +238,14 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = TextLogSourceAcceptanceTest.File20Mb;
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
-				logSource.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().Be(165342);
-				logSource.GetProperty(GeneralProperties.TraceLogEntryCount).Should().Be(0);
-				logSource.GetProperty(GeneralProperties.DebugLogEntryCount).Should().Be(165337);
-				logSource.GetProperty(GeneralProperties.InfoLogEntryCount).Should().Be(5);
-				logSource.GetProperty(GeneralProperties.ErrorLogEntryCount).Should().Be(0);
-				logSource.GetProperty(GeneralProperties.FatalLogEntryCount).Should().Be(0);
+				logSource.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().Be(165342);
+				logSource.GetProperty(Properties.TraceLogEntryCount).Should().Be(0);
+				logSource.GetProperty(Properties.DebugLogEntryCount).Should().Be(165337);
+				logSource.GetProperty(Properties.InfoLogEntryCount).Should().Be(5);
+				logSource.GetProperty(Properties.ErrorLogEntryCount).Should().Be(0);
+				logSource.GetProperty(Properties.FatalLogEntryCount).Should().Be(0);
 			}
 		}
 
@@ -256,9 +256,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			var fileName = @"TestData\DifferentLevels.txt";
 			using (var logSource = Create(fileName))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 				
-				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
+				logSource.GetProperty(Properties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
 
 				var entries = logSource.GetEntries(new LogSourceSection(0, 6));
 				entries[0].RawContent.Should().Be("DEBUG ERROR WARN FATAL INFO");
@@ -294,8 +294,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, 143, DateTimeKind.Unspecified));
@@ -307,8 +307,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, DateTimeKind.Unspecified));
@@ -320,8 +320,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create( @"TestData\Timestamps\HH_mm_ss.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				var today = DateTime.Today;
@@ -334,8 +334,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(@"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
@@ -347,8 +347,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
 
 				var entry = file.GetEntry(1);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
@@ -360,8 +360,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(@"TestData\Timestamps\HH_mm_ss;s.txt"))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(2);
 
 				var today = DateTime.Today;
 				var entry = file.GetEntry(0);
@@ -382,14 +382,14 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 				writer.Flush();
 
-				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogSourceSection(0, 2), Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 11, 59, 30),
 					new DateTime(2017, 12, 3, 12, 00, 00)
 				});
 
-				source.GetColumn(new LogSourceSection(1, 1), GeneralColumns.Timestamp)
+				source.GetColumn(new LogSourceSection(1, 1), Columns.Timestamp)
 				      .Should().Equal(new DateTime(2017, 12, 3, 12, 00, 00));
 			}
 		}
@@ -406,18 +406,18 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 				writer.Flush();
 				
-				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogLineIndex[] {0,  1}, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogLineIndex[] {0,  1}, Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 11, 59, 30),
 					new DateTime(2017, 12, 3, 12, 00, 00)
 				});
-				source.GetColumn(new LogLineIndex[] { 1, 0 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.GetColumn(new LogLineIndex[] { 1, 0 }, Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 12, 00, 00),
 					new DateTime(2017, 12, 3, 11, 59, 30)
 				});
-				source.GetColumn(new LogLineIndex[] { 1 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.GetColumn(new LogLineIndex[] { 1 }, Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 12, 00, 00),
 				});
@@ -437,17 +437,17 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 				writer.Flush();
 
-				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogLineIndex[] { -1 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogLineIndex[] { -1 }, Columns.Timestamp).Should().Equal(new object[]
 				{
 					null
 				});
-				source.GetColumn(new LogLineIndex[] { 1, 2 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.GetColumn(new LogLineIndex[] { 1, 2 }, Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 12, 00, 00),
 					null
 				});
-				source.GetColumn(new LogLineIndex[] { 1, 2, 0 }, GeneralColumns.Timestamp).Should().Equal(new object[]
+				source.GetColumn(new LogLineIndex[] { 1, 2, 0 }, Columns.Timestamp).Should().Equal(new object[]
 				{
 					new DateTime(2017, 12, 3, 12, 00, 00),
 					null,
@@ -467,14 +467,14 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				writer.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 				writer.Flush();
 				
-				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
-				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(2);
+				source.GetColumn(new LogSourceSection(0, 2), Columns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					TimeSpan.FromSeconds(30)
 				});
 
-				source.GetColumn(new LogSourceSection(1, 1), GeneralColumns.DeltaTime)
+				source.GetColumn(new LogSourceSection(1, 1), Columns.DeltaTime)
 				       .Should().Equal(new object[] {TimeSpan.FromSeconds(30)});
 			}
 		}
@@ -490,13 +490,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				writer.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 				writer.Flush();
 
-				source.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(1);
-				source.GetColumn(new LogSourceSection(0, 2), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldEventually().BeGreaterOrEqualTo(1);
+				source.GetColumn(new LogSourceSection(0, 2), Columns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					null
 				});
-				source.GetColumn(new LogSourceSection(1, 5), GeneralColumns.DeltaTime).Should().Equal(new object[]
+				source.GetColumn(new LogSourceSection(1, 5), Columns.DeltaTime).Should().Equal(new object[]
 				{
 					null,
 					null,
@@ -524,9 +524,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(AbstractTextLogSourceAcceptanceTest.File20Mb))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent, "because we should be able to read the entire file in a few seconds");
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
-				file.GetProperty(GeneralProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent, "because we should be able to read the entire file in a few seconds");
+				file.GetProperty(Properties.LogEntryCount).Should().Be(165342);
+				file.GetProperty(Properties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				var buffer = file.GetEntries(new LogSourceSection(0, 10));
 

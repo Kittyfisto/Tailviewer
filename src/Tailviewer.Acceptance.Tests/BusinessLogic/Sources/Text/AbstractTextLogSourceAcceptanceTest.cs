@@ -89,7 +89,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var logFile = Create("", LogFileFormats.Csv, Encoding.Default))
 			{
-				logFile.GetProperty(GeneralProperties.Format).Should().Be(LogFileFormats.Csv);
+				logFile.GetProperty(Properties.Format).Should().Be(LogFileFormats.Csv);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 
 			using (var logFile = Create(fname))
 			{
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				new Action(() =>
 					{
@@ -156,10 +156,10 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			{
 				new Action(() => logSource = Create( "dadwdawdw")).Should().NotThrow();
 
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(GeneralProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).NotBeNull();
 
-				logSource.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "Because the specified file doesn't exist");
+				logSource.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>("Because the specified file doesn't exist");
 			}
 			finally
 			{
@@ -176,10 +176,10 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			{
 				new Action(() => logSource = Create( File2Lines)).Should().NotThrow();
 
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(GeneralProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(null);
 
-				logSource.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "Because the specified file does exist");
+				logSource.GetProperty(Properties.EmptyReason).Should().Be(null, "Because the specified file does exist");
 			}
 			finally
 			{
@@ -196,11 +196,11 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			using (var logger = new FileLogger(fname))
 			using (var logFile = Create(fname))
 			{
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+				logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 
 				Log.Info("Test");
 
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(1);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(1);
 				var entries = logFile.GetEntries();
 				entries[0].RawContent.Should().EndWith("Test");
 			}
@@ -214,13 +214,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			using (var logger = new FileLogger(fname))
 			using (var logFile = Create(fname))
 			{
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
+				logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 
 				Log.Info("Hello");
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(1);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(1);
 
 				Log.Info("world!");
-				logFile.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(2);
+				logFile.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).BeGreaterOrEqualTo(2);
 			}
 		}
 
@@ -237,15 +237,14 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 
 				new Action(() => logSource = Create(fileName)).Should().NotThrow();
 
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(GeneralProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist,
-				                                                           "Because the specified file doesn't exist");
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).NotBeNull("Because the specified file doesn't exist");
 
 				File.WriteAllText(fileName, "Hello World!");
 
-				logSource.Property(x => x.GetProperty(GeneralProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None,
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(null,
 				                                                          "Because the file has been created now");
-				logSource.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
+				logSource.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
 
 				var entry = logSource.GetEntry(0);
 				entry.Index.Should().Be(0);
@@ -270,8 +269,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(165342);
 
 				modifications[0].Should().Be(LogSourceModification.Reset());
 				for (int i = 1; i < modifications.Count; ++i)
@@ -290,9 +289,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				file.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 
-				file.GetProperty(GeneralProperties.LogEntryCount).Should().Be(165342);
+				file.GetProperty(Properties.LogEntryCount).Should().Be(165342);
 			}
 		}
 	}

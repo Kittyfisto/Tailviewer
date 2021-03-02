@@ -12,40 +12,40 @@ namespace Tailviewer.Core.Tests.Properties
 		[Test]
 		public void TestWellKnown()
 		{
-			GeneralProperties.LogEntryCount.Should().NotBeNull();
-			GeneralProperties.Name.Should().NotBeNull();
-			GeneralProperties.StartTimestamp.Should().NotBeNull();
-			GeneralProperties.EndTimestamp.Should().NotBeNull();
-			GeneralProperties.Duration.Should().NotBeNull();
-			GeneralProperties.LastModified.Should().NotBeNull();
-			GeneralProperties.StartTimestamp.Should().NotBeNull();
-			GeneralProperties.Created.Should().NotBeNull();
-			GeneralProperties.Size.Should().NotBeNull();
-			GeneralProperties.PercentageProcessed.Should().NotBeNull();
-			GeneralProperties.EmptyReason.Should().NotBeNull();
-			GeneralProperties.Format.Should().NotBeNull();
-			GeneralProperties.FormatDetectionCertainty.Should().NotBeNull();
+			Core.Properties.LogEntryCount.Should().NotBeNull();
+			Core.Properties.Name.Should().NotBeNull();
+			Core.Properties.StartTimestamp.Should().NotBeNull();
+			Core.Properties.EndTimestamp.Should().NotBeNull();
+			Core.Properties.Duration.Should().NotBeNull();
+			Core.Properties.LastModified.Should().NotBeNull();
+			Core.Properties.StartTimestamp.Should().NotBeNull();
+			Core.Properties.Created.Should().NotBeNull();
+			Core.Properties.Size.Should().NotBeNull();
+			Core.Properties.PercentageProcessed.Should().NotBeNull();
+			Core.Properties.EmptyReason.Should().NotBeNull();
+			Core.Properties.Format.Should().NotBeNull();
+			Core.Properties.FormatDetectionCertainty.Should().NotBeNull();
 			TextProperties.AutoDetectedEncoding.Should().NotBeNull();
 		}
 
 		[Test]
 		public void TestCombineWithMinimum1()
 		{
-			GeneralProperties.CombineWithMinimum(null).Should().Equal(GeneralProperties.Minimum);
+			Core.Properties.CombineWithMinimum(null).Should().Equal(Core.Properties.Minimum);
 		}
 
 		[Test]
 		public void TestCombineWithMinimum2()
 		{
-			GeneralProperties.CombineWithMinimum(GeneralProperties.Minimum).Should().Equal(GeneralProperties.Minimum);
+			Core.Properties.CombineWithMinimum(Core.Properties.Minimum).Should().Equal(Core.Properties.Minimum);
 		}
 
 		[Test]
 		public void TestCombineWithMinimum3()
 		{
 			var property = new Mock<IReadOnlyPropertyDescriptor>().Object;
-			GeneralProperties.CombineWithMinimum(property).Should().Equal(GeneralProperties.Minimum
-			                                                                               .Concat(new [] {property}));
+			Core.Properties.CombineWithMinimum(property).Should().Equal(Core.Properties.Minimum
+			                                                                .Concat(new [] {property}));
 		}
 	}
 }

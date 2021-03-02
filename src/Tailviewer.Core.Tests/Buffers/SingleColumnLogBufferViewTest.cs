@@ -12,25 +12,25 @@ namespace Tailviewer.Core.Tests.Buffers
 		public void TestConstruction_LineNumber([Values(0, 10)] int count)
 		{
 			var buffer = new int[count];
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, 0, count);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, 0, count);
 			view.Count.Should().Be(count);
-			view.Columns.Should().Equal(new object[] {GeneralColumns.LineNumber});
-			view.Contains(GeneralColumns.LineNumber).Should().BeTrue();
-			view.Contains(GeneralColumns.OriginalLineNumber).Should().BeFalse();
-			view.Contains(GeneralColumns.Message).Should().BeFalse();
+			view.Columns.Should().Equal(new object[] {Core.Columns.LineNumber});
+			view.Contains(Core.Columns.LineNumber).Should().BeTrue();
+			view.Contains(Core.Columns.OriginalLineNumber).Should().BeFalse();
+			view.Contains(Core.Columns.Message).Should().BeFalse();
 		}
 
 		[Test]
 		public void TestConstruction_RawContent([Values(2, 100)] int count)
 		{
 			var buffer = new string[count];
-			var view = new SingleColumnLogBufferView<string>(GeneralColumns.RawContent, buffer, 0, count);
+			var view = new SingleColumnLogBufferView<string>(Core.Columns.RawContent, buffer, 0, count);
 			view.Count.Should().Be(count);
-			view.Columns.Should().Equal(new object[] {GeneralColumns.RawContent});
-			view.Contains(GeneralColumns.Message).Should().BeFalse();
-			view.Contains(GeneralColumns.RawContent).Should().BeTrue();
-			view.Contains(GeneralColumns.LineNumber).Should().BeFalse();
-			view.Contains(GeneralColumns.OriginalLineNumber).Should().BeFalse();
+			view.Columns.Should().Equal(new object[] {Core.Columns.RawContent});
+			view.Contains(Core.Columns.Message).Should().BeFalse();
+			view.Contains(Core.Columns.RawContent).Should().BeTrue();
+			view.Contains(Core.Columns.LineNumber).Should().BeFalse();
+			view.Contains(Core.Columns.OriginalLineNumber).Should().BeFalse();
 		}
 
 		[Test]
@@ -42,9 +42,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				"Morning",
 				"Munich"
 			};
-			var view = new SingleColumnLogBufferView<string>(GeneralColumns.RawContent, buffer, 1, 2);
+			var view = new SingleColumnLogBufferView<string>(Core.Columns.RawContent, buffer, 1, 2);
 			view.Count.Should().Be(2);
-			view.Columns.Should().Equal(new object[] {GeneralColumns.RawContent});
+			view.Columns.Should().Equal(new object[] {Core.Columns.RawContent});
 
 			view[0].RawContent.Should().Be("Morning");
 			view[1].RawContent.Should().Be("Munich");
@@ -60,7 +60,7 @@ namespace Tailviewer.Core.Tests.Buffers
 			var count = 1;
 			var buffer = new int[offset + count];
 
-			new Action(() => new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count))
+			new Action(() => new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count))
 				.Should()
 				.Throw<ArgumentOutOfRangeException>();
 		}
@@ -72,14 +72,14 @@ namespace Tailviewer.Core.Tests.Buffers
 			var count = 2;
 			var buffer = new int[offset + count - 1];
 
-			new Action(() => new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count))
+			new Action(() => new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count))
 				.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void TestConstruction_BufferNull()
 		{
-			new Action(() => new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, null, 0, 0))
+			new Action(() => new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, null, 0, 0))
 				.Should().Throw<ArgumentNullException>();
 		}
 
@@ -96,9 +96,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count);
 			var desiredData = new[] {2, 5, 42};
-			view.CopyFrom(GeneralColumns.LineNumber, 0, desiredData, 0, 3);
+			view.CopyFrom(Core.Columns.LineNumber, 0, desiredData, 0, 3);
 
 			for (int i = 0; i < offset; ++i)
 				buffer[i].Should().Be(originalBuffer[i]);
@@ -125,9 +125,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count);
 			var desiredData = new[] {2, 5, 42};
-			new Action(() => view.CopyFrom(GeneralColumns.OriginalLineNumber, 0, desiredData, 0, 3)).Should()
+			new Action(() => view.CopyFrom(Core.Columns.OriginalLineNumber, 0, desiredData, 0, 3)).Should()
 				.Throw<NoSuchColumnException>();
 
 			for (int i = 0; i < offset + count + surplus; ++i)
@@ -147,12 +147,12 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count);
-			var source = new LogBufferList(GeneralColumns.OriginalLineNumber, GeneralColumns.LineNumber);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count);
+			var source = new LogBufferList(Core.Columns.OriginalLineNumber, Core.Columns.LineNumber);
 			source.Add(new LogEntry{OriginalLineNumber = 10, LineNumber = 42});
 			source.Add(new LogEntry{OriginalLineNumber = 12, LineNumber = 9001});
 
-			view.CopyFrom(GeneralColumns.LineNumber, 1, source, new[] {1, 0});
+			view.CopyFrom(Core.Columns.LineNumber, 1, source, new[] {1, 0});
 
 			for (int i = 0; i < offset; ++i)
 				buffer[i].Should().Be(originalBuffer[i]);
@@ -179,12 +179,12 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count);
-			var source = new LogBufferList(GeneralColumns.OriginalLineNumber, GeneralColumns.LineNumber);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count);
+			var source = new LogBufferList(Core.Columns.OriginalLineNumber, Core.Columns.LineNumber);
 			source.Add(new LogEntry{OriginalLineNumber = 10, LineNumber = 42});
 			source.Add(new LogEntry{OriginalLineNumber = 12, LineNumber = 9001});
 
-			new Action(() => view.CopyFrom(GeneralColumns.OriginalLineNumber, 1, source, new[] {1, 0}))
+			new Action(() => view.CopyFrom(Core.Columns.OriginalLineNumber, 1, source, new[] {1, 0}))
 				.Should().Throw<NoSuchColumnException>();
 
 			for (int i = 0; i < offset + count + surplus; ++i)
@@ -205,8 +205,8 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<int>(GeneralColumns.LineNumber, buffer, offset, count);
-			var source = new LogBufferList(GeneralColumns.OriginalLineNumber, GeneralColumns.LineNumber);
+			var view = new SingleColumnLogBufferView<int>(Core.Columns.LineNumber, buffer, offset, count);
+			var source = new LogBufferList(Core.Columns.OriginalLineNumber, Core.Columns.LineNumber);
 			source.Add(new LogEntry{OriginalLineNumber = 10, LineNumber = 42});
 			source.Add(new LogEntry{OriginalLineNumber = 12, LineNumber = 9001});
 
@@ -231,7 +231,7 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<LogLineIndex>(Core.Columns.Index, buffer, offset, count);
 			var fillOffset = 1;
 			view.FillDefault(fillOffset, count - fillOffset);
 
@@ -242,7 +242,7 @@ namespace Tailviewer.Core.Tests.Buffers
 
 			for (int i = offset + fillOffset; i < offset + count; ++i)
 			{
-				buffer[i].Should().Be(GeneralColumns.Index.DefaultValue);
+				buffer[i].Should().Be(Core.Columns.Index.DefaultValue);
 			}
 
 			for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -265,9 +265,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<LogLineIndex>(Core.Columns.Index, buffer, offset, count);
 			var fillOffset = 1;
-			view.FillDefault(GeneralColumns.Index, fillOffset, count - fillOffset);
+			view.FillDefault(Core.Columns.Index, fillOffset, count - fillOffset);
 
 			for (int i = 0; i < offset + fillOffset; ++i)
 			{
@@ -276,7 +276,7 @@ namespace Tailviewer.Core.Tests.Buffers
 
 			for (int i = offset + fillOffset; i < offset + count; ++i)
 			{
-				buffer[i].Should().Be(GeneralColumns.Index.DefaultValue);
+				buffer[i].Should().Be(Core.Columns.Index.DefaultValue);
 			}
 
 			for (int i = offset + count; i < offset + count + surplus; ++i)
@@ -299,9 +299,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<LogLineIndex>(Core.Columns.Index, buffer, offset, count);
 			var fillOffset = 1;
-			new Action(() => view.FillDefault(GeneralColumns.OriginalIndex, fillOffset, count - fillOffset))
+			new Action(() => view.FillDefault(Core.Columns.OriginalIndex, fillOffset, count - fillOffset))
 				.Should().Throw<NoSuchColumnException>();
 
 			for (int i = 0; i <  offset + count + surplus; ++i)
@@ -324,9 +324,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<LogLineIndex>(Core.Columns.Index, buffer, offset, count);
 			var fillOffset = 1;
-			view.Fill(GeneralColumns.Index, 42,fillOffset, count - fillOffset);
+			view.Fill(Core.Columns.Index, 42,fillOffset, count - fillOffset);
 
 			for (int i = 0; i < offset + fillOffset; ++i)
 			{
@@ -358,9 +358,9 @@ namespace Tailviewer.Core.Tests.Buffers
 				originalBuffer[i] = buffer[i] = i + 1;
 			}
 
-			var view = new SingleColumnLogBufferView<LogLineIndex>(GeneralColumns.Index, buffer, offset, count);
+			var view = new SingleColumnLogBufferView<LogLineIndex>(Core.Columns.Index, buffer, offset, count);
 			var fillOffset = 1;
-			new Action(() => view.Fill(GeneralColumns.OriginalIndex, 42, fillOffset, count - fillOffset))
+			new Action(() => view.Fill(Core.Columns.OriginalIndex, 42, fillOffset, count - fillOffset))
 				.Should().Throw<NoSuchColumnException>();
 
 			for (int i = 0; i < offset + count + surplus; ++i)

@@ -125,11 +125,11 @@ namespace Tailviewer.Ui.SidePanel.Issues
 			if (dataSource is IMultiDataSource multi)
 			{
 				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
-				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogSource.GetProperty(GeneralProperties.Format))).ToList();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogSource.GetProperty(Properties.Format))).ToList();
 			}
 			else
 			{
-				plugins = FindMatchingPlugins(dataSource.UnfilteredLogSource.GetProperty(GeneralProperties.Format));
+				plugins = FindMatchingPlugins(dataSource.UnfilteredLogSource.GetProperty(Properties.Format));
 			}
 
 			if (plugins.Count == 0)

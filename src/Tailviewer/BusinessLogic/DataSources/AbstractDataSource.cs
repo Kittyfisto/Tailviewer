@@ -124,7 +124,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime? LastModified => UnfilteredLogSource.GetProperty(GeneralProperties.LastModified);
+		public DateTime? LastModified => UnfilteredLogSource.GetProperty(Properties.LastModified);
 
 		public DateTime LastViewed
 		{
@@ -139,7 +139,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void ClearScreen()
 		{
-			_hideLogLineCount = UnfilteredLogSource?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
+			_hideLogLineCount = UnfilteredLogSource?.GetProperty(Properties.LogEntryCount) ?? 0;
 			CreateFilteredLogFile();
 		}
 
@@ -173,19 +173,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public abstract ILogSource UnfilteredLogSource { get; }
 
-		public int NoLevelCount => UnfilteredLogSource.GetProperty(GeneralProperties.OtherLogEntryCount);
+		public int NoLevelCount => UnfilteredLogSource.GetProperty(Properties.OtherLogEntryCount);
 
-		public int TraceCount => UnfilteredLogSource.GetProperty(GeneralProperties.TraceLogEntryCount);
+		public int TraceCount => UnfilteredLogSource.GetProperty(Properties.TraceLogEntryCount);
 
-		public int DebugCount => UnfilteredLogSource.GetProperty(GeneralProperties.DebugLogEntryCount);
+		public int DebugCount => UnfilteredLogSource.GetProperty(Properties.DebugLogEntryCount);
 
-		public int InfoCount => UnfilteredLogSource.GetProperty(GeneralProperties.InfoLogEntryCount);
+		public int InfoCount => UnfilteredLogSource.GetProperty(Properties.InfoLogEntryCount);
 
-		public int WarningCount => UnfilteredLogSource.GetProperty(GeneralProperties.WarningLogEntryCount);
+		public int WarningCount => UnfilteredLogSource.GetProperty(Properties.WarningLogEntryCount);
 
-		public int ErrorCount => UnfilteredLogSource.GetProperty(GeneralProperties.ErrorLogEntryCount);
+		public int ErrorCount => UnfilteredLogSource.GetProperty(Properties.ErrorLogEntryCount);
 
-		public int FatalCount => UnfilteredLogSource.GetProperty(GeneralProperties.FatalLogEntryCount);
+		public int FatalCount => UnfilteredLogSource.GetProperty(Properties.FatalLogEntryCount);
 
 		public int NoTimestampCount => 0;
 
@@ -242,9 +242,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DataSource Settings => _settings;
 
-		public int TotalCount => UnfilteredLogSource.GetProperty(GeneralProperties.LogEntryCount);
+		public int TotalCount => UnfilteredLogSource.GetProperty(Properties.LogEntryCount);
 
-		public Size? FileSize => UnfilteredLogSource.GetProperty(GeneralProperties.Size);
+		public Size? FileSize => UnfilteredLogSource.GetProperty(Properties.Size);
 
 		public bool ColorByLevel
 		{

@@ -11,7 +11,7 @@ namespace Tailviewer.Core.Tests.Filters
 		public void TestSingleLine1()
 		{
 			var filter = new OrFilter(new[] {new SubstringFilter("foo", true)});
-			var line = new LogEntry(GeneralColumns.RawContent){RawContent = "foobar"};
+			var line = new LogEntry(Core.Columns.RawContent){RawContent = "foobar"};
 			filter.PassesFilter(line).Should().BeTrue();
 			var matches = filter.Match(line);
 			matches.Should().NotBeNull();
@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Tests.Filters
 		public void TestSingleLine2()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", true) });
-			var line = new LogEntry(GeneralColumns.RawContent){RawContent = "fobar"};
+			var line = new LogEntry(Core.Columns.RawContent){RawContent = "fobar"};
 			filter.PassesFilter(line).Should().BeFalse();
 			var matches = filter.Match(line);
 			matches.Should().NotBeNull();
@@ -33,7 +33,7 @@ namespace Tailviewer.Core.Tests.Filters
 		public void TestSingleLine3()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", true) });
-			var line = new LogEntry(GeneralColumns.RawContent){RawContent = "bar"};
+			var line = new LogEntry(Core.Columns.RawContent){RawContent = "bar"};
 			filter.PassesFilter(line).Should().BeFalse();
 			var matches = filter.Match(line);
 			matches.Should().NotBeNull();
@@ -44,28 +44,28 @@ namespace Tailviewer.Core.Tests.Filters
 		public void TestSingleLine4()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", false), new SubstringFilter("bar", false) });
-			filter.PassesFilter(new LogEntry(GeneralColumns.RawContent){RawContent = "foo"}).Should().BeTrue();
+			filter.PassesFilter(new LogEntry(Core.Columns.RawContent){RawContent = "foo"}).Should().BeTrue();
 		}
 
 		[Test]
 		public void TestSingleLine5()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", false), new SubstringFilter("bar", false) });
-			filter.PassesFilter(new LogEntry(GeneralColumns.RawContent){RawContent = "bar"}).Should().BeTrue();
+			filter.PassesFilter(new LogEntry(Core.Columns.RawContent){RawContent = "bar"}).Should().BeTrue();
 		}
 
 		[Test]
 		public void TestSingleLine6()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", false), new SubstringFilter("bar", false) });
-			filter.PassesFilter(new LogEntry(GeneralColumns.RawContent){RawContent = "foobar"}).Should().BeTrue();
+			filter.PassesFilter(new LogEntry(Core.Columns.RawContent){RawContent = "foobar"}).Should().BeTrue();
 		}
 
 		[Test]
 		public void TestSingleLine7()
 		{
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", false), new SubstringFilter("bar", false) });
-			filter.PassesFilter(new LogEntry(GeneralColumns.RawContent){RawContent = "FOOBAR"}).Should().BeFalse();
+			filter.PassesFilter(new LogEntry(Core.Columns.RawContent){RawContent = "FOOBAR"}).Should().BeFalse();
 		}
 
 		[Test]
@@ -74,8 +74,8 @@ namespace Tailviewer.Core.Tests.Filters
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", true) });
 			var lines = new[]
 			{
-				new LogEntry(GeneralColumns.RawContent){RawContent = "bar"},
-				new LogEntry(GeneralColumns.RawContent){RawContent = "foo"}
+				new LogEntry(Core.Columns.RawContent){RawContent = "bar"},
+				new LogEntry(Core.Columns.RawContent){RawContent = "foo"}
 			};
 
 			filter.PassesFilter(lines).Should().BeTrue("because it should be enough to have a hit on one line of a multi line entry");
@@ -87,8 +87,8 @@ namespace Tailviewer.Core.Tests.Filters
 			var filter = new OrFilter(new[] { new SubstringFilter("foo", true) });
 			var lines = new[]
 			{
-				new LogEntry(GeneralColumns.RawContent){RawContent = "fo"},
-				new LogEntry(GeneralColumns.RawContent){RawContent = "obar"}
+				new LogEntry(Core.Columns.RawContent){RawContent = "fo"},
+				new LogEntry(Core.Columns.RawContent){RawContent = "obar"}
 			};
 			
 			filter.PassesFilter(lines).Should().BeFalse("because substring filters shouldn't be matched across lines");

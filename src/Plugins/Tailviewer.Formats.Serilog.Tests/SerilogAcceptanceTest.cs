@@ -55,9 +55,9 @@ namespace Tailviewer.Serilog.Test
 
 			using (var logSource = _logSourceFactory.Open(@"TestData\Formats\Serilog\Serilog.txt"))
 			{
-				logSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-				logSource.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None);
-				logSource.GetProperty(GeneralProperties.LogEntryCount).Should().BeGreaterOrEqualTo(11);
+				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logSource.GetProperty(Properties.EmptyReason).Should().Be(null);
+				logSource.GetProperty(Properties.LogEntryCount).Should().BeGreaterOrEqualTo(11);
 
 				var entries = logSource.GetEntries();
 				entries[0].Index.Should().Be(0);

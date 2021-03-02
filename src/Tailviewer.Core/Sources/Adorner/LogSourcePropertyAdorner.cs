@@ -39,17 +39,17 @@ namespace Tailviewer.Core
 		{
 			ColumnsByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IColumnDescriptor>
 			{
-				{GeneralProperties.StartTimestamp, GeneralColumns.Timestamp },
-				{GeneralProperties.EndTimestamp, GeneralColumns.Timestamp },
-				{GeneralProperties.Duration, GeneralColumns.Timestamp },
+				{Core.Properties.StartTimestamp, Core.Columns.Timestamp },
+				{Core.Properties.EndTimestamp, Core.Columns.Timestamp },
+				{Core.Properties.Duration, Core.Columns.Timestamp },
 
-				{GeneralProperties.TraceLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.DebugLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.InfoLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.WarningLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.ErrorLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.FatalLogEntryCount, GeneralColumns.LogLevel },
-				{GeneralProperties.OtherLogEntryCount, GeneralColumns.LogLevel },
+				{Core.Properties.TraceLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.DebugLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.InfoLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.WarningLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.ErrorLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.FatalLogEntryCount, Core.Columns.LogLevel },
+				{Core.Properties.OtherLogEntryCount, Core.Columns.LogLevel },
 			};
 
 			AllAdornedProperties = ColumnsByProperty.Keys.ToList();
@@ -60,7 +60,7 @@ namespace Tailviewer.Core
 		{
 			var requiredColumns = new HashSet<IColumnDescriptor>
 			{
-				GeneralColumns.Index
+				Core.Columns.Index
 			};
 
 			foreach (var property in adornedProperties)
@@ -191,19 +191,19 @@ namespace Tailviewer.Core
 
 		private void Process(LogSourceSection section)
 		{
-			DateTime? startTime = _propertiesBuffer.GetValue(GeneralProperties.StartTimestamp);
-			DateTime? endTime = _propertiesBuffer.GetValue(GeneralProperties.EndTimestamp);
-			int traceCount = _propertiesBuffer.GetValue(GeneralProperties.TraceLogEntryCount);
-			int debugCount = _propertiesBuffer.GetValue(GeneralProperties.DebugLogEntryCount);
-			int infoCount = _propertiesBuffer.GetValue(GeneralProperties.InfoLogEntryCount);
-			int warningCount = _propertiesBuffer.GetValue(GeneralProperties.WarningLogEntryCount);
-			int errorCount = _propertiesBuffer.GetValue(GeneralProperties.ErrorLogEntryCount);
-			int fatalCount = _propertiesBuffer.GetValue(GeneralProperties.FatalLogEntryCount);
-			int otherCount = _propertiesBuffer.GetValue(GeneralProperties.OtherLogEntryCount);
+			DateTime? startTime = _propertiesBuffer.GetValue(Core.Properties.StartTimestamp);
+			DateTime? endTime = _propertiesBuffer.GetValue(Core.Properties.EndTimestamp);
+			int traceCount = _propertiesBuffer.GetValue(Core.Properties.TraceLogEntryCount);
+			int debugCount = _propertiesBuffer.GetValue(Core.Properties.DebugLogEntryCount);
+			int infoCount = _propertiesBuffer.GetValue(Core.Properties.InfoLogEntryCount);
+			int warningCount = _propertiesBuffer.GetValue(Core.Properties.WarningLogEntryCount);
+			int errorCount = _propertiesBuffer.GetValue(Core.Properties.ErrorLogEntryCount);
+			int fatalCount = _propertiesBuffer.GetValue(Core.Properties.FatalLogEntryCount);
+			int otherCount = _propertiesBuffer.GetValue(Core.Properties.OtherLogEntryCount);
 
 			_source.GetEntries(section, _buffer, 0, LogSourceQueryOptions.Default);
-			bool evaluateTimestamp = _requiredColumns.Contains(GeneralColumns.Timestamp);
-			bool evaluateLevel = _requiredColumns.Contains(GeneralColumns.LogLevel);
+			bool evaluateTimestamp = _requiredColumns.Contains(Core.Columns.Timestamp);
+			bool evaluateLevel = _requiredColumns.Contains(Core.Columns.LogLevel);
 
 			foreach (var entry in _buffer)
 			{
@@ -259,20 +259,20 @@ namespace Tailviewer.Core
 
 			if (evaluateTimestamp)
 			{
-				_propertiesBuffer.SetValue(GeneralProperties.StartTimestamp, startTime);
-				_propertiesBuffer.SetValue(GeneralProperties.EndTimestamp, endTime);
-				_propertiesBuffer.SetValue(GeneralProperties.Duration, endTime - startTime);
+				_propertiesBuffer.SetValue(Core.Properties.StartTimestamp, startTime);
+				_propertiesBuffer.SetValue(Core.Properties.EndTimestamp, endTime);
+				_propertiesBuffer.SetValue(Core.Properties.Duration, endTime - startTime);
 			}
 
 			if (evaluateLevel)
 			{
-				_propertiesBuffer.SetValue(GeneralProperties.TraceLogEntryCount, traceCount);
-				_propertiesBuffer.SetValue(GeneralProperties.DebugLogEntryCount, debugCount);
-				_propertiesBuffer.SetValue(GeneralProperties.InfoLogEntryCount, infoCount);
-				_propertiesBuffer.SetValue(GeneralProperties.WarningLogEntryCount, warningCount);
-				_propertiesBuffer.SetValue(GeneralProperties.ErrorLogEntryCount, errorCount);
-				_propertiesBuffer.SetValue(GeneralProperties.FatalLogEntryCount, fatalCount);
-				_propertiesBuffer.SetValue(GeneralProperties.OtherLogEntryCount, otherCount);
+				_propertiesBuffer.SetValue(Core.Properties.TraceLogEntryCount, traceCount);
+				_propertiesBuffer.SetValue(Core.Properties.DebugLogEntryCount, debugCount);
+				_propertiesBuffer.SetValue(Core.Properties.InfoLogEntryCount, infoCount);
+				_propertiesBuffer.SetValue(Core.Properties.WarningLogEntryCount, warningCount);
+				_propertiesBuffer.SetValue(Core.Properties.ErrorLogEntryCount, errorCount);
+				_propertiesBuffer.SetValue(Core.Properties.FatalLogEntryCount, fatalCount);
+				_propertiesBuffer.SetValue(Core.Properties.OtherLogEntryCount, otherCount);
 			}
 		}
 
@@ -280,14 +280,14 @@ namespace Tailviewer.Core
 		{
 			_source.GetAllProperties(_propertiesBuffer.Except(_adornedProperties));
 
-			var sourceProcessed = _propertiesBuffer.GetValue(GeneralProperties.PercentageProcessed);
-			var sourceCount = _propertiesBuffer.GetValue(GeneralProperties.LogEntryCount);
+			var sourceProcessed = _propertiesBuffer.GetValue(Core.Properties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(Core.Properties.LogEntryCount);
 			var ownProgress = sourceCount > 0
 				? Percentage.Of(_count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
-			_propertiesBuffer.SetValue(GeneralProperties.PercentageProcessed, totalProgress);
-			_propertiesBuffer.SetValue(GeneralProperties.LogEntryCount, _count);
+			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(Core.Properties.LogEntryCount, _count);
 			_properties.CopyFrom(_propertiesBuffer);
 		}
 

@@ -57,7 +57,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		protected override ILogSource CreateEmpty()
 		{
 			var fileLogSource = new FileLogSource(_services, "");
-			fileLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+			fileLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 			return fileLogSource;
 		}
 
@@ -72,7 +72,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				for(int i = 0; i < content.Count; ++i)
 				{
 					var logEntry = content[i];
-					if(logEntry.TryGetValue(GeneralColumns.Timestamp, out var timestamp) && timestamp != null)
+					if(logEntry.TryGetValue(Columns.Timestamp, out var timestamp) && timestamp != null)
 					{
 						// Let's write the timestamp in a format everybody recognizes
 						writer.Write("{0:yyyy-MM-dd HH:mm:ss.fffffff}", timestamp);
@@ -85,7 +85,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			}
 
 			var fileLogSource = new FileLogSource(_services, fileName);
-			fileLogSource.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+			fileLogSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 			return fileLogSource;
 		}
 

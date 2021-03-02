@@ -54,7 +54,7 @@ namespace Tailviewer.Core.Tests.Columns
 		[Description("Verifies that a custom column never equals a well-known column, even when it uses the same id")]
 		public void TestEquality3()
 		{
-			var index = GeneralColumns.Index;
+			var index = Core.Columns.Index;
 			var column = new CustomColumnDescriptor<LogLineIndex>(index.Id);
 			column.Equals(index).Should().BeFalse("because a well-known-column is fundamentally different from a custom column and thus the two may never be equal");
 		}

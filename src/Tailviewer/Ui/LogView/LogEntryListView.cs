@@ -25,6 +25,7 @@ using Tailviewer.Ui.LogView.LineNumbers;
 using Tailviewer.Ui.LogView.LogLevels;
 using Tailviewer.Ui.LogView.Messages;
 using Tailviewer.Ui.LogView.Timestamps;
+using Properties = Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.LogView
 {
@@ -141,18 +142,18 @@ namespace Tailviewer.Ui.LogView
 
 			_columnPresenterFactories = new Dictionary<IColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
 			{
-				{GeneralColumns.DeltaTime, settings => new DeltaTimeColumnPresenter(settings)},
-				{GeneralColumns.ElapsedTime, settings => new ElapsedTimeColumnPresenter(settings) },
-				{GeneralColumns.OriginalLineNumber, settings => new OriginalLineNumberColumnPresenter(settings) },
-				{GeneralColumns.LogLevel, settings => new  LogLevelColumnPresenter(settings)},
-				{GeneralColumns.Message, settings => new MessageColumnPresenter(settings) },
-				{GeneralColumns.Timestamp, settings => new TimestampColumnPresenter(settings)}
+				{Columns.DeltaTime, settings => new DeltaTimeColumnPresenter(settings)},
+				{Columns.ElapsedTime, settings => new ElapsedTimeColumnPresenter(settings) },
+				{Columns.OriginalLineNumber, settings => new OriginalLineNumberColumnPresenter(settings) },
+				{Columns.LogLevel, settings => new  LogLevelColumnPresenter(settings)},
+				{Columns.Message, settings => new MessageColumnPresenter(settings) },
+				{Columns.Timestamp, settings => new TimestampColumnPresenter(settings)}
 			};
 			_columnPresenters = new Dictionary<IColumnDescriptor, AbstractLogColumnPresenter>();
 			_columnDefinitionsByColumn = new Dictionary<IColumnDescriptor, ColumnDefinition>();
 			_columnsByColumnDefinition = new Dictionary<ColumnDefinition, IColumnDescriptor>();
 
-			_lineNumberColumn = (OriginalLineNumberColumnPresenter) AddColumn(GeneralColumns.OriginalLineNumber);
+			_lineNumberColumn = (OriginalLineNumberColumnPresenter) AddColumn(Columns.OriginalLineNumber);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
 			_dataSourceCanvas = new DataSourceCanvas(textSettings);
@@ -161,11 +162,11 @@ namespace Tailviewer.Ui.LogView
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 
-			_deltaTimesColumn = (DeltaTimeColumnPresenter) AddColumn(GeneralColumns.DeltaTime);
+			_deltaTimesColumn = (DeltaTimeColumnPresenter) AddColumn(Columns.DeltaTime);
 			_deltaTimesColumn.Visibility = Visibility.Collapsed;
 			_deltaTimesColumn.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_elapsedTimeColumn = (ElapsedTimeColumnPresenter) AddColumn(GeneralColumns.ElapsedTime);
+			_elapsedTimeColumn = (ElapsedTimeColumnPresenter) AddColumn(Columns.ElapsedTime);
 			_elapsedTimeColumn.Visibility = Visibility.Collapsed;
 			_elapsedTimeColumn.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
@@ -377,7 +378,7 @@ namespace Tailviewer.Ui.LogView
 			{
 				columnIndex = 0;
 			}
-			else if (Equals(column, GeneralColumns.Message))
+			else if (Equals(column, Columns.Message))
 			{
 				columnIndex = ColumnDefinitions.IndexOf(_messageColumnDefinition);
 			}
@@ -577,7 +578,7 @@ namespace Tailviewer.Ui.LogView
 			var logFile = LogSource;
 			if (logFile != null)
 			{
-				var count = logFile.GetProperty(GeneralProperties.LogEntryCount);
+				var count = logFile.GetProperty(Properties.LogEntryCount);
 				if (count > 0)
 					FollowTail = logLineIndex >= count - 1;
 			}
@@ -815,7 +816,7 @@ namespace Tailviewer.Ui.LogView
 
 		private void UpdateVerticalScrollbar()
 		{
-			var count = LogSource?.GetProperty(GeneralProperties.LogEntryCount) ?? 0;
+			var count = LogSource?.GetProperty(Properties.LogEntryCount) ?? 0;
 			var totalHeight = count * _textSettings.LineHeight;
 			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)

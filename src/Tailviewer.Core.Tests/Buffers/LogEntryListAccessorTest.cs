@@ -11,7 +11,7 @@ namespace Tailviewer.Core.Tests.Buffers
 		protected override IReadOnlyLogEntry CreateDefault()
 		{
 			// TODO: Swap
-			var buffer = new LogBufferList(GeneralColumns.Minimum);
+			var buffer = new LogBufferList(Core.Columns.Minimum);
 			buffer.AddEmpty();
 			return buffer[0];
 		}

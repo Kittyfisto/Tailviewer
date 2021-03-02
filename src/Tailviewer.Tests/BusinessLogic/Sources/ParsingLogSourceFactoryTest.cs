@@ -31,7 +31,7 @@ namespace Tailviewer.Tests.BusinessLogic.Sources
 		private ILogSource CreateSource(ILogFileFormat format)
 		{
 			var source = new Mock<ILogSource>();
-			source.Setup(x => x.GetProperty(GeneralProperties.Format)).Returns(format);
+			source.Setup(x => x.GetProperty(Properties.Format)).Returns(format);
 			source.Setup(x => x.Columns).Returns(new IColumnDescriptor[0]);
 			return source.Object;
 		}

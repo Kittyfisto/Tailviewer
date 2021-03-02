@@ -9,7 +9,7 @@ namespace Tailviewer.Core
 	/// </summary>
 	/// <remarks>
 	///     For example, for text log files, the resulting <see cref="ILogSource"/> exposes every line of the text document as
-	///     a log entry where the content of the line is exposed through the <see cref="GeneralColumns.RawContent"/> column.
+	///     a log entry where the content of the line is exposed through the <see cref="Columns.RawContent"/> column.
 	/// </remarks>
 	[Service]
 	public interface IRawFileLogSourceFactory

@@ -17,18 +17,18 @@ namespace Tailviewer.Core.Tests.Entries
 		public void TestCreateDefault()
 		{
 			var entry = CreateDefault();
-			entry.Columns.Should().Equal(GeneralColumns.Minimum);
-			entry.DeltaTime.Should().Be(GeneralColumns.DeltaTime.DefaultValue);
-			entry.ElapsedTime.Should().Be(GeneralColumns.ElapsedTime.DefaultValue);
-			entry.Index.Should().Be(GeneralColumns.Index.DefaultValue);
-			entry.LineNumber.Should().Be(GeneralColumns.LineNumber.DefaultValue);
-			entry.LogEntryIndex.Should().Be(GeneralColumns.LogEntryIndex.DefaultValue);
-			entry.LogLevel.Should().Be(GeneralColumns.LogLevel.DefaultValue);
-			entry.OriginalIndex.Should().Be(GeneralColumns.OriginalIndex.DefaultValue);
-			entry.OriginalLineNumber.Should().Be(GeneralColumns.OriginalLineNumber.DefaultValue);
-			entry.OriginalDataSourceName.Should().Be(GeneralColumns.OriginalDataSourceName.DefaultValue);
-			entry.RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
-			entry.Timestamp.Should().Be(GeneralColumns.Timestamp.DefaultValue);
+			entry.Columns.Should().Equal(Core.Columns.Minimum);
+			entry.DeltaTime.Should().Be(Core.Columns.DeltaTime.DefaultValue);
+			entry.ElapsedTime.Should().Be(Core.Columns.ElapsedTime.DefaultValue);
+			entry.Index.Should().Be(Core.Columns.Index.DefaultValue);
+			entry.LineNumber.Should().Be(Core.Columns.LineNumber.DefaultValue);
+			entry.LogEntryIndex.Should().Be(Core.Columns.LogEntryIndex.DefaultValue);
+			entry.LogLevel.Should().Be(Core.Columns.LogLevel.DefaultValue);
+			entry.OriginalIndex.Should().Be(Core.Columns.OriginalIndex.DefaultValue);
+			entry.OriginalLineNumber.Should().Be(Core.Columns.OriginalLineNumber.DefaultValue);
+			entry.OriginalDataSourceName.Should().Be(Core.Columns.OriginalDataSourceName.DefaultValue);
+			entry.RawContent.Should().Be(Core.Columns.RawContent.DefaultValue);
+			entry.Timestamp.Should().Be(Core.Columns.Timestamp.DefaultValue);
 			new Action(() =>
 			{
 				var unused = entry.SourceId;

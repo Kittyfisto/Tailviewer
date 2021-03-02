@@ -134,7 +134,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.Index.DefaultValue;
+						destination[destinationIndex + i] = Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -172,7 +172,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.LineNumber.DefaultValue;
+						destination[destinationIndex + i] = Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -191,7 +191,7 @@ namespace Tailviewer.Core
 					}
 					else
 					{
-						destination[destinationIndex + i] = GeneralColumns.SourceId.DefaultValue;
+						destination[destinationIndex + i] = Columns.SourceId.DefaultValue;
 					}
 				}
 			}
@@ -486,8 +486,8 @@ namespace Tailviewer.Core
 
 		/// <summary>
 		///     Retrieves the content the given modifications concern.
-		///     Only retrieves the <see cref="GeneralColumns.Index" />, <see cref="GeneralColumns.LogEntryIndex" />
-		///     and <see cref="GeneralColumns.Timestamp" /> columns (as these are the only ones required in order to
+		///     Only retrieves the <see cref="Columns.Index" />, <see cref="Columns.LogEntryIndex" />
+		///     and <see cref="Columns.Timestamp" /> columns (as these are the only ones required in order to
 		///     merge stuff).
 		/// </summary>
 		/// <param name="pendingModifications"></param>
@@ -498,9 +498,9 @@ namespace Tailviewer.Core
 		{
 			var columns = new IColumnDescriptor[]
 			{
-				GeneralColumns.Index,
-				GeneralColumns.LogEntryIndex,
-				GeneralColumns.Timestamp
+				Columns.Index,
+				Columns.LogEntryIndex,
+				Columns.Timestamp
 			};
 
 			var sections = new List<MergedLogSourceSection>();
@@ -561,9 +561,9 @@ namespace Tailviewer.Core
 
 			foreach (var entry in buffer)
 			{
-				var index = entry.GetValue(GeneralColumns.Index);
-				var entryIndex = entry.GetValue(GeneralColumns.LogEntryIndex);
-				var timestamp = entry.GetValue(GeneralColumns.Timestamp);
+				var index = entry.GetValue(Columns.Index);
+				var entryIndex = entry.GetValue(Columns.LogEntryIndex);
+				var timestamp = entry.GetValue(Columns.Timestamp);
 
 				if (index.IsValid &&
 				    entryIndex.IsValid && //< Invalid values are possible if the file has been invalidated in between it sending us a change and us having retrieved the corresponding data

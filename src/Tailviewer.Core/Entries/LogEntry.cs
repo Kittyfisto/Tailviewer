@@ -20,7 +20,7 @@ namespace Tailviewer.Core
 		/// <summary>
 		/// </summary>
 		public LogEntry()
-			: this(GeneralColumns.Minimum)
+			: this(Core.Columns.Minimum)
 		{}
 
 		/// <summary>

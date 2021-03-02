@@ -58,11 +58,6 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			return fileName;
 		}
 
-		private StreamingTextLogSource Create(string fileName)
-		{
-			return Create(fileName, Encoding.Default);
-		}
-
 		private StreamingTextLogSource Create(string fileName, Encoding encoding)
 		{
 			return new StreamingTextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
@@ -80,7 +75,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 
 		private IReadOnlyLogBuffer GetEntries(StreamingTextLogSource logSource)
 		{
-			return GetEntries(logSource, new LogSourceSection(0, logSource.GetProperty(GeneralProperties.LogEntryCount)));
+			return GetEntries(logSource, new LogSourceSection(0, logSource.GetProperty(Properties.LogEntryCount)));
 		}
 
 		private IReadOnlyLogBuffer GetEntries(StreamingTextLogSource logSource, IReadOnlyList<LogLineIndex> sourceSection)
@@ -112,12 +107,12 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
 			logFile.GetProperty(TextProperties.RequiresBuffer).Should().BeTrue();
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
-			logFile.GetProperty(GeneralProperties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
-			logFile.GetProperty(GeneralProperties.LastModified).Should().BeNull("because the log file didn't even have enough time to check the source");
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.Zero);
-			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the log file didn't have enough time to check the source");
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
+			logFile.GetProperty(Properties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetProperty(Properties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetProperty(Properties.LastModified).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(null, "because the log file didn't have enough time to check the source");
 		}
 
 		#region Static data
@@ -129,12 +124,12 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			_taskScheduler.Run(numReadOperations);
 			
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0);
-			logFile.GetProperty(GeneralProperties.Size).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(GeneralProperties.Created).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(GeneralProperties.LastModified).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
+			logFile.GetProperty(Properties.Size).Should().BeNull("because the source file does not exist");
+			logFile.GetProperty(Properties.Created).Should().BeNull("because the source file does not exist");
+			logFile.GetProperty(Properties.LastModified).Should().BeNull("because the source file does not exist");
+			logFile.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>("because the source file does not exist");
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 		}
 
 		[Test]
@@ -146,7 +141,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			var entries = GetEntries(logFile, new LogSourceSection(0, 1));
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(LogLineIndex.Invalid);
-			entries[0].RawContent.Should().Be(GeneralColumns.RawContent.DefaultValue);
+			entries[0].RawContent.Should().Be(Columns.RawContent.DefaultValue);
 		}
 
 		[Test]
@@ -159,12 +154,12 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			var logFile = Create(fileName, Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(0, "because the file is empty");
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because the file is empty");
-			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.Zero, "because the file is empty");
-			logFile.GetProperty(GeneralProperties.Created).Should().Be(info.Created);
-			logFile.GetProperty(GeneralProperties.LastModified).Should().Be(info.LastModified);
-			logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the source file does exist and can be accessed");
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the file is empty");
+			logFile.GetProperty(Properties.Size).Should().Be(Size.Zero, "because the file is empty");
+			logFile.GetProperty(Properties.Created).Should().Be(info.Created);
+			logFile.GetProperty(Properties.LastModified).Should().Be(info.LastModified);
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(null, "because the source file does exist and can be accessed");
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 
 			var indices = logFile.GetColumn(new LogSourceSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(StreamingTextLogSource.LineOffsetInBytes.DefaultValue);
@@ -183,16 +178,16 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			_taskScheduler.Run(numReadOperations);
 			
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(1);
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
-			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(109));
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(Properties.Size).Should().Be(Size.FromBytes(109));
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			var indices = logFile.GetColumn(new LogSourceSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(0, "because the first line starts at an offset of 0 bytes wrt the start of the file");
 
 			var entries = GetEntries(logFile);
 			entries.Should().HaveCount(1);
-			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent});
+			entries.Columns.Should().Equal(new IColumnDescriptor[]{Columns.Index, StreamingTextLogSource.LineOffsetInBytes, Columns.RawContent});
 			entries[0].Index.Should().Be(0);
 			entries[0].RawContent.Should().Be(@"[00:00:01] git clone -q --branch=master https://github.com/Kittyfisto/SharpRemote.git C:\projects\sharpremote");
 		}
@@ -208,9 +203,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(TextProperties.LineCount).Should().Be(3, "because there's 3 lines, the last one is empty though");
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3, "because there's 3 lines, the last one is empty though");
-			logFile.GetProperty(GeneralProperties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
-			logFile.GetProperty(GeneralProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3, "because there's 3 lines, the last one is empty though");
+			logFile.GetProperty(Properties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			var indices = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 			indices[0].Should().Be(3, "because the first line starts right after the preamble (also called byte order mark, BOM), which, for UTF-8, is 3 bytes long");
@@ -218,7 +213,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 
 			var entries = GetEntries(logFile);
 			entries.Should().HaveCount(3);
-			entries.Columns.Should().Equal(new IColumnDescriptor[]{GeneralColumns.Index, StreamingTextLogSource.LineOffsetInBytes, GeneralColumns.RawContent});
+			entries.Columns.Should().Equal(new IColumnDescriptor[]{Columns.Index, StreamingTextLogSource.LineOffsetInBytes, Columns.RawContent});
 			entries[0].Index.Should().Be(0);
 			entries[0].RawContent.Should().Be("2015-10-07 19:50:58,981 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
 			entries[1].Index.Should().Be(1);
@@ -240,7 +235,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			var logFile = Create(fileName, encoding);
 			_taskScheduler.RunOnce();
 
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1);
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			var indices = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 			var expectedOffset = encoding.GetPreamble().Length;
 			indices[0].Should().Be(expectedOffset, "");
@@ -297,13 +292,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			modifications.Should().Equal(new object[] {LogSourceModification.Reset()});
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's one log entry in the file");
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1, "because there's one log entry in the file");
 			modifications.Should().Equal(new object[] {LogSourceModification.Reset()}, "because not enough time has elapsed and thus the log source may not have notified the listener just yet");
 
 
 			Thread.Sleep(maxWaitTime);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(1, "because there's still one log entry in the file");
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1, "because there's still one log entry in the file");
 			modifications.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1)}, "because enough time has passed for the log file to notify us at this point in time");
 		}
 
@@ -456,7 +451,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			{
 				_taskScheduler.RunOnce();
 
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
+				logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because now we'Ve truncated the file which should have been detected by now");
 
 				changes.Should().Equal(new object[] {LogSourceModification.Reset(), LogSourceModification.Appended(0, 1), LogSourceModification.Appended(1, 1), LogSourceModification.Reset()},
 				                       "because the LogSource should have fired the Reset event now that the log source is done");
@@ -503,8 +498,8 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 				_taskScheduler.RunOnce();
 
 				logFile.GetProperty(TextProperties.LineCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
-				logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
-				logFile.GetProperty(GeneralProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+				logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
+				logFile.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>();
 
 				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we've deleted the file which should have been detected by now");
@@ -524,7 +519,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			var fileName = GetUniqueNonExistingFileName();
 			var logFile = Create(fileName, encoding);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(GeneralProperties.LogEntryCount).Should()
+			logFile.GetProperty(Properties.LogEntryCount).Should()
 			       .Be(0, "because the file doesn't even exist yet");
 
 			var line1 = "The sky crawlers";
@@ -679,7 +674,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 					writer.WriteLine(line1);
 					writer.Flush();
 					_taskScheduler.RunOnce();
-					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(2);
+					logFile.GetProperty(Properties.LogEntryCount).Should().Be(2);
 					var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(9);
@@ -687,7 +682,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 					writer.WriteLine(line2);
 					writer.Flush();
 					_taskScheduler.RunOnce();
-					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
 					index = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(9);
@@ -702,7 +697,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 					writer.Flush();
 
 					_taskScheduler.RunOnce();
-					logFile.GetProperty(GeneralProperties.LogEntryCount).Should().Be(3);
+					logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
 					var index = logFile.GetColumn(new LogSourceSection(0, 3), StreamingTextLogSource.LineOffsetInBytes);
 					index[0].Should().Be(0);
 					index[1].Should().Be(3);

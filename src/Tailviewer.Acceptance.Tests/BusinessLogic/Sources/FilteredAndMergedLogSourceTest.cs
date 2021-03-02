@@ -45,7 +45,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 					var filter = new SubstringFilter("foo", true);
 					using (var filtered = new FilteredLogSource(_taskScheduler, TimeSpan.FromMilliseconds(10), merged, null, filter))
 					{
-						filtered.Property(x => x.GetProperty(GeneralProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+						filtered.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 					}
 				}
 			}

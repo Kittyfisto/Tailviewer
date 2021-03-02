@@ -88,7 +88,7 @@ namespace Tailviewer.Tests.Ui.Controls.MainPanel
 			model.CurrentDataSource = dataSourceViewModel.Object;
 
 			logFile.AddEntry("", LevelFlags.All);
-			logFile.SetValue(GeneralProperties.Size, Size.OneByte);
+			logFile.SetValue(Properties.Size, Size.OneByte);
 			model.Update();
 			model.CurrentDataSourceLogView.NoEntriesExplanation.Should().Be("Nothing matches level filter");
 		}

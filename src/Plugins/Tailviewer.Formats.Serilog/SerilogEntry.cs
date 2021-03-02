@@ -90,12 +90,12 @@ namespace Tailviewer.Formats.Serilog
 
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			if (Equals(column, GeneralColumns.RawContent))
+			if (Equals(column, Core.Columns.RawContent))
 			{
 				return (T) (object) _rawContent;
 			}
 
-			if (Equals(column, GeneralColumns.Message))
+			if (Equals(column, Core.Columns.Message))
 			{
 				return (T)(object)Message;
 			}

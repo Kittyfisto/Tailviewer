@@ -73,7 +73,7 @@ namespace Tailviewer.Acceptance.Tests.Ui.LogView
 			{
 				var model = CreateFileViewModel(dataSource);
 
-				logFile.Property(x => x.GetProperty(GeneralProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				logFile.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				model.Property(x =>
 				{
