@@ -23,6 +23,7 @@ using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.QuickFilters;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
+using TimeFilter = Tailviewer.BusinessLogic.Filters.TimeFilter;
 
 namespace Tailviewer.Tests.Ui.Controls.MainPanel
 {
@@ -49,8 +50,8 @@ namespace Tailviewer.Tests.Ui.Controls.MainPanel
 			_dataSources.Setup(x => x.CustomDataSources).Returns(new List<ICustomDataSourcePlugin>());
 
 			_quickFilters = new Mock<IQuickFilters>();
-			_quickFilters.Setup(x => x.AddQuickFilter()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
-			_quickFilters.Setup(x => x.TimeFilter).Returns(new TimeFilter(new Core.Settings.TimeFilter()));
+			_quickFilters.Setup(x => x.AddQuickFilter()).Returns(new QuickFilter(new Core.QuickFilterSettings()));
+			_quickFilters.Setup(x => x.TimeFilter).Returns(new TimeFilter(new Core.TimeFilterSettings()));
 
 			_settings = new Mock<IApplicationSettings>();
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);

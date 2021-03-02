@@ -3,14 +3,14 @@ using System.Diagnostics.Contracts;
 using System.Xml;
 using Metrolib;
 using Tailviewer.Api;
-using Tailviewer.Core.Filters;
 
-namespace Tailviewer.Core.Settings
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     The configuration of an application-wide quick filter.
 	/// </summary>
-	public sealed class QuickFilter
+	public sealed class QuickFilterSettings
 		: ICloneable
 		, ISerializableType
 	{
@@ -44,7 +44,7 @@ namespace Tailviewer.Core.Settings
 		/// <summary>
 		///     Initializes this quick filter.
 		/// </summary>
-		public QuickFilter()
+		public QuickFilterSettings()
 		{
 			Id = QuickFilterId.CreateNew();
 			IgnoreCase = true;
@@ -115,9 +115,9 @@ namespace Tailviewer.Core.Settings
 		///     Creates a deep clone of this object.
 		/// </summary>
 		/// <returns></returns>
-		public QuickFilter Clone()
+		public QuickFilterSettings Clone()
 		{
-			return new QuickFilter
+			return new QuickFilterSettings
 			{
 				Id = Id,
 				IgnoreCase = IgnoreCase,
@@ -133,7 +133,7 @@ namespace Tailviewer.Core.Settings
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns>True when there is no doubt that the two filters perform identical, false otherwise</returns>
-		public bool IsEquivalent(QuickFilter other)
+		public bool IsEquivalent(QuickFilterSettings other)
 		{
 			if (ReferenceEquals(other, objB: null))
 				return false;

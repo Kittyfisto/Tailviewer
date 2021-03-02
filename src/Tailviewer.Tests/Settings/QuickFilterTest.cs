@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Tests.Settings
 {
@@ -11,7 +10,7 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestClone()
 		{
-			var filter = new QuickFilter
+			var filter = new QuickFilterSettings
 			{
 				IgnoreCase = true,
 				IsInverted = true,
@@ -34,7 +33,7 @@ namespace Tailviewer.Tests.Settings
 								  [Values("", "foo", "bar")] string value)
 		{
 			var id = QuickFilterId.CreateNew();
-			var config = new QuickFilter
+			var config = new QuickFilterSettings
 			{
 				Id = id,
 				IgnoreCase = ignoreCase,
@@ -52,7 +51,7 @@ namespace Tailviewer.Tests.Settings
 			actualQuickFilter.Value.Should().Be(value);
 		}
 
-		private QuickFilter Roundtrip(QuickFilter quickFilter)
+		private QuickFilterSettings Roundtrip(QuickFilterSettings quickFilter)
 		{
 			return quickFilter.Roundtrip(typeof(QuickFilterId));
 		}

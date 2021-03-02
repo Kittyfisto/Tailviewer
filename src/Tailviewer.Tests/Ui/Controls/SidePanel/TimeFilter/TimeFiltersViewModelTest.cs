@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 using Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter;
 
 namespace Tailviewer.Tests.Ui.Controls.SidePanel.TimeFilter
@@ -30,7 +30,7 @@ namespace Tailviewer.Tests.Ui.Controls.SidePanel.TimeFilter
 		[SetUp]
 		public void Setup()
 		{
-			_timeFilter = new Tailviewer.BusinessLogic.Filters.TimeFilter(new Core.Settings.TimeFilter());
+			_timeFilter = new Tailviewer.BusinessLogic.Filters.TimeFilter(new Core.TimeFilterSettings());
 		}
 
 		[Test]

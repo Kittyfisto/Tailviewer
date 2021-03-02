@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using log4net;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.Settings
 {

@@ -2,7 +2,8 @@
 using System.Text.RegularExpressions;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A filter based on regular expressions:

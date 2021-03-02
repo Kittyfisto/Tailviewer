@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Formats
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class TextLogFileFormat
 		: ILogFileFormat

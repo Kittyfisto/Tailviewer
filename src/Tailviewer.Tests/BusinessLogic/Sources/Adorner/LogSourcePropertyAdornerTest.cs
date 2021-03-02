@@ -8,7 +8,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Adorner;
 

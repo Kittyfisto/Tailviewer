@@ -11,7 +11,7 @@ using Tailviewer.Api.Tests;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Filters;
+using Tailviewer.Core;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;

@@ -4,7 +4,8 @@ using System.Linq;
 using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Entries
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    This class offers a view onto a subset of columns of another <see cref="ILogEntry"/>.

@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.QuickFilter;
@@ -26,7 +26,7 @@ namespace Tailviewer.Tests.Ui
 		[SetUp]
 		public void SetUp()
 		{
-			_quickFilter = new QuickFilter(new Core.Settings.QuickFilter());
+			_quickFilter = new QuickFilter(new Core.QuickFilterSettings());
 			_dataSource = new FileDataSource(_logSourceFactory, _scheduler, _dataSourceSettings = new DataSource("nothing") {Id = DataSourceId.CreateNew()});
 			_model = new QuickFilterViewModel(_quickFilter, x => { })
 				{

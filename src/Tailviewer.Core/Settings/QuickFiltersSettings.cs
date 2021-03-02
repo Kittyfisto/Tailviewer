@@ -4,24 +4,25 @@ using System.Linq;
 using System.Xml;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Settings
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     The list of all application-wide quick filters.
 	/// </summary>
-	public sealed class QuickFilters
-		: List<QuickFilter>
+	public sealed class QuickFiltersSettings
+		: List<QuickFilterSettings>
 		, ISerializableType
 		, ICloneable
 	{
-		private TimeFilter _timeFilter;
+		private TimeFilterSettings _timeFilter;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public QuickFilters()
+		public QuickFiltersSettings()
 		{
-			_timeFilter = new TimeFilter();
+			_timeFilter = new TimeFilterSettings();
 		}
 
 		object ICloneable.Clone()
@@ -32,7 +33,7 @@ namespace Tailviewer.Core.Settings
 		/// <summary>
 		/// 
 		/// </summary>
-		public TimeFilter TimeFilter => _timeFilter;
+		public TimeFilterSettings TimeFilter => _timeFilter;
 
 		/// <summary>
 		///     Restores the values of this object from the given xml document.
@@ -40,13 +41,13 @@ namespace Tailviewer.Core.Settings
 		/// <param name="reader"></param>
 		public void Restore(XmlReader reader)
 		{
-			var quickfilters = new List<QuickFilter>();
+			var quickfilters = new List<QuickFilterSettings>();
 			var subtree = reader.ReadSubtree();
 			while (subtree.Read())
 				switch (subtree.Name)
 				{
 					case "quickfilter":
-						var quickfilter = new QuickFilter();
+						var quickfilter = new QuickFilterSettings();
 						if (quickfilter.Restore(subtree))
 							quickfilters.Add(quickfilter);
 						break;
@@ -82,9 +83,9 @@ namespace Tailviewer.Core.Settings
 		///     Returns a deep clone of this object.
 		/// </summary>
 		/// <returns></returns>
-		public QuickFilters Clone()
+		public QuickFiltersSettings Clone()
 		{
-			var filters = new QuickFilters();
+			var filters = new QuickFiltersSettings();
 			filters.AddRange(this.Select(x => x.Clone()));
 			filters._timeFilter = _timeFilter.Clone();
 			return filters;
@@ -99,7 +100,7 @@ namespace Tailviewer.Core.Settings
 			if (ReferenceEquals(this, obj))
 				return true;
 
-			var other = obj as QuickFilters;
+			var other = obj as QuickFiltersSettings;
 			if (ReferenceEquals(other, objB: null))
 				return false;
 
@@ -124,7 +125,7 @@ namespace Tailviewer.Core.Settings
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public bool IsEquivalent(QuickFilters other)
+		public bool IsEquivalent(QuickFiltersSettings other)
 		{
 			if (ReferenceEquals(other, objB: null))
 				return false;
@@ -145,7 +146,7 @@ namespace Tailviewer.Core.Settings
 			return true;
 		}
 
-		private static bool IsEquivalent(QuickFilter lhs, QuickFilter rhs)
+		private static bool IsEquivalent(QuickFilterSettings lhs, QuickFilterSettings rhs)
 		{
 			if (ReferenceEquals(lhs, rhs))
 				return true;
@@ -158,14 +159,14 @@ namespace Tailviewer.Core.Settings
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
-			writer.WriteAttribute("QuickFilters", (IEnumerable<QuickFilter>)this);
+			writer.WriteAttribute("QuickFilters", (IEnumerable<QuickFilterSettings>)this);
 		}
 
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
 			Clear();
-			if (reader.TryReadAttribute("QuickFilters", out IEnumerable<QuickFilter> filters))
+			if (reader.TryReadAttribute("QuickFilters", out IEnumerable<QuickFilterSettings> filters))
 				AddRange(filters);
 		}
 	}

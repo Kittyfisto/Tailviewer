@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic
 {
@@ -37,16 +37,16 @@ namespace Tailviewer.Tests.BusinessLogic
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new QuickFilters();
+			_settings = new QuickFiltersSettings();
 		}
 
-		private QuickFilters _settings;
+		private QuickFiltersSettings _settings;
 
 		[Test]
 		public void TestCtor()
 		{
-			_settings.Add(new QuickFilter {Value = "foo"});
-			_settings.Add(new QuickFilter {Value = "bar"});
+			_settings.Add(new QuickFilterSettings {Value = "foo"});
+			_settings.Add(new QuickFilterSettings {Value = "bar"});
 			var quickFilters = new Tailviewer.BusinessLogic.Filters.QuickFilters(_settings);
 			List<Tailviewer.BusinessLogic.Filters.QuickFilter> filters = quickFilters.Filters.ToList();
 			filters.Count.Should().Be(2);

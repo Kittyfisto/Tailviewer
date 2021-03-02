@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Tailviewer.Api;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
 	public sealed class TimeFilter
 	{
-		private readonly Core.Settings.TimeFilter _settings;
+		private readonly Core.TimeFilterSettings _settings;
 
-		public TimeFilter(Core.Settings.TimeFilter settings)
+		public TimeFilter(Core.TimeFilterSettings settings)
 		{
 			if (settings == null)
 				throw new ArgumentNullException(nameof(settings));

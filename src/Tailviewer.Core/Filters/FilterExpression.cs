@@ -3,7 +3,8 @@ using System.Linq;
 using Tailviewer.Api;
 using Tailviewer.Core.Filters.ExpressionEngine;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// Parses a user supplied string into a boolean expression.

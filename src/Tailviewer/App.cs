@@ -22,7 +22,6 @@ using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
@@ -291,8 +290,8 @@ namespace Tailviewer
 			{
 				factory.Add(pair.Key, pair.Value);
 			}
-			factory.Add<Core.Settings.QuickFilters>();
-			factory.Add<QuickFilter>();
+			factory.Add<Core.QuickFiltersSettings>();
+			factory.Add<QuickFilterSettings>();
 			factory.Add<QuickFilterId>();
 			return factory;
 		}

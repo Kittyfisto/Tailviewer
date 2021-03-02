@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Api;
-using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This class serves as a collection of named constructors to create various <see cref="ILogEntryFilter" />s.

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A filter which wraps another filter and simply inverts its result.

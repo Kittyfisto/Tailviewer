@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.Api;
-using Tailviewer.Core.Entries;
 
 // ReSharper disable once CheckNamespace
 namespace Tailviewer.Core

@@ -23,6 +23,7 @@ using Tailviewer.Ui;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.QuickFilter;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Tests.Ui
 {

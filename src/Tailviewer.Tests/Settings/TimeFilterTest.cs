@@ -5,7 +5,7 @@ using System.Linq;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.Settings
 {
@@ -54,7 +54,7 @@ namespace Tailviewer.Tests.Settings
 		                      [ValueSource(nameof(DateTimes))] DateTime? start,
 		                      [ValueSource(nameof(DateTimes))] DateTime? end)
 		{
-			var filter = new TimeFilter
+			var filter = new TimeFilterSettings
 			{
 				Mode = mode,
 				SpecialInterval = range,
@@ -79,7 +79,7 @@ namespace Tailviewer.Tests.Settings
 				using (var writer = XmlWriter.Create(stream))
 				{
 					writer.WriteStartElement("Test");
-					var settings = new TimeFilter
+					var settings = new TimeFilterSettings
 					{
 						Mode = mode,
 						SpecialInterval = range,
@@ -97,7 +97,7 @@ namespace Tailviewer.Tests.Settings
 				{
 					reader.MoveToContent();
 
-					var settings = new TimeFilter();
+					var settings = new TimeFilterSettings();
 					settings.Restore(reader);
 					settings.Mode.Should().Be(mode);
 					settings.SpecialInterval.Should().Be(range);

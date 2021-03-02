@@ -6,7 +6,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Tests
 {

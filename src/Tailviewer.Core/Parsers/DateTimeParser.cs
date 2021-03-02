@@ -2,7 +2,8 @@
 using System.Globalization;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Parsers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A parser responsible for parsing strings which represent a point in time into

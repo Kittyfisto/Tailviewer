@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Tests.Settings
@@ -163,7 +162,7 @@ namespace Tailviewer.Tests.Settings
 				Directory.Delete(fileFolder);
 
 			var settings = new ApplicationSettings(filePath);
-			settings.QuickFilters.Add(new QuickFilter());
+			settings.QuickFilters.Add(new QuickFilterSettings());
 			settings.Save().Should().BeTrue();
 
 			File.Exists(filePath);
@@ -206,14 +205,14 @@ namespace Tailviewer.Tests.Settings
 				IsSingleLine = true,
 			});
 			List<QuickFilterId> guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
-			settings.QuickFilters.Add(new QuickFilter
+			settings.QuickFilters.Add(new QuickFilterSettings
 				{
 					Value = "foobar",
 					IgnoreCase = true,
 					MatchType = FilterMatchType.RegexpFilter,
 					IsInverted = true,
 				});
-			settings.QuickFilters.Add(new QuickFilter
+			settings.QuickFilters.Add(new QuickFilterSettings
 			{
 				Value = "clondykebar",
 				IgnoreCase = false,

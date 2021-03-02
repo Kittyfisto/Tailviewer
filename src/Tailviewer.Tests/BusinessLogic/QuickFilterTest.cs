@@ -3,8 +3,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Tests.BusinessLogic
 {
@@ -14,7 +12,7 @@ namespace Tailviewer.Tests.BusinessLogic
 		[Test]
 		public void TestCtor()
 		{
-			var quickFilter = new QuickFilter();
+			var quickFilter = new QuickFilterSettings();
 			quickFilter.Id.Should().NotBe(QuickFilterId.Empty);
 			quickFilter.Value.Should().BeNullOrEmpty();
 			quickFilter.IgnoreCase.Should().BeTrue();
@@ -24,7 +22,7 @@ namespace Tailviewer.Tests.BusinessLogic
 		[Test]
 		public void TestSubstringFilter1()
 		{
-			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilterSettings())
 				{
 					Value = "foobar"
 				};
@@ -36,7 +34,7 @@ namespace Tailviewer.Tests.BusinessLogic
 		[Test]
 		public void TestWildcardFilter()
 		{
-			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilterSettings())
 				{
 					Value = "he*rld",
 					IgnoreCase = true,
@@ -50,7 +48,7 @@ namespace Tailviewer.Tests.BusinessLogic
 		[Test]
 		public void TestInvertFilter()
 		{
-			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilterSettings())
 				{
 					Value = "foo",
 					IsInverted = true

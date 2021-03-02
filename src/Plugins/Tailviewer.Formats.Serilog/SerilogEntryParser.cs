@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Tailviewer.Api;
-using Tailviewer.Core.Entries;
+using Tailviewer.Core;
 using Tailviewer.Formats.Serilog.Matchers;
 
 namespace Tailviewer.Formats.Serilog

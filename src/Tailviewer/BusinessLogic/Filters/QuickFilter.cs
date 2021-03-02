@@ -2,15 +2,14 @@
 using System.Diagnostics.Contracts;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
 	public sealed class QuickFilter
 	{
-		private readonly Core.Settings.QuickFilter _settings;
+		private readonly Core.QuickFilterSettings _settings;
 
-		public QuickFilter(Core.Settings.QuickFilter settings)
+		public QuickFilter(Core.QuickFilterSettings settings)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 

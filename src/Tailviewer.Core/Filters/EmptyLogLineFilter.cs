@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// A filter responsible for filtering out log lines that are completely empty

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tailviewer.Api;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Parsers;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

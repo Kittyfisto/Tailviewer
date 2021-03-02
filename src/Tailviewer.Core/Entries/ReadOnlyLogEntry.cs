@@ -5,7 +5,8 @@ using System.Linq;
 using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Entries
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Represents a log entry which cannot be modified after it's been constructed.

@@ -1,4 +1,4 @@
-﻿using Tailviewer.Core.Settings;
+﻿using Tailviewer.Core;
 using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings

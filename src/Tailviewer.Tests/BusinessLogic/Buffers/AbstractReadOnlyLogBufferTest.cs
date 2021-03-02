@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
 
 namespace Tailviewer.Tests.BusinessLogic.Buffers
 {

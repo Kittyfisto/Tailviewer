@@ -3,8 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Sources;
-using Tailviewer.Core.Entries;
-using Tailviewer.Core.Parsers;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources.Text
 {

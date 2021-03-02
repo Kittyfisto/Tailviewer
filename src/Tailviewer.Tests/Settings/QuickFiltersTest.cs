@@ -3,7 +3,6 @@ using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Tests.Settings
 {
@@ -13,7 +12,7 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestConstruction()
 		{
-			var filters = new QuickFilters();
+			var filters = new QuickFiltersSettings();
 			filters.Should().BeEmpty();
 			filters.TimeFilter.Should().NotBeNull();
 			filters.TimeFilter.Mode.Should().Be(TimeFilterMode.Everything);
@@ -24,9 +23,9 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestClone()
 		{
-			var filters = new QuickFilters
+			var filters = new QuickFiltersSettings
 			{
-				new QuickFilter
+				new QuickFilterSettings
 				{
 					MatchType = FilterMatchType.WildcardFilter
 				},
@@ -51,11 +50,11 @@ namespace Tailviewer.Tests.Settings
 				using (var writer = XmlWriter.Create(stream))
 				{
 					writer.WriteStartElement("Test");
-					var settings = new QuickFilters
+					var settings = new QuickFiltersSettings
 					{
 						TimeFilter = {SpecialInterval = SpecialDateTimeInterval.ThisWeek}
 					};
-					settings.Add(new QuickFilter{Value = "42"});
+					settings.Add(new QuickFilterSettings{Value = "42"});
 					settings.Save(writer);
 					writer.WriteEndElement();
 				}
@@ -67,7 +66,7 @@ namespace Tailviewer.Tests.Settings
 				{
 					reader.MoveToContent();
 
-					var settings = new QuickFilters();
+					var settings = new QuickFiltersSettings();
 					settings.Restore(reader);
 					settings.TimeFilter.SpecialInterval.Should().Be(SpecialDateTimeInterval.ThisWeek);
 					settings.Should().HaveCount(1);
@@ -79,7 +78,7 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestRoundtripEmpty()
 		{
-			var filters = new QuickFilters();
+			var filters = new QuickFiltersSettings();
 			var actualFilters = Roundtrip(filters);
 			actualFilters.Should().NotBeNull();
 			actualFilters.Should().BeEmpty();
@@ -88,15 +87,15 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestRoundtripTwoFilters()
 		{
-			var filters = new QuickFilters();
-			filters.Add(new QuickFilter
+			var filters = new QuickFiltersSettings();
+			filters.Add(new QuickFilterSettings
 			{
 				IgnoreCase = true,
 				IsInverted = false,
 				Value = "A",
 				MatchType = FilterMatchType.TimeFilter
 			});
-			filters.Add(new QuickFilter
+			filters.Add(new QuickFilterSettings
 			{
 				IgnoreCase = false,
 				IsInverted = true,
@@ -121,9 +120,9 @@ namespace Tailviewer.Tests.Settings
 			actualFilters[1].MatchType.Should().Be(FilterMatchType.SubstringFilter);
 		}
 
-		private QuickFilters Roundtrip(QuickFilters quickFilters)
+		private QuickFiltersSettings Roundtrip(QuickFiltersSettings quickFilters)
 		{
-			return quickFilters.Roundtrip(typeof(QuickFilter), typeof(QuickFilterId));
+			return quickFilters.Roundtrip(typeof(QuickFilterSettings), typeof(QuickFilterId));
 		}
 	}
 }

@@ -2,7 +2,8 @@
 using System.Linq;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A filter that can be used to exclude entries of certain levels.

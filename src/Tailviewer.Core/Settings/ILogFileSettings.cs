@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Settings
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for storing settings related to <see cref="ILogSource" /> and its implementations.

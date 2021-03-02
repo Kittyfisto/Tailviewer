@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Sources;
-using Tailviewer.Core.Parsers;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests
 {

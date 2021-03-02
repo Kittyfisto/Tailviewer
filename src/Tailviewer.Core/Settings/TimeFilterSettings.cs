@@ -3,16 +3,16 @@ using System.Diagnostics.Contracts;
 using System.Xml;
 using Metrolib;
 using Tailviewer.Api;
-using Tailviewer.Core.Filters;
 using Tailviewer.Core.Filters.ExpressionEngine;
 
-namespace Tailviewer.Core.Settings
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     The configuration of a filter which allows filtering
 	///     log events by their timestamp.
 	/// </summary>
-	public sealed class TimeFilter
+	public sealed class TimeFilterSettings
 		: ICloneable
 	{
 		/// <summary>
@@ -38,9 +38,9 @@ namespace Tailviewer.Core.Settings
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public TimeFilter Clone()
+		public TimeFilterSettings Clone()
 		{
-			return new TimeFilter
+			return new TimeFilterSettings
 			{
 				Mode = Mode,
 				SpecialInterval = SpecialInterval,

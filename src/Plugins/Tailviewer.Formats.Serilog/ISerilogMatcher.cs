@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Tailviewer.Api;
-using Tailviewer.Core.Entries;
+using Tailviewer.Core;
 
 namespace Tailviewer.Formats.Serilog
 {
