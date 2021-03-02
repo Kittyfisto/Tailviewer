@@ -12,15 +12,29 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 	public sealed class TimestampParserTest
 	{
 		[Test]
+		public void TestTryParseNull()
+		{
+			var parser = new TimestampParser();
+			parser.TryParse(
+			                null,
+			                out var timestamp)
+			      .Should()
+			      .BeFalse();
+
+			timestamp.Should().Be(default);
+			parser.DateTimeColumn.Should().BeNull();
+			parser.DateTimeLength.Should().BeNull();
+		}
+
+		[Test]
 		public void TestTryParse1()
 		{
 			var parser = new TimestampParser();
-			DateTime unused;
 			parser.TryParse(
-					"2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-					out unused)
-				.Should()
-				.BeTrue();
+			                "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
+			                out var unused)
+			      .Should()
+			      .BeTrue();
 
 			parser.DateTimeColumn.Should().Be(0);
 			parser.DateTimeLength.Should().Be(23);
@@ -31,11 +45,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse2()
 		{
 			var parser = new TimestampParser();
-			DateTime dateTime;
 			parser.TryParse("2015-10-07 19:50:58,998",
-					out dateTime)
-				.Should()
-				.BeTrue();
+			                out var dateTime)
+			      .Should()
+			      .BeTrue();
 
 			dateTime.Year.Should().Be(2015);
 			dateTime.Month.Should().Be(10);
@@ -50,11 +63,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse3()
 		{
 			var parser = new TimestampParser();
-			DateTime dateTime;
 			parser.TryParse("2016 Feb 17 12:38:59.060754850",
-					out dateTime)
-				.Should()
-				.BeTrue();
+			                out var dateTime)
+			      .Should()
+			      .BeTrue();
 			parser.DateTimeColumn.Should().Be(0);
 			parser.DateTimeLength.Should().Be(24);
 
@@ -71,9 +83,8 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse4()
 		{
 			var parser = new TimestampParser();
-			DateTime dateTime;
 			parser.TryParse("07/Mar/2004:16:31:48",
-				out dateTime);
+			                out var dateTime);
 
 			parser.DateTimeColumn.Should().Be(0);
 			parser.DateTimeLength.Should().Be(20);
@@ -91,12 +102,11 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse5()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser.TryParse(
-					"06:51:57 ;      0.135345; Foo size               0; Th  6252(0x186c); Start;MC   14; Id  169= 169[ 0]; Bar; ",
-					out timestamp)
-				.Should()
-				.BeTrue();
+			                "06:51:57 ;      0.135345; Foo size               0; Th  6252(0x186c); Start;MC   14; Id  169= 169[ 0]; Bar; ",
+			                out var timestamp)
+			      .Should()
+			      .BeTrue();
 
 			var today = DateTime.Today;
 			timestamp.Year.Should().Be(today.Year);
@@ -112,12 +122,11 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse6()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser.TryParse(
-					"Fri May 05 11:28:24.662 2017; Created.",
-					out timestamp)
-				.Should()
-				.BeTrue();
+			                "Fri May 05 11:28:24.662 2017; Created.",
+			                out var timestamp)
+			      .Should()
+			      .BeTrue();
 
 			timestamp.Year.Should().Be(2017);
 			timestamp.Month.Should().Be(5);
@@ -146,11 +155,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse8()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser
 				.TryParse(
 					"2017-03-24 11-45-22.182783; 0; 0;  0; 109;  0; 125;   1;PB_CONTINUE; ; ; 109; 2;   2.30; 0; S.N. 100564: 0.3 sec for:",
-					out timestamp)
+					out var timestamp)
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 22, 182));
@@ -160,11 +168,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse9()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser
 				.TryParse(
 					"Foobar 2017-05-22 18-36-51",
-					out timestamp)
+					out var timestamp)
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2017, 5, 22, 18, 36, 51, 0));
@@ -174,11 +181,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse10()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser
 				.TryParse(
 					"Foobar 2017-05-22 18-36-51.541",
-					out timestamp)
+					out var timestamp)
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2017, 5, 22, 18, 36, 51, 541));
@@ -189,9 +195,8 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse11()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			var before = DateTime.Now;
-			parser.TryParse("21:15:39.369 |I|", out timestamp).Should().BeTrue();
+			parser.TryParse("21:15:39.369 |I|", out var timestamp).Should().BeTrue();
 			var after = DateTime.Now;
 
 			// The test shall work even on sylvester so the year/month/day
@@ -210,11 +215,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse12()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser
 				.TryParse(
 					"2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals",
-					out timestamp)
+					out var timestamp)
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
@@ -224,11 +228,10 @@ namespace Tailviewer.Tests.BusinessLogic.Sources.Parsers
 		public void TestTryParse13()
 		{
 			var parser = new TimestampParser();
-			DateTime timestamp;
 			parser
 				.TryParse(
 					"2019-07-08 16:18:58.381",
-					out timestamp)
+					out var timestamp)
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2019, 7, 8, 16, 18, 58, 381));

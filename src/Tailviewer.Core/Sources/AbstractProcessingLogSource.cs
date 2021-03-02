@@ -19,7 +19,7 @@ namespace Tailviewer.Core.Sources
 	///     The source is processed in fixed size blocks and abstract methods are called
 	///     depending on what has transpired.
 	/// </remarks>
-	internal abstract class AbstractProcessingLogSource
+	public abstract class AbstractProcessingLogSource
 		: AbstractLogSource
 		, ILogSourceListener
 	{
@@ -35,6 +35,15 @@ namespace Tailviewer.Core.Sources
 		private readonly ILogSource _source;
 		private int _count;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="taskScheduler"></param>
+		/// <param name="source"></param>
+		/// <param name="columnsToFetch"></param>
+		/// <param name="overwrittenProperties"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="maxEntryCount"></param>
 		protected AbstractProcessingLogSource(ITaskScheduler taskScheduler,
 		                                      ILogSource source,
 		                                      IReadOnlyList<IColumnDescriptor> columnsToFetch,
@@ -55,6 +64,7 @@ namespace Tailviewer.Core.Sources
 
 		#region Implementation of ILogSourceListener
 
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogSource logSource, LogSourceModification modification)
 		{
 			_pendingSections.Enqueue(modification);
@@ -127,14 +137,30 @@ namespace Tailviewer.Core.Sources
 			Listeners.Reset();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		protected abstract void OnResetSection();
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="totalLogEntryCount"></param>
 		protected abstract void OnSectionRemoved(int totalLogEntryCount);
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="section"></param>
+		/// <param name="data"></param>
+		/// <param name="totalLogEntryCount"></param>
 		protected abstract void OnSectionAppended(LogSourceSection section,
 		                                        IReadOnlyLogBuffer data,
 		                                        int totalLogEntryCount);
 
+		/// <summary>
+		/// 
+		/// </summary>
 		protected abstract void NothingToProcess();
 
 		/// <summary>
@@ -166,12 +192,14 @@ namespace Tailviewer.Core.Sources
 
 		#region Overrides of AbstractLogSource
 
+		/// <inheritdoc />
 		protected override void StartTask()
 		{
 			_source.AddListener(this, _maximumWaitTime, _maxEntryCount);
 			base.StartTask();
 		}
 
+		/// <inheritdoc />
 		protected sealed override TimeSpan RunOnce(CancellationToken token)
 		{
 			var pendingSections = _pendingSections.DequeueAll();
@@ -189,41 +217,49 @@ namespace Tailviewer.Core.Sources
 
 		#region Overrides of AbstractLogSource
 
+		/// <inheritdoc />
 		public sealed override IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return _source.Columns; }
 		}
 
+		/// <inheritdoc />
 		public sealed override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get { return _properties.Properties; }
 		}
 
+		/// <inheritdoc />
 		public sealed override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
 			return _properties.GetValue(property);
 		}
 
+		/// <inheritdoc />
 		public sealed override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			return _properties.GetValue(property);
 		}
 
+		/// <inheritdoc />
 		public sealed override void SetProperty(IPropertyDescriptor property, object value)
 		{
 			_source.SetProperty(property, value);
 		}
 
+		/// <inheritdoc />
 		public sealed override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
 		{
 			_source.SetProperty(property, value);
 		}
 
+		/// <inheritdoc />
 		public sealed override void GetAllProperties(IPropertiesBuffer destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
 
+		/// <inheritdoc />
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);

@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Tailviewer.Api;
+using Tailviewer.Core.Sources;
 
-namespace Tailviewer.Core.Sources
+namespace Tailviewer.BusinessLogic.Sources
 {
 	/// <summary>
 	///     This class implements one of the layers of isolation between a third-party plugin

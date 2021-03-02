@@ -156,6 +156,7 @@
     <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest2.cs" />
     <Compile Include="BusinessLogic\Sources\MultiLine\MultiLineLogSourceTest3.cs" />
     <Compile Include="BusinessLogic\Sources\NoThrowLogSourceTest.cs" />
+    <Compile Include="BusinessLogic\Sources\ParsingLogSourceFactoryTest.cs" />
     <Compile Include="BusinessLogic\Sources\PluginLogFileFactoryTest.cs" />
     <Compile Include="BusinessLogic\Sources\Proxy\LogSourceProxyTest2.cs" />
     <Compile Include="BusinessLogic\Buffers\AbstractReadOnlyLogBufferTest.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\AvailablePluginViewModelTest.cs" />
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
     <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
