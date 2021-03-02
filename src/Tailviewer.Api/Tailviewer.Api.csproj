@@ -111,7 +111,6 @@
     <Compile Include="ILogSource.cs" />
     <Compile Include="ILogSourceListener.cs" />
     <Compile Include="LogSourceSection.cs" />
-    <Compile Include="LogLine.cs" />
     <Compile Include="LogLineIndex.cs" />
     <Compile Include="Plugins\IPlugin.cs" />
     <Compile Include="Plugins\PluginAuthorAttribute.cs" />
