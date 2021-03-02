@@ -16,7 +16,9 @@ namespace Tailviewer.Ui.Plugins
 			Description = plugin.Description;
 			Author = plugin.Author;
 			Version = plugin.Identifier.Version;
-			Website = new Uri(plugin.Website);
+
+			var website = plugin.Website;
+			Website = website != null ? new Uri(website) : null;
 			DownloadCommand = new DelegateCommand2(download);
 		}
 
