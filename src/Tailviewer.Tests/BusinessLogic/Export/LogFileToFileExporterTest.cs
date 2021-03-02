@@ -4,7 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Exporter;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Export
 {

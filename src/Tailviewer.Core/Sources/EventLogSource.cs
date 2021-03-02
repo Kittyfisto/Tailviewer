@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading;
 using log4net;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This <see cref="ILogSource" /> implementation is responsible for exposing the windows event log

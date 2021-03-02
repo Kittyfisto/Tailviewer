@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 
 namespace Tailviewer.LogLevelPlugin
 {

@@ -15,8 +15,6 @@ using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Collections;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.Menu;

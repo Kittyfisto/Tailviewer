@@ -9,7 +9,6 @@ using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Tests;
 

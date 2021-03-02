@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 using Tailviewer.Ui.SidePanel.Bookmarks;
 
 namespace Tailviewer.Tests.Ui.Controls.SidePanel.Bookmarks

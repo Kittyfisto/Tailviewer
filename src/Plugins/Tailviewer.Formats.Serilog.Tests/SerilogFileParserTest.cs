@@ -4,7 +4,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 using Tailviewer.Formats.Serilog;
 
 namespace Tailviewer.Serilog.Test

@@ -4,7 +4,7 @@ using System.Windows;
 using log4net;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Sources;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.DataSources.Custom
 {

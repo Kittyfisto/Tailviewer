@@ -6,9 +6,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources.Adorner
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This class is responsible for calculating the values for certain properties based on the data of an underlying

@@ -8,8 +8,6 @@ using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources

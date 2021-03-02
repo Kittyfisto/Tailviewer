@@ -4,7 +4,8 @@ using System.Reflection;
 using log4net;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for keeping track of changes made to a <see cref="MergedLogSourceIndex" /> in one

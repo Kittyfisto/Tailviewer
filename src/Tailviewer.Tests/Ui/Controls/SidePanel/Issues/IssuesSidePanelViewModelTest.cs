@@ -5,7 +5,6 @@ using Tailviewer.Api.Tests;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
 using Tailviewer.Ui.SidePanel.Issues;
 
 namespace Tailviewer.Tests.Ui.Controls.SidePanel.Issues

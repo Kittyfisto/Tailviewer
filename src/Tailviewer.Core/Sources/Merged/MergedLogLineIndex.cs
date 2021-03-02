@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A single entry in the <see cref="MergedLogEntryIndex" /> structure.

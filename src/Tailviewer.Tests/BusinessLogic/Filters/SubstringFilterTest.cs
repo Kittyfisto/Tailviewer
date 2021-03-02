@@ -4,7 +4,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Tests.BusinessLogic.Filters
 {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for opening files in "raw" mode where it's content is interpreted as little as possible.

@@ -7,9 +7,6 @@ using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Tests.BusinessLogic.DataSources

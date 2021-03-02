@@ -6,8 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView.DataSource;
 

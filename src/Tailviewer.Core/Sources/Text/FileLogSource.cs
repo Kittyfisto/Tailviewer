@@ -9,11 +9,9 @@ using System.Text;
 using System.Threading;
 using log4net;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources.Adorner;
-using Tailviewer.Core.Sources.Buffer;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    Responsible for interpreting any file as a log file and exposing its data as log entries.

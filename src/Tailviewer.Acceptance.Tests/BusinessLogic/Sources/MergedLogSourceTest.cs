@@ -7,10 +7,6 @@ using Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Merged;
-using Tailviewer.Core.Sources.Text.Simple;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 {

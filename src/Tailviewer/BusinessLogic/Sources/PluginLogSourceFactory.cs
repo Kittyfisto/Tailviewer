@@ -7,9 +7,7 @@ using log4net;
 using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Merged;
-using Tailviewer.Core.Sources.Text;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

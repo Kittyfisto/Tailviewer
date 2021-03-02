@@ -9,10 +9,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Buffer;
-using Tailviewer.Core.Sources.Text.Simple;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 {

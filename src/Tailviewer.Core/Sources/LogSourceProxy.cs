@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Fully represents another <see cref="ILogSource" /> which can be replaced over the lifetime

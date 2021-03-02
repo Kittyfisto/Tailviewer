@@ -2,7 +2,8 @@
 using System.Text;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Issues
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Represents an issue a <see cref="ILogSourceIssueAnalyser" /> has found in a log file.

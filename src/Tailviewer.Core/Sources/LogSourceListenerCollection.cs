@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Holds a list of zero or more <see cref="ILogSourceListener" /> and forwards events to every single listener,

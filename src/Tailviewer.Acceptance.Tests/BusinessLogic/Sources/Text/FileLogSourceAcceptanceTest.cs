@@ -11,9 +11,6 @@ using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Tests;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text

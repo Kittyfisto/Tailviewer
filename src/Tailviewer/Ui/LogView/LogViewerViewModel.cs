@@ -14,7 +14,6 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 

@@ -5,7 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 {

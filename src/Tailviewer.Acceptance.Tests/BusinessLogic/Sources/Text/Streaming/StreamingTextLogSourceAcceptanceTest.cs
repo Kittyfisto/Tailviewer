@@ -2,7 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Sources.Text.Streaming;
+using Tailviewer.Core;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 {

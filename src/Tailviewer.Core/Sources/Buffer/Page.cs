@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources.Buffer
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class Page
 	{

@@ -15,9 +15,6 @@ using Metrolib.Controls;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView

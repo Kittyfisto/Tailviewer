@@ -13,7 +13,6 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;

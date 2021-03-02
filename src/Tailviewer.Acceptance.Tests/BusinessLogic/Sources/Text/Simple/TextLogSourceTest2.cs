@@ -3,7 +3,6 @@ using System.Threading;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources.Text.Simple;
 using Tailviewer.Tests.BusinessLogic.Sources;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple

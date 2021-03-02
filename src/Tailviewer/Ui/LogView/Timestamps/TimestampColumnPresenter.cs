@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView.Timestamps

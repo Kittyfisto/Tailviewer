@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.QuickFilter;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;

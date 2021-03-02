@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Core.Sources.Buffer
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// Describes if a log entry was retrieved from a column or not.

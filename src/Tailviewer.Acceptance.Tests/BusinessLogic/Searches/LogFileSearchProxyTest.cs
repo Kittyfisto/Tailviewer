@@ -4,7 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Searches
 {

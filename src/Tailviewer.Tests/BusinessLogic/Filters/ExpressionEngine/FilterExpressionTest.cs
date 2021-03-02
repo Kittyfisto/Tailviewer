@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Tests.BusinessLogic.Filters.ExpressionEngine
 {

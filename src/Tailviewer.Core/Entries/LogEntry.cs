@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
 // ReSharper disable once CheckNamespace
 namespace Tailviewer.Core

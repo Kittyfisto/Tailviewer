@@ -10,7 +10,6 @@ using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 

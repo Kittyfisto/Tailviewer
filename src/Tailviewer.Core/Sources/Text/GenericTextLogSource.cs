@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A simple accessor which provides access to log entries produced by a <see cref="ILogEntryParser" />.

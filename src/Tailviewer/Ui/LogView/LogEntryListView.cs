@@ -16,7 +16,6 @@ using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView.Any;
 using Tailviewer.Ui.LogView.DataSource;

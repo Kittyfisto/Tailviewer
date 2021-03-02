@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class EmptyLogSource
 		: ILogSource

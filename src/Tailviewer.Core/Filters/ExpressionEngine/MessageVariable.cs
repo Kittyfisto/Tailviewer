@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {

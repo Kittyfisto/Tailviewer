@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.Api;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView

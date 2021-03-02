@@ -3,7 +3,6 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 

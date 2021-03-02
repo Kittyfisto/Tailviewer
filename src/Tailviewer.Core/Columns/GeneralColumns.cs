@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Columns
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Provides access to well-known columns which are provided by all log files:

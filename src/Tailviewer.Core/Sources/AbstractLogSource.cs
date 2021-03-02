@@ -5,7 +5,8 @@ using System.Threading;
 using log4net;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This abstract <see cref="ILogSource" /> implementation serves as a solid base class for most, if not all needs.

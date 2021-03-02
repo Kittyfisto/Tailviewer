@@ -5,7 +5,6 @@ using log4net;
 using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources.Text;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

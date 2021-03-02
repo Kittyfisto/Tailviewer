@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Sources.Text;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources.Text
 {

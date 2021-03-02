@@ -8,8 +8,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Text.Simple;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 {

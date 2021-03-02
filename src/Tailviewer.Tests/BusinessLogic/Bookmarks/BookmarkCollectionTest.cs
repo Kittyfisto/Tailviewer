@@ -8,7 +8,7 @@ using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.Tests.BusinessLogic.Bookmarks

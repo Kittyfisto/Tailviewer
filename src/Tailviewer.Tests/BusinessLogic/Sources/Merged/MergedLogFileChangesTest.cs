@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Sources.Merged;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources.Merged
 {

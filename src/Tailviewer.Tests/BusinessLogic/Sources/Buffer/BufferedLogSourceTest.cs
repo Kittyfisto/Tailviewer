@@ -2,8 +2,7 @@
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Buffer;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources.Buffer
 {

@@ -22,7 +22,6 @@ using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.Sources.Text;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;

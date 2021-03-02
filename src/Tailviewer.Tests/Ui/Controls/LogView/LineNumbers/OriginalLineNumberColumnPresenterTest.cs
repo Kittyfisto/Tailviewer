@@ -6,8 +6,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView.LineNumbers;
 

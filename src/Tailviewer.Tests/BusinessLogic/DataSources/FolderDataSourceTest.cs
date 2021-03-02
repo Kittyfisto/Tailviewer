@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Tests.BusinessLogic.DataSources

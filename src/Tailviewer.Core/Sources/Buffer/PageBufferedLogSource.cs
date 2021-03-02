@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.Api;
-using Tailviewer.Core.Columns;
 
-namespace Tailviewer.Core.Sources.Buffer
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    Responsible for buffering entire log entries in memory so they may be retrieved later one a bit quicker.
@@ -46,7 +46,7 @@ namespace Tailviewer.Core.Sources.Buffer
 
 		static PageBufferedLogSource()
 		{
-			RetrievalState = new WellKnownColumnDescriptor<RetrievalState>("retrieval_state", Buffer.RetrievalState.NotInSource);
+			RetrievalState = new WellKnownColumnDescriptor<RetrievalState>("retrieval_state", Core.RetrievalState.NotInSource);
 		}
 
 		public PageBufferedLogSource(ITaskScheduler taskScheduler, ILogSource source, TimeSpan maximumWaitTime, int pageSize = DefaultPageSize, int maxNumPages = DefaultMaxPageCount)

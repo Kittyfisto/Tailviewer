@@ -8,8 +8,6 @@ using System.Threading;
 using log4net;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView

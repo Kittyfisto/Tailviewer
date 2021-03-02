@@ -10,8 +10,7 @@ using Metrolib;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Sources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.Bookmarks
 {
