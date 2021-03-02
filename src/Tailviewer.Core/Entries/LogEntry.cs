@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 
 namespace Tailviewer.Core.Entries

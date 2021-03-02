@@ -6,7 +6,7 @@ set SRC_DIR=%SCRIPT_DIR%src
 set ASSEMBLYINFO_TOOL=%SCRIPT_DIR%tools\BuildTool.exe
 set DEVELOPER_KEY=%SCRIPT_DIR%sig\DeveloperKey.snk
 set CURRENT_KEY=%SCRIPT_DIR%sig\Key.snk
-set "TAILVIEWER_ASSEMBLIES=Installer Tailviewer Tailviewer.AcceptanceTests Tailviewer.Api archiver Tailviewer.Archiver.Test Tailviewer.Core Tailviewer.PluginRepository Tailviewer.PluginRepository.Service Tailviewer.PluginRepository.Test Tailviewer.SystemTests Tailviewer.Test"
+set "TAILVIEWER_ASSEMBLIES=Installer Tailviewer Tailviewer.Acceptance.Tests Tailviewer.Api Tailviewer.Api.Tests archiver Tailviewer.Archiver.Tests Tailviewer.Core Tailviewer.PluginRepository Tailviewer.PluginRepository.Service Tailviewer.PluginRepository.Tests Tailviewer.System.Tests Tailviewer.Tests"
 
 echo Restoring developer key (strong name key file)...
 

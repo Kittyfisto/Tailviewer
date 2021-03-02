@@ -8,7 +8,6 @@ using Tailviewer.Api.Tests;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Text;
 using Tailviewer.Tests.BusinessLogic.Sources;
 

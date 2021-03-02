@@ -8,7 +8,6 @@ using Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text;
 using Tailviewer.Api;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
 using Tailviewer.Core.Sources.Text.Simple;

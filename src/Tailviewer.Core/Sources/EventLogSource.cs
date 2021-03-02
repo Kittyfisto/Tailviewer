@@ -9,7 +9,6 @@ using log4net;
 using Tailviewer.Api;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources
 {

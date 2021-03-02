@@ -3,7 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Provides a view onto another <see cref="IPropertiesBuffer" /> with a reduced set of properties.

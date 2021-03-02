@@ -10,7 +10,7 @@ using Metrolib;
 using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Properties;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

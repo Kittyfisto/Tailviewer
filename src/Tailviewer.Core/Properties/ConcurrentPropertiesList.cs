@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Holds a list of log file properties.

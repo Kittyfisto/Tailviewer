@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Maintains a collection of well-known log file properties which are applicable to most sources.

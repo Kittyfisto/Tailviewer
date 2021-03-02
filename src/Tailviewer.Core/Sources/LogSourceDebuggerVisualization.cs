@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources
 {

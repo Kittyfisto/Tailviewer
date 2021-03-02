@@ -2,7 +2,8 @@
 using System.Diagnostics;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Provides a custom debugger visualization for an <see cref="IPropertiesBuffer" /> object.

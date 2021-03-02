@@ -6,9 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources.Adorner
 {

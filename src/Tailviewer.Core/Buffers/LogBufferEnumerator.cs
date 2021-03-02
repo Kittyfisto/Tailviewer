@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Buffers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for enumerating <see cref="ILogBuffer" />.

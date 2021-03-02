@@ -9,7 +9,6 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 

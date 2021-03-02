@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Properties;
+using Tailviewer.Core;
 
 namespace Tailviewer.Tests.BusinessLogic.Properties
 {

@@ -16,7 +16,6 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.Core;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;

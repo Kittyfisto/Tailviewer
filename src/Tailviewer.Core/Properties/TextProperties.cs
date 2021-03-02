@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Maintains a collection of well-known log file properties only applicable to text-based log files.

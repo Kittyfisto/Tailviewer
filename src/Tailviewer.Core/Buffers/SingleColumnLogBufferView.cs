@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using Tailviewer.Api;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Core.Buffers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    Provides a view onto a buffer of a single column.

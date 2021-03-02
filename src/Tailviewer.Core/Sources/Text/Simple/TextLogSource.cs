@@ -8,10 +8,8 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources.Buffer;
 
 namespace Tailviewer.Core.Sources.Text.Simple

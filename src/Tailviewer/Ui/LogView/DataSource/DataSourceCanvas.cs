@@ -9,7 +9,7 @@ using System.Windows.Media;
 using log4net;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Buffers;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Sources;
 using Tailviewer.Settings;

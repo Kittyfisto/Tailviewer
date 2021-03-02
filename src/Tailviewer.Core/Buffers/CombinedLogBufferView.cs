@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using Tailviewer.Api;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Core.Buffers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    This class represents a combined view onto multiple source <see cref="ILogBuffer"/>s, where each source contributes

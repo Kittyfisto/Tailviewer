@@ -5,8 +5,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Tests.BusinessLogic.Sources
 {

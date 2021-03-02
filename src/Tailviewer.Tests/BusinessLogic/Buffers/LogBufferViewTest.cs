@@ -5,7 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
 

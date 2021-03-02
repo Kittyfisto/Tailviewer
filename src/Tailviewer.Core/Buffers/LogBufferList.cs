@@ -5,7 +5,8 @@ using System.Diagnostics.Contracts;
 using Tailviewer.Api;
 using Tailviewer.Core.Entries;
 
-namespace Tailviewer.Core.Buffers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A variable-length buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s:

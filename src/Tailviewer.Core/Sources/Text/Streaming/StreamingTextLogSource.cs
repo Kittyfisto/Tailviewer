@@ -12,10 +12,8 @@ using System.Threading.Tasks;
 using log4net;
 using Metrolib;
 using Tailviewer.Api;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources.Text.Streaming
 {

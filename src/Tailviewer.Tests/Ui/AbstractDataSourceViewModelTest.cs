@@ -7,7 +7,7 @@ using Tailviewer.Api;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.Properties;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 

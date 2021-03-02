@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Api;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView.LineNumbers

@@ -7,7 +7,6 @@ using System.Threading;
 using log4net;
 using Tailviewer.Api;
 using Tailviewer.Core;
-using Tailviewer.Core.Buffers;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Sources;

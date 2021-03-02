@@ -8,10 +8,9 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
-using Tailviewer.Core.Buffers;
+using Tailviewer.Core;
 using Tailviewer.Core.Columns;
 using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Core.Sources.Merged;
 

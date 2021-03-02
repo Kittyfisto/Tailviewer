@@ -11,7 +11,6 @@ using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
 using Tailviewer.Core;
-using Tailviewer.Core.Properties;
 using Tailviewer.Core.Sources;
 using Tailviewer.Tests;
 

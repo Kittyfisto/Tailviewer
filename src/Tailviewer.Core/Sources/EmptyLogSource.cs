@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.Api;
 using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
 
 namespace Tailviewer.Core.Sources
 {
