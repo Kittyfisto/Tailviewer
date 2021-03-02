@@ -210,11 +210,11 @@
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="QuickFilterId.cs" />
     <Compile Include="Reader.cs" />
-    <Compile Include="Settings\QuickFilter.cs" />
+    <Compile Include="Settings\QuickFilterSettings.cs" />
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\FilterMatchType.cs" />
-    <Compile Include="Settings\QuickFilters.cs" />
-    <Compile Include="Settings\TimeFilter.cs" />
+    <Compile Include="Settings\QuickFiltersSettings.cs" />
+    <Compile Include="Settings\TimeFilterSettings.cs" />
     <Compile Include="Settings\TimeFilterMode.cs" />
     <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView.ElapsedTime

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using log4net;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.GoToLine
 {

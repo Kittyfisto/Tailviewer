@@ -5,10 +5,10 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Fully represents another <see cref="ILogSource" /> which can be replaced over the lifetime

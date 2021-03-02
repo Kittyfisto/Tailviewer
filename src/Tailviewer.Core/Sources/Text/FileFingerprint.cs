@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This class is responsible for holding a "fingerprint" of a file which can be used to detect if a file has been

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Adorner
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     This class is responsible for calculating the values for certain columns based on the data of an underlying

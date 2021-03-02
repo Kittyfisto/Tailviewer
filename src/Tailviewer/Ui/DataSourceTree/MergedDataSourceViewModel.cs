@@ -8,6 +8,7 @@ using System.Text;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;

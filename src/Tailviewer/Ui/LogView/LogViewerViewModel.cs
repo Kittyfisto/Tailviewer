@@ -8,13 +8,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core.Filters;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources.Merged;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 

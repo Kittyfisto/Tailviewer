@@ -1,6 +1,5 @@
-﻿using Tailviewer.Plugins;
-
-namespace Tailviewer.Ui
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///    This plugin is responsible for creating <see cref="IPropertyPresenter"/>s for <see cref="IPropertyDescriptor"/>s.

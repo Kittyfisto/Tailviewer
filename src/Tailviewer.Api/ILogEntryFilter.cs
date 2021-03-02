@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	/// The interface for a filter that is responsible for deciding whether or not an entire log entry shall be visible

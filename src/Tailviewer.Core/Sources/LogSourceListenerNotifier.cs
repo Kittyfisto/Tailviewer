@@ -1,6 +1,8 @@
 using System;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class LogSourceListenerNotifier
 	{

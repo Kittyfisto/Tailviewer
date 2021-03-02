@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A filter that looks for a substring in a (possibly) bigger string.

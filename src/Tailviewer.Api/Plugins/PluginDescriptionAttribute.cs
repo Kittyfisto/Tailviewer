@@ -1,6 +1,7 @@
 using System;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This attribute should be placed alongside other attributes in your

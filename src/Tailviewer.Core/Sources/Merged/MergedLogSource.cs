@@ -7,10 +7,10 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for merging two or more <see cref="ILogSource" /> instances into one coherent view.

@@ -12,7 +12,6 @@ using log4net.Repository.Hierarchy;
 using SharpRemote;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Repository;
-using Tailviewer.Core;
 using Constants = Tailviewer.Archiver.Repository.Constants;
 using Exception = System.Exception;
 

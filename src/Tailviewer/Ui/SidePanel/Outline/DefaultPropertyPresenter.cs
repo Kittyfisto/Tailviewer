@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

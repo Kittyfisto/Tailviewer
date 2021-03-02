@@ -3,7 +3,8 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This attribute is used by tailviewer to version <see cref="IPlugin" /> interfaces.

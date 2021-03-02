@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Repository;
 
 namespace Tailviewer.BusinessLogic.Plugins

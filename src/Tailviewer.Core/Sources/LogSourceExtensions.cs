@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Extension methods to the <see cref="ILogSource" /> interface.

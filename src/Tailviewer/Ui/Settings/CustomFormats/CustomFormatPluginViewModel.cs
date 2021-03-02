@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 

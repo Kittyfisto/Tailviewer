@@ -11,12 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net;
 using Metrolib;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Text.Streaming
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Represents a text file as a collection of log entries where every line is a single log entry.

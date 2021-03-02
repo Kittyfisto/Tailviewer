@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml;
 using log4net;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings
@@ -23,7 +23,7 @@ namespace Tailviewer.Settings
 		private readonly string _fileFolder;
 		private readonly string _fileName;
 		private readonly MainWindowSettings _mainWindow;
-		private readonly QuickFilters _quickFilters;
+		private readonly QuickFiltersSettings _quickFilters;
 		private readonly ExportSettings _export;
 		private readonly LogViewerSettings _logViewer;
 		private readonly LogFileSettings _logFile;
@@ -74,7 +74,7 @@ namespace Tailviewer.Settings
 			_autoUpdate = new AutoUpdateSettings();
 			_mainWindow = new MainWindowSettings();
 			_dataSources = new DataSourceSettings();
-			_quickFilters = new QuickFilters();
+			_quickFilters = new QuickFiltersSettings();
 			_logViewer = new LogViewerSettings();
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
@@ -92,7 +92,7 @@ namespace Tailviewer.Settings
 
 		public ILogFileSettings LogFile => _logFile;
 
-		public QuickFilters QuickFilters => _quickFilters;
+		public QuickFiltersSettings QuickFilters => _quickFilters;
 
 		public IExportSettings Export => _export;
 

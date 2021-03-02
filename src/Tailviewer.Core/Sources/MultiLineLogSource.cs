@@ -6,11 +6,10 @@ using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for merging consecutive lines into multi-line log entries,

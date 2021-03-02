@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Describes a log file format to tailviewer.

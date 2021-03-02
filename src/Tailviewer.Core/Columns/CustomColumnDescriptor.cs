@@ -1,6 +1,8 @@
 ﻿using System;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Columns
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A column which is not known by Tailviewer, i.e. one that cannot be interpreted and merely

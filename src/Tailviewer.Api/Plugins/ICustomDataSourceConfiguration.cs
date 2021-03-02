@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Xml;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The interface to hold the configuration necessary to access a custom data source.

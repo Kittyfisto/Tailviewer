@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This attribute marks interfaces which can be retrieved from a <see cref="IServiceContainer" />.

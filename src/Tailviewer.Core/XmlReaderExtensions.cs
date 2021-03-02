@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Xml;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

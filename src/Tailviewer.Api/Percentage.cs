@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Represents a relative value.
 	/// </summary>
-	public struct Percentage
+	public readonly struct Percentage
 		: IEquatable<Percentage>
-			, IComparable<Percentage>
+		, IComparable<Percentage>
 	{
 		/// <summary>
 		///     100%.

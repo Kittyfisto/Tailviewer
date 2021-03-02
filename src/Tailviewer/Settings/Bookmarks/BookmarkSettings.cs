@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using Metrolib;
+using Tailviewer.Api;
 
 namespace Tailviewer.Settings.Bookmarks
 {

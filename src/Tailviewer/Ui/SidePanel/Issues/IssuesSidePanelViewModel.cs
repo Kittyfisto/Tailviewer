@@ -5,10 +5,10 @@ using System.Reflection;
 using System.Windows.Media;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Properties;
-using Tailviewer.Plugins;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.Issues
 {

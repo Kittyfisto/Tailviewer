@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace Tailviewer.Core.Sources.Text.Streaming
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// 

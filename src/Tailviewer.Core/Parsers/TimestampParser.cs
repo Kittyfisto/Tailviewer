@@ -3,8 +3,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Parsers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for finding the first matching timestamp format in a stream of messages.

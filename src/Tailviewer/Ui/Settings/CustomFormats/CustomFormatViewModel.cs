@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFileFormats;
-using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 

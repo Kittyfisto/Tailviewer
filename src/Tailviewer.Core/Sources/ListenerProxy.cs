@@ -1,4 +1,7 @@
-﻿namespace Tailviewer.Core.Sources
+﻿using Tailviewer.Api;
+
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class ListenerProxy
 		: ILogSourceListener

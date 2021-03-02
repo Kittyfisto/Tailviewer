@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using Tailviewer.Plugins;
 
 namespace Tailviewer.Archiver.Plugins.Description
 {

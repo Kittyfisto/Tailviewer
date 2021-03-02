@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.Core.Columns;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Entries
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    An abstract implementation of <see cref="ILogEntry"/>.

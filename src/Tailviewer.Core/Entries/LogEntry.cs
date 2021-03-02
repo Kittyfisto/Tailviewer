@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Entries
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     An <see cref="ILogEntry" /> implementation which holds all data in memory (although in a memory intensive fashion).

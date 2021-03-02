@@ -5,9 +5,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using Tailviewer.Core.Columns;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for storing and updating the index structure of a <see cref="MergedLogSource" />.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Tailviewer.Api;
 
 namespace Tailviewer.Settings.CustomFormats
 {

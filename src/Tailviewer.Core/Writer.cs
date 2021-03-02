@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

@@ -4,7 +4,6 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Xml.Serialization;
 using log4net;
 using Tailviewer.PluginRepository.Configuration;
 

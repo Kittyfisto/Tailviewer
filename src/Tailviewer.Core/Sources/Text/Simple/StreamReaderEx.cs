@@ -2,7 +2,8 @@
 using System.IO;
 using System.Text;
 
-namespace Tailviewer.Core.Sources.Text.Simple
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Similar to <see cref="StreamReader" />, but is able to ReadLine() without

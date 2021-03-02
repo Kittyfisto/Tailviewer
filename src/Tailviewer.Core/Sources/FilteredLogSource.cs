@@ -6,12 +6,10 @@ using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Filters;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A <see cref="ILogSource" /> implementation which offers a filtered view onto a log file.

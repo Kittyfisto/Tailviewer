@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     An id which represents the source of a particular <see cref="IReadOnlyLogEntry" />.

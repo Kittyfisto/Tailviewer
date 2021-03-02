@@ -7,13 +7,10 @@ using System.Text;
 using System.Threading;
 using log4net;
 using Metrolib;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources.Buffer;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Text.Simple
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Reads the contents of an entire file into memory, line by line and exposes it via

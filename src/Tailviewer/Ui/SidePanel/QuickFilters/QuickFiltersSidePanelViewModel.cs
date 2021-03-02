@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;

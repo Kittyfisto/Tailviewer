@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Text;
-using Tailviewer.Plugins;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Sources
 {
@@ -58,11 +56,15 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			try
 			{
-				return new NoThrowLogSource(pair.Plugin.CreateParser(_services, source), pair.Description.Name);
+				var parser = pair.Plugin.CreateParser(_services, source);
+				if (parser != null)
+					return new NoThrowLogSource(parser, pair.Description.Name);
+
+				return null;
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception from plugin {0}: {1}", pair.Description, e);
+				Log.ErrorFormat("Caught unexpected exception from plugin {0}: {1}", pair?.Description?.Id, e);
 				return null;
 			}
 		}
@@ -71,11 +73,15 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			try
 			{
-				return new NoThrowLogEntryParser(pair.Plugin.CreateParser(_services, format));
+				var parser = pair.Plugin.CreateParser(_services, format);
+				if (parser != null)
+					return new NoThrowLogEntryParser(parser);
+
+				return null;
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception from plugin {0}: {1}", pair.Description, e);
+				Log.ErrorFormat("Caught unexpected exception from plugin {0}: {1}", pair?.Description?.Id, e);
 				return null;
 			}
 		}

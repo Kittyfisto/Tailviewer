@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Core.Parsers;
-using Tailviewer.Plugins;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

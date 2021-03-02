@@ -2,8 +2,8 @@
 using System.Text;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Sources.Text;
-using Tailviewer.Core.Sources.Text.Streaming;
+using Tailviewer.Api;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Sources
 {

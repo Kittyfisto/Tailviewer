@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Tailviewer.Api;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal readonly struct MergedLogSourcePendingModification
 	{

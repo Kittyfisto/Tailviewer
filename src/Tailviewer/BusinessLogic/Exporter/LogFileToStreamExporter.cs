@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources;
+using Tailviewer.Api;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {

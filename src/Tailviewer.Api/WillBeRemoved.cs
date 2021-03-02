@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     An attribute which marks a field, property, method or type which will soon be made

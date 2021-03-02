@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.LogLevelPlugin
 {

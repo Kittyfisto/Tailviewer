@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using Tailviewer.Plugins;
 
-namespace Tailviewer.Ui
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     This interface can be implemented to provide a custom outline of a log file to a user.

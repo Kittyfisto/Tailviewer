@@ -4,9 +4,10 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using log4net;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class FileFormatDetector
 	{

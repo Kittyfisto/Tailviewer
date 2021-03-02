@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for parsing a particular log file so that tailviewer can interpret

@@ -10,6 +10,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Ookii.Dialogs.Wpf;
+using Tailviewer.Api;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Settings.CustomFormats;
 

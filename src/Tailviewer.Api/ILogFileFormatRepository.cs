@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     A registry of all log file formats known by Tailviewer. Allows users to query the list of currently known

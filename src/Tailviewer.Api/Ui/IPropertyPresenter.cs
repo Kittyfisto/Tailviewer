@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Tailviewer.Ui
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///    Responsible for presenting the value of an <see cref="IReadOnlyPropertyDescriptor"/> to the end-user

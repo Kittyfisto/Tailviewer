@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;

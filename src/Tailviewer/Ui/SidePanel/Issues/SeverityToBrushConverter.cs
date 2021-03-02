@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.SidePanel.Issues
 {

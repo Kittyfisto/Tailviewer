@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Filters
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// Responsible for filtering a range of log entries based on their <see cref="IReadOnlyLogEntry.Index"/>.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The various error flags a log file may set to indicate as to why a data source doesn't

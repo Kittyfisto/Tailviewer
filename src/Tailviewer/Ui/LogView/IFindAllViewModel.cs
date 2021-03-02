@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.LogView

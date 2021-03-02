@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter
 {

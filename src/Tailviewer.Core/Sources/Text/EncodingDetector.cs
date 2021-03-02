@@ -6,7 +6,8 @@ using System.Reflection;
 using System.Text;
 using log4net;
 
-namespace Tailviewer.Core.Sources.Text
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///    This class is responsible for detecting the encoding of text file or byte stream.

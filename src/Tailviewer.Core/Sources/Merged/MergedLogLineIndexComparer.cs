@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Core.Sources.Merged
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class MergedLogLineIndexComparer
 		: IComparer<MergedLogLineIndex>

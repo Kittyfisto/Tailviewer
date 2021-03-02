@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Responsible for creating log sources.

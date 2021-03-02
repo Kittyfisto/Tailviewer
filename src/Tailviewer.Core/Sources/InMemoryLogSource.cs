@@ -4,12 +4,10 @@ using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Metrolib;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A <see cref="ILogSource"/> implementation which buffers the entire contents in memory.

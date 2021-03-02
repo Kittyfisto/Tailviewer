@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Core.Properties;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

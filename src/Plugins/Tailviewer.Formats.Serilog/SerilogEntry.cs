@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tailviewer.Core.Columns;
+using Tailviewer.Api;
+using Tailviewer.Core;
 
 namespace Tailviewer.Formats.Serilog
 {

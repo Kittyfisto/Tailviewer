@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Properties
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A property which is well-known by Tailviewer and can be changed by the user.

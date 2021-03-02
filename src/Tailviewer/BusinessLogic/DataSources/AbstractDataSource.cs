@@ -4,12 +4,10 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Filters;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources

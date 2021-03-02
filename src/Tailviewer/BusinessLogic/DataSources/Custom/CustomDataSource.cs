@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Sources;
-using Tailviewer.Core.Sources;
-using Tailviewer.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources.Custom

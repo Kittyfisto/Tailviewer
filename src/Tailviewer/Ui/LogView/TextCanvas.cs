@@ -12,13 +12,9 @@ using System.Windows.Threading;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Properties;
-using Tailviewer.Core.Sources;
-using Tailviewer.Core.Sources.Buffer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.LogView

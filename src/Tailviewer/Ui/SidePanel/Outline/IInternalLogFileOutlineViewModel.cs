@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

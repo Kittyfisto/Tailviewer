@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Tailviewer.Core.Columns;
-using Tailviewer.Core.Entries;
+using Tailviewer.Api;
+using Tailviewer.Core;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {

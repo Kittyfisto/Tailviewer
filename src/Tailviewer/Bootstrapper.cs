@@ -6,9 +6,7 @@ using log4net.Appender;
 using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
-using Tailviewer.Core.Sources.Buffer;
-using Tailviewer.Core.Sources.Text;
-using Tailviewer.Core.Sources.Text.Streaming;
+using Tailviewer.Core;
 using Tailviewer.Ui.LogView;
 
 namespace Tailviewer

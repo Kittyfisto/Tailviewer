@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Represents an index to a specific log entry in a log.

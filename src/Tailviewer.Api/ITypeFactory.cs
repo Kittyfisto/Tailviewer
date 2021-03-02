@@ -1,6 +1,6 @@
 using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for creating serializable types from their type name.

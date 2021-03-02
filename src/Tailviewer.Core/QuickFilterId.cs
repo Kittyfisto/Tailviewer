@@ -1,11 +1,11 @@
 using System;
 using System.Diagnostics.Contracts;
-using Tailviewer.Core.Settings;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {
 	/// <summary>
-	///     A globally unique identifier for a <see cref="QuickFilter" />.
+	///     A globally unique identifier for a <see cref="QuickFilterSettings" />.
 	/// </summary>
 	public struct QuickFilterId
 		: IEquatable<QuickFilterId>

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Highlighters;
-using Tailviewer.Core.Settings;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.SidePanel.Highlighters
 {

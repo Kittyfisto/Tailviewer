@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Responsible for matching log files to a particular format.

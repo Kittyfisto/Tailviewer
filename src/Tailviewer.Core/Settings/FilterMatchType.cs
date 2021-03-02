@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Tailviewer.Core.Settings
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Defines how the filter value is supposed to be interpreted.

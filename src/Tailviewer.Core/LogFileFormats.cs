@@ -1,6 +1,5 @@
 ﻿using System.Text;
-using Tailviewer.Core.Formats;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Core
 {

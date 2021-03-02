@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.Core.Buffers;
-using Tailviewer.Core.Properties;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     The base class for a log source which processes the log entries from another source

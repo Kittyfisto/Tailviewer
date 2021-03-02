@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Represents a log entry which can be modified.

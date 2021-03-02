@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;

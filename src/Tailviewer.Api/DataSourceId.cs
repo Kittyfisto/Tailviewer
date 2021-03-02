@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     Uniquely identifies a data source.
 	/// </summary>
-	public struct DataSourceId
+	public readonly struct DataSourceId
 		: IEquatable<DataSourceId>
 	{
 		/// <summary>

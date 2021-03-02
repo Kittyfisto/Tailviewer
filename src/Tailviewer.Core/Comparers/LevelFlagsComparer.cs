@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Comparers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	internal sealed class LevelFlagsComparer
 		: IEqualityComparer<LevelFlags>

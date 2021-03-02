@@ -15,15 +15,13 @@ using log4net;
 using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
+using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
-using Tailviewer.Core.Settings;
-using Tailviewer.Core.Sources.Text;
-using Tailviewer.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
@@ -291,8 +289,8 @@ namespace Tailviewer
 			{
 				factory.Add(pair.Key, pair.Value);
 			}
-			factory.Add<Core.Settings.QuickFilters>();
-			factory.Add<QuickFilter>();
+			factory.Add<Core.QuickFiltersSettings>();
+			factory.Add<QuickFilterSettings>();
 			factory.Add<QuickFilterId>();
 			return factory;
 		}

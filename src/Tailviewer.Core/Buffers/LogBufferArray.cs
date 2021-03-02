@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Tailviewer.Core.Entries;
+using Tailviewer.Api;
 
-namespace Tailviewer.Core.Buffers
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A fixed-size buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s.

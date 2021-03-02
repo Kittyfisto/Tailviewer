@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using Tailviewer.Ui;
 
-namespace Tailviewer.Plugins
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Api
 {
 	/// <summary>
 	///     The plugin interface for a non-file based data source which nonetheless contains log events.

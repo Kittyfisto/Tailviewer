@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using log4net;
-using Tailviewer.Plugins;
+using Tailviewer.Api;
 
 namespace Tailviewer.Ui.SidePanel.Outline
 {

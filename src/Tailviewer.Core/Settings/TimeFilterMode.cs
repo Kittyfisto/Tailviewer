@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Core.Settings
+﻿// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// </summary>
