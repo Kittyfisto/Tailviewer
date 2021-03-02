@@ -140,6 +140,7 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\NoThrowTimestampParser.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogSource.cs" />
     <Compile Include="BusinessLogic\Sources\RawFileLogSourceFactory.cs" />
     <Compile Include="BusinessLogic\Sources\ILogSourceFactory.cs" />
     <Compile Include="BusinessLogic\LogFileFormats\ILogFileFormatRegistry.cs" />
