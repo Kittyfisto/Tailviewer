@@ -28,6 +28,8 @@ namespace Tailviewer.Core
 
 		#region Data
 
+		private readonly IEmptyReason _sourceDoesNotExist;
+		private readonly IEmptyReason _sourceCannotBeAccessed;
 		private readonly Encoding _encoding;
 		private readonly LogBufferList _entries;
 		private readonly object _syncRoot;
@@ -95,6 +97,9 @@ namespace Tailviewer.Core
 				Core.Columns.RawContent,
 				PageBufferedLogSource.RetrievalState
 			};
+
+			_sourceDoesNotExist = new SourceDoesNotExist(fileName);
+			_sourceCannotBeAccessed = new SourceCannotBeAccessed(fileName);
 
 			_localProperties = new PropertiesBufferList(Core.Properties.Minimum);
 			_localProperties.SetValue(Core.Properties.Name, _fileName);
@@ -249,7 +254,7 @@ namespace Tailviewer.Core
 							// not allowed to access the file (in which case a different
 							// error must be set).
 
-							_localProperties.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
+							_localProperties.SetValue(Core.Properties.EmptyReason, null);
 							if (stream.Length >= _lastStreamPosition)
 							{
 								stream.Position = _lastStreamPosition;
@@ -314,12 +319,12 @@ namespace Tailviewer.Core
 			}
 			catch (FileNotFoundException e)
 			{
-				SetError(ErrorFlags.SourceDoesNotExist);
+				SetError(_sourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (DirectoryNotFoundException e)
 			{
-				SetError(ErrorFlags.SourceDoesNotExist);
+				SetError(_sourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (OperationCanceledException e)
@@ -328,12 +333,12 @@ namespace Tailviewer.Core
 			}
 			catch (UnauthorizedAccessException e)
 			{
-				SetError(ErrorFlags.SourceCannotBeAccessed);
+				SetError(_sourceCannotBeAccessed);
 				Log.Debug(e);
 			}
 			catch (IOException e)
 			{
-				SetError(ErrorFlags.SourceCannotBeAccessed);
+				SetError(_sourceCannotBeAccessed);
 				Log.Debug(e);
 			}
 			catch (Exception e)
@@ -484,12 +489,12 @@ namespace Tailviewer.Core
 			_localProperties.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_localProperties.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);
 			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
-			SetError(ErrorFlags.SourceDoesNotExist);
+			SetError(_sourceDoesNotExist);
 		}
 
-		private void SetError(ErrorFlags error)
+		private void SetError(IEmptyReason emptyReason)
 		{
-			_localProperties.SetValue(Core.Properties.EmptyReason, error);
+			_localProperties.SetValue(Core.Properties.EmptyReason, emptyReason);
 			SynchronizePropertiesWithUser();
 			SetEndOfSourceReached();
 		}

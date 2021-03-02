@@ -44,7 +44,7 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 			{
 				proxy.InnerLogSource.Should().BeNull();
 				proxy.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
-				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
 				proxy.GetProperty(Core.Properties.Size).Should().BeNull();
 				proxy.GetProperty(Core.Properties.StartTimestamp).Should().NotHaveValue();
 				proxy.GetProperty(Core.Properties.EndTimestamp).Should().NotHaveValue();
@@ -133,18 +133,19 @@ namespace Tailviewer.Core.Tests.Sources.Proxy
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
+					        destination.SetValue(Core.Properties.EmptyReason, null);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.None);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
 
+				var emptyReason = new Mock<IEmptyReason>();
 				_logFile.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 				        .Callback((IPropertiesBuffer destination) =>
 				        {
-					        destination.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					        destination.SetValue(Core.Properties.EmptyReason, emptyReason.Object);
 				        });
 				_taskScheduler.RunOnce();
-				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				proxy.GetProperty(Core.Properties.EmptyReason).Should().Be(emptyReason.Object);
 			}
 		}
 

@@ -58,11 +58,6 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			return fileName;
 		}
 
-		private StreamingTextLogSource Create(string fileName)
-		{
-			return Create(fileName, Encoding.Default);
-		}
-
 		private StreamingTextLogSource Create(string fileName, Encoding encoding)
 		{
 			return new StreamingTextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
@@ -117,7 +112,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(Properties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(Properties.LastModified).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None, "because the log file didn't have enough time to check the source");
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(null, "because the log file didn't have enough time to check the source");
 		}
 
 		#region Static data
@@ -133,7 +128,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(Properties.Size).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(Properties.Created).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(Properties.LastModified).Should().BeNull("because the source file does not exist");
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
+			logFile.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>("because the source file does not exist");
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 		}
 
@@ -163,7 +158,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 			logFile.GetProperty(Properties.Size).Should().Be(Size.Zero, "because the file is empty");
 			logFile.GetProperty(Properties.Created).Should().Be(info.Created);
 			logFile.GetProperty(Properties.LastModified).Should().Be(info.LastModified);
-			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None, "because the source file does exist and can be accessed");
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(null, "because the source file does exist and can be accessed");
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 
 			var indices = logFile.GetColumn(new LogSourceSection(0, 1), StreamingTextLogSource.LineOffsetInBytes);
@@ -504,7 +499,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 
 				logFile.GetProperty(TextProperties.LineCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
 				logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because now we've deleted the file which should have been detected by now");
-				logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+				logFile.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>();
 
 				var index = logFile.GetColumn(new LogSourceSection(0, 2), StreamingTextLogSource.LineOffsetInBytes);
 				index[0].Should().Be(-1, "because now we've deleted the file which should have been detected by now");

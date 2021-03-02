@@ -87,6 +87,7 @@
     <Compile Include="Int32Range.cs" />
     <Compile Include="Parsers\LogLevelParser.cs" />
     <Compile Include="Properties\PropertiesBufferHidingView.cs" />
+    <Compile Include="SourceCannotBeAccessed.cs" />
     <Compile Include="Sources\Adorner\LogSourcePropertyAdorner.cs" />
     <Compile Include="Sources\AbstractProcessingLogSource.cs" />
     <Compile Include="Sources\Buffer\PageBufferedLogSource.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
+    <Compile Include="SourceDoesNotExist.cs" />
     <Compile Include="Writer.cs" />
     <Compile Include="XmlReaderExtensions.cs" />
     <Compile Include="XmlWriterExtensions.cs" />

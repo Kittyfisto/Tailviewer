@@ -157,9 +157,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				new Action(() => logSource = Create( "dadwdawdw")).Should().NotThrow();
 
 				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist);
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).NotBeNull();
 
-				logSource.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "Because the specified file doesn't exist");
+				logSource.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>("Because the specified file doesn't exist");
 			}
 			finally
 			{
@@ -177,9 +177,9 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				new Action(() => logSource = Create( File2Lines)).Should().NotThrow();
 
 				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None);
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(null);
 
-				logSource.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None, "Because the specified file does exist");
+				logSource.GetProperty(Properties.EmptyReason).Should().Be(null, "Because the specified file does exist");
 			}
 			finally
 			{
@@ -238,12 +238,11 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				new Action(() => logSource = Create(fileName)).Should().NotThrow();
 
 				logSource.Property(x => x.GetProperty(Properties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
-				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist,
-				                                                           "Because the specified file doesn't exist");
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).NotBeNull("Because the specified file doesn't exist");
 
 				File.WriteAllText(fileName, "Hello World!");
 
-				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None,
+				logSource.Property(x => x.GetProperty(Properties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(null,
 				                                                          "Because the file has been created now");
 				logSource.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
 

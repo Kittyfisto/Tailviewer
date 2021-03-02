@@ -56,7 +56,7 @@ namespace Tailviewer.Core
 
 			_taskScheduler = taskScheduler;
 			_properties = new ConcurrentPropertiesList(Core.Properties.Minimum);
-			_properties.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_properties.SetValue(Core.Properties.EmptyReason, null);
 
 			_sourceProperties = new PropertiesBufferList();
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogSource, LogSourceModification>>();

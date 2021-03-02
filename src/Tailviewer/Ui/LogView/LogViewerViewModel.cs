@@ -264,17 +264,11 @@ namespace Tailviewer.Ui.LogView
 			{
 				ILogEntryFilter filter = dataSource.LogEntryFilter;
 				var emptyReason = source.GetProperty(Properties.EmptyReason);
-				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
+				if (emptyReason != null)
 				{
-					NoEntriesIcon = Icons.FileRemove;
-					NoEntriesExplanation = "Data source does not exist";
-					NoEntriesAction = $"The data source '{Path.GetFileName(dataSource.FullFileName)}' was last seen {Path.GetDirectoryName(dataSource.FullFileName)}";
-				}
-				else if ((emptyReason & ErrorFlags.SourceCannotBeAccessed) == ErrorFlags.SourceCannotBeAccessed)
-				{
-					NoEntriesIcon = Icons.FileAlert;
-					NoEntriesExplanation = "Data source cannot be opened";
-					NoEntriesAction = $"The file '{Path.GetFileName(dataSource.FullFileName)}' may be opened exclusively by another process or you are not authorized to view it";
+					NoEntriesIcon = emptyReason.Icon;
+					NoEntriesExplanation = emptyReason.Reason;
+					NoEntriesAction = emptyReason.Explanation;
 				}
 				else if (folderDataSource != null && folderDataSource.UnfilteredFileCount == 0)
 				{

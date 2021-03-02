@@ -95,7 +95,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		{
 			_source = Create(_fname);
 			_taskScheduler.RunOnce();
-			_source.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None);
+			_source.GetProperty(Properties.EmptyReason).Should().Be(null);
 			_source.GetProperty(Properties.Created).Should().NotBe(DateTime.MinValue);
 
 			_streamWriter?.Dispose();
@@ -103,7 +103,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 			File.Delete(_fname);
 			_taskScheduler.RunOnce();
 
-			_source.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
+			_source.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>();
 			_source.GetProperty(Properties.Created).Should().BeNull();
 		}
 

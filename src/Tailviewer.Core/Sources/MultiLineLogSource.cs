@@ -71,7 +71,7 @@ namespace Tailviewer.Core
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
 			_propertiesBuffer = new PropertiesBufferList(Core.Properties.CombineWithMinimum(source.Properties));
-			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, null);
 
 			_properties = new ConcurrentPropertiesList(Core.Properties.CombineWithMinimum(source.Properties));
 			_properties.CopyFrom(_propertiesBuffer);

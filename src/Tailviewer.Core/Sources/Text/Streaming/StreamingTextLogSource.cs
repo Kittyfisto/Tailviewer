@@ -39,6 +39,8 @@ namespace Tailviewer.Core
 		public static readonly IColumnDescriptor<long> LineOffsetInBytes;
 
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly IEmptyReason _sourceDoesNotExist;
+		private readonly IEmptyReason _sourceCannotBeAccessed;
 		private readonly Encoding _encoding;
 		private readonly LogSourceListenerCollection _listeners;
 		private readonly LogBufferList _index;
@@ -77,6 +79,9 @@ namespace Tailviewer.Core
 			_encoding = encoding;
 
 			_listeners = new LogSourceListenerCollection(this);
+
+			_sourceDoesNotExist = new SourceDoesNotExist(fileName);
+			_sourceCannotBeAccessed = new SourceCannotBeAccessed(fileName);
 
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_index = new LogBufferList(StreamingTextLogSource.LineOffsetInBytes);
@@ -231,7 +236,7 @@ namespace Tailviewer.Core
 			{
 				if (!File.Exists(_fileName))
 				{
-					SetError(ErrorFlags.SourceDoesNotExist);
+					SetError(_sourceDoesNotExist);
 				}
 				else
 				{
@@ -240,12 +245,12 @@ namespace Tailviewer.Core
 			}
 			catch (FileNotFoundException e)
 			{
-				SetError(ErrorFlags.SourceDoesNotExist);
+				SetError(_sourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (DirectoryNotFoundException e)
 			{
-				SetError(ErrorFlags.SourceDoesNotExist);
+				SetError(_sourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (OperationCanceledException e)
@@ -254,12 +259,12 @@ namespace Tailviewer.Core
 			}
 			catch (UnauthorizedAccessException e)
 			{
-				SetError(ErrorFlags.SourceCannotBeAccessed);
+				SetError(_sourceCannotBeAccessed);
 				Log.Debug(e);
 			}
 			catch (IOException e)
 			{
-				SetError(ErrorFlags.SourceCannotBeAccessed);
+				SetError(_sourceCannotBeAccessed);
 				Log.Debug(e);
 			}
 			catch (Exception e)
@@ -301,7 +306,7 @@ namespace Tailviewer.Core
 			                                   FileAccess.Read,
 			                                   FileShare.ReadWrite | FileShare.Delete))
 			{
-				_propertiesBuffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
+				_propertiesBuffer.SetValue(Core.Properties.EmptyReason, null);
 
 				var startOffset = _lastLineOffsetStreamPosition;
 				if (startOffset == 0)
@@ -488,9 +493,9 @@ namespace Tailviewer.Core
 			return true;
 		}
 
-		private void SetError(ErrorFlags error)
+		private void SetError(IEmptyReason emptyReason)
 		{
-			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, error);
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, emptyReason);
 			_propertiesBuffer.SetValue(Core.Properties.Created, null);
 			_propertiesBuffer.SetValue(Core.Properties.Size, null);
 			_propertiesBuffer.SetValue(Core.Properties.PercentageProcessed, Percentage.HundredPercent);

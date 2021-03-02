@@ -220,7 +220,8 @@ namespace Tailviewer.Core
 				{
 					Log.ErrorFormat("Unable to create event log reader: {0}", e);
 
-					_buffer.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+					// TODO: Set error
+					_buffer.SetValue(Core.Properties.EmptyReason, null);
 
 					_loggedException = true;
 				}

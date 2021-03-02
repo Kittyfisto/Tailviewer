@@ -781,7 +781,7 @@ namespace Tailviewer.Ui.LogView
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			Exists = _dataSource.UnfilteredLogSource?.GetProperty(Properties.EmptyReason) == ErrorFlags.None;
+			Exists = _dataSource.UnfilteredLogSource?.GetProperty(Properties.EmptyReason) == null;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			_search.Update();

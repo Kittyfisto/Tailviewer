@@ -57,7 +57,7 @@ namespace Tailviewer.Core.Tests.Properties
 		[Test]
 		public void TestTryGetValue3()
 		{
-			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(Core.Properties.EmptyReason, ErrorFlags.SourceCannotBeAccessed));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(Core.Properties.Duration, TimeSpan.FromSeconds(10)));
 			DateTime? lastModified;
 			properties.TryGetValue(Core.Properties.LastModified, out lastModified).Should().BeFalse();
 			lastModified.Should().Be(Core.Properties.LastModified.DefaultValue);

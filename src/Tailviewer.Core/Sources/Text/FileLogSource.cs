@@ -32,6 +32,8 @@ namespace Tailviewer.Core
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		
 		private readonly object _syncRoot;
+		private readonly IEmptyReason _sourceDoesNotExist;
+		private readonly IEmptyReason _sourceCannotBeAccessed;
 		private readonly IServiceContainer _services;
 		private readonly string _fullFilename;
 		private readonly EncodingDetector _encodingDetector;
@@ -67,6 +69,9 @@ namespace Tailviewer.Core
 				? fileName
 				: Path.Combine(Directory.GetCurrentDirectory(), fileName);
 			_maximumWaitTime = maximumWaitTime;
+
+			_sourceDoesNotExist = new SourceDoesNotExist(fileName);
+			_sourceCannotBeAccessed = new SourceCannotBeAccessed(fileName);
 
 			var formatMatcher = services.Retrieve<ILogFileFormatMatcher>();
 			_encodingDetector = new EncodingDetector();
@@ -200,7 +205,7 @@ namespace Tailviewer.Core
 				{
 					if (!File.Exists(_fullFilename))
 					{
-						SetError(ErrorFlags.SourceDoesNotExist);
+						SetError(_sourceDoesNotExist);
 					}
 					else
 					{
@@ -252,46 +257,46 @@ namespace Tailviewer.Core
 			}
 		}
 
-		private static Stream TryOpenRead(string fileName, out ErrorFlags error)
+		private Stream TryOpenRead(string fileName, out IEmptyReason error)
 		{
 			try
 			{
-				error = ErrorFlags.None;
+				error = null;
 				return new FileStream(fileName, FileMode.Open, FileAccess.Read,
 				                      FileShare.ReadWrite | FileShare.Delete);
 			}
 			catch (FileNotFoundException e)
 			{
-				error = ErrorFlags.SourceDoesNotExist;
+				error = _sourceDoesNotExist;
 				Log.Debug(e);
 			}
 			catch (DirectoryNotFoundException e)
 			{
-				error = ErrorFlags.SourceDoesNotExist;
+				error = _sourceDoesNotExist;
 				Log.Debug(e);
 			}
 			catch (UnauthorizedAccessException e)
 			{
-				error = ErrorFlags.SourceCannotBeAccessed;
+				error = _sourceCannotBeAccessed;
 				Log.Debug(e);
 			}
 			catch (IOException e)
 			{
-				error = ErrorFlags.SourceCannotBeAccessed;
+				error = _sourceCannotBeAccessed;
 				Log.Debug(e);
 			}
 
 			return null;
 		}
 
-		private void SetError(ErrorFlags error)
+		private void SetError(IEmptyReason emptyReason)
 		{
 			_propertiesBuffer.SetValue(Core.Properties.Format, null);
 			_propertiesBuffer.SetValue(TextProperties.ByteOrderMark, null);
 			_propertiesBuffer.SetValue(TextProperties.AutoDetectedEncoding, null);
 			_propertiesBuffer.SetValue(TextProperties.Encoding, null);
 			_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, _maxCharactersInLine = 0);
-			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, error);
+			_propertiesBuffer.SetValue(Core.Properties.EmptyReason, emptyReason);
 			_propertiesBuffer.SetValue(Core.Properties.Created, _lastFingerprint?.Created);
 			_propertiesBuffer.SetValue(Core.Properties.LastModified, _lastFingerprint?.LastModified);
 		}

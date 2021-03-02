@@ -38,7 +38,7 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
 			logFile.GetProperty(Core.Properties.EndTimestamp).Should().BeNull();
 			logFile.GetProperty(Core.Properties.Duration).Should().BeNull();
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
 			logFile.GetProperty(Core.Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			logFile.Count.Should().Be(0);
 		}
@@ -305,7 +305,7 @@ namespace Tailviewer.Core.Tests.Sources
 			logFile.GetProperty(Core.Properties.StartTimestamp).Should().BeNull();
 			logFile.GetProperty(Core.Properties.EndTimestamp).Should().BeNull();
 			logFile.GetProperty(Core.Properties.Duration).Should().BeNull();
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(null);
 			logFile.Count.Should().Be(0);
 		}
 

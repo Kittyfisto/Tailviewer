@@ -67,7 +67,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 				var source = Create(fileName);
 				_taskScheduler.Run(5);
 
-				source.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				source.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceCannotBeAccessed>();
 				source.GetProperty(Properties.Created).Should().NotBe(DateTime.MinValue);
 				source.GetProperty(Properties.Created).Should().Be(new FileInfo(fileName).CreationTimeUtc);
 			}

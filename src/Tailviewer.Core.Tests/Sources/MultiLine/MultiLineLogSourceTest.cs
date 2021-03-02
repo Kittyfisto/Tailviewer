@@ -86,29 +86,30 @@ namespace Tailviewer.Core.Tests.Sources.MultiLine
 		[Description("Verifies that the Exists flag is changed once a modification is applied")]
 		public void TestOneModification3()
 		{
-			_source.Setup(x => x.GetProperty(Core.Properties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
+			var emptyReason = new Mock<IEmptyReason>();
+			_source.Setup(x => x.GetProperty(Core.Properties.EmptyReason)).Returns(emptyReason.Object);
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer destination) =>
-				                 destination.SetValue(Core.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist));
+				                 destination.SetValue(Core.Properties.EmptyReason, emptyReason.Object));
 			var logFile = new MultiLineLogSource(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(emptyReason.Object, "because the source doesn't exist (yet)");
 
 			_entries.Add(new LogEntry());
-			_source.Setup(x => x.GetProperty(Core.Properties.EmptyReason)).Returns(ErrorFlags.None);
+			_source.Setup(x => x.GetProperty(Core.Properties.EmptyReason)).Returns((IEmptyReason) null);
 			_source.Setup(x => x.GetAllProperties(It.IsAny<IPropertiesBuffer>()))
 			       .Callback((IPropertiesBuffer properties) =>
 			       {
-				       properties.SetValue(Core.Properties.EmptyReason, ErrorFlags.None);
+				       properties.SetValue(Core.Properties.EmptyReason, null);
 			       });
 
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(emptyReason.Object, "because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, LogSourceModification.Appended(0, 1));
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(emptyReason.Object, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(ErrorFlags.None, "because the change should have been applied by now");
+			logFile.GetProperty(Core.Properties.EmptyReason).Should().Be(null, "because the change should have been applied by now");
 		}
 
 		[Test]
