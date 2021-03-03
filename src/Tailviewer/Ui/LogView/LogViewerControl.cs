@@ -39,10 +39,6 @@ namespace Tailviewer.Ui.LogView
 			DependencyProperty.Register("CurrentLogLine", typeof(LogLineIndex), typeof(LogViewerControl),
 				new PropertyMetadata(default(LogLineIndex), OnCurrentLogLineChanged));
 
-		public static readonly DependencyProperty ShowLineNumbersProperty =
-			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(LogViewerControl),
-				new PropertyMetadata(default(bool), OnShowLineNumbersChanged));
-
 		public static readonly DependencyProperty ShowFatalProperty =
 			DependencyProperty.Register("ShowFatal", typeof(bool), typeof(LogViewerControl),
 				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnFatalChanged));
@@ -138,12 +134,6 @@ namespace Tailviewer.Ui.LogView
 		{
 			get { return (LogLineIndex) GetValue(CurrentLogLineProperty); }
 			set { SetValue(CurrentLogLineProperty, value); }
-		}
-
-		public bool ShowLineNumbers
-		{
-			get { return (bool) GetValue(ShowLineNumbersProperty); }
-			set { SetValue(ShowLineNumbersProperty, value); }
 		}
 
 		public ILogSource LogSource
@@ -338,10 +328,22 @@ namespace Tailviewer.Ui.LogView
 				newValue.OnRequestBringIntoView += DataSourceOnRequestBringIntoView;
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				newValue.Search.PropertyChanged += SearchOnPropertyChanged;
+
 				PART_ListView.FollowTail = newValue.FollowTail;
 				PART_ListView.SelectedSearchResultIndex = newValue.Search.CurrentResultIndex;
 
-				ShowLineNumbers = newValue.ShowLineNumbers;
+				PART_ListView.ShowLineNumbers = newValue.ShowLineNumbers;
+				PART_FindAllView.ShowLineNumbers = newValue.ShowLineNumbers;
+				
+				PART_ListView.ShowDeltaTimes = newValue.ShowDeltaTimes;
+				PART_FindAllView.ShowDeltaTimes = newValue.ShowDeltaTimes;
+				
+				PART_ListView.ShowElapsedTime = newValue.ShowElapsedTime;
+				PART_FindAllView.ShowElapsedTime = newValue.ShowElapsedTime;
+				
+				PART_ListView.ColorByLevel = newValue.ColorByLevel;
+				PART_FindAllView.ColorByLevel = newValue.ColorByLevel;
+
 				if (newValue is IMergedDataSourceViewModel merged)
 					MergedDataSourceDisplayMode = merged.DisplayMode;
 			}
@@ -376,19 +378,6 @@ namespace Tailviewer.Ui.LogView
 			if (dataSource != null)
 				if (!_changingLogView)
 					dataSource.VisibleLogLine = index;
-		}
-
-		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
-			DependencyPropertyChangedEventArgs args)
-		{
-			((LogViewerControl) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
-		}
-
-		private void OnShowLineNumbersChanged(bool showLineNumbers)
-		{
-			var dataSource = DataSource;
-			if (dataSource != null)
-				dataSource.ShowLineNumbers = showLineNumbers;
 		}
 
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -579,18 +568,22 @@ namespace Tailviewer.Ui.LogView
 
 				case nameof(IDataSourceViewModel.ShowLineNumbers):
 					PART_ListView.ShowLineNumbers = dataSource.ShowLineNumbers;
+					PART_FindAllView.ShowLineNumbers = dataSource.ShowLineNumbers;
 					break;
 
 				case nameof(IDataSourceViewModel.ShowElapsedTime):
 					PART_ListView.ShowElapsedTime = dataSource.ShowElapsedTime;
+					PART_FindAllView.ShowElapsedTime = dataSource.ShowElapsedTime;
 					break;
 
 				case nameof(IDataSourceViewModel.ShowDeltaTimes):
 					PART_ListView.ShowDeltaTimes = dataSource.ShowDeltaTimes;
+					PART_FindAllView.ShowDeltaTimes = dataSource.ShowDeltaTimes;
 					break;
 
 				case nameof(IDataSourceViewModel.ColorByLevel):
 					PART_ListView.ColorByLevel = dataSource.ColorByLevel;
+					PART_FindAllView.ColorByLevel = dataSource.ColorByLevel;
 					break;
 
 				case nameof(IMergedDataSourceViewModel.DisplayMode):

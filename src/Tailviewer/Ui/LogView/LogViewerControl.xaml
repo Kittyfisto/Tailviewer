@@ -232,10 +232,6 @@
                     LogSource="{Binding LogSource, ElementName=This}"
                     Search="{Binding Search, ElementName=This}"
                     CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
-                    ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                    ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                    ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                    ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
                     MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
                     Settings="{Binding Settings, ElementName=This}"
                     SnapsToDevicePixels="True" />
@@ -304,10 +300,6 @@
                         LogSource="{Binding DataSource.FindAll.LogSource, ElementName=This}"
                         Search="{Binding DataSource.FindAll.Search, ElementName=This}"
                         SelectedIndices="{Binding DataSource.FindAll.SelectedLogLines, ElementName=This, Mode=TwoWay}"
-                        ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                        ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                        ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                        ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
                         MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
                         Settings="{Binding Settings, ElementName=This}"
                         SnapsToDevicePixels="True" />

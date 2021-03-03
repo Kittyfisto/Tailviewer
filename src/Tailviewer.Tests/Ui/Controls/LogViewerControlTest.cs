@@ -89,26 +89,138 @@ namespace Tailviewer.Tests.Ui.Controls
 
 		[Test]
 		[NUnit.Framework.Description("Verifies that the ShowLineNumbers value on the new data source is used")]
-		public void TestChangeDataSource2()
+		public void TestChangeDataSource2([Values(true, false)] bool showLineNumbers)
 		{
-			var dataSource = CreateDataSourceViewModel();
-			dataSource.Setup(x => x.ShowLineNumbers).Returns(false);
+			var dataSource1 = CreateDataSourceViewModel();
+			dataSource1.Setup(x => x.ShowLineNumbers).Returns(showLineNumbers);
 
-			_control.ShowLineNumbers = true;
-			_control.DataSource = dataSource.Object;
-			_control.ShowLineNumbers.Should().BeFalse();
+			_control.DataSource = dataSource1.Object;
+			_control.PART_ListView.ShowLineNumbers.Should().Be(showLineNumbers);
+			_control.PART_FindAllView.ShowLineNumbers.Should().Be(showLineNumbers);
+
+
+			var dataSource2 = CreateDataSourceViewModel();
+			dataSource2.Setup(x => x.ShowLineNumbers).Returns(!showLineNumbers);
+			_control.DataSource = dataSource2.Object;
+			_control.PART_ListView.ShowLineNumbers.Should().Be(!showLineNumbers);
+			_control.PART_FindAllView.ShowLineNumbers.Should().Be(!showLineNumbers);
 		}
 
 		[Test]
-		[NUnit.Framework.Description("Verifies that the ShowLineNumbers value on the new data source is used")]
-		public void TestChangeDataSource3()
+		[NUnit.Framework.Description("Verifies that changes to the ShowLineNumbers property are propagated")]
+		public void TestDataSourceChangeShowLineNumbers([Values(true, false)] bool showLineNumbers)
 		{
 			var dataSource = CreateDataSourceViewModel();
-			dataSource.Setup(x => x.ShowLineNumbers).Returns(true);
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(!showLineNumbers);
 
-			_control.ShowLineNumbers = false;
 			_control.DataSource = dataSource.Object;
-			_control.ShowLineNumbers.Should().BeTrue();
+
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(showLineNumbers);
+			dataSource.Raise( x => x.PropertyChanged += null, new PropertyChangedEventArgs(nameof(IDataSourceViewModel.ShowLineNumbers)));
+			_control.PART_ListView.ShowLineNumbers.Should().Be(showLineNumbers);
+			_control.PART_FindAllView.ShowLineNumbers.Should().Be(showLineNumbers);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that the ShowDeltaTime value on the new data source is used")]
+		public void TestChangeDataSource3([Values(true, false)] bool showDeltaTimes)
+		{
+			var dataSource1 = CreateDataSourceViewModel();
+			dataSource1.Setup(x => x.ShowDeltaTimes).Returns(showDeltaTimes);
+
+			_control.DataSource = dataSource1.Object;
+			_control.PART_ListView.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			_control.PART_FindAllView.ShowDeltaTimes.Should().Be(showDeltaTimes);
+
+
+			var dataSource2 = CreateDataSourceViewModel();
+			dataSource2.Setup(x => x.ShowDeltaTimes).Returns(!showDeltaTimes);
+			_control.DataSource = dataSource2.Object;
+			_control.PART_ListView.ShowDeltaTimes.Should().Be(!showDeltaTimes);
+			_control.PART_FindAllView.ShowDeltaTimes.Should().Be(!showDeltaTimes);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that changes to the ShowDeltaTime property are propagated")]
+		public void TestDataSourceChangeShowDeltaTimes([Values(true, false)] bool showDeltaTimes)
+		{
+			var dataSource = CreateDataSourceViewModel();
+			dataSource.Setup(x => x.ShowDeltaTimes).Returns(!showDeltaTimes);
+
+			_control.DataSource = dataSource.Object;
+
+			dataSource.Setup(x => x.ShowDeltaTimes).Returns(showDeltaTimes);
+			dataSource.Raise( x => x.PropertyChanged += null, new PropertyChangedEventArgs(nameof(IDataSourceViewModel.ShowDeltaTimes)));
+			_control.PART_ListView.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			_control.PART_FindAllView.ShowDeltaTimes.Should().Be(showDeltaTimes);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that the ShowElapsedTime value on the new data source is used")]
+		public void TestChangeDataSource4([Values(true, false)] bool showElapsedTime)
+		{
+			var dataSource1 = CreateDataSourceViewModel();
+			dataSource1.Setup(x => x.ShowElapsedTime).Returns(showElapsedTime);
+
+			_control.DataSource = dataSource1.Object;
+			_control.PART_ListView.ShowElapsedTime.Should().Be(showElapsedTime);
+			_control.PART_FindAllView.ShowElapsedTime.Should().Be(showElapsedTime);
+
+
+			var dataSource2 = CreateDataSourceViewModel();
+			dataSource2.Setup(x => x.ShowElapsedTime).Returns(!showElapsedTime);
+			_control.DataSource = dataSource2.Object;
+			_control.PART_ListView.ShowElapsedTime.Should().Be(!showElapsedTime);
+			_control.PART_FindAllView.ShowElapsedTime.Should().Be(!showElapsedTime);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that changes to the ShowElapsedTime property are propagated")]
+		public void TestDataSourceChangeShowElapsedTimes([Values(true, false)] bool showElapsedTime)
+		{
+			var dataSource = CreateDataSourceViewModel();
+			dataSource.Setup(x => x.ShowElapsedTime).Returns(!showElapsedTime);
+
+			_control.DataSource = dataSource.Object;
+
+			dataSource.Setup(x => x.ShowElapsedTime).Returns(showElapsedTime);
+			dataSource.Raise( x => x.PropertyChanged += null, new PropertyChangedEventArgs(nameof(IDataSourceViewModel.ShowElapsedTime)));
+			_control.PART_ListView.ShowElapsedTime.Should().Be(showElapsedTime);
+			_control.PART_FindAllView.ShowElapsedTime.Should().Be(showElapsedTime);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that the ColorByLevel value on the new data source is used")]
+		public void TestChangeDataSource5([Values(true, false)] bool colorByLevel)
+		{
+			var dataSource1 = CreateDataSourceViewModel();
+			dataSource1.Setup(x => x.ColorByLevel).Returns(colorByLevel);
+
+			_control.DataSource = dataSource1.Object;
+			_control.PART_ListView.ColorByLevel.Should().Be(colorByLevel);
+			_control.PART_FindAllView.ColorByLevel.Should().Be(colorByLevel);
+
+
+			var dataSource2 = CreateDataSourceViewModel();
+			dataSource2.Setup(x => x.ColorByLevel).Returns(!colorByLevel);
+			_control.DataSource = dataSource2.Object;
+			_control.PART_ListView.ColorByLevel.Should().Be(!colorByLevel);
+			_control.PART_FindAllView.ColorByLevel.Should().Be(!colorByLevel);
+		}
+
+		[Test]
+		[NUnit.Framework.Description("Verifies that changes to the ColorByLevel property are propagated")]
+		public void TestDataSourceChangeColorByLevel([Values(true, false)] bool colorByLevel)
+		{
+			var dataSource = CreateDataSourceViewModel();
+			dataSource.Setup(x => x.ColorByLevel).Returns(!colorByLevel);
+
+			_control.DataSource = dataSource.Object;
+
+			dataSource.Setup(x => x.ColorByLevel).Returns(colorByLevel);
+			dataSource.Raise( x => x.PropertyChanged += null, new PropertyChangedEventArgs(nameof(IDataSourceViewModel.ColorByLevel)));
+			_control.PART_ListView.ColorByLevel.Should().Be(colorByLevel);
+			_control.PART_FindAllView.ColorByLevel.Should().Be(colorByLevel);
 		}
 
 		[Test]
