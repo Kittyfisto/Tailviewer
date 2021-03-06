@@ -29,6 +29,9 @@ namespace Tailviewer.Tests.Ui.Controls.SidePanel.Issues
 			var viewModel = new IssuesSidePanelViewModel(_services);
 			viewModel.CurrentDataSource.Should().BeNull();
 			viewModel.CurrentIssues.Should().BeNull();
+
+			viewModel.EmptyStatement.Should().Be("No issues plugin installed");
+			viewModel.EmptyExplanation.Should().Be("There is no plugin installed which is able to present a list of issues for the current data source's log format.");
 		}
 
 		[Test]

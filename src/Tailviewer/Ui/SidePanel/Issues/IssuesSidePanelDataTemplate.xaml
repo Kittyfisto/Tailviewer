@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:issues="clr-namespace:Tailviewer.Ui.SidePanel.Issues">
+                    xmlns:issues="clr-namespace:Tailviewer.Ui.SidePanel.Issues"
+                    xmlns:ui="clr-namespace:Tailviewer.Ui">
 
     <issues:SeverityToIconConverter x:Key="SeverityToIconConverter" />
     <issues:SeverityToBrushConverter x:Key="SeverityToBrushConverter" />
@@ -96,6 +97,11 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </controls:FlatScrollViewer>
+
+                <ui:EmptyState Grid.Row="2"
+                               Visibility="{Binding EmptyStatement, Converter={StaticResource NullToCollapsedConverter}}"
+                               EmptyStatement="{Binding EmptyStatement}"
+                               EmptyExplanation="{Binding EmptyExplanation}"/>
             </Grid>
         </Border>
     </DataTemplate>

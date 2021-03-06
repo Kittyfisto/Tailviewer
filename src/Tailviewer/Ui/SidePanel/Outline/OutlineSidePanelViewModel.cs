@@ -18,10 +18,12 @@ namespace Tailviewer.Ui.SidePanel.Outline
 		: AbstractSidePanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		
+
 		private readonly IServiceContainer _services;
 		private readonly IReadOnlyList<ILogFileOutlinePlugin> _plugins;
 		private readonly Dictionary<IDataSource, IInternalLogFileOutlineViewModel> _viewModelsByDataSource;
+		private string _emptyStatement;
+		private string _emptyExplanation;
 
 		private IDataSource _currentDataSource;
 		private FrameworkElement _currentContent;
@@ -33,6 +35,7 @@ namespace Tailviewer.Ui.SidePanel.Outline
 			_plugins = services.Retrieve<IPluginLoader>().LoadAllOfType<ILogFileOutlinePlugin>();
 			Tooltip = "Show outline of the current log file";
 			_viewModelsByDataSource = new Dictionary<IDataSource, IInternalLogFileOutlineViewModel>();
+			UpdateEmptyReason();
 		}
 
 		#region Overrides of AbstractSidePanelViewModel
@@ -72,6 +75,30 @@ namespace Tailviewer.Ui.SidePanel.Outline
 				EmitPropertyChanged();
 
 				CurrentContent = value?.TryCreateContent();
+				UpdateEmptyReason();
+			}
+		}
+
+		private void UpdateEmptyReason()
+		{
+			if (_currentViewModel != null)
+			{
+				if (CurrentContent != null)
+				{
+					EmptyStatement = null;
+					EmptyExplanation = null;
+				}
+				else
+				{
+					EmptyStatement = "Outline creation failed";
+					EmptyExplanation = "An error occurred while trying to present the outline: check the log";
+				}
+			}
+			else
+			{
+				EmptyStatement = "No outline plugin installed";
+				EmptyExplanation =
+					"There is no plugin installed which is able to present an outline for the current data source's log format.";
 			}
 		}
 
@@ -84,6 +111,32 @@ namespace Tailviewer.Ui.SidePanel.Outline
 					return;
 
 				_currentContent = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string EmptyStatement
+		{
+			get { return _emptyStatement; }
+			private set
+			{
+				if (value == _emptyStatement)
+					return;
+
+				_emptyStatement = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string EmptyExplanation
+		{
+			get { return _emptyExplanation; }
+			private set
+			{
+				if (value == _emptyExplanation)
+					return;
+
+				_emptyExplanation = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -116,10 +169,9 @@ namespace Tailviewer.Ui.SidePanel.Outline
 			var logFile = dataSource.UnfilteredLogSource;
 
 			var plugin = FindMatchingPlugin(dataSource);
-			if (plugin == null)
-				return new DefaultLogFileOutlineViewModel(_services, logFile);
-
-			return new LogFileOutlineViewModelProxy(plugin, _services, logFile);
+			return plugin == null
+				? null
+				: new LogFileOutlineViewModelProxy(plugin, _services, logFile);
 		}
 
 		private ILogFileOutlinePlugin FindMatchingPlugin(IDataSource dataSource)

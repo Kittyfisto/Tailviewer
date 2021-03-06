@@ -33,6 +33,9 @@ namespace Tailviewer.Tests.Ui.Controls.SidePanel.Outline
 			var viewModel = new OutlineSidePanelViewModel(_services);
 			viewModel.CurrentDataSource.Should().BeNull();
 			viewModel.CurrentContent.Should().BeNull();
+
+			viewModel.EmptyStatement.Should().Be("No outline plugin installed");
+			viewModel.EmptyExplanation.Should().Be("There is no plugin installed which is able to present an outline for the current data source's log format.");
 		}
 
 		[Test]
@@ -74,10 +77,15 @@ namespace Tailviewer.Tests.Ui.Controls.SidePanel.Outline
 
 			viewModel.CurrentContent.Should().BeNull();
 			viewModel.CurrentDataSource.Should().BeNull();
+			viewModel.EmptyStatement.Should().NotBeNull();
+			viewModel.EmptyExplanation.Should().NotBeNull();
 
 			viewModel.CurrentDataSource = dataSource.Object;
 			plugin.Verify(x => x.CreateViewModel(_services, logFile.Object), Times.Once);
 			viewModel.CurrentContent.Should().BeSameAs(pluginContent);
+
+			viewModel.EmptyStatement.Should().BeNull();
+			viewModel.EmptyExplanation.Should().BeNull();
 		}
 
 		private IDataSource CreateDataSource(ILogFileFormat format)
