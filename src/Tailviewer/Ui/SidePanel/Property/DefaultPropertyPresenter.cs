@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tailviewer.Api;
 
-namespace Tailviewer.Ui.SidePanel.Outline
+namespace Tailviewer.Ui.SidePanel.Property
 {
 	public sealed class DefaultPropertyPresenter
 		: IPropertyPresenter

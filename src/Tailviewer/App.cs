@@ -25,7 +25,7 @@ using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
-using Tailviewer.Ui.SidePanel.Outline;
+using Tailviewer.Ui.SidePanel.Property;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;

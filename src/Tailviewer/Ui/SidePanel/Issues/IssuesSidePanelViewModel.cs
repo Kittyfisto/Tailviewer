@@ -23,6 +23,8 @@ namespace Tailviewer.Ui.SidePanel.Issues
 		private IDataSource _currentDataSource;
 		private IssuesViewModel _currentIssues;
 		private int _issueCount;
+		private string _emptyStatement;
+		private string _emptyExplanation;
 
 		public IssuesSidePanelViewModel(IServiceContainer services)
 		{
@@ -31,6 +33,7 @@ namespace Tailviewer.Ui.SidePanel.Issues
 			                   .LoadAllOfType<ILogFileIssuesPlugin>()
 			                   .Select(x => new NoThrowLogFileIssuePlugin(x)).ToList();
 			_viewModels = new Dictionary<IDataSource, IssuesViewModel>();
+			UpdateEmptyReason();
 		}
 
 		#region Overrides of AbstractSidePanelViewModel
@@ -70,6 +73,7 @@ namespace Tailviewer.Ui.SidePanel.Issues
 
 				_currentIssues = value;
 				EmitPropertyChanged();
+				UpdateEmptyReason();
 			}
 		}
 
@@ -94,6 +98,32 @@ namespace Tailviewer.Ui.SidePanel.Issues
 		}
 
 		#endregion
+
+		public string EmptyStatement
+		{
+			get { return _emptyStatement; }
+			private set
+			{
+				if (value == _emptyStatement)
+					return;
+
+				_emptyStatement = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string EmptyExplanation
+		{
+			get { return _emptyExplanation; }
+			private set
+			{
+				if (value == _emptyExplanation)
+					return;
+
+				_emptyExplanation = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		private IssuesViewModel GetOrCreateViewModel(IDataSource dataSource)
 		{
@@ -160,6 +190,21 @@ namespace Tailviewer.Ui.SidePanel.Issues
 			{
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				return false;
+			}
+		}
+
+		private void UpdateEmptyReason()
+		{
+			if (CurrentIssues != null)
+			{
+				EmptyStatement = null;
+				EmptyExplanation = null;
+			}
+			else
+			{
+				EmptyStatement = "No issues plugin installed";
+				EmptyExplanation =
+					"There is no plugin installed which is able to present a list of issues for the current data source's log format.";
 			}
 		}
 	}

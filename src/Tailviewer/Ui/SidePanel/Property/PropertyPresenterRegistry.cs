@@ -6,7 +6,7 @@ using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Core;
 
-namespace Tailviewer.Ui.SidePanel.Outline
+namespace Tailviewer.Ui.SidePanel.Property
 {
 	public sealed class PropertyPresenterRegistry
 		: IPropertyPresenterPlugin
@@ -23,25 +23,25 @@ namespace Tailviewer.Ui.SidePanel.Outline
 
 			_wellKnownDisplayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
-				{ Properties.LogEntryCount, "Count" },
-				{ Properties.TraceLogEntryCount, "Trace Count" },
-				{ Properties.DebugLogEntryCount, "Debug Count" },
-				{ Properties.InfoLogEntryCount, "Info Count" },
-				{ Properties.WarningLogEntryCount, "Warning Count" },
-				{ Properties.ErrorLogEntryCount, "Error Count" },
-				{ Properties.FatalLogEntryCount, "Fatal Count" },
-				{ Properties.OtherLogEntryCount, "Other Count" },
+				{ Core.Properties.LogEntryCount, "Count" },
+				{ Core.Properties.TraceLogEntryCount, "Trace Count" },
+				{ Core.Properties.DebugLogEntryCount, "Debug Count" },
+				{ Core.Properties.InfoLogEntryCount, "Info Count" },
+				{ Core.Properties.WarningLogEntryCount, "Warning Count" },
+				{ Core.Properties.ErrorLogEntryCount, "Error Count" },
+				{ Core.Properties.FatalLogEntryCount, "Fatal Count" },
+				{ Core.Properties.OtherLogEntryCount, "Other Count" },
 
-				{ Properties.Name, "Name" },
-				{ Properties.StartTimestamp, "First Timestamp" },
-				{ Properties.EndTimestamp, "Last Timestamp" },
-				{ Properties.Duration, "Duration" },
-				{ Properties.LastModified, "Last Modified" },
-				{ Properties.Created, "Created" },
-				{ Properties.Size, "Size" },
+				{ Core.Properties.Name, "Name" },
+				{ Core.Properties.StartTimestamp, "First Timestamp" },
+				{ Core.Properties.EndTimestamp, "Last Timestamp" },
+				{ Core.Properties.Duration, "Duration" },
+				{ Core.Properties.LastModified, "Last Modified" },
+				{ Core.Properties.Created, "Created" },
+				{ Core.Properties.Size, "Size" },
 
-				{ Properties.PercentageProcessed, "Processed" },
-				{ Properties.Format, "Format" },
+				{ Core.Properties.PercentageProcessed, "Processed" },
+				{ Core.Properties.Format, "Format" },
 				{ TextProperties.AutoDetectedEncoding, "Auto Detected Encoding" },
 				{ TextProperties.OverwrittenEncoding, "Overwritten Encoding" },
 				{ TextProperties.Encoding, "Encoding" }

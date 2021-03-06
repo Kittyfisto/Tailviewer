@@ -49,6 +49,8 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
                 <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Property/PropertiesSidePanelDataTemplate.xaml" />
+                <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Outline/OutlineSidePanelDataTemplate.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />

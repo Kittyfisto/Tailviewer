@@ -336,13 +336,10 @@
     <Compile Include="Ui\SidePanel\Issues\NoThrowLogFileIssuePlugin.cs" />
     <Compile Include="Ui\SidePanel\Issues\SeverityToBrushConverter.cs" />
     <Compile Include="Ui\SidePanel\Issues\SeverityToIconConverter.cs" />
-    <Compile Include="Ui\SidePanel\Outline\DefaultLogFileOutline.xaml.cs">
-      <DependentUpon>DefaultLogFileOutline.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Ui\SidePanel\Outline\DefaultLogFileOutlineViewModel.cs" />
-    <Compile Include="Ui\SidePanel\Outline\DefaultPropertyPresenter.cs" />
-    <Compile Include="Ui\SidePanel\Outline\EncodingPropertyPresenter.cs" />
-    <Compile Include="Ui\SidePanel\Outline\PropertyPresenterRegistry.cs" />
+    <Compile Include="Ui\SidePanel\Property\PropertiesSidePanelViewModel.cs" />
+    <Compile Include="Ui\SidePanel\Property\DefaultPropertyPresenter.cs" />
+    <Compile Include="Ui\SidePanel\Property\EncodingPropertyPresenter.cs" />
+    <Compile Include="Ui\SidePanel\Property\PropertyPresenterRegistry.cs" />
     <Compile Include="Ui\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
     <Compile Include="Ui\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\SidePanel\Outline\LogFilePropertyConverter.cs" />
@@ -596,7 +593,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\SidePanel\Outline\DefaultLogFileOutline.xaml">
+    <Page Include="Ui\SidePanel\Property\PropertiesSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
