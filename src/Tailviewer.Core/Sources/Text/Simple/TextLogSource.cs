@@ -27,7 +27,8 @@ namespace Tailviewer.Core
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		#region Data
-
+		
+		private readonly IFilesystem _filesystem;
 		private readonly IEmptyReason _sourceDoesNotExist;
 		private readonly IEmptyReason _sourceCannotBeAccessed;
 		private readonly Encoding _encoding;
@@ -72,16 +73,19 @@ namespace Tailviewer.Core
 		/// <summary>
 		///    Initializes this text log file.
 		/// </summary>
+		/// <param name="filesystem"></param>
 		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
 		/// <param name="format"></param>
 		/// <param name="encoding"></param>
-		internal TextLogSource(ITaskScheduler taskScheduler,
+		internal TextLogSource(IFilesystem filesystem,
+		                       ITaskScheduler taskScheduler,
 		                       string fileName,
 		                       ILogFileFormat format,
 		                       Encoding encoding)
 			: base(taskScheduler)
 		{
+			_filesystem = filesystem;
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -228,13 +232,13 @@ namespace Tailviewer.Core
 
 			try
 			{
-				if (!File.Exists(_fileName))
+				if (!_filesystem.FileExists(_fileName))
 				{
 					SetDoesNotExist();
 				}
 				else
 				{
-					var info = new FileInfo(_fileName);
+					var info = _filesystem.GetFileInfo(_fileName);
 					var fileSize = info.Length;
 					_localProperties.SetValue(Core.Properties.LastModified, info.LastWriteTimeUtc);
 					_localProperties.SetValue(Core.Properties.Created, info.CreationTimeUtc);
@@ -242,7 +246,7 @@ namespace Tailviewer.Core
 					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
 					SynchronizePropertiesWithUser();
 
-					using (var stream = new FileStream(_fileName,
+					using (var stream = _filesystem.Open(_fileName,
 						FileMode.Open,
 						FileAccess.Read,
 						FileShare.ReadWrite))
@@ -499,7 +503,7 @@ namespace Tailviewer.Core
 			SetEndOfSourceReached();
 		}
 
-		private void OnReset(FileStream stream,
+		private void OnReset(Stream stream,
 		                     out int numberOfLinesRead,
 		                     out long lastPosition)
 		{

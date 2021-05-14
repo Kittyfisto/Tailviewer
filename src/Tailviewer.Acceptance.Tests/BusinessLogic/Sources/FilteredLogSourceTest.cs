@@ -18,11 +18,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 		private const string File20Mb = AbstractTextLogSourceAcceptanceTest.File20Mb;
 
 		private DefaultTaskScheduler _taskScheduler;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 		}
 
 		[TearDown]
@@ -33,7 +35,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 
 		private TextLogSource Create(string fileName)
 		{
-			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
+			return new TextLogSource(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]

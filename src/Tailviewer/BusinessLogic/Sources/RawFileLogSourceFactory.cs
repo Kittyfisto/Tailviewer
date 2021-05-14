@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
@@ -16,13 +17,16 @@ namespace Tailviewer.BusinessLogic.Sources
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly IFilesystem _filesystem;
 
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="filesystem"></param>
 		/// <param name="taskScheduler"></param>
-		public RawFileLogSourceFactory(ITaskScheduler taskScheduler)
+		public RawFileLogSourceFactory(IFilesystem filesystem, ITaskScheduler taskScheduler)
 		{
+			_filesystem = filesystem;
 			_taskScheduler = taskScheduler;
 		}
 
@@ -34,7 +38,7 @@ namespace Tailviewer.BusinessLogic.Sources
 			if (format.IsText)
 			{
 				//return new TextLogSource(_taskScheduler, fileName, format, encoding);
-				return new StreamingTextLogSource(_taskScheduler, fileName, format, encoding);
+				return new StreamingTextLogSource(_filesystem, _taskScheduler, fileName, format, encoding);
 			}
 			else
 			{

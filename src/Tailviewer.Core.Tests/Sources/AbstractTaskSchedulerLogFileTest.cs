@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Api;
@@ -11,19 +12,21 @@ namespace Tailviewer.Core.Tests.Sources
 	public abstract class AbstractTaskSchedulerLogFileTest
 	{
 		private ManualTaskScheduler _taskScheduler;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void Setup()
 		{
 			_taskScheduler = new ManualTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 		}
 
 		private ILogSource CreateEmpty()
 		{
-			return CreateEmpty(_taskScheduler);
+			return CreateEmpty(_filesystem, _taskScheduler);
 		}
 
-		protected abstract ILogSource CreateEmpty(ITaskScheduler taskScheduler);
+		protected abstract ILogSource CreateEmpty(IFilesystem filesystem, ITaskScheduler taskScheduler);
 
 		#region Percentage Processed
 

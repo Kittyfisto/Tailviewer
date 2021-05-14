@@ -38,6 +38,7 @@ namespace Tailviewer.Core
 		/// </remarks>
 		public static readonly IColumnDescriptor<long> LineOffsetInBytes;
 
+		private readonly IFilesystem _filesystem;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IEmptyReason _sourceDoesNotExist;
 		private readonly IEmptyReason _sourceCannotBeAccessed;
@@ -66,15 +67,18 @@ namespace Tailviewer.Core
 		/// <summary>
 		///    Initializes this text log file.
 		/// </summary>
+		/// <param name="filesystem"></param>
 		/// <param name="taskScheduler"></param>
 		/// <param name="fileName"></param>
 		/// <param name="format"></param>
 		/// <param name="encoding"></param>
-		internal StreamingTextLogSource(ITaskScheduler taskScheduler,
+		internal StreamingTextLogSource(IFilesystem filesystem,
+		                                ITaskScheduler taskScheduler,
 		                                string fileName,
 		                                ILogFileFormat format,
 		                                Encoding encoding)
 		{
+			_filesystem = filesystem;
 			_taskScheduler = taskScheduler;
 			_encoding = encoding;
 
@@ -234,7 +238,7 @@ namespace Tailviewer.Core
 
 			try
 			{
-				if (!File.Exists(_fileName))
+				if (!_filesystem.FileExists(_fileName))
 				{
 					SetError(_sourceDoesNotExist);
 				}
@@ -301,10 +305,10 @@ namespace Tailviewer.Core
 				Clear();
 			}
 
-			using (var stream = new FileStream(_fileName,
-			                                   FileMode.Open,
-			                                   FileAccess.Read,
-			                                   FileShare.ReadWrite | FileShare.Delete))
+			using (var stream = _filesystem.Open(_fileName,
+			                                     FileMode.Open,
+			                                     FileAccess.Read,
+			                                     FileShare.ReadWrite | FileShare.Delete))
 			{
 				_propertiesBuffer.SetValue(Core.Properties.EmptyReason, null);
 
@@ -347,7 +351,7 @@ namespace Tailviewer.Core
 			return true;
 		}
 
-		private void AddFirstLineIfNecessary(FileStream stream)
+		private void AddFirstLineIfNecessary(Stream stream)
 		{
 			if (stream.Length <= 0)
 				return;
@@ -482,7 +486,7 @@ namespace Tailviewer.Core
 		private bool HasFileChanged(out FileFingerprint currentFingerprint, out FileFingerprint lastFingerprint)
 		{
 			lastFingerprint = _lastFingerprint;
-			currentFingerprint = FileFingerprint.FromFile(_fileName);
+			currentFingerprint = FileFingerprint.FromFile(_filesystem, _fileName);
 			if (Equals(currentFingerprint, _lastFingerprint))
 				return false;
 
@@ -607,7 +611,7 @@ namespace Tailviewer.Core
 		{
 			try
 			{
-				if (!File.Exists(_fileName))
+				if (!_filesystem.FileExists(_fileName))
 					return null;
 
 				var stream = new FileStream(_fileName,

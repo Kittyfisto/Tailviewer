@@ -36,12 +36,14 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		private DefaultTaskScheduler _taskScheduler;
 		private SimpleLogFileFormatMatcher _formatMatcher;
 		private SimpleLogEntryParserPlugin _logEntryParserPlugin;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serviceContainer = new ServiceContainer();
 			_taskScheduler = new DefaultTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 			_formatMatcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
 			_logEntryParserPlugin = new SimpleLogEntryParserPlugin();
 
@@ -56,16 +58,16 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			_taskScheduler.Dispose();
 		}
 
-		protected abstract ILogSource Create(ITaskScheduler taskScheduler, string fileName, ILogFileFormat format, Encoding encoding);
+		protected abstract ILogSource Create(IFilesystem filesystem, ITaskScheduler taskScheduler, string fileName, ILogFileFormat format, Encoding encoding);
 
 		protected ILogSource Create(string fileName, ILogFileFormat format, Encoding encoding)
 		{
-			return Create(_taskScheduler, fileName, format, encoding);
+			return Create(_filesystem, _taskScheduler, fileName, format, encoding);
 		}
 
 		protected ILogSource Create(string fileName, Encoding encoding)
 		{
-			return Create(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
+			return Create(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		protected ILogSource Create(string fileName)

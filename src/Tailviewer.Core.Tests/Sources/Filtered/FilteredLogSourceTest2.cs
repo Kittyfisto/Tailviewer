@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.Api;
@@ -11,7 +12,7 @@ namespace Tailviewer.Core.Tests.Sources.Filtered
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(IFilesystem filesystem, ITaskScheduler taskScheduler)
 		{
 			return new FilteredLogSource(taskScheduler, TimeSpan.Zero, new EmptyLogSource(), new WildcardFilter("*", true),
 			                           null);
