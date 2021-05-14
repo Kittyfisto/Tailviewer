@@ -59,7 +59,7 @@ namespace Tailviewer.LogLevelPlugin
 			#region Implementation of ILogFileFormatMatcher
 
 			public bool TryMatchFormat(string fileName,
-			                           byte[] data,
+			                           byte[] header,
 			                           Encoding encoding,
 			                           out ILogFileFormat format,
 			                           out Certainty certainty)
