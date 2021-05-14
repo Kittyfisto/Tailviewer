@@ -99,7 +99,7 @@
     <Compile Include="Sources\ILogSourceFactory.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\GenericTextLogEntryParser.cs" />
-    <Compile Include="Sources\Text\RawFileLogSourceFactory.cs" />
+    <Compile Include="Sources\Text\StreamingTextLogSourceFactory.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
     <Compile Include="Sources\Text\FileFormatDetector.cs" />
@@ -221,6 +221,7 @@
     <Compile Include="Settings\TimeFilterSettings.cs" />
     <Compile Include="Settings\TimeFilterMode.cs" />
     <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
+    <Compile Include="Sources\Text\TextLogSourceFactory.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="SourceDoesNotExist.cs" />

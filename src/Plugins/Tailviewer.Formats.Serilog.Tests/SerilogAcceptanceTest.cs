@@ -40,7 +40,7 @@ namespace Tailviewer.Serilog.Test
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogFileFormatMatcher>(new SerilogFileFormatMatcher(_repository.Object));
 			_services.RegisterInstance<IFilesystem>(_filesystem);
-			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_filesystem, _taskScheduler));
+			_services.RegisterInstance<IRawFileLogSourceFactory>(new StreamingTextLogSourceFactory(_filesystem, _taskScheduler));
 			_services.RegisterInstance<IPluginLoader>(_plugins);
 			_services.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(_services));
 			_logSourceFactory = new PluginLogSourceFactory(_services, null);

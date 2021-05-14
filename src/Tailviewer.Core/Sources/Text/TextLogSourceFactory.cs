@@ -11,7 +11,7 @@ namespace Tailviewer.Core
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class RawFileLogSourceFactory
+	public sealed class TextLogSourceFactory
 		: IRawFileLogSourceFactory
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -24,7 +24,7 @@ namespace Tailviewer.Core
 		/// </summary>
 		/// <param name="filesystem"></param>
 		/// <param name="taskScheduler"></param>
-		public RawFileLogSourceFactory(IFilesystem filesystem, ITaskScheduler taskScheduler)
+		public TextLogSourceFactory(IFilesystem filesystem, ITaskScheduler taskScheduler)
 		{
 			_filesystem = filesystem;
 			_taskScheduler = taskScheduler;
@@ -37,8 +37,7 @@ namespace Tailviewer.Core
 		{
 			if (format.IsText)
 			{
-				//return new TextLogSource(_taskScheduler, fileName, format, encoding);
-				return new StreamingTextLogSource(_filesystem, _taskScheduler, fileName, format, encoding);
+				return new TextLogSource(_filesystem, _taskScheduler, fileName, format, encoding);
 			}
 			else
 			{

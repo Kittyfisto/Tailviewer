@@ -23,7 +23,7 @@ namespace Tailviewer.Tests
 			container.RegisterInstance<IFilesystem>(filesystem);
 			container.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
 			container.RegisterInstance<ILogEntryParserPlugin>(new SimpleLogEntryParserPlugin());
-			container.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(filesystem, scheduler));
+			container.RegisterInstance<IRawFileLogSourceFactory>(new StreamingTextLogSourceFactory(filesystem, scheduler));
 			container.RegisterInstance<IPluginLoader>(new PluginRegistry());
 			container.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(container));
 			return container;

@@ -34,7 +34,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			       });
 
 			_filesystem = new Filesystem(_taskScheduler);
-			_rawFileLogSourceFactory = new RawFileLogSourceFactory(_filesystem, _taskScheduler);
+			_rawFileLogSourceFactory = new StreamingTextLogSourceFactory(_filesystem, _taskScheduler);
 			_formatMatcher = new Mock<ILogFileFormatMatcher>();
 
 			_services.RegisterInstance<IFilesystem>(_filesystem);

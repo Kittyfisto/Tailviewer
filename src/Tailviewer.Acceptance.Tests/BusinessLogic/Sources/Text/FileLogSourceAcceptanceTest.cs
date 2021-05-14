@@ -40,7 +40,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 			_filesystem = new Filesystem(_taskScheduler);
 
 			_services.RegisterInstance<IFilesystem>(_filesystem);
-			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_filesystem, _taskScheduler));
+			_services.RegisterInstance<IRawFileLogSourceFactory>(new StreamingTextLogSourceFactory(_filesystem, _taskScheduler));
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogSourceParserPlugin>(_parser.Object);
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);
