@@ -149,7 +149,6 @@
     <Compile Include="BusinessLogic\Sources\NoThrowLogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Sources\NoThrowLogEntryParser.cs" />
     <Compile Include="BusinessLogic\Sources\PluginLogSourceFactory.cs" />
-    <Compile Include="BusinessLogic\Sources\GenericTextLogEntryParser.cs" />
     <Compile Include="BusinessLogic\Sources\LogEntryParserFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />

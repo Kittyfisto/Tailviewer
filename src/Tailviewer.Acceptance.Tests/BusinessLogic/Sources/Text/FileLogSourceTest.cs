@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 
 namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text

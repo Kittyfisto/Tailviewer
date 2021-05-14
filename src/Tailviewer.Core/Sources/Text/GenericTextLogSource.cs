@@ -10,7 +10,7 @@ namespace Tailviewer.Core
 	///     A simple accessor which provides access to log entries produced by a <see cref="ILogEntryParser" />.
 	///     Parsing happens on demand when corresponding properties are requested.
 	/// </summary>
-	internal sealed class GenericTextLogSource
+	public sealed class GenericTextLogSource
 		: ILogSource
 	{
 		private readonly ProxyLogListenerCollection _listeners;
@@ -20,6 +20,11 @@ namespace Tailviewer.Core
 		private readonly IReadOnlyLogEntry _nothingParsed;
 		private ILogSource _source;
 
+		/// <summary>
+		/// Initializes this object.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="parser"></param>
 		public GenericTextLogSource(ILogSource source,
 		                            ILogEntryParser parser)
 		{
@@ -31,23 +36,28 @@ namespace Tailviewer.Core
 			_nothingParsed = new ReadOnlyLogEntry(_parsedColumns);
 		}
 
+		/// <inheritdoc />
 		public IReadOnlyList<IColumnDescriptor> Columns => _allColumns;
 
+		/// <inheritdoc />
 		public void AddListener(ILogSourceListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
+		/// <inheritdoc />
 		public void RemoveListener(ILogSourceListener listener)
 		{
 			_listeners.RemoveListener(listener);
 		}
 
+		/// <inheritdoc />
 		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get { return _source?.Properties ?? new IReadOnlyPropertyDescriptor[0]; }
 		}
 
+		/// <inheritdoc />
 		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
 			var source = _source;
@@ -57,6 +67,7 @@ namespace Tailviewer.Core
 			return property.DefaultValue;
 		}
 
+		/// <inheritdoc />
 		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			var source = _source;
@@ -66,21 +77,25 @@ namespace Tailviewer.Core
 			return property.DefaultValue;
 		}
 
+		/// <inheritdoc />
 		public void SetProperty(IPropertyDescriptor property, object value)
 		{
 			_source?.SetProperty(property, value);
 		}
 
+		/// <inheritdoc />
 		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
 		{
 			_source?.SetProperty(property, value);
 		}
 
+		/// <inheritdoc />
 		public void GetAllProperties(IPropertiesBuffer destination)
 		{
 			_source?.GetAllProperties(destination);
 		}
 
+		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
 		                         IColumnDescriptor<T> column,
 		                         T[] destination,
@@ -103,6 +118,7 @@ namespace Tailviewer.Core
 			           0, queryOptions);
 		}
 
+		/// <inheritdoc />
 		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices,
 		                       ILogBuffer destination,
 		                       int destinationIndex,
@@ -138,6 +154,7 @@ namespace Tailviewer.Core
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			return _source?.GetLogLineIndexOfOriginalLineIndex(originalLineIndex) ?? LogLineIndex.Invalid;
@@ -145,6 +162,7 @@ namespace Tailviewer.Core
 
 		#region Implementation of IDisposable
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			_source?.Dispose();

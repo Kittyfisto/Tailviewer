@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tailviewer.Api;
-using Tailviewer.Core;
 
-namespace Tailviewer.BusinessLogic.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
-	internal sealed class GenericTextLogEntryParser
+	/// <summary>
+	///   The <see cref="ILogEntryParser"/> which is used when no better one can be found.
+	///   Implements Tailviewer's default behavior to parse <see cref="ILogEntry"/>s.
+	/// </summary>
+	public sealed class GenericTextLogEntryParser
 		: ILogEntryParser
 	{
 		private static readonly string[] RemovableCharacters;
@@ -26,10 +30,17 @@ namespace Tailviewer.BusinessLogic.Sources
 			                                .Concat(new []{"\u007f"}).ToArray();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public GenericTextLogEntryParser()
 			: this(new TimestampParser())
 		{ }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="timestampParser"></param>
 		public GenericTextLogEntryParser(ITimestampParser timestampParser)
 		{
 			_timestampParser = timestampParser ?? throw new ArgumentNullException(nameof(timestampParser));
@@ -39,6 +50,7 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		#region Implementation of IDisposable
 
+		/// <inheritdoc />
 		public void Dispose()
 		{}
 
@@ -46,6 +58,7 @@ namespace Tailviewer.BusinessLogic.Sources
 
 		#region Implementation of ITextLogFileParser
 
+		/// <inheritdoc />
 		public IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry)
 		{
 			var rawContent = logEntry.RawContent;
@@ -58,6 +71,7 @@ namespace Tailviewer.BusinessLogic.Sources
 			return new ParsedLogEntry(logEntry, line, level, timestamp);
 		}
 
+		/// <inheritdoc />
 		public IEnumerable<IColumnDescriptor> Columns
 		{
 			get
