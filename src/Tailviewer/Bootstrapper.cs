@@ -113,7 +113,7 @@ namespace Tailviewer
 					File = Constants.ApplicationLogFile,
 					Layout = patternLayout,
 					MaxSizeRollBackups = 20,
-					MaximumFileSize = "1GB",
+					MaximumFileSize = "10MB",
 					RollingStyle = RollingFileAppender.RollingMode.Size,
 					StaticLogFileName = false
 				};
@@ -123,10 +123,10 @@ namespace Tailviewer
 			//SetLogLevelOf<MergedLogFile>(Level.Debug);
 			//SetLogLevelOf<MergedLogFileIndex>(Level.Debug);
 			//SetLogLevelOf<LogFileProxy>(Level.Debug);
-			SetLogLevelOf<StreamingTextLogSource>(Level.Debug);
-			SetLogLevelOf<StreamingTextLogSource.AbstractReadRequest>(Level.Debug);
-			SetLogLevelOf<TextCanvas>(Level.Debug);
-			SetLogLevelOf<PageBufferedLogSource>(Level.Debug);
+			//SetLogLevelOf<StreamingTextLogSource>(Level.Debug);
+			//SetLogLevelOf<StreamingTextLogSource.AbstractReadRequest>(Level.Debug);
+			//SetLogLevelOf<TextCanvas>(Level.Debug);
+			//SetLogLevelOf<PageBufferedLogSource>(Level.Debug);
 
 			hierarchy.Root.Level = Level.Info;
 			hierarchy.Configured = true;
