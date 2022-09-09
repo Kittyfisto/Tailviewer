@@ -61,6 +61,18 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		}
 
 		[Test]
+		public void TestFileDoesNotExist()
+		{
+			var fileName = GetUniqueNonExistingFileName();
+
+			var source = Create(fileName);
+			_taskScheduler.Run(5);
+
+			source.GetProperty(Properties.EmptyReason).Should().BeOfType<SourceDoesNotExist>();
+			source.GetProperty(Properties.Created).Should().Be(null);
+		}
+
+		[Test]
 		public void TestFileCannotBeAccessed()
 		{
 			var fileName = GetUniqueNonExistingFileName();
