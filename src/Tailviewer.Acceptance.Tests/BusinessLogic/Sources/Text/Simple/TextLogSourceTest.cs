@@ -23,11 +23,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		private Mock<ILogSourceListener> _listener;
 		private List<LogSourceModification> _modifications;
 		private BinaryWriter _binaryWriter;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void Setup()
 		{
 			_taskScheduler = new ManualTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 			_fname = PathEx.GetTempFileName();
 			if (File.Exists(_fname))
 				File.Delete(_fname);
@@ -62,7 +64,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple
 		private TextLogSource Create(string fileName,
 		                           Encoding encoding)
 		{
-			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
+			return new TextLogSource(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		[Test]

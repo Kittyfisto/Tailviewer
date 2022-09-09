@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using Tailviewer.Api;
@@ -11,7 +12,7 @@ namespace Tailviewer.Core.Tests.Sources.MultiLine
 	{
 		#region Overrides of AbstractTaskSchedulerLogFileTest
 
-		protected override ILogSource CreateEmpty(ITaskScheduler taskScheduler)
+		protected override ILogSource CreateEmpty(IFilesystem filesystem, ITaskScheduler taskScheduler)
 		{
 			return new MultiLineLogSource(taskScheduler, new EmptyLogSource(), TimeSpan.Zero);
 		}

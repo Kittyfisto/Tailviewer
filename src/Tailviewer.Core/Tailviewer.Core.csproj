@@ -52,8 +52,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=2.0.72.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.2.0.72\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.CSharp" />
@@ -98,6 +98,8 @@
     <Compile Include="Sources\Buffer\FullyBufferedLogSource.cs" />
     <Compile Include="Sources\ILogSourceFactory.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
+    <Compile Include="Sources\Text\GenericTextLogEntryParser.cs" />
+    <Compile Include="Sources\Text\StreamingTextLogSourceFactory.cs" />
     <Compile Include="Sources\Text\EncodingDetector.cs" />
     <Compile Include="Sources\Text\FileFingerprint.cs" />
     <Compile Include="Sources\Text\FileFormatDetector.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Sources\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="Sources\Merged\Stuff.cs" />
     <Compile Include="Properties\TextProperties.cs" />
+    <Compile Include="Sources\Text\FileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\GenericTextLogSource.cs" />
     <Compile Include="Sources\Text\IRawFileLogSourceFactory.cs" />
     <Compile Include="Sources\Text\Streaming\LineOffsetDetector.cs" />
@@ -218,6 +221,7 @@
     <Compile Include="Settings\TimeFilterSettings.cs" />
     <Compile Include="Settings\TimeFilterMode.cs" />
     <Compile Include="Sources\Text\Simple\StreamReaderEx.cs" />
+    <Compile Include="Sources\Text\TextLogSourceFactory.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="SourceDoesNotExist.cs" />

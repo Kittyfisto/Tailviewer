@@ -1,28 +1,32 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using log4net;
 using Tailviewer.Api;
-using Tailviewer.Core;
 
-namespace Tailviewer.BusinessLogic.Sources
+// ReSharper disable once CheckNamespace
+namespace Tailviewer.Core
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class RawFileLogSourceFactory
+	public sealed class TextLogSourceFactory
 		: IRawFileLogSourceFactory
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly IFilesystem _filesystem;
 
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="filesystem"></param>
 		/// <param name="taskScheduler"></param>
-		public RawFileLogSourceFactory(ITaskScheduler taskScheduler)
+		public TextLogSourceFactory(IFilesystem filesystem, ITaskScheduler taskScheduler)
 		{
+			_filesystem = filesystem;
 			_taskScheduler = taskScheduler;
 		}
 
@@ -33,8 +37,7 @@ namespace Tailviewer.BusinessLogic.Sources
 		{
 			if (format.IsText)
 			{
-				//return new TextLogSource(_taskScheduler, fileName, format, encoding);
-				return new StreamingTextLogSource(_taskScheduler, fileName, format, encoding);
+				return new TextLogSource(_filesystem, _taskScheduler, fileName, format, encoding);
 			}
 			else
 			{

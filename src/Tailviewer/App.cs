@@ -25,7 +25,7 @@ using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
-using Tailviewer.Ui.SidePanel.Outline;
+using Tailviewer.Ui.SidePanel.Property;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -181,7 +181,7 @@ namespace Tailviewer
 					var propertyPresenter = new PropertyPresenterRegistry(pluginSystem);
 					services.RegisterInstance<IPropertyPresenterPlugin>(propertyPresenter);
 
-					var fileLogSourceFactory = new RawFileLogSourceFactory(taskScheduler);
+					var fileLogSourceFactory = new StreamingTextLogSourceFactory(filesystem, taskScheduler);
 					services.RegisterInstance<IRawFileLogSourceFactory>(fileLogSourceFactory);
 
 					var parsingLogSourceFactory = new ParsingLogSourceFactory(services);

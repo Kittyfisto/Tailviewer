@@ -25,6 +25,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 		private ManualTaskScheduler _taskScheduler;
 		private SimpleLogFileFormatMatcher _formatMatcher;
 		private SimpleLogEntryParserPlugin _logEntryParserPlugin;
+		private Filesystem _filesystem;
 
 		public static IReadOnlyList<Encoding> Encodings => LineOffsetDetectorTest.Encodings;
 
@@ -39,10 +40,12 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 		{
 			_serviceContainer = new ServiceContainer();
 			_taskScheduler = new ManualTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 			_formatMatcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
 			_logEntryParserPlugin = new SimpleLogEntryParserPlugin();
 
 			_serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
+			_serviceContainer.RegisterInstance<IFilesystem>(_filesystem);
 			_serviceContainer.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);
 			_serviceContainer.RegisterInstance<ILogEntryParserPlugin>(_logEntryParserPlugin);
 
@@ -60,7 +63,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 
 		private StreamingTextLogSource Create(string fileName, Encoding encoding)
 		{
-			return new StreamingTextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, encoding);
+			return new StreamingTextLogSource(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, encoding);
 		}
 
 		private IReadOnlyLogEntry GetEntry(StreamingTextLogSource logSource, LogLineIndex index)
@@ -149,7 +152,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 		public void TestEmptyFile([Values(1, 2, 3)] int numReadOperations)
 		{
 			var fileName = @"TestData\Empty.txt";
-			var info = FileFingerprint.FromFile(fileName);
+			var info = FileFingerprint.FromFile(_filesystem, fileName);
 
 			var logFile = Create(fileName, Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
@@ -172,7 +175,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 		public void Test1Line([Values(1, 2, 3)] int numReadOperations)
 		{
 			var fileName = @"TestData\1Line.txt";
-			var info = FileFingerprint.FromFile(fileName);
+			var info = FileFingerprint.FromFile(_filesystem, fileName);
 
 			var logFile = Create(fileName, Encoding.Default);
 			_taskScheduler.Run(numReadOperations);
@@ -197,7 +200,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Streaming
 		{
 			// TODO: Rename to 3 lines because that filename is just plain wrong
 			var fileName = @"TestData\2Lines.txt";
-			var info = FileFingerprint.FromFile(fileName);
+			var info = FileFingerprint.FromFile(_filesystem, fileName);
 
 			var logFile = Create(fileName, Encoding.UTF8);
 			_taskScheduler.RunOnce();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using FluentAssertions;
@@ -22,12 +23,14 @@ namespace Tailviewer.Serilog.Test
 		private List<SerilogFileFormat> _formats;
 		private PluginRegistry _plugins;
 		private PluginLogSourceFactory _logSourceFactory;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void Setup()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
 			_formats = new List<SerilogFileFormat>();
+			_filesystem = new Filesystem(_taskScheduler);
 			_repository = new Mock<ILogFileFormatRepository>();
 			_repository.Setup(x => x.Formats).Returns(() => _formats);
 			_plugins = new PluginRegistry();
@@ -36,7 +39,8 @@ namespace Tailviewer.Serilog.Test
 			_services = new ServiceContainer();
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogFileFormatMatcher>(new SerilogFileFormatMatcher(_repository.Object));
-			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_taskScheduler));
+			_services.RegisterInstance<IFilesystem>(_filesystem);
+			_services.RegisterInstance<IRawFileLogSourceFactory>(new StreamingTextLogSourceFactory(_filesystem, _taskScheduler));
 			_services.RegisterInstance<IPluginLoader>(_plugins);
 			_services.RegisterInstance<ILogSourceParserPlugin>(new ParsingLogSourceFactory(_services));
 			_logSourceFactory = new PluginLogSourceFactory(_services, null);

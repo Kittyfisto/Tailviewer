@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text.Simple;
 using Tailviewer.Api;
 using Tailviewer.Api.Tests;
-using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
 using Tailviewer.Core.Tests;
 
@@ -22,6 +21,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 		private DefaultTaskScheduler _taskScheduler;
 		private Mock<ILogSourceParserPlugin> _parser;
 		private SimpleLogFileFormatMatcher _formatMatcher;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void Setup()
@@ -37,7 +37,10 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources.Text
 
 			_formatMatcher = new SimpleLogFileFormatMatcher(null);
 
-			_services.RegisterInstance<IRawFileLogSourceFactory>(new RawFileLogSourceFactory(_taskScheduler));
+			_filesystem = new Filesystem(_taskScheduler);
+
+			_services.RegisterInstance<IFilesystem>(_filesystem);
+			_services.RegisterInstance<IRawFileLogSourceFactory>(new StreamingTextLogSourceFactory(_filesystem, _taskScheduler));
 			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			_services.RegisterInstance<ILogSourceParserPlugin>(_parser.Object);
 			_services.RegisterInstance<ILogFileFormatMatcher>(_formatMatcher);

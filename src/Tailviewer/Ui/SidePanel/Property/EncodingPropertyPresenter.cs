@@ -9,7 +9,7 @@ using log4net;
 using Tailviewer.Api;
 using Tailviewer.Ui.Settings;
 
-namespace Tailviewer.Ui.SidePanel.Outline
+namespace Tailviewer.Ui.SidePanel.Property
 {
 	public sealed class EncodingPropertyPresenter
 		: IPropertyPresenter

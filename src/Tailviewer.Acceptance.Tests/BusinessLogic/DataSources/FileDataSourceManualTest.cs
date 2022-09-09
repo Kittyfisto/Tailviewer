@@ -16,6 +16,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 	public sealed class FileDataSourceManualTest
 	{
 		private ManualTaskScheduler _scheduler;
+		private Filesystem _filesystem;
 		private string _fname;
 		private FileStream _stream;
 		private StreamWriter _writer;
@@ -29,6 +30,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 			if (File.Exists(_fname))
 				File.Delete(_fname);
 			_scheduler = new ManualTaskScheduler();
+			_filesystem = new Filesystem(_scheduler);
 			
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
@@ -42,7 +44,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.DataSources
 
 		private TextLogSource Create(string fileName)
 		{
-			return new TextLogSource(_scheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
+			return new TextLogSource(_filesystem, _scheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]

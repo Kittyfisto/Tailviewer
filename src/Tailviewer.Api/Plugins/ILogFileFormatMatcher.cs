@@ -25,7 +25,7 @@ namespace Tailviewer.Api
 		///     way that it blocks for long amounts of time, then Tailviewer's performance will suffer incredibly so just don't do that.
 		/// </remarks>
 		/// <param name="fileName">The complete file path of the log file.</param>
-		/// <param name="data">A **portion** of the file, usually up to the first 512 bytes</param>
+		/// <param name="header">A **portion** of the file, usually up to the first 512 bytes</param>
 		/// <param name="encoding">
 		///     The encoding with which the file should be opened, in case it is a text file.
 		/// </param>
@@ -38,7 +38,7 @@ namespace Tailviewer.Api
 		/// <returns>true in case this matcher is 100% certain that the given log file is of a particular format, false otherwise.</returns>
 		[ThreadSafe]
 		bool TryMatchFormat(string fileName,
-		                    byte[] data,
+		                    byte[] header,
 		                    Encoding encoding,
 		                    out ILogFileFormat format,
 		                    out Certainty certainty);

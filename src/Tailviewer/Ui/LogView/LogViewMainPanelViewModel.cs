@@ -24,6 +24,7 @@ using Tailviewer.Ui.SidePanel.DataSources;
 using Tailviewer.Ui.SidePanel.Highlighters;
 using Tailviewer.Ui.SidePanel.Issues;
 using Tailviewer.Ui.SidePanel.Outline;
+using Tailviewer.Ui.SidePanel.Property;
 using Tailviewer.Ui.SidePanel.QuickFilters;
 
 namespace Tailviewer.Ui.LogView
@@ -40,6 +41,7 @@ namespace Tailviewer.Ui.LogView
 
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly BookmarksViewModel _bookmarks;
+		private readonly PropertiesSidePanelViewModel _properties;
 		private readonly OutlineSidePanelViewModel _outline;
 		private readonly IssuesSidePanelViewModel _issues;
 
@@ -82,6 +84,7 @@ namespace Tailviewer.Ui.LogView
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
+			_properties = new PropertiesSidePanelViewModel(services);
 			_outline = new OutlineSidePanelViewModel(services);
 			_issues = new IssuesSidePanelViewModel(services);
 
@@ -90,6 +93,7 @@ namespace Tailviewer.Ui.LogView
 				_quickFilters,
 				//_highlighters,
 				_bookmarks,
+				_properties,
 				_outline,
 				_issues
 			};
@@ -182,6 +186,7 @@ namespace Tailviewer.Ui.LogView
 			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
 			_bookmarks.CurrentDataSource = value?.DataSource;
+			_properties.CurrentDataSource = value?.DataSource;
 			_outline.CurrentDataSource = value?.DataSource;
 			_issues.CurrentDataSource = value?.DataSource;
 			Search = value?.Search;
@@ -442,6 +447,7 @@ namespace Tailviewer.Ui.LogView
 		{
 			CurrentDataSourceLogView?.Update();
 			_dataSources.Update();
+			_properties.Update();
 			_bookmarks.Update();
 			_outline.Update();
 			_issues.Update();

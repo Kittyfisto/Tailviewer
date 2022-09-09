@@ -2,14 +2,19 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Tailviewer.Api;
+using Tailviewer.Core;
 
 namespace Tailviewer.LogLevelPlugin
 {
 	/// <summary>
-	///     This class is responsible for categorizing log files (if it knows them) so that other plugins can simply check if
-	///     the
-	///     <see cref="ILogSource" />'s format matches the format they both know and want to actually influence.
+	///     This class is instantiated when this plugin is loaded by tailviewer and will be used to categorize log files into a particular
+	///     <see cref="ILogFileFormat"/>. The first matcher which claims a <see cref="Certainty.Sure"/> detection wins and the format it
+	///     detects will be locked in.
 	/// </summary>
+	/// <remarks>
+	///     Other plugins will, in turn, be able to use the <see cref="Properties.Format"/> of an <see cref="ILogSource"/> to determine if they
+	///     want to work with that log source or if they don't want to.
+	/// </remarks>
 	public sealed class MyLogFileFormatMatcherPlugin
 		: ILogFileFormatMatcherPlugin
 	{
@@ -54,7 +59,7 @@ namespace Tailviewer.LogLevelPlugin
 			#region Implementation of ILogFileFormatMatcher
 
 			public bool TryMatchFormat(string fileName,
-			                           byte[] data,
+			                           byte[] header,
 			                           Encoding encoding,
 			                           out ILogFileFormat format,
 			                           out Certainty certainty)

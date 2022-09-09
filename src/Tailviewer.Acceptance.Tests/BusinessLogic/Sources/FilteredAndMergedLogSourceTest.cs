@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using FluentAssertions;
@@ -14,11 +15,13 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 	public sealed class FilteredAndMergedLogSourceTest
 	{
 		private DefaultTaskScheduler _taskScheduler;
+		private Filesystem _filesystem;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 		}
 
 		[TearDown]
@@ -29,7 +32,7 @@ namespace Tailviewer.Acceptance.Tests.BusinessLogic.Sources
 
 		private TextLogSource Create(string fileName)
 		{
-			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
+			return new TextLogSource(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]

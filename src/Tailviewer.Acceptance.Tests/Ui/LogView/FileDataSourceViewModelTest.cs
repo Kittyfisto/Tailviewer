@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace Tailviewer.Acceptance.Tests.Ui.LogView
 	public sealed class FileDataSourceViewModelTest
 	{
 		private DefaultTaskScheduler _taskScheduler;
+		private Filesystem _filesystem;
 		private Mock<IActionCenter> _actionCenter;
 		private Mock<IApplicationSettings> _applicationSettings;
 
@@ -28,6 +30,7 @@ namespace Tailviewer.Acceptance.Tests.Ui.LogView
 		public void SetUp()
 		{
 			_taskScheduler = new DefaultTaskScheduler();
+			_filesystem = new Filesystem(_taskScheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_applicationSettings = new Mock<IApplicationSettings>();
 		}
@@ -58,7 +61,7 @@ namespace Tailviewer.Acceptance.Tests.Ui.LogView
 
 		private TextLogSource Create(string fileName)
 		{
-			return new TextLogSource(_taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
+			return new TextLogSource(_filesystem, _taskScheduler, fileName, LogFileFormats.GenericText, Encoding.Default);
 		}
 
 		[Test]

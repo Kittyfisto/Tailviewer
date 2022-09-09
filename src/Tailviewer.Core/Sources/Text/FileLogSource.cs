@@ -41,6 +41,7 @@ namespace Tailviewer.Core
 		private readonly PropertiesBufferList _propertiesBuffer;
 		private readonly ConcurrentPropertiesList _properties;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly IFilesystem _filesystem;
 		private const int MaximumLineCount = 10000;
 		private bool _isDisposed;
 
@@ -64,6 +65,7 @@ namespace Tailviewer.Core
 			: base(services.Retrieve<ITaskScheduler>())
 		{
 			_syncRoot = new object();
+			_filesystem = services.Retrieve<IFilesystem>();
 			_services = services;
 			_fullFilename = Path.IsPathRooted(fileName)
 				? fileName
@@ -203,7 +205,7 @@ namespace Tailviewer.Core
 			{
 				if (DetectFileChange(out var overwrittenEncoding))
 				{
-					if (!File.Exists(_fullFilename))
+					if (!_filesystem.FileExists(_fullFilename))
 					{
 						SetError(_sourceDoesNotExist);
 					}
@@ -262,7 +264,7 @@ namespace Tailviewer.Core
 			try
 			{
 				error = null;
-				return new FileStream(fileName, FileMode.Open, FileAccess.Read,
+				return _filesystem.Open(fileName, FileMode.Open, FileAccess.Read,
 				                      FileShare.ReadWrite | FileShare.Delete);
 			}
 			catch (FileNotFoundException e)
@@ -304,7 +306,7 @@ namespace Tailviewer.Core
 		private bool DetectFileChange(out Encoding overwrittenEncoding)
 		{
 			overwrittenEncoding = null;
-			if (!File.Exists(_fullFilename))
+			if (!_filesystem.FileExists(_fullFilename))
 			{
 				if (_lastFingerprint != null)
 				{
@@ -316,7 +318,7 @@ namespace Tailviewer.Core
 				return false;
 			}
 
-			var currentFingerprint = FileFingerprint.FromFile(_fullFilename);
+			var currentFingerprint = FileFingerprint.FromFile(_filesystem, _fullFilename);
 			if (!Equals(currentFingerprint, _lastFingerprint))
 			{
 				Log.DebugFormat("File {0} fingerprint changed from {1} to {2}", _fullFilename, _lastFingerprint, currentFingerprint);

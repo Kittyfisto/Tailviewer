@@ -47,9 +47,9 @@ namespace Tailviewer.Core
 			get { return _size; }
 		}
 
-		public static FileFingerprint FromFile(string fileName)
+		public static FileFingerprint FromFile(IFilesystem filesystem, string fileName)
 		{
-			var info = new FileInfo(fileName);
+			var info = filesystem.GetFileInfo(fileName);
 			return new FileFingerprint(fileName, info.CreationTimeUtc, info.LastWriteTimeUtc, info.Length);
 		}
 
