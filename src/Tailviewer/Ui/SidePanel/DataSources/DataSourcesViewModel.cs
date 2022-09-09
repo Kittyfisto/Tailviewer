@@ -148,6 +148,9 @@ namespace Tailviewer.Ui.SidePanel.DataSources
 				_isPinned = value;
 				_settings.DataSources.IsPinned = value;
 				EmitPropertyChanged();
+
+				if (!value)
+					IsChecked = false;
 			}
 		}
 
