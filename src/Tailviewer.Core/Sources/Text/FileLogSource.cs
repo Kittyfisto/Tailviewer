@@ -54,6 +54,7 @@ namespace Tailviewer.Core
 		private int _count;
 		private FileFingerprint _lastFingerprint;
 		private int _maxCharactersInLine;
+		private bool _anyChange;
 
 		#endregion
 
@@ -315,6 +316,20 @@ namespace Tailviewer.Core
 					return true;
 				}
 
+				if (!_anyChange)
+				{
+					// We haven't detected any change (i.e. we're within the first loop of this source) and the
+					// file doesn't exist. We want our code to run through at least one loop so that EmptyReason, etc...
+					// are filled correctly. We do this by returning "true" (=a change occurred) ONCE and then no more until
+					// we find an actual change...
+					Log.DebugFormat("File {0} does not exist", _fullFilename);
+
+					_anyChange = true;
+ 
+					return true;
+				}
+
+				// We don't have a fingerprint, which means that th
 				return false;
 			}
 
