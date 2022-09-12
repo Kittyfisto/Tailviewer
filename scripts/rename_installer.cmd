@@ -34,7 +34,7 @@ call "%dest_installer_name%" silentinstall || goto :INSTALLATION_FAILED
 echo Installation succeeded!
 
 set install_directory=%PROGRAMFILES%\Tailviewer
-set portable_full_name="%cd%\%dest_portable_name%
+set portable_full_name=%cd%\%dest_portable_name%
 echo Creating portable version from %install_directory% to %portable_full_name%
 tar -a -cvf "%portable_full_name%" -C "%install_directory%" * || goto :PORTABLE_FAILED
 echo Successfully created portable archive!
