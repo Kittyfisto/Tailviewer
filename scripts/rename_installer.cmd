@@ -22,7 +22,7 @@ if [%BRANCH_NAME%] == [master] (
 	set dest_portable_name=Tailviewer-portable-%APPVEYOR_BUILD_VERSION%.zip
 	set dest_installer_name=Tailviewer-setup-%APPVEYOR_BUILD_VERSION%.exe
 ) else (
-	set dest_portable_name=Tailviewer-setup-branch-%BRANCH_NAME%-%COMMIT_HASH%.zip
+	set dest_portable_name=Tailviewer-portable-%BRANCH_NAME%-%COMMIT_HASH%.zip
 	set dest_installer_name=Tailviewer-setup-branch-%BRANCH_NAME%-%COMMIT_HASH%.exe
 )
 
