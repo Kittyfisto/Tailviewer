@@ -56,7 +56,7 @@ namespace Tailviewer.BusinessLogic.Sources
 			{
 				try
 				{
-					return _inner.Columns;
+					return _inner.Columns ?? Enumerable.Empty<IColumnDescriptor>();
 				}
 				catch (Exception e)
 				{

@@ -239,10 +239,11 @@ namespace Tailviewer.Archiver.Plugins
 			if (!File.Exists(fullPath)) //< If the dependency is not part of the TV installation, we try to load it through the plugin
 			{
 				// This assembly may be part of a plugin itself
+				var assemblyName = Path.GetFileName(fullPath);
 				var plugins = FindPluginGroupFor(args);
 				foreach (var plugin in plugins)
 				{
-					var assembly = TryLoadAssembly(args, plugin);
+					var assembly = TryLoadAssembly(assemblyName, plugin);
 					if (assembly != null)
 					{
 						return assembly;
@@ -255,15 +256,20 @@ namespace Tailviewer.Archiver.Plugins
 			return null;
 		}
 
-		private static Assembly TryLoadAssembly(ResolveEventArgs args, PluginGroup plugin)
+		private static Assembly TryLoadAssembly(string assemblyFileName, PluginGroup plugin)
 		{
 			try
 			{
-				return plugin.LoadAssembly(args.Name);
+				if (assemblyFileName.Contains("ewt"))
+				{
+					Console.WriteLine("fuck");
+				}
+
+				return plugin.LoadAssembly(assemblyFileName);
 			}
 			catch (Exception e)
 			{
-				Log.DebugFormat("Unable to load assembly '{0}' from plugin '{1}': {2}", args.Name, plugin, e);
+				Log.DebugFormat("Unable to load assembly '{0}' from plugin '{1}': {2}", assemblyFileName, plugin, e);
 				return null;
 			}
 		}
@@ -292,7 +298,13 @@ namespace Tailviewer.Archiver.Plugins
 			if (plugins.Count > 1)
 				Log.WarnFormat("Found multiple plugins trying to load an assembly at the same time! We may use the wrong one :(");
 
-			return plugins;
+			if (plugins.Count == 1)
+				return plugins;
+
+			// It's quite possible that we're having to load a dependency a long time after the plugin was initially loaded.
+			// In this case we'll just have to try every plugin since it's really hard to know from which plugin this request
+			// came from...
+			return _plugins.Values.ToList();
 		}
 	}
 }
