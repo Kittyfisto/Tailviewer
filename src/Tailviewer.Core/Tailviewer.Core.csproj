@@ -97,7 +97,6 @@
     <Compile Include="Sources\Adorner\LogSourceColumnAdorner.cs" />
     <Compile Include="Sources\Buffer\FullyBufferedLogSource.cs" />
     <Compile Include="Sources\ILogSourceFactory.cs" />
-    <Compile Include="Sources\LineSplitLogSource.cs" />
     <Compile Include="Sources\ProxyLogListenerCollection.cs" />
     <Compile Include="Sources\Text\GenericTextLogEntryParser.cs" />
     <Compile Include="Sources\Text\StreamingTextLogSourceFactory.cs" />

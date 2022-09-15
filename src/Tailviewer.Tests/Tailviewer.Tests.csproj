@@ -100,6 +100,7 @@
     <Compile Include="BusinessLogic\Settings\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\Settings\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Sources\LogEntryParserFactoryTest.cs" />
+    <Compile Include="BusinessLogic\Sources\NoThrowLogEntryParserTest.cs" />
     <Compile Include="BusinessLogic\Sources\NoThrowLogSourceTest.cs" />
     <Compile Include="BusinessLogic\Sources\ParsingLogSourceFactoryTest.cs" />
     <Compile Include="BusinessLogic\Sources\PluginLogFileFactoryTest.cs" />
