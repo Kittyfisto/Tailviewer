@@ -260,11 +260,6 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			try
 			{
-				if (assemblyFileName.Contains("ewt"))
-				{
-					Console.WriteLine("fuck");
-				}
-
 				return plugin.LoadAssembly(assemblyFileName);
 			}
 			catch (Exception e)
