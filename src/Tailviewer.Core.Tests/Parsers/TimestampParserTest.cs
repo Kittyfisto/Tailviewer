@@ -237,6 +237,21 @@ namespace Tailviewer.Core.Tests.Parsers
 		}
 
 		[Test]
+		public void TestTryParse14()
+		{
+			var parser = new TimestampParser();
+			parser.TryParse("19:50:58,998",
+			                out var dateTime)
+			      .Should()
+			      .BeTrue();
+
+			dateTime.Hour.Should().Be(19);
+			dateTime.Minute.Should().Be(50);
+			dateTime.Second.Should().Be(58);
+			dateTime.Millisecond.Should().Be(998);
+		}
+
+		[Test]
 		public void TestTryParseLongGarbageLine()
 		{
 			var parser = new TimestampParser();
