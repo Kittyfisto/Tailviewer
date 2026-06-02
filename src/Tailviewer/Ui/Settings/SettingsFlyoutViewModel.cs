@@ -188,6 +188,21 @@ namespace Tailviewer.Ui.Settings
 			get { return new DelegateCommand2(ChooseExportFolder); }
 		}
 
+		public IReadOnlyList<Theme> Themes { get; } = new[] {Theme.Light, Theme.Dark};
+
+		public Theme SelectedTheme
+		{
+			get { return _settings.SelectedTheme; }
+			set
+			{
+				if (value == _settings.SelectedTheme)
+					return;
+
+				_settings.SelectedTheme = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public int ScrollSpeed
 		{
 			get { return _settings.LogViewer.LinesScrolledPerWheelTick; }

@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Light theme: bright surfaces with dark text. -->
+
+    <Color x:Key="ThemeWindowBackground">#FFFFFF</Color>
+    <Color x:Key="ThemePanelBackground">#FFFFFF</Color>
+    <Color x:Key="ThemeSecondaryBackground">#EAEDF2</Color>
+    <Color x:Key="ThemeForeground">#333333</Color>
+    <Color x:Key="ThemeSecondaryForeground">#A9A9A9</Color>
+    <Color x:Key="ThemeBorder">#CCCCCC</Color>
+
+    <!-- Colors used by code-drawn log view elements (see AppTheme.cs). -->
+    <Color x:Key="ThemeLogBackground">#FFFFFF</Color>
+    <Color x:Key="ThemeLogAlternatingBackground">#E8F1F7</Color>
+    <Color x:Key="ThemeLogForeground">#000000</Color>
+    <Color x:Key="ThemeLineNumberForeground">#2B91AF</Color>
+
+    <SolidColorBrush x:Key="ThemeWindowBackgroundBrush" Color="{StaticResource ThemeWindowBackground}" />
+    <SolidColorBrush x:Key="ThemePanelBackgroundBrush" Color="{StaticResource ThemePanelBackground}" />
+    <SolidColorBrush x:Key="ThemeSecondaryBackgroundBrush" Color="{StaticResource ThemeSecondaryBackground}" />
+    <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{StaticResource ThemeForeground}" />
+    <SolidColorBrush x:Key="ThemeSecondaryForegroundBrush" Color="{StaticResource ThemeSecondaryForeground}" />
+    <SolidColorBrush x:Key="ThemeBorderBrush" Color="{StaticResource ThemeBorder}" />
+
+</ResourceDictionary>

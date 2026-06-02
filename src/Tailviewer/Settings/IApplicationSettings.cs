@@ -44,6 +44,11 @@ namespace Tailviewer.Settings
 		ICustomFormatsSettings CustomFormats { get; }
 
 		/// <summary>
+		///     The theme (light/dark) currently selected by the user.
+		/// </summary>
+		Theme SelectedTheme { get; set; }
+
+		/// <summary>
 		/// 
 		/// </summary>
 		void SaveAsync();

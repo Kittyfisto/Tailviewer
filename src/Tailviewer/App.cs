@@ -38,9 +38,32 @@ namespace Tailviewer
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private ResourceDictionary _themeDictionary;
+
 		public App()
 		{
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
+		}
+
+		/// <summary>
+		///     Applies the given theme by (re-)adding the matching resource dictionary to the application resources.
+		/// </summary>
+		/// <param name="theme"></param>
+		public void ApplyTheme(Theme theme)
+		{
+			Themes.AppTheme.Initialize(theme);
+
+			var source = theme == Theme.Dark
+				? "pack://application:,,,/Tailviewer;component/Themes/Dark.xaml"
+				: "pack://application:,,,/Tailviewer;component/Themes/Light.xaml";
+
+			var newDictionary = new ResourceDictionary { Source = new Uri(source) };
+
+			if (_themeDictionary != null)
+				Resources.MergedDictionaries.Remove(_themeDictionary);
+
+			Resources.MergedDictionaries.Add(newDictionary);
+			_themeDictionary = newDictionary;
 		}
 
 		public static int Start(SingleApplicationHelper.IMutex mutex, string[] args, Stopwatch stopwatch)
@@ -223,6 +246,7 @@ namespace Tailviewer
 						actionCenter.Add(Build.Current);
 						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
 						var application = new App();
+						application.ApplyTheme(settings.SelectedTheme);
 						var dispatcher = Dispatcher.CurrentDispatcher;
 						var uiDispatcher = new UiDispatcher(dispatcher);
 						services.RegisterInstance<IDispatcher>(uiDispatcher);
