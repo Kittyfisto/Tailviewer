@@ -15,10 +15,10 @@
         </Separator>
     </ControlTemplate>
 
-    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="White" />
-    <SolidColorBrush x:Key="MenuForegroundBrush" Color="Black" />
-    <SolidColorBrush x:Key="MenuBorderBrush" Color="Gray" />
-    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="Gray" />
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="{DynamicResource ThemePanelBackground}" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="{DynamicResource ThemeForeground}" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="{DynamicResource ThemeBorder}" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="{DynamicResource ThemeBorder}" />
 
     <Style x:Key="MainSubMenuItemStyle" TargetType="{x:Type MenuItem}">
         <Setter Property="Foreground" Value="{StaticResource MenuForegroundBrush}" />
@@ -130,7 +130,7 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="MainMenuItemStyle" TargetType="{x:Type MenuItem}">
-        <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Height" Value="32" />
@@ -167,7 +167,7 @@
                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                Placement="Bottom" VerticalOffset="-1">
 
-                            <Border BorderThickness="1,0,1,1" BorderBrush="Gray" Background="{StaticResource MenuBackgroundBrush}">
+                            <Border BorderThickness="1,0,1,1" BorderBrush="{StaticResource MenuBorderBrush}" Background="{StaticResource MenuBackgroundBrush}">
                                 <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true"
                                               Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
                                     <Grid RenderOptions.ClearTypeHint="Enabled">

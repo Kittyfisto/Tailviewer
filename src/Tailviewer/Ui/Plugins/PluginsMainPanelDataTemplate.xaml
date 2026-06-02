@@ -13,7 +13,7 @@
 
     <DataTemplate DataType="{x:Type local:PluginsMainPanelViewModel}">
 
-        <Grid Background="White">
+        <Grid Background="{DynamicResource ThemeWindowBackgroundBrush}">
 
             <Grid>
                 <Grid.RowDefinitions>

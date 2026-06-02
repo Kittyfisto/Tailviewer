@@ -10,8 +10,8 @@
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance settings:SettingsFlyoutViewModel}"
-             Foreground="#333333"
-             Background="White">
+             Foreground="{DynamicResource ThemeForegroundBrush}"
+             Background="{DynamicResource ThemeWindowBackgroundBrush}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -385,7 +385,36 @@
                                        Header="Window" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
-                        <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Row="0"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
+
+                        <TextBlock Text="Theme"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="1"
+                                   Grid.Column="0" />
+                        <ComboBox Grid.Row="1"
+                                  Grid.Column="1"
+                                  Margin="0,6,6,6"
+                                  ItemsSource="{Binding Themes}"
+                                  SelectedItem="{Binding SelectedTheme, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="1"
+                                   Foreground="#6B6B6B"
+                                   TextWrapping="Wrap"
+                                   Text="Changing the theme requires tailviewer to be restarted in order to take effect." />
                     </Grid>
                 </controls:FlatGroupBox>
 

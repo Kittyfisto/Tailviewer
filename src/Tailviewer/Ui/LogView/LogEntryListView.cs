@@ -123,7 +123,9 @@ namespace Tailviewer.Ui.LogView
 			_verticalScrollBar = new FlatScrollBar
 			{
 				Name = "PART_VerticalScrollBar",
-				Thickness = 18
+				Thickness = 18,
+				Background = Themes.AppTheme.ScrollBarBackgroundBrush,
+				Foreground = Themes.AppTheme.ScrollBarForegroundBrush
 			};
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
@@ -134,7 +136,9 @@ namespace Tailviewer.Ui.LogView
 			{
 				Name = "PART_HorizontalScrollBar",
 				Orientation = Orientation.Horizontal,
-				Thickness = 18
+				Thickness = 18,
+				Background = Themes.AppTheme.ScrollBarBackgroundBrush,
+				Foreground = Themes.AppTheme.ScrollBarForegroundBrush
 			};
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);

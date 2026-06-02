@@ -11,6 +11,7 @@ namespace Tailviewer.Ui.LogView
 	{
 		public static readonly Brush SelectedForegroundBrush;
 		public static readonly Brush SelectedBackgroundBrush;
+		public static readonly Brush SelectedUnfocusedForegroundBrush;
 		public static readonly Brush SelectedUnfocusedBackgroundBrush;
 		public static readonly Brush HighlightedForegroundBrush;
 		public static readonly Brush HighlightedBackgroundBrush;
@@ -30,7 +31,8 @@ namespace Tailviewer.Ui.LogView
 
 			SelectedForegroundBrush = Brushes.White;
 
-			SelectedUnfocusedBackgroundBrush = CreateBrush(Color.FromRgb(215, 215, 215));
+			SelectedUnfocusedBackgroundBrush = CreateBrush(Themes.AppTheme.SelectedUnfocusedBackgroundColor);
+			SelectedUnfocusedForegroundBrush = CreateBrush(Themes.AppTheme.LogForegroundColor);
 
 			HighlightedForegroundBrush = Brushes.Black;
 			HighlightedBackgroundBrush = CreateBrush(Color.FromRgb(255, 255, 77));
@@ -38,10 +40,10 @@ namespace Tailviewer.Ui.LogView
 			HighlightedSelectedForegroundBrush = Brushes.Black;
 			HighlightedSelectedBackgroundBrush = CreateBrush(Color.FromRgb(255, 150, 50));
 			
-			LineNumberForegroundBrush = CreateBrush(Color.FromRgb(43, 145, 175));
+			LineNumberForegroundBrush = CreateBrush(Themes.AppTheme.LineNumberForegroundColor);
 
 			DataSourceFilenameForegroundBrush = CreateBrush(Color.FromRgb(128, 128, 128));
-			DataSourceCharacterCodeForegroundBrush = CreateBrush(Color.FromRgb(43, 145, 175));
+			DataSourceCharacterCodeForegroundBrush = CreateBrush(Themes.AppTheme.LineNumberForegroundColor);
 		}
 
 		public TextBrushes(ILogViewerSettings settings)
@@ -51,19 +53,19 @@ namespace Tailviewer.Ui.LogView
 			_alternateBackgroundBrushes = new Dictionary<LevelFlags, Brush>();
 			if (settings != null)
 			{
-				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.ForegroundColor));
+				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(AdaptForeground(settings.Other.ForegroundColor)));
 				_backgroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.BackgroundColor));
 				_alternateBackgroundBrushes.Add(LevelFlags.Other, CreateBrush(GetAlternatingColor(settings.Other.BackgroundColor)));
 
-				_foregroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.ForegroundColor));
+				_foregroundBrushes.Add(LevelFlags.Trace, CreateBrush(AdaptForeground(settings.Trace.ForegroundColor)));
 				_backgroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.BackgroundColor));
 				_alternateBackgroundBrushes.Add(LevelFlags.Trace, CreateBrush(GetAlternatingColor(settings.Trace.BackgroundColor)));
 
-				_foregroundBrushes.Add(LevelFlags.Debug, CreateBrush(settings.Debug.ForegroundColor));
+				_foregroundBrushes.Add(LevelFlags.Debug, CreateBrush(AdaptForeground(settings.Debug.ForegroundColor)));
 				_backgroundBrushes.Add(LevelFlags.Debug, CreateBrush(settings.Debug.BackgroundColor));
 				_alternateBackgroundBrushes.Add(LevelFlags.Debug, CreateBrush(GetAlternatingColor(settings.Debug.BackgroundColor)));
 
-				_foregroundBrushes.Add(LevelFlags.Info, CreateBrush(settings.Info.ForegroundColor));
+				_foregroundBrushes.Add(LevelFlags.Info, CreateBrush(AdaptForeground(settings.Info.ForegroundColor)));
 				_backgroundBrushes.Add(LevelFlags.Info, CreateBrush(settings.Info.BackgroundColor));
 				_alternateBackgroundBrushes.Add(LevelFlags.Info, CreateBrush(GetAlternatingColor(settings.Info.BackgroundColor)));
 
@@ -81,11 +83,12 @@ namespace Tailviewer.Ui.LogView
 			}
 			else
 			{
+				var foreground = CreateBrush(Themes.AppTheme.LogForegroundColor);
 				foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
 				{
-					_foregroundBrushes.Add(level, Brushes.Black);
-					_backgroundBrushes.Add(level, Brushes.White);
-					_alternateBackgroundBrushes.Add(level, Brushes.White);
+					_foregroundBrushes.Add(level, foreground);
+					_backgroundBrushes.Add(level, Themes.AppTheme.LogBackgroundBrush);
+					_alternateBackgroundBrushes.Add(level, Themes.AppTheme.LogBackgroundBrush);
 				}
 			}
 		}
@@ -97,7 +100,7 @@ namespace Tailviewer.Ui.LogView
 				if (isFocused)
 					return SelectedForegroundBrush;
 
-				return _foregroundBrushes[LevelFlags.Info];
+				return SelectedUnfocusedForegroundBrush;
 			}
 
 			if (colorByLevel)
@@ -147,7 +150,20 @@ namespace Tailviewer.Ui.LogView
 		{
 			if (color.A == 0 || Colors.White.Equals(color))
 			{
-				return Color.FromRgb(0xE8, 0xF1, 0xF7);
+				return Themes.AppTheme.LogAlternatingBackgroundColor;
+			}
+
+			return color;
+		}
+
+		[Pure]
+		private static Color AdaptForeground(Color color)
+		{
+			// User-customized colors are kept as-is. Only the default black-on-light
+			// foreground is remapped so that text stays readable on a dark background.
+			if (Themes.AppTheme.IsDark && Colors.Black.Equals(color))
+			{
+				return Themes.AppTheme.LogForegroundColor;
 			}
 
 			return color;

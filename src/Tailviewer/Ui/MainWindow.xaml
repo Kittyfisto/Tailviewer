@@ -60,7 +60,7 @@
 
     <Window.Background>
         <!--<StaticResource ResourceKey="TitleBarBrush" />-->
-        <StaticResource ResourceKey="SecondaryBrush" />
+        <DynamicResource ResourceKey="ThemeWindowBackgroundBrush" />
     </Window.Background>
 
     <metrolib:ChromelessWindow.Header>

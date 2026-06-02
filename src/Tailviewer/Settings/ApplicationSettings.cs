@@ -31,6 +31,7 @@ namespace Tailviewer.Settings
 		private int _numSaved;
 
 		private bool _allowSave;
+		private Theme _selectedTheme;
 
 		public bool AllowSave
 		{
@@ -63,6 +64,7 @@ namespace Tailviewer.Settings
 			_logViewer = other._logViewer.Clone();
 			_logFile = other._logFile.Clone();
 			_customFormats = other._customFormats.Clone();
+			_selectedTheme = other._selectedTheme;
 			_allowSave = true;
 		}
 
@@ -79,6 +81,7 @@ namespace Tailviewer.Settings
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
 			_customFormats = new CustomFormatsSettings();
+			_selectedTheme = Theme.Light;
 			_allowSave = true;
 		}
 
@@ -97,6 +100,19 @@ namespace Tailviewer.Settings
 		public IExportSettings Export => _export;
 
 		public ICustomFormatsSettings CustomFormats => _customFormats;
+
+		public Theme SelectedTheme
+		{
+			get { return _selectedTheme; }
+			set
+			{
+				if (_selectedTheme != value)
+				{
+					_selectedTheme = value;
+					SaveAsync();
+				}
+			}
+		}
 
 		public static ApplicationSettings Create()
 		{
@@ -134,6 +150,8 @@ namespace Tailviewer.Settings
 					using (XmlWriter writer = XmlWriter.Create(stream, settings))
 					{
 						writer.WriteStartElement("xml");
+
+						writer.WriteAttributeString("theme", _selectedTheme.ToString());
 
 						writer.WriteStartElement("mainwindow");
 						_mainWindow.Save(writer);
@@ -214,6 +232,20 @@ namespace Tailviewer.Settings
 					{
 						switch (reader.Name)
 						{
+							case "xml":
+								if (reader.NodeType == XmlNodeType.Element)
+								{
+									var themeAttribute = reader.GetAttribute("theme");
+									if (!string.IsNullOrEmpty(themeAttribute))
+									{
+										if (Enum.TryParse<Theme>(themeAttribute, out var theme))
+										{
+											_selectedTheme = theme;
+										}
+									}
+								}
+								break;
+
 							case "mainwindow":
 								_mainWindow.Restore(reader);
 								break;

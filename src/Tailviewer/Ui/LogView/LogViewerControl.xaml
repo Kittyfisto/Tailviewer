@@ -9,7 +9,7 @@
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
              xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
-             Background="White">
+             Background="{DynamicResource ThemeWindowBackgroundBrush}">
 
     <UserControl.Resources>
         <ResourceDictionary>
