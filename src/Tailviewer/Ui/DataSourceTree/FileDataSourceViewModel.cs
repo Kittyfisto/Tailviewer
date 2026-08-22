@@ -11,6 +11,8 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.DataSourceTree
 {
 	/// <summary>
@@ -45,8 +47,8 @@ namespace Tailviewer.Ui.DataSourceTree
 			{
 				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
 				{
-					Header = "Open Containing Folder",
-					ToolTip = "Opens Folder the current Data Source is contained in"
+					Header = Strings.OpenContainingFolder,
+					ToolTip = Strings.OpenContainingFolderHint
 				}
 			});
 

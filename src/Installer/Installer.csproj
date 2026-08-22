@@ -1,238 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0A1431F6-8548-44D4-B82B-049B94A7F57D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
     <RootNamespace>Installer</RootNamespace>
     <AssemblyName>Tailviewer-setup</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>..\Tailviewer\Resources\Tailviewer.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../sig/key.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NuGetAudit>false</NuGetAudit>
+    <OutputPath>..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.162, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.162\lib\net45\Metrolib.dll</HintPath>
-    </Reference>
+    <PackageReference Include="log4net" Version="3.3.0" />
+    <PackageReference Include="Metrolib" Version="0.3.0.162" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Applications\AbstractViewModel.cs" />
-    <Compile Include="Applications\App.cs" />
-    <Compile Include="Applications\Install\Launcher.cs" />
-    <Compile Include="Applications\SilentInstall\SilentInstallApplication.cs" />
-    <Compile Include="Applications\Uninstall\UninstallApplication.cs" />
-    <Compile Include="Arguments.cs" />
-    <Compile Include="Applications\Install\InstallApplication.cs" />
-    <Compile Include="Mode.cs" />
-    <Compile Include="Applications\Update\UpdateApplication.cs" />
-    <Compile Include="Applications\Update\UpdaterWindow.xaml.cs">
-      <DependentUpon>UpdaterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Applications\Update\UpdateWindowViewModel.cs" />
-    <Page Include="Applications\Install\LicenseWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Applications\Install\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Exceptions\CopyFileException.cs" />
-    <Compile Include="Exceptions\DeleteFileException.cs" />
-    <Compile Include="Exceptions\FileIOException.cs" />
-    <Compile Include="Installer.cs" />
-    <Compile Include="Applications\Install\LicenseWindow.xaml.cs">
-      <DependentUpon>LicenseWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Applications\Install\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Applications\Update\UpdaterWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Applications\Install\MainWindowViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    <EmbeddedResource Include="..\..\artifacts\portable\**\*">
+      <LogicalName>InstallationFiles\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\LICENSE">
-      <Link>InstallationFiles\LICENSE</Link>
-      <LogicalName>InstallationFiles\LICENSE</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\FONTLOG.txt">
-      <Link>InstallationFiles\Fonts\FONTLOG.txt</Link>
-      <LogicalName>InstallationFiles\Fonts\FONTLOG.txt</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Licenses\Inconsolata\OFL.txt">
-      <Link>InstallationFiles\Fonts\OFL.txt</Link>
-      <LogicalName>InstallationFiles\Fonts\OFL.txt</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\METADATA.pb">
-      <Link>InstallationFiles\Fonts\METADATA.pb</Link>
-      <LogicalName>InstallationFiles\Fonts\METADATA.pb</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\Tailviewer.ico">
-      <Link>InstallationFiles\Icons\Tailviewer.ico</Link>
-      <LogicalName>InstallationFiles\Icons\Tailviewer.ico</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Tailviewer.exe.config">
-      <Link>InstallationFiles\Tailviewer.exe.config</Link>
-      <LogicalName>InstallationFiles\Tailviewer.exe.config</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\log4net.dll">
-      <Link>InstallationFiles\log4net.dll</Link>
-      <LogicalName>InstallationFiles\log4net.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Metrolib.dll">
-      <Link>InstallationFiles\Metrolib.dll</Link>
-      <LogicalName>InstallationFiles\Metrolib.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Tailviewer.exe">
-      <Link>InstallationFiles\Tailviewer.exe</Link>
-      <LogicalName>InstallationFiles\Tailviewer.exe</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InstallationFiles\Plugins\Readme.txt">
-      <LogicalName>InstallationFiles\Plugins\Readme.txt</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Formats.Serilog.1.0.0.0.tvp">
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Formats.Serilog.1.0.0.0.tvp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\MMQ.dll">
-      <Link>InstallationFiles\MMQ.dll</Link>
-      <LogicalName>InstallationFiles\MMQ.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Tailviewer.Api.dll">
-      <Link>InstallationFiles\Tailviewer.Api.dll</Link>
-      <LogicalName>InstallationFiles\Tailviewer.Api.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Tailviewer.Core.dll">
-      <Link>InstallationFiles\Tailviewer.Core.dll</Link>
-      <LogicalName>InstallationFiles\Tailviewer.Core.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\archive.exe">
-      <Link>InstallationFiles\archive.exe</Link>
-      <LogicalName>InstallationFiles\archive.exe</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\SharpRemote.dll">
-      <Link>InstallationFiles\SharpRemote.dll</Link>
-      <LogicalName>InstallationFiles\SharpRemote.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\System.Extensions.dll">
-      <Link>InstallationFiles\System.Extensions.dll</Link>
-      <LogicalName>InstallationFiles\System.Extensions.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Ookii.Dialogs.Wpf.dll">
-      <Link>InstallationFiles\Ookii.Dialogs.Wpf.dll</Link>
-      <LogicalName>InstallationFiles\Ookii.Dialogs.Wpf.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Xceed.Wpf.Toolkit.dll">
-      <Link>InstallationFiles\Xceed.Wpf.Toolkit.dll</Link>
-      <LogicalName>InstallationFiles\Xceed.Wpf.Toolkit.dll</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InstallationFiles\Uninstall.cmd">
-      <LogicalName>InstallationFiles\Uninstall.cmd</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
+
   <ItemGroup>
     <Resource Include="..\Tailviewer\Resources\Tailviewer.ico">
       <Link>Resources\Tailviewer.ico</Link>
@@ -241,6 +47,7 @@
       <Link>Resources\Tailviewer.png</Link>
     </Resource>
   </ItemGroup>
+
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
@@ -252,42 +59,12 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
-      <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
-      <Name>Tailviewer.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
-      <Project>{c667eb8a-6781-4623-ac7c-d3fba2f6e7d4}</Project>
-      <Name>Tailviewer.Archiver</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
-      <Project>{62c60d20-180e-4a59-9ef3-30161e1e31cb}</Project>
-      <Name>Tailviewer.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
-      <Project>{799f74c7-6de8-455d-936d-e11d7525ab36}</Project>
-      <Name>Tailviewer</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj" />
+    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj" />
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj" />
+    <ProjectReference Include="..\Tailviewer\Tailviewer.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.1 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

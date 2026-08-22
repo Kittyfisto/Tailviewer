@@ -16,6 +16,8 @@ using Tailviewer.Collections;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.DataSources
 {
 	public sealed class DataSourcesViewModel
@@ -84,8 +86,8 @@ namespace Tailviewer.Ui.SidePanel.DataSources
 		private void UpdateTooltip()
 		{
 			Tooltip = IsSelected
-				? "Hide the list of data sources"
-				: "Show the list of data sources";
+				? Strings.HideDataSourceList
+				: Strings.ShowDataSourceList;
 		}
 
 		private void AddCustomDataSource(CustomDataSourceId id)

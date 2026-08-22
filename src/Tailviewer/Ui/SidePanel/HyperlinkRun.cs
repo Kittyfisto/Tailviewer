@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Tailviewer.Ui.SidePanel
 {
@@ -125,20 +126,21 @@ namespace Tailviewer.Ui.SidePanel
 		{
 			if (!IsEnabled)
 			{
-				Foreground = Metrolib.Constants.ForegroundBrushDisabled;
+				Foreground = DisabledBrush;
+				return;
 			}
-			else if (IsPressed)
-			{
-				Foreground = Metrolib.Constants.ForegroundBrushPressed;
-			}
-			else if (IsMouseOver)
-			{
-				Foreground = Metrolib.Constants.ForegroundBrushHovered;
-			}
-			else
-			{
-				Foreground = Metrolib.Constants.ForegroundBrushAccent;
-			}
+
+			var palette = ThemePalette.Compute(ThemeManager.CurrentPrimary);
+			Foreground = CreateBrush(IsPressed || IsMouseOver ? palette.PrimaryDark : palette.Primary);
 		}
+
+		private static SolidColorBrush CreateBrush(Color color)
+		{
+			var brush = new SolidColorBrush(color);
+			brush.Freeze();
+			return brush;
+		}
+
+		private static readonly SolidColorBrush DisabledBrush = CreateBrush(Color.FromRgb(0xB7, 0xB7, 0xB7));
 	}
 }

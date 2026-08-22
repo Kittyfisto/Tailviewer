@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -33,9 +33,9 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		///     The maximum supported .NET Framework version a plugin may target.
 		///     This is limited to the same version that Tailviewer.exe is built against.
-		///     Currently, this happens to be .NET Framework 4.7.1
+		///     Currently, this happens to be .NET Framework 4.8
 		/// </summary>
-		private static readonly Version MaximumNetFrameworkVersion = new Version(4, 7, 1);
+		private static readonly Version MaximumNetFrameworkVersion = new Version(4, 8);
 
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;

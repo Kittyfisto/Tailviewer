@@ -24,6 +24,8 @@ using Tailviewer.Ui.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui
 {
 	/// <summary>
@@ -145,9 +147,9 @@ namespace Tailviewer.Ui
 		{
 			var dlg = new OpenFileDialog
 			{
-				Title = "Select log file to open",
+				Title = Strings.SelectLogFileToOpen,
 				DefaultExt = ".log",
-				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+				Filter = Strings.LogFileDialogFilter,
 				Multiselect = true
 			};
 
@@ -165,7 +167,7 @@ namespace Tailviewer.Ui
 		{
 			var dlg = new VistaFolderBrowserDialog
 			{
-				Description = "Select folder to open",
+				Description = Strings.SelectFolderToOpen,
 				UseDescriptionForTitle = true
 			};
 
@@ -305,17 +307,17 @@ namespace Tailviewer.Ui
 
 		private void ReportIssue()
 		{
-			Process.Start("https://github.com/Kittyfisto/Tailviewer/issues/new");
+			Process.Start("https://github.com/brofea/Tailviewer-NEXT/issues/new");
 		}
 
 		private void SuggestFeature()
 		{
-			Process.Start("https://github.com/Kittyfisto/Tailviewer/discussions/new");
+			Process.Start("https://github.com/brofea/Tailviewer-NEXT/discussions/new");
 		}
 
 		private void AskQuestion()
 		{
-			Process.Start("https://github.com/Kittyfisto/Tailviewer/discussions/new");
+			Process.Start("https://github.com/brofea/Tailviewer-NEXT/discussions/new");
 		}
 
 		private void ShowAboutFlyout()

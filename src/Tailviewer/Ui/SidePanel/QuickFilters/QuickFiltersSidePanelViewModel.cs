@@ -7,10 +7,13 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Api;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.QuickFilter;
 using Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter;
+
+using Tailviewer.Localization;
 
 namespace Tailviewer.Ui.SidePanel.QuickFilters
 {
@@ -63,6 +66,7 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 				_currentDataSource = value;
 				var source = value?.DataSource;
 				_filters.CurrentDataSource = source;
+				EmitPropertyChanged(nameof(FilterCombinationMode));
 			}
 		}
 
@@ -83,8 +87,8 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 		private void UpdateTooltip()
 		{
 			Tooltip = IsSelected
-				? "Hide the list of quick filters"
-				: "Show the list of quick filters";
+				? Strings.HideQuickFilterList
+				: Strings.ShowQuickFilterList;
 		}
 
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -128,7 +132,7 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 			if (!TimeFilters.SelectEverything)
 				++count;
 
-			QuickInfo = count > 0 ? string.Format("{0} active", count) : null;
+			QuickInfo = count > 0 ? string.Format(Strings.ActiveFilterCount, count) : null;
 			OnFiltersChanged?.Invoke();
 		}
 
@@ -145,15 +149,33 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 
 		public IEnumerable<ILogEntryFilter> CreateFilterChain()
 		{
-			var quickFilter = _filters.CreateFilterChain();
-			var timeFilter = _timeFilters.CreateFilter();
-			if (timeFilter == null)
-				return quickFilter;
-			if (quickFilter == null)
-				quickFilter = new List<ILogEntryFilter>();
+			return _filters.CreateFilterChain();
+		}
 
-			quickFilter.Add(timeFilter);
-			return quickFilter;
+		public ILogEntryFilter CreateTimeFilter()
+		{
+			return _timeFilters.CreateFilter();
+		}
+
+		public FilterCombinationMode FilterCombinationMode
+		{
+			get
+			{
+				var dataSource = CurrentDataSource?.DataSource;
+				return dataSource?.FilterCombinationMode ?? FilterCombinationMode.And;
+			}
+			set
+			{
+				var dataSource = CurrentDataSource?.DataSource;
+				if (dataSource == null)
+					return;
+
+				if (dataSource.FilterCombinationMode == value)
+					return;
+
+				dataSource.FilterCombinationMode = value;
+				OnFiltersChanged?.Invoke();
+			}
 		}
 
 		public override void Update()

@@ -1,0 +1,882 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AIsAvailable" xml:space="preserve">
+    <value>A newer version</value>
+  </data>
+  <data name="Absolute" xml:space="preserve">
+    <value>Absolute</value>
+  </data>
+  <data name="ActionCenter" xml:space="preserve">
+    <value>Action Center</value>
+  </data>
+  <data name="ActiveFilterCount" xml:space="preserve">
+    <value>{0} active</value>
+  </data>
+  <data name="AddNewHighlighter" xml:space="preserve">
+    <value>Add new highlighters (Ctrl+Shift+H)</value>
+  </data>
+  <data name="AddNewQuickFilter" xml:space="preserve">
+    <value>Add new quick filter (Ctrl+Shift+N)</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AllPluginsUpToDate" xml:space="preserve">
+    <value>All plugins are up-to-date!</value>
+  </data>
+  <data name="AllWord" xml:space="preserve">
+    <value>all</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author:</value>
+  </data>
+  <data name="AutoDetect" xml:space="preserve">
+    <value>Auto detect</value>
+  </data>
+  <data name="AutoDetectedEncoding" xml:space="preserve">
+    <value>Auto Detected Encoding</value>
+  </data>
+  <data name="AutoInstallNewest" xml:space="preserve">
+    <value>Automatically install the newest versions</value>
+  </data>
+  <data name="BackgroundColor" xml:space="preserve">
+    <value>Background Color</value>
+  </data>
+  <data name="BookmarkLineTitle" xml:space="preserve">
+    <value>Line #{0}, {1}</value>
+  </data>
+  <data name="Bookmarks" xml:space="preserve">
+    <value>Bookmarks</value>
+  </data>
+  <data name="BookmarksCount" xml:space="preserve">
+    <value>{0} bookmarks</value>
+  </data>
+  <data name="Bugfixes" xml:space="preserve">
+    <value>Bugfixes:</value>
+  </data>
+  <data name="ChangesAppliedAfterPen" xml:space="preserve">
+    <value>Changes will be applied only after the pen above is pressed again.</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>Character</value>
+  </data>
+  <data name="ChineseSimplified" xml:space="preserve">
+    <value>中文（简体）</value>
+  </data>
+  <data name="ChooseExportFolder" xml:space="preserve">
+    <value>Choose export folder</value>
+  </data>
+  <data name="ChooseFolderToMonitor" xml:space="preserve">
+    <value>Choose folder to monitor</value>
+  </data>
+  <data name="ClickToFollowTail" xml:space="preserve">
+    <value>Click to follow the tail of this data source</value>
+  </data>
+  <data name="ClickToStopFollowingTail" xml:space="preserve">
+    <value>Click to stop following the tail of this data source</value>
+  </data>
+  <data name="ClickToToggleLevel" xml:space="preserve">
+    <value>Click to {0} {1} log entries</value>
+  </data>
+  <data name="CloseThisFile" xml:space="preserve">
+    <value>Close this file</value>
+  </data>
+  <data name="CouldNotRetrievePlugins" xml:space="preserve">
+    <value>Could not retrieve plugins from repository :(</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="CurrentDataSource" xml:space="preserve">
+    <value>Current Data Source</value>
+  </data>
+  <data name="CustomFormatsGroup" xml:space="preserve">
+    <value>Custom Log file Formats</value>
+  </data>
+  <data name="DataSourceDescription" xml:space="preserve">
+    <value>Identifies this data source amongst all others in this group - also displayed next to each log line</value>
+  </data>
+  <data name="DataSourceExcluded" xml:space="preserve">
+    <value>This data source is excluded from the parent's data source view</value>
+  </data>
+  <data name="DataSourceFilter" xml:space="preserve">
+    <value>Filter data sources (Ctrl+E)</value>
+  </data>
+  <data name="DataSourceIsEmpty" xml:space="preserve">
+    <value>Data source is empty</value>
+  </data>
+  <data name="DataSourceNameOrPath" xml:space="preserve">
+    <value>Enter data source name or path</value>
+  </data>
+  <data name="DataSourcesGroup" xml:space="preserve">
+    <value>Data Sources</value>
+  </data>
+  <data name="DebugCount" xml:space="preserve">
+    <value>Debug Count</value>
+  </data>
+  <data name="DefaultTextFileEncoding" xml:space="preserve">
+    <value>Default text file encoding</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="Encoding" xml:space="preserve">
+    <value>Encoding</value>
+  </data>
+  <data name="EncodingHint1" xml:space="preserve">
+    <value>If anything else but 'Auto detect' is selected, then Tailviewer NEXT will only use the given encoding to decode text-based log files.</value>
+  </data>
+  <data name="EncodingHint2" xml:space="preserve">
+    <value>Changing this value requires Tailviewer NEXT to be restarted in order to take effect.</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="EnterDisplayName" xml:space="preserve">
+    <value>Enter display name</value>
+  </data>
+  <data name="EnterHighlightedTerm" xml:space="preserve">
+    <value>Enter highlighted term</value>
+  </data>
+  <data name="EnterLineNumber" xml:space="preserve">
+    <value>Enter line number</value>
+  </data>
+  <data name="ErrorCount" xml:space="preserve">
+    <value>Error Count</value>
+  </data>
+  <data name="Everything" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="ExcludeAll" xml:space="preserve">
+    <value>Exclude all</value>
+  </data>
+  <data name="ExcludeFromGroup" xml:space="preserve">
+    <value>Exclude from group</value>
+  </data>
+  <data name="ExportFolder" xml:space="preserve">
+    <value>Export folder</value>
+  </data>
+  <data name="ExportGroup" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Exporting" xml:space="preserve">
+    <value>Exporting</value>
+  </data>
+  <data name="FatalCount" xml:space="preserve">
+    <value>Fatal Count</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>Features:</value>
+  </data>
+  <data name="Filename" xml:space="preserve">
+    <value>Filename</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="FilterCombinationMode" xml:space="preserve">
+    <value>Match all active quick filters (AND) or any of them (OR)</value>
+  </data>
+  <data name="FilterLogFile" xml:space="preserve">
+    <value>Filter log file</value>
+  </data>
+  <data name="FindAllInLogFile" xml:space="preserve">
+    <value>Find all in log file (Ctrl+Shift+F)</value>
+  </data>
+  <data name="FindAllResults" xml:space="preserve">
+    <value>Find all results:</value>
+  </data>
+  <data name="FirstTimestamp" xml:space="preserve">
+    <value>First Timestamp</value>
+  </data>
+  <data name="FolderDataSourceFilter" xml:space="preserve">
+    <value>Folder data source filter</value>
+  </data>
+  <data name="FolderDataSourceRecursive" xml:space="preserve">
+    <value>When checked, newly created folder data sources will display all files in the selected folder AND its subfolders.</value>
+  </data>
+  <data name="FolderDoesNotContainAnyFile" xml:space="preserve">
+    <value>The folder "{0}" does not contain any file</value>
+  </data>
+  <data name="FolderDoesNotContainMatchingFile" xml:space="preserve">
+    <value>The folder "{0}" does not contain any file matching "{1}"</value>
+  </data>
+  <data name="FolderPatternHint1" xml:space="preserve">
+    <value>Newly created folder data sources will use this pattern to select files which shall be displayed.</value>
+  </data>
+  <data name="FolderPatternHint2" xml:space="preserve">
+    <value>A pattern such as '*.log' (without quotes) selects files which end in .log.</value>
+  </data>
+  <data name="FolderPatternHint3" xml:space="preserve">
+    <value>'*.txt;*.log' (without quotes) selects files which end in either .txt or .log.</value>
+  </data>
+  <data name="FolderPatternHint4" xml:space="preserve">
+    <value>'*bb*' (without quotes) selects files which have bb in their file name.</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="ForegroundColor" xml:space="preserve">
+    <value>Foreground Color</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="GoToLine" xml:space="preserve">
+    <value>Go to line:</value>
+  </data>
+  <data name="GoingToLine" xml:space="preserve">
+    <value>Going to line {0}</value>
+  </data>
+  <data name="GotIt" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="HideBookmarkList" xml:space="preserve">
+    <value>Hide the list of bookmarks</value>
+  </data>
+  <data name="HideDataSourceList" xml:space="preserve">
+    <value>Hide the list of data sources</value>
+  </data>
+  <data name="HideQuickFilterList" xml:space="preserve">
+    <value>Hide the list of quick filters</value>
+  </data>
+  <data name="HideWord" xml:space="preserve">
+    <value>hide</value>
+  </data>
+  <data name="Highlighters" xml:space="preserve">
+    <value>Highlighters</value>
+  </data>
+  <data name="IncludeAll" xml:space="preserve">
+    <value>Include all</value>
+  </data>
+  <data name="IncludeInGroup" xml:space="preserve">
+    <value>Include in group</value>
+  </data>
+  <data name="InfoCount" xml:space="preserve">
+    <value>Info Count</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="IsAvailable" xml:space="preserve">
+    <value>is available.</value>
+  </data>
+  <data name="Issues" xml:space="preserve">
+    <value>Issues</value>
+  </data>
+  <data name="IssuesCount" xml:space="preserve">
+    <value>{0} issue(s)</value>
+  </data>
+  <data name="ItDoes" xml:space="preserve">
+    <value>it does</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageRestartNotice" xml:space="preserve">
+    <value>Changing the language requires Tailviewer NEXT to be restarted to take effect.</value>
+  </data>
+  <data name="Last24Hours" xml:space="preserve">
+    <value>Last 24 hours</value>
+  </data>
+  <data name="Last30Days" xml:space="preserve">
+    <value>Last 30 days</value>
+  </data>
+  <data name="Last365Days" xml:space="preserve">
+    <value>Last 365 days</value>
+  </data>
+  <data name="Last7Days" xml:space="preserve">
+    <value>Last 7 days</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Last Modified</value>
+  </data>
+  <data name="LastTimestamp" xml:space="preserve">
+    <value>Last Timestamp</value>
+  </data>
+  <data name="LevelDebug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="LevelError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="LevelFatal" xml:space="preserve">
+    <value>Fatal</value>
+  </data>
+  <data name="LevelInfo" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="LevelOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="LevelTrace" xml:space="preserve">
+    <value>Trace</value>
+  </data>
+  <data name="LevelWarning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Licenses" xml:space="preserve">
+    <value>Licenses</value>
+  </data>
+  <data name="LogEntriesAre" xml:space="preserve">
+    <value>s are</value>
+  </data>
+  <data name="LogEntriesSuffix" xml:space="preserve">
+    <value>{0} log entry</value>
+  </data>
+  <data name="LogEntryIs" xml:space="preserve">
+    <value> is</value>
+  </data>
+  <data name="LogFileDialogFilter" xml:space="preserve">
+    <value>Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*</value>
+  </data>
+  <data name="LogLevelsGroup" xml:space="preserve">
+    <value>Log Levels</value>
+  </data>
+  <data name="LogViewerGroup" xml:space="preserve">
+    <value>Log Viewer</value>
+  </data>
+  <data name="MenuAbout" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="MenuAddBookmark" xml:space="preserve">
+    <value>Add Bookmark</value>
+  </data>
+  <data name="MenuAskQuestion" xml:space="preserve">
+    <value>Ask a Question...</value>
+  </data>
+  <data name="MenuCheckForUpdates" xml:space="preserve">
+    <value>Check For Updates</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="MenuCloseAll" xml:space="preserve">
+    <value>Close All</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuGoToDataSource" xml:space="preserve">
+    <value>Go To Data Source...</value>
+  </data>
+  <data name="MenuGoToLine" xml:space="preserve">
+    <value>Go To Line...</value>
+  </data>
+  <data name="MenuGoToNextDataSource" xml:space="preserve">
+    <value>Go To Next Data Source</value>
+  </data>
+  <data name="MenuGoToPreviousDataSource" xml:space="preserve">
+    <value>Go To Previous Data Source</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="MenuNew" xml:space="preserve">
+    <value>_New</value>
+  </data>
+  <data name="MenuOpen" xml:space="preserve">
+    <value>_Open</value>
+  </data>
+  <data name="MenuOpenFolder" xml:space="preserve">
+    <value>Fol_der</value>
+  </data>
+  <data name="MenuPlugins" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="MenuRemoveAllBookmarks" xml:space="preserve">
+    <value>Remove All Bookmarks</value>
+  </data>
+  <data name="MenuReportProblem" xml:space="preserve">
+    <value>Report a Problem...</value>
+  </data>
+  <data name="MenuSendFeedback" xml:space="preserve">
+    <value>Send Feedback</value>
+  </data>
+  <data name="MenuSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="MenuShowLog" xml:space="preserve">
+    <value>Show Log</value>
+  </data>
+  <data name="MenuSuggestFeature" xml:space="preserve">
+    <value>Suggest a Feature...</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="Miscellaneous" xml:space="preserve">
+    <value>Miscellaneous</value>
+  </data>
+  <data name="Mixed" xml:space="preserve">
+    <value>Mixed</value>
+  </data>
+  <data name="MonitoringFolder" xml:space="preserve">
+    <value>Monitoring {0}</value>
+  </data>
+  <data name="MonitoringFolderWithFilter" xml:space="preserve">
+    <value>Monitoring {0} ({1} not matching filter)</value>
+  </data>
+  <data name="MultipleIssuesPlugins" xml:space="preserve">
+    <value>There are multiple plugins which claim to provide an outline for '{0}', selecting the first one:
+{1}</value>
+  </data>
+  <data name="MultipleOutlinePlugins" xml:space="preserve">
+    <value>There are multiple plugins which claim to provide an outline for '{0}', selecting the first one:
+{1}</value>
+  </data>
+  <data name="MyCustomFormat" xml:space="preserve">
+    <value>My custom {0} format</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="NavigatingTo" xml:space="preserve">
+    <value>Navigating to '{0}'</value>
+  </data>
+  <data name="NewerVersionAvailable" xml:space="preserve">
+    <value>A newer version ({0}) is available to be downloaded</value>
+  </data>
+  <data name="NoBookmarksAdded" xml:space="preserve">
+    <value>No Bookmarks added</value>
+  </data>
+  <data name="NoDataSourceMatchesFilter" xml:space="preserve">
+    <value>No data source matches '{0}'</value>
+  </data>
+  <data name="NoDataSourceOpened" xml:space="preserve">
+    <value>No data source opened</value>
+  </data>
+  <data name="NoDataSources" xml:space="preserve">
+    <value>There are no {0}</value>
+  </data>
+  <data name="NoIcon" xml:space="preserve">
+    <value>No icon!</value>
+  </data>
+  <data name="NoIssuesPluginForFormat" xml:space="preserve">
+    <value>There is no plugin installed which is able to present a list of issues for the current data source's log format.</value>
+  </data>
+  <data name="NoIssuesPluginInstalled" xml:space="preserve">
+    <value>No issues plugin installed</value>
+  </data>
+  <data name="NoLogEntriesWithTimestamps" xml:space="preserve">
+    <value>No log entries with timestamps</value>
+  </data>
+  <data name="NoLogEntryMatchesFilter" xml:space="preserve">
+    <value>No log entry matches "{0}".
+Try changing your filter(s) or disable them again</value>
+  </data>
+  <data name="NoNewEntriesAfterClear" xml:space="preserve">
+    <value>No new log entries have been added to the data source since the screen was cleared. Try waiting for a little longer or show all log entries again.</value>
+  </data>
+  <data name="NoNewMessages" xml:space="preserve">
+    <value>No new messages</value>
+  </data>
+  <data name="NoOutlinePluginForFormat" xml:space="preserve">
+    <value>There is no plugin installed which is able to present an outline for the current data source's log format.</value>
+  </data>
+  <data name="NoOutlinePluginInstalled" xml:space="preserve">
+    <value>No outline plugin installed</value>
+  </data>
+  <data name="NoPluginRepositoryConfigured" xml:space="preserve">
+    <value>No plugin repository configured!</value>
+  </data>
+  <data name="NoPluginsInstalled" xml:space="preserve">
+    <value>No plugins installed!</value>
+  </data>
+  <data name="NoResultsForSearch" xml:space="preserve">
+    <value>No results for search {0}</value>
+  </data>
+  <data name="NoTimestampReason" xml:space="preserve">
+    <value> not contain a timestamp or because its timestamp was not recognized</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="NotDisplayedBecause" xml:space="preserve">
+    <value> not displayed in the group because </value>
+  </data>
+  <data name="NothingMatchesLevelFilter" xml:space="preserve">
+    <value>Nothing matches level filter</value>
+  </data>
+  <data name="NothingMatchesQuickFilter" xml:space="preserve">
+    <value>Nothing matches quick filter</value>
+  </data>
+  <data name="NotifyWhenUpdateAvailable" xml:space="preserve">
+    <value>Notify me when an update becomes available</value>
+  </data>
+  <data name="OneBookmark" xml:space="preserve">
+    <value>1 bookmark</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>Open Containing Folder</value>
+  </data>
+  <data name="OpenContainingFolderHint" xml:space="preserve">
+    <value>Opens Folder the current Data Source is contained in</value>
+  </data>
+  <data name="OpenContainingFolders" xml:space="preserve">
+    <value>Open Containing Folder(s)</value>
+  </data>
+  <data name="OpenContainingFoldersHint" xml:space="preserve">
+    <value>Opens the Folder(s) of the Child Data sources</value>
+  </data>
+  <data name="OpenPluginFolder" xml:space="preserve">
+    <value>Open plugin folder</value>
+  </data>
+  <data name="OtherCount" xml:space="preserve">
+    <value>Other Count</value>
+  </data>
+  <data name="Outline" xml:space="preserve">
+    <value>Outline</value>
+  </data>
+  <data name="OutlineCreationFailed" xml:space="preserve">
+    <value>Outline creation failed</value>
+  </data>
+  <data name="OutlinePresentationError" xml:space="preserve">
+    <value>An error occurred while trying to present the outline: check the log</value>
+  </data>
+  <data name="OverwrittenEncoding" xml:space="preserve">
+    <value>Overwritten Encoding</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="PinUnpinPanel" xml:space="preserve">
+    <value>Pin/Unpin this panel</value>
+  </data>
+  <data name="PluginDetails" xml:space="preserve">
+    <value>Plugin details:</value>
+  </data>
+  <data name="PluginRepositoriesHint" xml:space="preserve">
+    <value>Third party plugins will be automatically updated from the following repositories:</value>
+  </data>
+  <data name="PluginRepositoryRequired" xml:space="preserve">
+    <value>In order to download/update plugins, you have to configure Tailviewer NEXT to use a plugin repository. Please note that there is no globally available plugin repository. This feature is currently intended for organizations to deploy their own private repositories.</value>
+  </data>
+  <data name="PluginTranslationHint" xml:space="preserve">
+    <value>A plugin is responsible for translating the contents of this log file</value>
+  </data>
+  <data name="PluginTranslationTooltip" xml:space="preserve">
+    <value>A plugin is responsible for translating the contents of this log file - click here for details</value>
+  </data>
+  <data name="PluginUpdateError" xml:space="preserve">
+    <value>An error occured while trying to update plugins: {0}</value>
+  </data>
+  <data name="PluginsUpdatedRestart" xml:space="preserve">
+    <value>{0} plugin(s) were updated. Please restart {1}!</value>
+  </data>
+  <data name="Processed" xml:space="preserve">
+    <value>Processed</value>
+  </data>
+  <data name="Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="PropertiesRegistryMissing" xml:space="preserve">
+    <value>Registry is missing: No properties will be displayed...</value>
+  </data>
+  <data name="PropertyName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ProxyHint" xml:space="preserve">
+    <value>If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available.</value>
+  </data>
+  <data name="ProxyPassword" xml:space="preserve">
+    <value>Proxy password</value>
+  </data>
+  <data name="ProxyServer" xml:space="preserve">
+    <value>Proxy server</value>
+  </data>
+  <data name="ProxyUsername" xml:space="preserve">
+    <value>Proxy username</value>
+  </data>
+  <data name="Quick" xml:space="preserve">
+    <value>Quick</value>
+  </data>
+  <data name="QuickFilters" xml:space="preserve">
+    <value>Quick Filters</value>
+  </data>
+  <data name="Recursive" xml:space="preserve">
+    <value>Recursive</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>Refreshing...</value>
+  </data>
+  <data name="Regexp" xml:space="preserve">
+    <value>Regexp</value>
+  </data>
+  <data name="RemoveMergedDataSource" xml:space="preserve">
+    <value>Remove this merged data source</value>
+  </data>
+  <data name="ReportBug" xml:space="preserve">
+    <value>report a bug!</value>
+  </data>
+  <data name="RunningLatestVersion" xml:space="preserve">
+    <value>You are running the latest version!</value>
+  </data>
+  <data name="ScreenWasCleared" xml:space="preserve">
+    <value>The screen was cleared</value>
+  </data>
+  <data name="ScrollSpeed" xml:space="preserve">
+    <value>Scroll speed</value>
+  </data>
+  <data name="SearchDataSources" xml:space="preserve">
+    <value>Search data sources:</value>
+  </data>
+  <data name="SearchLogFile" xml:space="preserve">
+    <value>Search log file (Ctrl+F)</value>
+  </data>
+  <data name="SelectEverything" xml:space="preserve">
+    <value>Select: Everything</value>
+  </data>
+  <data name="SelectFolderToOpen" xml:space="preserve">
+    <value>Select folder to open</value>
+  </data>
+  <data name="SelectFrom" xml:space="preserve">
+    <value>Select from {0}</value>
+  </data>
+  <data name="SelectFromTo" xml:space="preserve">
+    <value>Select from - to -</value>
+  </data>
+  <data name="SelectLogFileToOpen" xml:space="preserve">
+    <value>Select log file to open</value>
+  </data>
+  <data name="SelectRange" xml:space="preserve">
+    <value>Select from {0} to {1}</value>
+  </data>
+  <data name="SelectTitle" xml:space="preserve">
+    <value>Select: {0}</value>
+  </data>
+  <data name="SelectUntil" xml:space="preserve">
+    <value>Select until {0}</value>
+  </data>
+  <data name="ShowBookmarkList" xml:space="preserve">
+    <value>Show the list of bookmarks</value>
+  </data>
+  <data name="ShowCharacterCode" xml:space="preserve">
+    <value>Show a one or two digit character code next to each line (and in the data sources panel)</value>
+  </data>
+  <data name="ShowDataSourceList" xml:space="preserve">
+    <value>Show the list of data sources</value>
+  </data>
+  <data name="ShowFilename" xml:space="preserve">
+    <value>Show the filename next to each line</value>
+  </data>
+  <data name="ShowOutlineOfCurrentLogFile" xml:space="preserve">
+    <value>Show outline of the current log file</value>
+  </data>
+  <data name="ShowPropertiesOfCurrentLogFile" xml:space="preserve">
+    <value>Show properties of the current log file</value>
+  </data>
+  <data name="ShowQuickFilterList" xml:space="preserve">
+    <value>Show the list of quick filters</value>
+  </data>
+  <data name="ShowSourceName" xml:space="preserve">
+    <value>Show source name</value>
+  </data>
+  <data name="ShowSourceNameHint" xml:space="preserve">
+    <value>Toggles between showing the full name of the data source or a character code representing the original data source</value>
+  </data>
+  <data name="ShowWord" xml:space="preserve">
+    <value>show</value>
+  </data>
+  <data name="ShuttingDownForUpdate" xml:space="preserve">
+    <value>Shutting down to perform the update</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SorryForInconvenience" xml:space="preserve">
+    <value>We are very sorry for this. If this prevented you from doing your work, then please</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="TabWidth" xml:space="preserve">
+    <value>Tab Width</value>
+  </data>
+  <data name="Tailviewer" xml:space="preserve">
+    <value>Tailviewer NEXT</value>
+  </data>
+  <data name="ThemeColor" xml:space="preserve">
+    <value>Theme color</value>
+  </data>
+  <data name="ThemeGroup" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="TheyDo" xml:space="preserve">
+    <value>they do</value>
+  </data>
+  <data name="ThisMonth" xml:space="preserve">
+    <value>This month</value>
+  </data>
+  <data name="ThisWeek" xml:space="preserve">
+    <value>This week</value>
+  </data>
+  <data name="ThisYear" xml:space="preserve">
+    <value>This year</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="TooltipClearScreen" xml:space="preserve">
+    <value>Clear Screen</value>
+  </data>
+  <data name="TooltipColorByLevel" xml:space="preserve">
+    <value>Color by Level</value>
+  </data>
+  <data name="TooltipColorLogMessages" xml:space="preserve">
+    <value>Color log messages by their log level</value>
+  </data>
+  <data name="TooltipElapsedSinceFirst" xml:space="preserve">
+    <value>Show the amount of time elapsed since the first entry</value>
+  </data>
+  <data name="TooltipElapsedSincePrevious" xml:space="preserve">
+    <value>Show the amount of time elapsed since the previous entry</value>
+  </data>
+  <data name="TooltipExportDataSource" xml:space="preserve">
+    <value>Export the current Data Source to a text file (with the current filters)</value>
+  </data>
+  <data name="TooltipExportToFile" xml:space="preserve">
+    <value>Export To File</value>
+  </data>
+  <data name="TooltipFollowLastEntry" xml:space="preserve">
+    <value>Follow/Unfollow the last log entry</value>
+  </data>
+  <data name="TooltipFollowTail" xml:space="preserve">
+    <value>Follow Tail</value>
+  </data>
+  <data name="TooltipHideAllEntries" xml:space="preserve">
+    <value>Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source.</value>
+  </data>
+  <data name="TooltipHideCompletelyEmptyLines" xml:space="preserve">
+    <value>Hide lines which are completely empty</value>
+  </data>
+  <data name="TooltipHideEmptyLines" xml:space="preserve">
+    <value>Hide Empty Lines</value>
+  </data>
+  <data name="TooltipShowAll" xml:space="preserve">
+    <value>Show All</value>
+  </data>
+  <data name="TooltipShowClearedEntries" xml:space="preserve">
+    <value>Shows all log entries that were previously cleared again</value>
+  </data>
+  <data name="TooltipShowDeltaTimes" xml:space="preserve">
+    <value>Show Delta Times</value>
+  </data>
+  <data name="TooltipShowElapsedTimes" xml:space="preserve">
+    <value>Show Elapsed Times</value>
+  </data>
+  <data name="TooltipShowLineNumbers" xml:space="preserve">
+    <value>Show Line Numbers</value>
+  </data>
+  <data name="TooltipSingleLine" xml:space="preserve">
+    <value>Single Line</value>
+  </data>
+  <data name="TooltipToggleLineNumbers" xml:space="preserve">
+    <value>Show/hide line numbers</value>
+  </data>
+  <data name="TooltipTreatEachLine" xml:space="preserve">
+    <value>Treat every single line as a separate log entry</value>
+  </data>
+  <data name="TraceCount" xml:space="preserve">
+    <value>Trace Count</value>
+  </data>
+  <data name="TryChangingFilterOrAddDataSource" xml:space="preserve">
+    <value>Try changing the filter or add the desired data source</value>
+  </data>
+  <data name="TryClickingAddBookmark" xml:space="preserve">
+    <value>Try clicking Add Bookmark</value>
+  </data>
+  <data name="TryDifferentLevels" xml:space="preserve">
+    <value>Try filtering by different levels or display everything regardless of its level again</value>
+  </data>
+  <data name="TryDifferentQuickFilterTerms" xml:space="preserve">
+    <value>Try filtering by different terms or disable all quick filters</value>
+  </data>
+  <data name="TryMergingDataSources" xml:space="preserve">
+    <value>Try merging different data sources, change the timestamp format of the data or create a plugin to help Tailviewer NEXT parse its timestamp</value>
+  </data>
+  <data name="TryOpeningFileOrFolder" xml:space="preserve">
+    <value>Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.</value>
+  </data>
+  <data name="TrySelectingLogEntry" xml:space="preserve">
+    <value>Try selecting a log entry /or line and click Add Bookmark</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occured :(</value>
+  </data>
+  <data name="UnknownNotification" xml:space="preserve">
+    <value>Unknown notification: {0}</value>
+  </data>
+  <data name="UpdateAllPlugins" xml:space="preserve">
+    <value>Update all plugins</value>
+  </data>
+  <data name="UpdatesGroup" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version:</value>
+  </data>
+  <data name="WarningCount" xml:space="preserve">
+    <value>Warning Count</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="WebsiteLabel" xml:space="preserve">
+    <value>Website:</value>
+  </data>
+  <data name="Wildcard" xml:space="preserve">
+    <value>Wildcard</value>
+  </data>
+  <data name="WindowGroup" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="Working" xml:space="preserve">
+    <value>Working</value>
+  </data>
+</root>

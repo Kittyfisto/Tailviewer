@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish release
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag is on master
+        shell: pwsh
+        run: |
+          # branches + tags 在 push 触发中是 OR 语义，无法同时限定；这里显式校验
+          # tag 提交确实可达 master，杜绝在其它分支打 v-tag 误触发发布。
+          git merge-base --is-ancestor "$env:GITHUB_SHA" origin/master
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Tag $env:GITHUB_REF_NAME is not reachable from origin/master"
+            exit 1
+          }
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download NuGet
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" `
+            -OutFile "$env:RUNNER_TEMP\nuget.exe"
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3.1.11
+        with:
+          useConfigFile: true
+
+      - name: Inject version
+        shell: pwsh
+        run: |
+          ./scripts/set-version.ps1 -Version $env:GITVERSION_MAJORMINORPATCH
+
+      - name: Restore packages
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP\nuget.exe" restore Tailviewer.sln
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build app
+        shell: pwsh
+        run: |
+          # Serilog 插件 PostBuildEvent 以裸名调用 archive.exe，故把 bin\ 加入 PATH。
+          $env:PATH = "$pwd\bin;$env:PATH"
+          $projects = @(
+            'src\Tailviewer.Archiver\Tailviewer.Archiver.csproj',
+            'src\Plugins\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj',
+            'src\Tailviewer\Tailviewer.csproj'
+          )
+          foreach ($p in $projects) {
+            Write-Host "==> msbuild $p"
+            msbuild $p /t:Build /p:Configuration=Release /m /v:minimal
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Stage portable
+        shell: pwsh
+        run: |
+          ./scripts/stage-portable.ps1
+
+      - name: Create portable zip
+        shell: pwsh
+        run: |
+          $version = $env:GITVERSION_MAJORMINORPATCH
+          $zip = "Tailviewer-NEXT-portable-$version.zip"
+          Compress-Archive -Path artifacts\portable\* -DestinationPath $zip -Force
+          if (-not (Test-Path $zip)) {
+            Write-Error "Failed to create $zip"
+            exit 1
+          }
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          msbuild src\Installer\Installer.csproj /t:Build /p:Configuration=Release /m /v:minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare release artifacts
+        shell: pwsh
+        run: |
+          $version = $env:GITVERSION_MAJORMINORPATCH
+          $setup = "Tailviewer-NEXT-setup-$version.exe"
+          $zip = "Tailviewer-NEXT-portable-$version.zip"
+          Copy-Item bin\Tailviewer-setup.exe $setup -Force
+          # portable 与 installer 必须同时存在，缺一即整体失败（禁止只发安装器）。
+          if (-not (Test-Path $setup)) { Write-Error "Missing $setup"; exit 1 }
+          if (-not (Test-Path $zip)) { Write-Error "Missing $zip (portable build failed)"; exit 1 }
+          Write-Host "Release artifacts:"
+          Get-ChildItem "Tailviewer-NEXT-*-$version.*" | ForEach-Object { Write-Host "  $($_.Name)" }
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Tailviewer-NEXT-setup-*.exe
+            Tailviewer-NEXT-portable-*.zip
+          generate_release_notes: true

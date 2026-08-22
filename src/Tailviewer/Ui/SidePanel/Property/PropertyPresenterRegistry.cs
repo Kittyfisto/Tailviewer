@@ -6,6 +6,8 @@ using Tailviewer.Api;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Property
 {
 	public sealed class PropertyPresenterRegistry
@@ -23,28 +25,28 @@ namespace Tailviewer.Ui.SidePanel.Property
 
 			_wellKnownDisplayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
-				{ Core.Properties.LogEntryCount, "Count" },
-				{ Core.Properties.TraceLogEntryCount, "Trace Count" },
-				{ Core.Properties.DebugLogEntryCount, "Debug Count" },
-				{ Core.Properties.InfoLogEntryCount, "Info Count" },
-				{ Core.Properties.WarningLogEntryCount, "Warning Count" },
-				{ Core.Properties.ErrorLogEntryCount, "Error Count" },
-				{ Core.Properties.FatalLogEntryCount, "Fatal Count" },
-				{ Core.Properties.OtherLogEntryCount, "Other Count" },
+				{ Core.Properties.LogEntryCount, Strings.Count },
+				{ Core.Properties.TraceLogEntryCount, Strings.TraceCount },
+				{ Core.Properties.DebugLogEntryCount, Strings.DebugCount },
+				{ Core.Properties.InfoLogEntryCount, Strings.InfoCount },
+				{ Core.Properties.WarningLogEntryCount, Strings.WarningCount },
+				{ Core.Properties.ErrorLogEntryCount, Strings.ErrorCount },
+				{ Core.Properties.FatalLogEntryCount, Strings.FatalCount },
+				{ Core.Properties.OtherLogEntryCount, Strings.OtherCount },
 
-				{ Core.Properties.Name, "Name" },
-				{ Core.Properties.StartTimestamp, "First Timestamp" },
-				{ Core.Properties.EndTimestamp, "Last Timestamp" },
-				{ Core.Properties.Duration, "Duration" },
-				{ Core.Properties.LastModified, "Last Modified" },
-				{ Core.Properties.Created, "Created" },
-				{ Core.Properties.Size, "Size" },
+				{ Core.Properties.Name, Strings.PropertyName },
+				{ Core.Properties.StartTimestamp, Strings.FirstTimestamp },
+				{ Core.Properties.EndTimestamp, Strings.LastTimestamp },
+				{ Core.Properties.Duration, Strings.Duration },
+				{ Core.Properties.LastModified, Strings.LastModified },
+				{ Core.Properties.Created, Strings.Created },
+				{ Core.Properties.Size, Strings.Size },
 
-				{ Core.Properties.PercentageProcessed, "Processed" },
-				{ Core.Properties.Format, "Format" },
-				{ TextProperties.AutoDetectedEncoding, "Auto Detected Encoding" },
-				{ TextProperties.OverwrittenEncoding, "Overwritten Encoding" },
-				{ TextProperties.Encoding, "Encoding" }
+				{ Core.Properties.PercentageProcessed, Strings.Processed },
+				{ Core.Properties.Format, Strings.Format },
+				{ TextProperties.AutoDetectedEncoding, Strings.AutoDetectedEncoding },
+				{ TextProperties.OverwrittenEncoding, Strings.OverwrittenEncoding },
+				{ TextProperties.Encoding, Strings.Encoding }
 			};
 			_wellKnownPresenters = new Dictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>>
 			{

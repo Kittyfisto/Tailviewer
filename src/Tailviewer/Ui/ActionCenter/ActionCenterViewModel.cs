@@ -27,7 +27,6 @@ namespace Tailviewer.Ui.ActionCenter
 		public ActionCenterViewModel()
 		{
 			_notifications = new ObservableCollection<INotificationViewModel>();
-			AddNotification(Changelog.MostRecent);
 		}
 
 		public ActionCenterViewModel(IDispatcher dispatcher, IActionCenter actionCenter)
@@ -116,33 +115,25 @@ namespace Tailviewer.Ui.ActionCenter
 			}
 			else
 			{
-				var change = notification as Change;
-				if (change != null)
+				var bug = notification as IBug;
+				if (bug != null)
 				{
-					Add(new ChangeViewModel(change));
+					Add(new BugViewModel(bug));
 				}
 				else
 				{
-					var bug = notification as IBug;
-					if (bug != null)
-					{
-						Add(new BugViewModel(bug));
-					}
+					var export = notification as IExportAction;
+					if (export != null)
+						Add(new ExportViewModel(export));
 					else
 					{
-						var export = notification as IExportAction;
-						if (export != null)
-							Add(new ExportViewModel(export));
-						else
+						var build = notification as Build;
+						if (build != null)
 						{
-							var build = notification as Build;
-							if (build != null)
-							{
-								Add(new BuildViewModel(build));
-							}
-							else
-								Log.WarnFormat("Unknown notification: {0}", notification);
+							Add(new BuildViewModel(build));
 						}
+						else
+							Log.WarnFormat("Unknown notification: {0}", notification);
 					}
 				}
 			}

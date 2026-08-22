@@ -41,6 +41,7 @@ namespace Tailviewer
 		public App()
 		{
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
+			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Tailviewer;component/Themes/MetrolibTheme.xaml") });
 		}
 
 		public static int Start(SingleApplicationHelper.IMutex mutex, string[] args, Stopwatch stopwatch)
@@ -136,6 +137,19 @@ namespace Tailviewer
 			settings.Restore(out var neededPatching);
 			settings.AllowSave = false; //< We will allow saving once the app is fully booted
 
+			// Apply the chosen UI language before any view model or window is built.
+			// Language changes only take effect after a restart (see UISettings).
+			try
+			{
+				var uiCulture = new System.Globalization.CultureInfo(settings.Ui.Language);
+				System.Threading.Thread.CurrentThread.CurrentUICulture = uiCulture;
+				System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = uiCulture;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while applying UI language '{0}': {1}", settings.Ui.Language, e);
+			}
+
 			if (neededPatching)
 			{
 				// TODO: Save settings right again to complete the upgrade
@@ -221,8 +235,8 @@ namespace Tailviewer
 						services.RegisterInstance<IHighlighters>(highlighters);
 
 						actionCenter.Add(Build.Current);
-						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
 						var application = new App();
+						ThemeManager.Apply(settings.Ui.ThemeColor);
 						var dispatcher = Dispatcher.CurrentDispatcher;
 						var uiDispatcher = new UiDispatcher(dispatcher);
 						services.RegisterInstance<IDispatcher>(uiDispatcher);
@@ -245,7 +259,7 @@ namespace Tailviewer
 						settings.AllowSave = true;
 
 						stopwatch.Stop();
-						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);
+						Log.InfoFormat("Tailviewer NEXT started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);
 
 						window.Show();
 						mutex?.SetListener(window);
@@ -299,7 +313,7 @@ namespace Tailviewer
 		{
 			var builder = new StringBuilder();
 			builder.AppendLine();
-			builder.AppendFormat("Tailviewer: v{0}, {1}",
+			builder.AppendFormat("Tailviewer NEXT: v{0}, {1}",
 			                     FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
 			                     Environment.Is64BitProcess ? "64bit" : "32bit");
 			builder.AppendLine();

@@ -25,6 +25,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
 		/// <summary>
+		///     The time filter which is always combined via a logical AND with the
+		///     <see cref="LevelFilter" /> and the result of the <see cref="QuickFilterChain" />.
+		/// </summary>
+		ILogEntryFilter TimeFilter { get; set; }
+
+		/// <summary>
+		///     Defines how the individual quick filters of the <see cref="QuickFilterChain" /> are
+		///     combined with each other (logical AND or logical OR).
+		/// </summary>
+		FilterCombinationMode FilterCombinationMode { get; set; }
+
+		/// <summary>
 		///     The final filter which is used to filter the <see cref="UnfilteredLogSource"/> into the <see cref="FilteredLogSource"/>.
 		/// </summary>
 		/// <remarks>

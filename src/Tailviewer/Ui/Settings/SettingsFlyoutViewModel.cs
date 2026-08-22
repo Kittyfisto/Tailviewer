@@ -7,11 +7,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using log4net;
 using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Api;
 using Tailviewer.Settings;
+using Tailviewer.Localization;
 using Tailviewer.Ui.Settings.CustomFormats;
 
 namespace Tailviewer.Ui.Settings
@@ -28,7 +30,7 @@ namespace Tailviewer.Ui.Settings
 			Encodings = new[]
 			{
 				// TODO: Move to service
-				new EncodingViewModel(null, "Auto detect"),
+				new EncodingViewModel(null, Strings.AutoDetect),
 				new EncodingViewModel(Encoding.Default),
 				new EncodingViewModel(Encoding.ASCII),
 				new EncodingViewModel(Encoding.UTF8),
@@ -39,6 +41,13 @@ namespace Tailviewer.Ui.Settings
 			};
 		}
 
+		public IReadOnlyList<LanguageViewModel> Languages { get; } = new[]
+		{
+			new LanguageViewModel("en", Tailviewer.Localization.Strings.English),
+			new LanguageViewModel("zh-CN", Tailviewer.Localization.Strings.ChineseSimplified)
+		};
+
+		private LanguageViewModel _language;
 		private readonly IApplicationSettings _settings;
 		private readonly LogLevelSettingsViewModel _otherLevel;
 		private readonly LogLevelSettingsViewModel _traceLevel;
@@ -77,6 +86,7 @@ namespace Tailviewer.Ui.Settings
 			_errorLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Error);
 			_fatalLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Fatal);
 			_customFormats = new CustomFormatsSettingsViewModel(_settings, serviceContainer, Encodings);
+			_language = Languages.FirstOrDefault(x => string.Equals(x.Code, applicationSettings.Ui.Language, StringComparison.InvariantCultureIgnoreCase)) ?? Languages.First();
 		}
 
 		public bool CheckForUpdates
@@ -233,6 +243,34 @@ namespace Tailviewer.Ui.Settings
 			}
 		}
 
+		public Color ThemeColor
+		{
+			get { return _settings.Ui.ThemeColor; }
+			set
+			{
+				if (value == _settings.Ui.ThemeColor)
+					return;
+
+				_settings.Ui.ThemeColor = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+
+				// Defer the theme application until the color picker has finished updating,
+				// otherwise mutating the application resources during the picker's own
+				// selection callback re-enters the layout/rendering pass.
+				var dispatcher = Application.Current?.Dispatcher;
+				if (dispatcher != null)
+				{
+					dispatcher.BeginInvoke(new Action(() => ThemeManager.Apply(value)));
+				}
+				else
+				{
+					ThemeManager.Apply(value);
+				}
+			}
+		}
+
 		public LogLevelSettingsViewModel OtherLevel => _otherLevel;
 		public LogLevelSettingsViewModel TraceLevel => _traceLevel;
 		public LogLevelSettingsViewModel DebugLevel => _debugLevel;
@@ -309,17 +347,32 @@ namespace Tailviewer.Ui.Settings
 			}
 		}
 
+		public LanguageViewModel Language
+		{
+			get { return _language; }
+			set
+			{
+				if (Equals(value, _language))
+				return;
+
+				_language = value;
+				_settings.Ui.Language = value?.Code;
+				EmitPropertyChanged();
+				_settings.SaveAsync();
+			}
+		}
+
 		public void Update()
 		{}
 
-		public string Name => "Settings";
+		public string Name => Strings.MenuSettings;
 
 		private void ChooseExportFolder()
 		{
 			var dialog = new VistaFolderBrowserDialog
 			{
 				SelectedPath = ExportFolder,
-				Description = "Choose export folder",
+				Description = Strings.ChooseExportFolder,
 				UseDescriptionForTitle = true
 			};
 

@@ -9,6 +9,8 @@ using MMQ;
 using Ookii.Dialogs.Wpf;
 using Xceed.Wpf.Toolkit;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.About
 {
 	public sealed class AboutFlyoutViewModel
@@ -69,7 +71,7 @@ namespace Tailviewer.Ui.About
 		public void Update()
 		{ }
 
-		public string Name => "About";
+		public string Name => Strings.MenuAbout;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

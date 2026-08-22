@@ -6,6 +6,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/ImageLabel.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/FlatImage.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/QuickFilterMatchTypeToggleButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/SidePanel/QuickFilters/FilterCombinationModeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 

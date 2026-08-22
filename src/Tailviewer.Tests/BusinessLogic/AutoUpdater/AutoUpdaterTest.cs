@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.AutoUpdates;
@@ -11,18 +12,20 @@ namespace Tailviewer.Tests.BusinessLogic.AutoUpdater
 		[Test]
 		public void TestParse()
 		{
-			byte[] data = File.ReadAllBytes(@"TestData\version.xml");
+			byte[] data = File.ReadAllBytes(@"TestData\version.json");
 			VersionInfo version;
 			Tailviewer.BusinessLogic.AutoUpdates.AutoUpdater.Parse(data, out version);
 			version.Should().NotBeNull();
 
-			version.Beta.Major.Should().Be(0);
-			version.Beta.Minor.Should().Be(2);
-			version.Beta.Build.Should().Be(67);
+			version.Beta.Should().BeNull("because this fork only publishes stable releases");
+			version.Stable.Should().Be(new Version(0, 9, 2));
+			version.StableAddress.Should().Be(new Uri("https://github.com/brofea/Tailviewer-NEXT/releases/download/v0.9.2/Tailviewer-setup-0.9.2.exe"), "because the setup asset must be preferred over other assets");
+		}
 
-			version.Stable.Major.Should().Be(0);
-			version.Stable.Minor.Should().Be(2);
-			version.Stable.Build.Should().Be(60);
+		[Test]
+		public void TestBuildVersionCheckUri()
+		{
+			Tailviewer.BusinessLogic.AutoUpdates.AutoUpdater.BuildVersionCheckUri().Should().Be(new Uri("https://api.github.com/repos/brofea/Tailviewer-NEXT/releases/latest"));
 		}
 	}
 }

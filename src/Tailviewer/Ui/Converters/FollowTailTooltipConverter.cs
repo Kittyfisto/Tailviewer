@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Converters
 {
 	public sealed class FollowTailTooltipConverter
@@ -15,9 +17,9 @@ namespace Tailviewer.Ui.Converters
 				return null;
 
 			if (isChecked)
-				return "Click to stop following the tail of this data source";
+				return Strings.ClickToStopFollowingTail;
 
-			return "Click to follow the tail of this data source";
+			return Strings.ClickToFollowTail;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

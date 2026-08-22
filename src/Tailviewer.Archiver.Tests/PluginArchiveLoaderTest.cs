@@ -28,6 +28,9 @@ namespace Tailviewer.Archiver.Tests
 
 			_filesystem = new InMemoryFilesystem();
 			_filesystem.AddRoot(Path.GetPathRoot(Constants.PluginPath));
+			var downloadedPluginsRoot = Path.GetPathRoot(Constants.DownloadedPluginsPath);
+			if (!string.Equals(downloadedPluginsRoot, Path.GetPathRoot(Constants.PluginPath), StringComparison.OrdinalIgnoreCase))
+				_filesystem.AddRoot(downloadedPluginsRoot);
 			_filesystem.CreateDirectory(Constants.PluginPath);
 		}
 

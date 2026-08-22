@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Converters
 {
 	public sealed class ShowAllToContentConverter
@@ -11,10 +13,10 @@ namespace Tailviewer.Ui.Converters
 		{
 			var showAll = value as bool?;
 			if (showAll == true)
-				return "All";
+				return Strings.All;
 			if (showAll == false)
-				return "None";
-			return "Mixed";
+				return Strings.None;
+			return Strings.Mixed;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

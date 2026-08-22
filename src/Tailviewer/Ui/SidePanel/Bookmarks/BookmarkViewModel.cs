@@ -5,6 +5,8 @@ using Metrolib;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Bookmarks
 {
 	public sealed class BookmarkViewModel
@@ -26,7 +28,7 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			_navigate = navigate;
 			_remove = remove;
 			Bookmark = bookmark;
-			Name = string.Format("Line #{0}, {1}", Bookmark.Index.Value + 1, DataSourceName(bookmark.DataSource));
+			Name = string.Format(Strings.BookmarkLineTitle, Bookmark.Index.Value + 1, DataSourceName(bookmark.DataSource));
 			NavigateCommand = new DelegateCommand(Navigate);
 			RemoveCommand = new DelegateCommand(Remove);
 		}

@@ -45,7 +45,7 @@ namespace Tailviewer
 				mutex = SingleApplicationHelper.AcquireMutex();
 				if (mutex == null)
 				{
-					Console.WriteLine("WARN: Unable to acquire mutex, another Tailviewer is already running!");
+					Console.WriteLine("WARN: Unable to acquire mutex, another Tailviewer NEXT is already running!");
 
 					if (AllowMultipleInstance())
 					{
@@ -58,7 +58,7 @@ namespace Tailviewer
 						if (SingleApplicationHelper.ShouldTakeOver(processes, out primaryProcess))
 						{
 							Console.WriteLine(
-							                  "INFO: Tailviewer with pid {0} has been determined to not be usable anymore",
+							                  "INFO: Tailviewer NEXT with pid {0} has been determined to not be usable anymore",
 							                  primaryProcess?.Id);
 
 							SingleApplicationHelper.KillAllOtherInstances(processes);
@@ -68,7 +68,7 @@ namespace Tailviewer
 						}
 						else
 						{
-							Console.WriteLine("INFO: Tailviewer with pid {0} has been determined to still be usable",
+							Console.WriteLine("INFO: Tailviewer NEXT with pid {0} has been determined to still be usable",
 							                  primaryProcess?.Id);
 
 							// I guess the already running process

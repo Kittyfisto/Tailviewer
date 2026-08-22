@@ -350,7 +350,7 @@ namespace Installer
 
 		static readonly string StartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
 		static readonly string ShortcutFolder = Path.Combine(StartMenuPath, Constants.ApplicationTitle);
-		static readonly string TailviewerLink = Path.Combine(ShortcutFolder, "Tailviewer.lnk");
+		static readonly string TailviewerLink = Path.Combine(ShortcutFolder, Constants.ApplicationTitle + ".lnk");
 
 		private void CreateStartMenuEntry()
 		{
@@ -358,7 +358,7 @@ namespace Installer
 				Directory.CreateDirectory(ShortcutFolder);
 			var shell = new WshShell();
 			var shortcut = (IWshShortcut) shell.CreateShortcut(TailviewerLink);
-			shortcut.TargetPath = Path.Combine(_installationPath, "Tailviewer.exe");
+			shortcut.TargetPath = Path.Combine(_installationPath, Constants.ApplicationExecutable);
 			shortcut.IconLocation = IconPath;
 			shortcut.Arguments = "";
 			shortcut.Description = "Open & Free log file viewer";
@@ -478,7 +478,7 @@ namespace Installer
 
 		public void Launch()
 		{
-			var app = Path.Combine(_installationPath, "Tailviewer.exe");
+			var app = Path.Combine(_installationPath, Constants.ApplicationExecutable);
 			Launcher.RunAsDesktopUser(app);
 		}
 	}

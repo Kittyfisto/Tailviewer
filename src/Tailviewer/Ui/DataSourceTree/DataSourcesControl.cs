@@ -15,6 +15,8 @@ using Tailviewer.Collections;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.SidePanel.DataSources;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.DataSourceTree
 {
 	/// <summary>
@@ -212,13 +214,13 @@ namespace Tailviewer.Ui.DataSourceTree
 			}
 			else if (!string.IsNullOrEmpty(StringFilter))
 			{
-				NoDataSourcesReason = $"No data source matches '{StringFilter}'";
-				NoDataSourcesActions = "Try changing the filter or add the desired data source";
+				NoDataSourcesReason = string.Format(Strings.NoDataSourceMatchesFilter, StringFilter);
+				NoDataSourcesActions = Strings.TryChangingFilterOrAddDataSource;
 			}
 			else
 			{
-				NoDataSourcesReason = "No data source opened";
-				NoDataSourcesActions = "Try opening a file or folder, create a new data source from the file menu or simply drag and drop a file into this window.";
+				NoDataSourcesReason = Strings.NoDataSourceOpened;
+				NoDataSourcesActions = Strings.TryOpeningFileOrFolder;
 			}
 		}
 

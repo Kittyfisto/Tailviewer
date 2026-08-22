@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/core/architecture.md", "reason": "Layering rules for Tailviewer.Core (UI-free) and where the new FilterCombinationMode enum should live."}
+{"file": ".trellis/spec/core/error-handling.md", "reason": "No-throw contract relevant to filter construction and Filter.Create overloads."}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "MVVM conventions for the side panel view model property and INotifyPropertyChanged wiring."}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "BusinessLogic vs Ui vs Settings placement for DataSource settings and the new members."}

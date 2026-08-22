@@ -3,6 +3,7 @@ using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.Localization;
 using Tailviewer.Settings;
 using Tailviewer.Ui;
 
@@ -38,11 +39,11 @@ namespace Tailviewer.Tests.Ui
 		{
 			_viewModel.InstallCommand.Should().NotBeNull();
 			_viewModel.InstallCommand.CanExecute(null).Should().BeTrue();
-			_viewModel.InstallTitle.Should().Be("Install");
+			_viewModel.InstallTitle.Should().Be(Strings.Install);
 
 			_viewModel.InstallCommand.Execute(null);
 			_viewModel.InstallCommand.CanExecute(null).Should().BeFalse();
-			_viewModel.InstallTitle.Should().Be("Downloading...");
+			_viewModel.InstallTitle.Should().Be(Strings.Downloading);
 		}
 
 		[Test]

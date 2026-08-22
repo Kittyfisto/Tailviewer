@@ -12,7 +12,6 @@ namespace Tailviewer.Core.Tests.Sources.Buffer
 	{
 		private ManualTaskScheduler _taskScheduler;
 		private Mock<ILogSource> _source;
-		private LogBufferList _data;
 
 		[SetUp]
 		public void Setup()

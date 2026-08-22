@@ -7,6 +7,8 @@ using Metrolib;
 using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
@@ -42,12 +44,12 @@ namespace Tailviewer.Ui.Menu
 			{
 				new CommandMenuViewModel(addDataSourceFromFile)
 				{
-					Header = "_File",
+					Header = Strings.MenuFile,
 					Icon = Icons.FileOutline,
 				},
 				new CommandMenuViewModel(addDataSourceFromFolder)
 				{
-					Header = "Fol_der",
+					Header = Strings.MenuOpenFolder,
 					Icon = Icons.FolderOpen
 				}
 			};
@@ -56,11 +58,11 @@ namespace Tailviewer.Ui.Menu
 			{
 				new ParentMenuViewModel(_newCustomMenuViewModels)
 				{
-					Header = "_New"
+					Header = Strings.MenuNew
 				},
 				new ParentMenuViewModel(openFileMenuViewModels)
 				{
-					Header = "_Open"
+					Header = Strings.MenuOpen
 				}
 			};
 
@@ -73,11 +75,11 @@ namespace Tailviewer.Ui.Menu
 			{
 				new CommandMenuViewModel(closeCurrentDataSource)
 				{
-					Header = "Close",
+					Header = Strings.MenuClose,
 				},
 				new CommandMenuViewModel(closeAllDataSources)
 				{
-					Header = "Close All",
+					Header = Strings.MenuCloseAll,
 				},
 			};
 			_fileMenuItems.Add(_closeItems);
@@ -85,7 +87,7 @@ namespace Tailviewer.Ui.Menu
 			{
 				new CommandMenuViewModel(showPlugins)
 				{
-					Header = "Plugins",
+					Header = Strings.MenuPlugins,
 					Icon = Icons.PuzzleOutline
 				}
 			};
@@ -94,7 +96,7 @@ namespace Tailviewer.Ui.Menu
 			{
 				new CommandMenuViewModel(showSettings)
 				{
-					Header = "Settings",
+					Header = Strings.MenuSettings,
 					Icon = Icons.CogOutline
 				}
 			};
@@ -107,7 +109,7 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.F4
 				})
 				{
-					Header = "E_xit"
+					Header = Strings.MenuExit
 				}
 			};
 			_fileMenuItems.Add(_exitItems);

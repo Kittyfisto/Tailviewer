@@ -130,7 +130,7 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="MainMenuItemStyle" TargetType="{x:Type MenuItem}">
-        <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Height" Value="32" />
@@ -187,7 +187,7 @@
                                 <Condition Property="IsSubmenuOpen" Value="False" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{StaticResource ForegroundBrushHovered}" />
+                            <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
                         </MultiTrigger>
                         <Trigger Property="IsSubmenuOpen" Value="True">
                             <Setter Property="Background" Value="{StaticResource MenuBackgroundBrush}" />

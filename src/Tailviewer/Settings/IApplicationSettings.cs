@@ -43,6 +43,8 @@ namespace Tailviewer.Settings
 		/// </summary>
 		ICustomFormatsSettings CustomFormats { get; }
 
+		UISettings Ui { get; }
+
 		/// <summary>
 		/// 
 		/// </summary>

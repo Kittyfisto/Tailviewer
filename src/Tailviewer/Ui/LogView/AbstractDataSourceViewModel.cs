@@ -19,6 +19,8 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.Menu;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.LogView
 {
 	public abstract class AbstractDataSourceViewModel
@@ -81,8 +83,8 @@ namespace Tailviewer.Ui.LogView
 			{
 				new CommandMenuViewModel(new DelegateCommand2(ExportToFile))
 				{
-					Header = "Export To File",
-					ToolTip = "Export the current Data Source to a text file (with the current filters)"
+					Header = Strings.TooltipExportToFile,
+					ToolTip = Strings.TooltipExportDataSource
 				}
 			};
 			_editMenuItems = new ObservableCollectionExt<IMenuViewModel>();
@@ -90,52 +92,52 @@ namespace Tailviewer.Ui.LogView
 			{
 				new ToggleMenuViewModel(FollowTail, newValue => { FollowTail = newValue; })
 				{
-					Header = "Follow Tail",
-					ToolTip = "Follow/Unfollow the last log entry"
+					Header = Strings.TooltipFollowTail,
+					ToolTip = Strings.TooltipFollowLastEntry
 				},
 				null,
 				new ToggleMenuViewModel(ShowLineNumbers, newValue => { ShowLineNumbers = newValue;})
 				{
-					Header = "Show Line Numbers",
-					ToolTip = "Show/hide line numbers",
+					Header = Strings.TooltipShowLineNumbers,
+					ToolTip = Strings.TooltipToggleLineNumbers,
 				},
 				new ToggleMenuViewModel(ShowDeltaTimes, newValue => { ShowDeltaTimes = newValue;})
 				{
-					Header = "Show Delta Times",
-					ToolTip = "Show the amount of time elapsed since the previous entry"
+					Header = Strings.TooltipShowDeltaTimes,
+					ToolTip = Strings.TooltipElapsedSincePrevious
 				},
 				new ToggleMenuViewModel(ShowElapsedTime, newValue => { ShowElapsedTime = newValue;})
 				{
-					Header = "Show Elapsed Times",
-					ToolTip = "Show the amount of time elapsed since the first entry"
+					Header = Strings.TooltipShowElapsedTimes,
+					ToolTip = Strings.TooltipElapsedSinceFirst
 				},
 				null,
 				new ToggleMenuViewModel(ColorByLevel, newValue => { ColorByLevel = newValue;})
 				{
-					Header = "Color by Level",
-					ToolTip = "Color log messages by their log level"
+					Header = Strings.TooltipColorByLevel,
+					ToolTip = Strings.TooltipColorLogMessages
 				},
 				new ToggleMenuViewModel(HideEmptyLines, newValue => { HideEmptyLines = newValue;})
 				{
-					Header = "Hide Empty Lines",
-					ToolTip = "Hide lines which are completely empty"
+					Header = Strings.TooltipHideEmptyLines,
+					ToolTip = Strings.TooltipHideCompletelyEmptyLines
 				},
 				new ToggleMenuViewModel(IsSingleLine, newValue => { IsSingleLine = newValue;})
 				{
-					Header = "Single Line",
-					ToolTip = "Treat every single line as a separate log entry"
+					Header = Strings.TooltipSingleLine,
+					ToolTip = Strings.TooltipTreatEachLine
 				},
 				null,
 				new CommandMenuViewModel(_clearScreenCommand)
 				{
 					Icon = Icons.PlaylistRemove,
-					Header = "Clear Screen",
-					ToolTip = "Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."
+					Header = Strings.TooltipClearScreen,
+					ToolTip = Strings.TooltipHideAllEntries
 				},
 				new CommandMenuViewModel(_showAllCommand)
 				{
-					Header = "Show All",
-					ToolTip = "Shows all log entries that were previously cleared again"
+					Header = Strings.TooltipShowAll,
+					ToolTip = Strings.TooltipShowClearedEntries
 				}
 			};
 
@@ -755,6 +757,18 @@ namespace Tailviewer.Ui.LogView
 		{
 			get { return _dataSource.QuickFilterChain; }
 			set { _dataSource.QuickFilterChain = value; }
+		}
+
+		public ILogEntryFilter TimeFilter
+		{
+			get { return _dataSource.TimeFilter; }
+			set { _dataSource.TimeFilter = value; }
+		}
+
+		public FilterCombinationMode FilterCombinationMode
+		{
+			get { return _dataSource.FilterCombinationMode; }
+			set { _dataSource.FilterCombinationMode = value; }
 		}
 
 		public void RequestBringIntoView(LogLineIndex index)

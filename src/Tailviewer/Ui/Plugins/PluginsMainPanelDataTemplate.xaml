@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:loc="clr-namespace:Tailviewer.Localization"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
@@ -27,7 +27,7 @@
                                                Width="26"
                                                Height="26"
                                                VerticalContentAlignment="Center"
-                                               ToolTip="Open plugin folder"
+                                               ToolTip="{x:Static loc:Strings.OpenPluginFolder}"
                                                Command="{Binding OpenPluginFolderCommand}" />
 
                     <controls:DownloadButton Padding="0"
@@ -35,7 +35,7 @@
                                              Width="26"
                                              Height="26"
                                              Command="{Binding UpdatePluginsCommand}"
-                                             ToolTip="Update all plugins"
+                                             ToolTip="{x:Static loc:Strings.UpdateAllPlugins}"
                                              IsEnabled="{Binding HasPluginRepositoryConfigured}" />
 
                     <controls:RefreshButton Padding="0"
@@ -61,11 +61,11 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Installed"
+                    <TextBlock Text="{x:Static loc:Strings.Installed}"
                                FontSize="14"
                                Foreground="DarkGray"
                                HorizontalAlignment="Center" />
-                    <TextBlock Text="All"
+                    <TextBlock Text="{x:Static loc:Strings.All}"
                                FontSize="14"
                                Foreground="DarkGray"
                                HorizontalAlignment="Center"
@@ -88,7 +88,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <TextBlock Text="No plugins installed!"
+                            <TextBlock Text="{x:Static loc:Strings.NoPluginsInstalled}"
                                        FontSize="20"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center" />
@@ -115,7 +115,7 @@
                         </controls:FlatScrollViewer>
                         <controls:CircularProgressBar
                             Visibility="{Binding IsRefreshingPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                            Content="Refreshing..."
+                            Content="{x:Static loc:Strings.Refreshing}"
                             IsIndeterminate="True" />
                         <Grid
                             Visibility="{Binding ShowAllPluginsError, Converter={StaticResource NullToCollapsedConverter}}"

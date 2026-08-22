@@ -1,0 +1,882 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AIsAvailable" xml:space="preserve">
+    <value>有更新的版本</value>
+  </data>
+  <data name="Absolute" xml:space="preserve">
+    <value>绝对路径</value>
+  </data>
+  <data name="ActionCenter" xml:space="preserve">
+    <value>操作中心</value>
+  </data>
+  <data name="ActiveFilterCount" xml:space="preserve">
+    <value>{0} 个生效</value>
+  </data>
+  <data name="AddNewHighlighter" xml:space="preserve">
+    <value>添加新的高亮器 (Ctrl+Shift+H)</value>
+  </data>
+  <data name="AddNewQuickFilter" xml:space="preserve">
+    <value>添加新的快速筛选 (Ctrl+Shift+N)</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="AllPluginsUpToDate" xml:space="preserve">
+    <value>所有插件均已是最新版本！</value>
+  </data>
+  <data name="AllWord" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>始终置顶</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>作者：</value>
+  </data>
+  <data name="AutoDetect" xml:space="preserve">
+    <value>自动检测</value>
+  </data>
+  <data name="AutoDetectedEncoding" xml:space="preserve">
+    <value>自动检测的编码</value>
+  </data>
+  <data name="AutoInstallNewest" xml:space="preserve">
+    <value>自动安装最新版本</value>
+  </data>
+  <data name="BackgroundColor" xml:space="preserve">
+    <value>背景色</value>
+  </data>
+  <data name="BookmarkLineTitle" xml:space="preserve">
+    <value>第 #{0} 行，{1}</value>
+  </data>
+  <data name="Bookmarks" xml:space="preserve">
+    <value>书签</value>
+  </data>
+  <data name="BookmarksCount" xml:space="preserve">
+    <value>{0} 个书签</value>
+  </data>
+  <data name="Bugfixes" xml:space="preserve">
+    <value>缺陷修复：</value>
+  </data>
+  <data name="ChangesAppliedAfterPen" xml:space="preserve">
+    <value>只有再次按下上方的笔形按钮后，更改才会生效。</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>字符</value>
+  </data>
+  <data name="ChineseSimplified" xml:space="preserve">
+    <value>中文（简体）</value>
+  </data>
+  <data name="ChooseExportFolder" xml:space="preserve">
+    <value>选择导出文件夹</value>
+  </data>
+  <data name="ChooseFolderToMonitor" xml:space="preserve">
+    <value>选择要监视的文件夹</value>
+  </data>
+  <data name="ClickToFollowTail" xml:space="preserve">
+    <value>点击以跟随此数据源的末尾</value>
+  </data>
+  <data name="ClickToStopFollowingTail" xml:space="preserve">
+    <value>点击以停止跟随此数据源的末尾</value>
+  </data>
+  <data name="ClickToToggleLevel" xml:space="preserve">
+    <value>点击以{0}{1}日志条目</value>
+  </data>
+  <data name="CloseThisFile" xml:space="preserve">
+    <value>关闭此文件</value>
+  </data>
+  <data name="CouldNotRetrievePlugins" xml:space="preserve">
+    <value>无法从仓库获取插件 :(</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>创建时间</value>
+  </data>
+  <data name="CurrentDataSource" xml:space="preserve">
+    <value>当前数据源</value>
+  </data>
+  <data name="CustomFormatsGroup" xml:space="preserve">
+    <value>自定义日志文件格式</value>
+  </data>
+  <data name="DataSourceDescription" xml:space="preserve">
+    <value>用于在该组的所有数据源中标识此数据源——同时会显示在每一行日志旁边</value>
+  </data>
+  <data name="DataSourceExcluded" xml:space="preserve">
+    <value>此数据源已从父级数据源视图中排除</value>
+  </data>
+  <data name="DataSourceFilter" xml:space="preserve">
+    <value>筛选数据源 (Ctrl+E)</value>
+  </data>
+  <data name="DataSourceIsEmpty" xml:space="preserve">
+    <value>数据源为空</value>
+  </data>
+  <data name="DataSourceNameOrPath" xml:space="preserve">
+    <value>输入数据源名称或路径</value>
+  </data>
+  <data name="DataSourcesGroup" xml:space="preserve">
+    <value>数据源</value>
+  </data>
+  <data name="DebugCount" xml:space="preserve">
+    <value>调试数量</value>
+  </data>
+  <data name="DefaultTextFileEncoding" xml:space="preserve">
+    <value>默认文本文件编码</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述：</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>正在下载...</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>时长</value>
+  </data>
+  <data name="Encoding" xml:space="preserve">
+    <value>编码</value>
+  </data>
+  <data name="EncodingHint1" xml:space="preserve">
+    <value>如果选择的是「自动检测」以外的选项，Tailviewer NEXT 将仅使用所选编码来解码基于文本的日志文件。</value>
+  </data>
+  <data name="EncodingHint2" xml:space="preserve">
+    <value>更改此值需要重启 Tailviewer NEXT 后生效。</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="EnterDisplayName" xml:space="preserve">
+    <value>输入显示名称</value>
+  </data>
+  <data name="EnterHighlightedTerm" xml:space="preserve">
+    <value>输入要高亮的词</value>
+  </data>
+  <data name="EnterLineNumber" xml:space="preserve">
+    <value>输入行号</value>
+  </data>
+  <data name="ErrorCount" xml:space="preserve">
+    <value>错误数量</value>
+  </data>
+  <data name="Everything" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="ExcludeAll" xml:space="preserve">
+    <value>全部排除</value>
+  </data>
+  <data name="ExcludeFromGroup" xml:space="preserve">
+    <value>从组中排除</value>
+  </data>
+  <data name="ExportFolder" xml:space="preserve">
+    <value>导出文件夹</value>
+  </data>
+  <data name="ExportGroup" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Exporting" xml:space="preserve">
+    <value>正在导出</value>
+  </data>
+  <data name="FatalCount" xml:space="preserve">
+    <value>致命数量</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>新功能：</value>
+  </data>
+  <data name="Filename" xml:space="preserve">
+    <value>文件名</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>筛选</value>
+  </data>
+  <data name="FilterCombinationMode" xml:space="preserve">
+    <value>匹配所有激活的快速筛选（AND）或其中任意一个（OR）</value>
+  </data>
+  <data name="FilterLogFile" xml:space="preserve">
+    <value>筛选日志文件</value>
+  </data>
+  <data name="FindAllInLogFile" xml:space="preserve">
+    <value>在日志文件中查找全部 (Ctrl+Shift+F)</value>
+  </data>
+  <data name="FindAllResults" xml:space="preserve">
+    <value>查找全部结果：</value>
+  </data>
+  <data name="FirstTimestamp" xml:space="preserve">
+    <value>首个时间戳</value>
+  </data>
+  <data name="FolderDataSourceFilter" xml:space="preserve">
+    <value>文件夹数据源过滤器</value>
+  </data>
+  <data name="FolderDataSourceRecursive" xml:space="preserve">
+    <value>勾选后，新建的文件夹数据源将显示所选文件夹及其子文件夹中的所有文件。</value>
+  </data>
+  <data name="FolderDoesNotContainAnyFile" xml:space="preserve">
+    <value>文件夹“{0}”中不包含任何文件</value>
+  </data>
+  <data name="FolderDoesNotContainMatchingFile" xml:space="preserve">
+    <value>文件夹“{0}”中不包含任何匹配“{1}”的文件</value>
+  </data>
+  <data name="FolderPatternHint1" xml:space="preserve">
+    <value>新建的文件夹数据源将使用此模式来选择要显示的文件。</value>
+  </data>
+  <data name="FolderPatternHint2" xml:space="preserve">
+    <value>例如模式 '*.log'（不带引号）会选择所有以 .log 结尾的文件。</value>
+  </data>
+  <data name="FolderPatternHint3" xml:space="preserve">
+    <value>'*.txt;*.log'（不带引号）会选择所有以 .txt 或 .log 结尾的文件。</value>
+  </data>
+  <data name="FolderPatternHint4" xml:space="preserve">
+    <value>'*bb*'（不带引号）会选择文件名中包含 bb 的文件。</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>字体大小</value>
+  </data>
+  <data name="ForegroundColor" xml:space="preserve">
+    <value>前景色</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>格式</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>从</value>
+  </data>
+  <data name="GoToLine" xml:space="preserve">
+    <value>转到行：</value>
+  </data>
+  <data name="GoingToLine" xml:space="preserve">
+    <value>正在转到第 {0} 行</value>
+  </data>
+  <data name="GotIt" xml:space="preserve">
+    <value>知道了</value>
+  </data>
+  <data name="HideBookmarkList" xml:space="preserve">
+    <value>隐藏书签列表</value>
+  </data>
+  <data name="HideDataSourceList" xml:space="preserve">
+    <value>隐藏数据源列表</value>
+  </data>
+  <data name="HideQuickFilterList" xml:space="preserve">
+    <value>隐藏快速筛选列表</value>
+  </data>
+  <data name="HideWord" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
+  <data name="Highlighters" xml:space="preserve">
+    <value>高亮器</value>
+  </data>
+  <data name="IncludeAll" xml:space="preserve">
+    <value>全部包含</value>
+  </data>
+  <data name="IncludeInGroup" xml:space="preserve">
+    <value>包含在组中</value>
+  </data>
+  <data name="InfoCount" xml:space="preserve">
+    <value>信息数量</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="IsAvailable" xml:space="preserve">
+    <value>可用。</value>
+  </data>
+  <data name="Issues" xml:space="preserve">
+    <value>问题</value>
+  </data>
+  <data name="IssuesCount" xml:space="preserve">
+    <value>{0} 个问题</value>
+  </data>
+  <data name="ItDoes" xml:space="preserve">
+    <value>它</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="LanguageRestartNotice" xml:space="preserve">
+    <value>更改语言需要重启 Tailviewer NEXT 后生效。</value>
+  </data>
+  <data name="Last24Hours" xml:space="preserve">
+    <value>最近 24 小时</value>
+  </data>
+  <data name="Last30Days" xml:space="preserve">
+    <value>最近 30 天</value>
+  </data>
+  <data name="Last365Days" xml:space="preserve">
+    <value>最近 365 天</value>
+  </data>
+  <data name="Last7Days" xml:space="preserve">
+    <value>最近 7 天</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>最后修改</value>
+  </data>
+  <data name="LastTimestamp" xml:space="preserve">
+    <value>最后时间戳</value>
+  </data>
+  <data name="LevelDebug" xml:space="preserve">
+    <value>调试</value>
+  </data>
+  <data name="LevelError" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="LevelFatal" xml:space="preserve">
+    <value>致命</value>
+  </data>
+  <data name="LevelInfo" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="LevelOther" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="LevelTrace" xml:space="preserve">
+    <value>跟踪</value>
+  </data>
+  <data name="LevelWarning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Licenses" xml:space="preserve">
+    <value>许可证</value>
+  </data>
+  <data name="LogEntriesAre" xml:space="preserve">
+    <value>们是</value>
+  </data>
+  <data name="LogEntriesSuffix" xml:space="preserve">
+    <value>{0} 条日志条目</value>
+  </data>
+  <data name="LogEntryIs" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="LogFileDialogFilter" xml:space="preserve">
+    <value>日志文件 (*.log)|*.log|文本文件 (*.txt)|*.txt|CSV 文件 (*.csv)|*.csv|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="LogLevelsGroup" xml:space="preserve">
+    <value>日志级别</value>
+  </data>
+  <data name="LogViewerGroup" xml:space="preserve">
+    <value>日志查看器</value>
+  </data>
+  <data name="MenuAbout" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="MenuAddBookmark" xml:space="preserve">
+    <value>添加书签</value>
+  </data>
+  <data name="MenuAskQuestion" xml:space="preserve">
+    <value>提问...</value>
+  </data>
+  <data name="MenuCheckForUpdates" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="MenuCloseAll" xml:space="preserve">
+    <value>全部关闭</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>编辑(_E)</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>退出(_X)</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>文件(_F)</value>
+  </data>
+  <data name="MenuGoToDataSource" xml:space="preserve">
+    <value>转到数据源...</value>
+  </data>
+  <data name="MenuGoToLine" xml:space="preserve">
+    <value>转到行...</value>
+  </data>
+  <data name="MenuGoToNextDataSource" xml:space="preserve">
+    <value>转到下一个数据源</value>
+  </data>
+  <data name="MenuGoToPreviousDataSource" xml:space="preserve">
+    <value>转到上一个数据源</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>帮助(_H)</value>
+  </data>
+  <data name="MenuNew" xml:space="preserve">
+    <value>新建(_N)</value>
+  </data>
+  <data name="MenuOpen" xml:space="preserve">
+    <value>打开(_O)</value>
+  </data>
+  <data name="MenuOpenFolder" xml:space="preserve">
+    <value>文件夹(_D)</value>
+  </data>
+  <data name="MenuPlugins" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="MenuRemoveAllBookmarks" xml:space="preserve">
+    <value>移除所有书签</value>
+  </data>
+  <data name="MenuReportProblem" xml:space="preserve">
+    <value>报告问题...</value>
+  </data>
+  <data name="MenuSendFeedback" xml:space="preserve">
+    <value>发送反馈</value>
+  </data>
+  <data name="MenuSettings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="MenuShowLog" xml:space="preserve">
+    <value>显示日志</value>
+  </data>
+  <data name="MenuSuggestFeature" xml:space="preserve">
+    <value>建议新功能...</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>视图(_V)</value>
+  </data>
+  <data name="Miscellaneous" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="Mixed" xml:space="preserve">
+    <value>混合</value>
+  </data>
+  <data name="MonitoringFolder" xml:space="preserve">
+    <value>正在监视 {0}</value>
+  </data>
+  <data name="MonitoringFolderWithFilter" xml:space="preserve">
+    <value>正在监视 {0}（{1} 个不匹配筛选）</value>
+  </data>
+  <data name="MultipleIssuesPlugins" xml:space="preserve">
+    <value>有多个插件声称能为“{0}”提供问题列表，选择第一个：
+{1}</value>
+  </data>
+  <data name="MultipleOutlinePlugins" xml:space="preserve">
+    <value>有多个插件声称能为“{0}”提供大纲，选择第一个：
+{1}</value>
+  </data>
+  <data name="MyCustomFormat" xml:space="preserve">
+    <value>我的自定义 {0} 格式</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>名称：</value>
+  </data>
+  <data name="NavigatingTo" xml:space="preserve">
+    <value>正在导航到“{0}”</value>
+  </data>
+  <data name="NewerVersionAvailable" xml:space="preserve">
+    <value>有可下载的新版本（{0}）</value>
+  </data>
+  <data name="NoBookmarksAdded" xml:space="preserve">
+    <value>尚未添加任何书签</value>
+  </data>
+  <data name="NoDataSourceMatchesFilter" xml:space="preserve">
+    <value>没有匹配“{0}”的数据源</value>
+  </data>
+  <data name="NoDataSourceOpened" xml:space="preserve">
+    <value>尚未打开任何数据源</value>
+  </data>
+  <data name="NoDataSources" xml:space="preserve">
+    <value>没有{0}</value>
+  </data>
+  <data name="NoIcon" xml:space="preserve">
+    <value>无图标！</value>
+  </data>
+  <data name="NoIssuesPluginForFormat" xml:space="preserve">
+    <value>没有安装能够为当前数据源日志格式展示问题列表的插件。</value>
+  </data>
+  <data name="NoIssuesPluginInstalled" xml:space="preserve">
+    <value>尚未安装问题分析插件</value>
+  </data>
+  <data name="NoLogEntriesWithTimestamps" xml:space="preserve">
+    <value>没有带时间戳的日志条目</value>
+  </data>
+  <data name="NoLogEntryMatchesFilter" xml:space="preserve">
+    <value>没有匹配“{0}”的日志条目。
+请尝试更改筛选条件或再次禁用它们</value>
+  </data>
+  <data name="NoNewEntriesAfterClear" xml:space="preserve">
+    <value>屏幕被清除后，数据源中没有新的日志条目。请稍等片刻，或再次显示所有日志条目。</value>
+  </data>
+  <data name="NoNewMessages" xml:space="preserve">
+    <value>没有新消息</value>
+  </data>
+  <data name="NoOutlinePluginForFormat" xml:space="preserve">
+    <value>没有安装能够为当前数据源日志格式展示大纲的插件。</value>
+  </data>
+  <data name="NoOutlinePluginInstalled" xml:space="preserve">
+    <value>尚未安装大纲插件</value>
+  </data>
+  <data name="NoPluginRepositoryConfigured" xml:space="preserve">
+    <value>尚未配置插件仓库！</value>
+  </data>
+  <data name="NoPluginsInstalled" xml:space="preserve">
+    <value>尚未安装任何插件！</value>
+  </data>
+  <data name="NoResultsForSearch" xml:space="preserve">
+    <value>搜索 {0} 没有结果</value>
+  </data>
+  <data name="NoTimestampReason" xml:space="preserve">
+    <value>不包含时间戳，或其时间戳无法被识别</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="NotDisplayedBecause" xml:space="preserve">
+    <value>未显示在组中，因为</value>
+  </data>
+  <data name="NothingMatchesLevelFilter" xml:space="preserve">
+    <value>没有匹配级别筛选的日志</value>
+  </data>
+  <data name="NothingMatchesQuickFilter" xml:space="preserve">
+    <value>没有匹配快速筛选的日志</value>
+  </data>
+  <data name="NotifyWhenUpdateAvailable" xml:space="preserve">
+    <value>当有新版本可用时通知我</value>
+  </data>
+  <data name="OneBookmark" xml:space="preserve">
+    <value>1 个书签</value>
+  </data>
+  <data name="OpenContainingFolder" xml:space="preserve">
+    <value>打开所在文件夹</value>
+  </data>
+  <data name="OpenContainingFolderHint" xml:space="preserve">
+    <value>打开当前数据源所在的文件夹</value>
+  </data>
+  <data name="OpenContainingFolders" xml:space="preserve">
+    <value>打开所在文件夹</value>
+  </data>
+  <data name="OpenContainingFoldersHint" xml:space="preserve">
+    <value>打开子数据源所在的文件夹</value>
+  </data>
+  <data name="OpenPluginFolder" xml:space="preserve">
+    <value>打开插件文件夹</value>
+  </data>
+  <data name="OtherCount" xml:space="preserve">
+    <value>其他数量</value>
+  </data>
+  <data name="Outline" xml:space="preserve">
+    <value>大纲</value>
+  </data>
+  <data name="OutlineCreationFailed" xml:space="preserve">
+    <value>大纲创建失败</value>
+  </data>
+  <data name="OutlinePresentationError" xml:space="preserve">
+    <value>尝试展示大纲时发生错误：请检查日志</value>
+  </data>
+  <data name="OverwrittenEncoding" xml:space="preserve">
+    <value>覆盖的编码</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="PinUnpinPanel" xml:space="preserve">
+    <value>固定/取消固定此面板</value>
+  </data>
+  <data name="PluginDetails" xml:space="preserve">
+    <value>插件详情：</value>
+  </data>
+  <data name="PluginRepositoriesHint" xml:space="preserve">
+    <value>第三方插件将从以下仓库自动更新：</value>
+  </data>
+  <data name="PluginRepositoryRequired" xml:space="preserve">
+    <value>要下载/更新插件，你必须配置 Tailviewer NEXT 使用插件仓库。请注意，不存在全局可用的插件仓库。此功能目前面向需要部署自有私有仓库的组织。</value>
+  </data>
+  <data name="PluginTranslationHint" xml:space="preserve">
+    <value>此日志文件的内容由某个插件负责解析</value>
+  </data>
+  <data name="PluginTranslationTooltip" xml:space="preserve">
+    <value>此日志文件的内容由某个插件负责解析——点击此处查看详情</value>
+  </data>
+  <data name="PluginUpdateError" xml:space="preserve">
+    <value>尝试更新插件时发生错误：{0}</value>
+  </data>
+  <data name="PluginsUpdatedRestart" xml:space="preserve">
+    <value>{0} 个插件已更新。请重启 {1}！</value>
+  </data>
+  <data name="Processed" xml:space="preserve">
+    <value>已处理</value>
+  </data>
+  <data name="Properties" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="PropertiesRegistryMissing" xml:space="preserve">
+    <value>注册表缺失：不会显示任何属性...</value>
+  </data>
+  <data name="PropertyName" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="ProxyHint" xml:space="preserve">
+    <value>如果你在代理服务器后面，则可能需要填写以下字段，以便在有新版本可用时自动收到通知。</value>
+  </data>
+  <data name="ProxyPassword" xml:space="preserve">
+    <value>代理密码</value>
+  </data>
+  <data name="ProxyServer" xml:space="preserve">
+    <value>代理服务器</value>
+  </data>
+  <data name="ProxyUsername" xml:space="preserve">
+    <value>代理用户名</value>
+  </data>
+  <data name="Quick" xml:space="preserve">
+    <value>快速</value>
+  </data>
+  <data name="QuickFilters" xml:space="preserve">
+    <value>快速筛选</value>
+  </data>
+  <data name="Recursive" xml:space="preserve">
+    <value>递归</value>
+  </data>
+  <data name="Refreshing" xml:space="preserve">
+    <value>正在刷新…</value>
+  </data>
+  <data name="Regexp" xml:space="preserve">
+    <value>正则表达式</value>
+  </data>
+  <data name="RemoveMergedDataSource" xml:space="preserve">
+    <value>移除这个合并数据源</value>
+  </data>
+  <data name="ReportBug" xml:space="preserve">
+    <value>报告一个 bug！</value>
+  </data>
+  <data name="RunningLatestVersion" xml:space="preserve">
+    <value>你正在运行最新版本！</value>
+  </data>
+  <data name="ScreenWasCleared" xml:space="preserve">
+    <value>屏幕已被清除</value>
+  </data>
+  <data name="ScrollSpeed" xml:space="preserve">
+    <value>滚动速度</value>
+  </data>
+  <data name="SearchDataSources" xml:space="preserve">
+    <value>搜索数据源：</value>
+  </data>
+  <data name="SearchLogFile" xml:space="preserve">
+    <value>搜索日志文件 (Ctrl+F)</value>
+  </data>
+  <data name="SelectEverything" xml:space="preserve">
+    <value>选择：全部</value>
+  </data>
+  <data name="SelectFolderToOpen" xml:space="preserve">
+    <value>选择要打开的文件夹</value>
+  </data>
+  <data name="SelectFrom" xml:space="preserve">
+    <value>选择从 {0} 开始</value>
+  </data>
+  <data name="SelectFromTo" xml:space="preserve">
+    <value>选择 从 - 到 -</value>
+  </data>
+  <data name="SelectLogFileToOpen" xml:space="preserve">
+    <value>选择要打开的日志文件</value>
+  </data>
+  <data name="SelectRange" xml:space="preserve">
+    <value>选择从 {0} 到 {1}</value>
+  </data>
+  <data name="SelectTitle" xml:space="preserve">
+    <value>选择：{0}</value>
+  </data>
+  <data name="SelectUntil" xml:space="preserve">
+    <value>选择至 {0}</value>
+  </data>
+  <data name="ShowBookmarkList" xml:space="preserve">
+    <value>显示书签列表</value>
+  </data>
+  <data name="ShowCharacterCode" xml:space="preserve">
+    <value>在每一行（以及数据源面板中）旁边显示一到两位的字符代码</value>
+  </data>
+  <data name="ShowDataSourceList" xml:space="preserve">
+    <value>显示数据源列表</value>
+  </data>
+  <data name="ShowFilename" xml:space="preserve">
+    <value>在每一行旁边显示文件名</value>
+  </data>
+  <data name="ShowOutlineOfCurrentLogFile" xml:space="preserve">
+    <value>显示当前日志文件的大纲</value>
+  </data>
+  <data name="ShowPropertiesOfCurrentLogFile" xml:space="preserve">
+    <value>显示当前日志文件的属性</value>
+  </data>
+  <data name="ShowQuickFilterList" xml:space="preserve">
+    <value>显示快速筛选列表</value>
+  </data>
+  <data name="ShowSourceName" xml:space="preserve">
+    <value>显示来源名称</value>
+  </data>
+  <data name="ShowSourceNameHint" xml:space="preserve">
+    <value>在显示数据源全名与代表原始数据源的字符代码之间切换</value>
+  </data>
+  <data name="ShowWord" xml:space="preserve">
+    <value>显示</value>
+  </data>
+  <data name="ShuttingDownForUpdate" xml:space="preserve">
+    <value>正在关闭以执行更新</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <data name="SorryForInconvenience" xml:space="preserve">
+    <value>对此我们深表歉意。如果这妨碍了你的工作，请</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>来源</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>字符串</value>
+  </data>
+  <data name="TabWidth" xml:space="preserve">
+    <value>制表符宽度</value>
+  </data>
+  <data name="Tailviewer" xml:space="preserve">
+    <value>Tailviewer NEXT</value>
+  </data>
+  <data name="ThemeColor" xml:space="preserve">
+    <value>主题色</value>
+  </data>
+  <data name="ThemeGroup" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="TheyDo" xml:space="preserve">
+    <value>它们</value>
+  </data>
+  <data name="ThisMonth" xml:space="preserve">
+    <value>本月</value>
+  </data>
+  <data name="ThisWeek" xml:space="preserve">
+    <value>本周</value>
+  </data>
+  <data name="ThisYear" xml:space="preserve">
+    <value>今年</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>到</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>今天</value>
+  </data>
+  <data name="TooltipClearScreen" xml:space="preserve">
+    <value>清屏</value>
+  </data>
+  <data name="TooltipColorByLevel" xml:space="preserve">
+    <value>按级别着色</value>
+  </data>
+  <data name="TooltipColorLogMessages" xml:space="preserve">
+    <value>按日志级别为日志消息着色</value>
+  </data>
+  <data name="TooltipElapsedSinceFirst" xml:space="preserve">
+    <value>显示自第一条条目以来经过的时间</value>
+  </data>
+  <data name="TooltipElapsedSincePrevious" xml:space="preserve">
+    <value>显示自上一条目以来经过的时间</value>
+  </data>
+  <data name="TooltipExportDataSource" xml:space="preserve">
+    <value>将当前数据源导出为文本文件（应用当前筛选）</value>
+  </data>
+  <data name="TooltipExportToFile" xml:space="preserve">
+    <value>导出到文件</value>
+  </data>
+  <data name="TooltipFollowLastEntry" xml:space="preserve">
+    <value>跟随/取消跟随最后一条日志</value>
+  </data>
+  <data name="TooltipFollowTail" xml:space="preserve">
+    <value>跟随末尾</value>
+  </data>
+  <data name="TooltipHideAllEntries" xml:space="preserve">
+    <value>隐藏数据源当前的所有日志条目。新添加到数据源的日志条目仍会显示。</value>
+  </data>
+  <data name="TooltipHideCompletelyEmptyLines" xml:space="preserve">
+    <value>隐藏完全为空的行</value>
+  </data>
+  <data name="TooltipHideEmptyLines" xml:space="preserve">
+    <value>隐藏空行</value>
+  </data>
+  <data name="TooltipShowAll" xml:space="preserve">
+    <value>显示全部</value>
+  </data>
+  <data name="TooltipShowClearedEntries" xml:space="preserve">
+    <value>重新显示之前被清除的所有日志条目</value>
+  </data>
+  <data name="TooltipShowDeltaTimes" xml:space="preserve">
+    <value>显示间隔时间</value>
+  </data>
+  <data name="TooltipShowElapsedTimes" xml:space="preserve">
+    <value>显示经过时间</value>
+  </data>
+  <data name="TooltipShowLineNumbers" xml:space="preserve">
+    <value>显示行号</value>
+  </data>
+  <data name="TooltipSingleLine" xml:space="preserve">
+    <value>单行</value>
+  </data>
+  <data name="TooltipToggleLineNumbers" xml:space="preserve">
+    <value>显示/隐藏行号</value>
+  </data>
+  <data name="TooltipTreatEachLine" xml:space="preserve">
+    <value>将每一行视为单独的日志条目</value>
+  </data>
+  <data name="TraceCount" xml:space="preserve">
+    <value>跟踪数量</value>
+  </data>
+  <data name="TryChangingFilterOrAddDataSource" xml:space="preserve">
+    <value>请尝试更改筛选条件或添加所需的数据源</value>
+  </data>
+  <data name="TryClickingAddBookmark" xml:space="preserve">
+    <value>请尝试点击“添加书签”</value>
+  </data>
+  <data name="TryDifferentLevels" xml:space="preserve">
+    <value>请尝试按不同级别筛选，或再次显示所有级别的日志</value>
+  </data>
+  <data name="TryDifferentQuickFilterTerms" xml:space="preserve">
+    <value>请尝试使用不同的筛选词，或禁用所有快速筛选</value>
+  </data>
+  <data name="TryMergingDataSources" xml:space="preserve">
+    <value>请尝试合并不同的数据源、更改数据的时间戳格式，或创建插件来帮助 Tailviewer NEXT 解析时间戳</value>
+  </data>
+  <data name="TryOpeningFileOrFolder" xml:space="preserve">
+    <value>请尝试打开文件或文件夹、从文件菜单创建新数据源，或直接将文件拖放到此窗口中。</value>
+  </data>
+  <data name="TrySelectingLogEntry" xml:space="preserve">
+    <value>请尝试选择一条日志/行，然后点击“添加书签”</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>发生了意外错误 :(</value>
+  </data>
+  <data name="UnknownNotification" xml:space="preserve">
+    <value>未知通知：{0}</value>
+  </data>
+  <data name="UpdateAllPlugins" xml:space="preserve">
+    <value>更新所有插件</value>
+  </data>
+  <data name="UpdatesGroup" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本：</value>
+  </data>
+  <data name="WarningCount" xml:space="preserve">
+    <value>警告数量</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>网站</value>
+  </data>
+  <data name="WebsiteLabel" xml:space="preserve">
+    <value>网站：</value>
+  </data>
+  <data name="Wildcard" xml:space="preserve">
+    <value>通配符</value>
+  </data>
+  <data name="WindowGroup" xml:space="preserve">
+    <value>窗口</value>
+  </data>
+  <data name="Working" xml:space="preserve">
+    <value>工作中</value>
+  </data>
+</root>

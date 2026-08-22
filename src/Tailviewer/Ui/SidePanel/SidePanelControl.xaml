@@ -8,7 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type dashboard:SidePanelControl}">
-        <Setter Property="Background" Value="{StaticResource SecondaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -26,7 +26,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
                                         <Border BorderThickness="1,0,0,0"
-                                                BorderBrush="{StaticResource PrimarySeparatorBrush}">
+                                                BorderBrush="{DynamicResource PrimarySeparatorBrush}">
                                             <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                                        HoveredBackground="{DynamicResource SecondaryLightBrush}"
                                                                        CheckedBackground="{DynamicResource SecondaryLighterBrush}"
@@ -38,7 +38,7 @@
                                                         <Canvas Width="24" Height="24">
                                                             <Path
                                                                 Data="{Binding Icon}"
-                                                                Fill="{StaticResource PrimaryForegroundBrush}" />
+                                                                Fill="{DynamicResource PrimaryForegroundBrush}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                     <TextBlock Text="{Binding QuickInfo}"
@@ -46,7 +46,7 @@
                                                                TextWrapping="NoWrap"
                                                                TextTrimming="CharacterEllipsis"
                                                                VerticalAlignment="Bottom"
-                                                               Foreground="{StaticResource PrimaryForegroundBrush}" />
+                                                               Foreground="{DynamicResource PrimaryForegroundBrush}" />
                                                 </Grid>
                                             </controls:FlatToggleButton>
                                         </Border>

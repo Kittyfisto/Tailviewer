@@ -14,6 +14,8 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.SidePanel;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Plugins
 {
 	/// <summary>
@@ -51,8 +53,8 @@ namespace Tailviewer.Ui.Plugins
 
 			if (!HasPluginRepositoryConfigured)
 			{
-				ShowAllPluginsError = "No plugin repository configured!";
-				ShowAllPluginsErrorDescription = "In order to download/update plugins, you have to configure tailviewer to use a plugin repository. Please note that there is no globally available plugin repository. This feature is currently intended for organizations to deploy their own private repositories.";
+				ShowAllPluginsError = Strings.NoPluginRepositoryConfigured;
+				ShowAllPluginsErrorDescription = Strings.PluginRepositoryRequired;
 			}
 			else
 			{
@@ -128,7 +130,7 @@ namespace Tailviewer.Ui.Plugins
 		{
 		}
 
-		public string Name => "Plugins";
+		public string Name => Strings.MenuPlugins;
 
 		private void OpenPluginFolder()
 		{
@@ -160,20 +162,20 @@ namespace Tailviewer.Ui.Plugins
 				var numPluginsUpdated = task.Result;
 				if (numPluginsUpdated == 0)
 				{
-					PluginUpdateMessage = "All plugins are up-to-date!";
+					PluginUpdateMessage = Strings.AllPluginsUpToDate;
 				}
 				else
 				{
-					PluginUpdateMessage = $"{numPluginsUpdated} plugin(s) were updated. Please restart {Constants.ApplicationTitle}!";
+					PluginUpdateMessage = string.Format(Strings.PluginsUpdatedRestart, numPluginsUpdated, Constants.ApplicationTitle);
 				}
 			}
 			catch (AggregateException e)
 			{
-				PluginUpdateMessage = $"An error occured while trying to update plugins: {e.InnerException?.Message}";
+				PluginUpdateMessage = string.Format(Strings.PluginUpdateError, e.InnerException?.Message);
 			}
 			catch (Exception e)
 			{
-				PluginUpdateMessage = $"An error occured while trying to update plugins: {e.Message}";
+				PluginUpdateMessage = string.Format(Strings.PluginUpdateError, e.Message);
 			}
 			finally
 			{
@@ -210,7 +212,7 @@ namespace Tailviewer.Ui.Plugins
 			}
 			catch (Exception e)
 			{
-				ShowAllPluginsError = "Could not retrieve plugins from repository :(";
+				ShowAllPluginsError = Strings.CouldNotRetrievePlugins;
 
 				var description = e is AggregateException a ? a.InnerException.Message : e.Message;
 				ShowAllPluginsErrorDescription = description;

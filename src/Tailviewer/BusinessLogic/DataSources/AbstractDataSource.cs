@@ -29,6 +29,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private ILogEntryFilter _logEntryFilter;
 		private ILogSource _filteredLogSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private ILogEntryFilter _timeFilter;
 		private bool _isDisposed;
 		private ILogSource _previousUnfilteredLogSource;
 		private string _findAllFilter;
@@ -80,6 +81,32 @@ namespace Tailviewer.BusinessLogic.DataSources
 					return;
 
 				_quickFilterChain = value;
+				CreateFilteredLogFile();
+			}
+		}
+
+		public ILogEntryFilter TimeFilter
+		{
+			get { return _timeFilter; }
+			set
+			{
+				if (ReferenceEquals(value, _timeFilter))
+					return;
+
+				_timeFilter = value;
+				CreateFilteredLogFile();
+			}
+		}
+
+		public FilterCombinationMode FilterCombinationMode
+		{
+			get { return _settings.FilterCombinationMode; }
+			set
+			{
+				if (value == FilterCombinationMode)
+					return;
+
+				_settings.FilterCombinationMode = value;
 				CreateFilteredLogFile();
 			}
 		}
@@ -332,7 +359,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			LevelFlags levelFilter = LevelFilter;
 			ILogLineFilter logLineFilter = CreateLogLineFilter();
-			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
+			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _timeFilter, _quickFilterChain, FilterCombinationMode);
 			if (Filter.IsFilter(logEntryFilter) || Filter.IsFilter(logLineFilter))
 			{
 				_logEntryFilter = logEntryFilter;

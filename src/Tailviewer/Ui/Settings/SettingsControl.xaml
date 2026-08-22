@@ -7,6 +7,7 @@
              xmlns:tailviewer="clr-namespace:Tailviewer"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:settings="clr-namespace:Tailviewer.Ui.Settings"
+             xmlns:loc="clr-namespace:Tailviewer.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance settings:SettingsFlyoutViewModel}"
@@ -38,24 +39,39 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                
-                <controls:FlatGroupBox Header="Export" VerticalAlignment="Top" Margin="8"
+
+                <controls:FlatGroupBox Header="{x:Static loc:Strings.Language}" Grid.Row="0" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <StackPanel>
+                        <ComboBox ItemsSource="{Binding Languages}"
+                                  SelectedItem="{Binding Language, Mode=TwoWay}"
+                                  DisplayMemberPath="DisplayName" />
+                        <TextBlock Text="{x:Static loc:Strings.LanguageRestartNotice}"
+                                   Foreground="#6B6B6B"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Header="{x:Static loc:Strings.ExportGroup}" Grid.Row="1" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Export folder" Margin="0,6,6,6"/>
+                        <TextBlock Text="{x:Static loc:Strings.ExportFolder}" Margin="0,6,6,6"/>
                         <controls:PathChooserTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                      PathChooserCommand="{Binding ChooseExportFolderCommand}"
                                                      Grid.Column="1"/>
                     </Grid>
                 </controls:FlatGroupBox>
 
-                <controls:FlatGroupBox Grid.Row="1" Header="Log Viewer" VerticalAlignment="Top" Margin="8"
+                <controls:FlatGroupBox Grid.Row="2" Header="{x:Static loc:Strings.LogViewerGroup}" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -68,7 +84,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Scroll speed"
+                        <TextBlock Text="{x:Static loc:Strings.ScrollSpeed}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="0" />
@@ -85,7 +101,7 @@
                             </controls:EditorTextBox.Text>
                         </controls:EditorTextBox>
 
-                        <TextBlock Text="Font Size"
+                        <TextBlock Text="{x:Static loc:Strings.FontSize}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="1"
@@ -103,7 +119,7 @@
                             </controls:EditorTextBox.Text>
                         </controls:EditorTextBox>
 
-                        <TextBlock Text="Tab Width"
+                        <TextBlock Text="{x:Static loc:Strings.TabWidth}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="2"
@@ -123,7 +139,7 @@
                     </Grid>
                 </controls:FlatGroupBox>
 
-                <controls:FlatGroupBox Grid.Row="2" Header="Log Levels" VerticalAlignment="Top" Margin="8"
+                <controls:FlatGroupBox Grid.Row="3" Header="{x:Static loc:Strings.LogLevelsGroup}" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -147,13 +163,13 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Foreground Color"
+                            <TextBlock Text="{x:Static loc:Strings.ForegroundColor}"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="Background Color"
+                            <TextBlock Grid.Column="1" Text="{x:Static loc:Strings.BackgroundColor}"
                                        HorizontalAlignment="Center"/>
                         </Grid>
 
-                        <TextBlock Text="Other"
+                        <TextBlock Text="{x:Static loc:Strings.LevelOther}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="1"
@@ -173,7 +189,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Trace"
+                        <TextBlock Text="{x:Static loc:Strings.LevelTrace}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="2"
@@ -193,7 +209,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Debug"
+                        <TextBlock Text="{x:Static loc:Strings.LevelDebug}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="3"
@@ -213,7 +229,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Info"
+                        <TextBlock Text="{x:Static loc:Strings.LevelInfo}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="4"
@@ -233,7 +249,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Warning"
+                        <TextBlock Text="{x:Static loc:Strings.LevelWarning}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="5"
@@ -253,7 +269,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Error"
+                        <TextBlock Text="{x:Static loc:Strings.LevelError}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="6"
@@ -273,7 +289,7 @@
                                               Grid.Column="1" />
                         </Grid>
 
-                        <TextBlock Text="Fatal"
+                        <TextBlock Text="{x:Static loc:Strings.LevelFatal}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="7"
@@ -294,6 +310,24 @@
                         </Grid>
                     </Grid>
                 </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="4" Header="{x:Static loc:Strings.ThemeGroup}" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Static loc:Strings.ThemeColor}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Column="0" />
+                        <xctk:ColorPicker Grid.Column="1"
+                                          Margin="0,6,6,6"
+                                          SelectedColor="{Binding ThemeColor}"
+                                          AvailableColorsSortingMode="HueSaturationBrightness" />
+                    </Grid>
+                </controls:FlatGroupBox>
             </Grid>
 
             <Grid Grid.Column="1">
@@ -305,7 +339,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <controls:FlatGroupBox Header="Data Sources" VerticalAlignment="Top" Margin="8"
+                <controls:FlatGroupBox Header="{x:Static loc:Strings.DataSourcesGroup}" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -326,11 +360,11 @@
                                   Margin="0,6,6,6"
                                   VerticalAlignment="Center"
                                   IsChecked="{Binding FolderDataSourceRecursive, Mode=TwoWay}">
-                            <TextBlock Text="When checked, newly created folder data sources will display all files in the selected folder AND its subfolders."
+                            <TextBlock Text="{x:Static loc:Strings.FolderDataSourceRecursive}"
                                        TextWrapping="Wrap" />
                         </CheckBox>
 
-                        <TextBlock Text="Folder data source filter"
+                        <TextBlock Text="{x:Static loc:Strings.FolderDataSourceFilter}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="1"
@@ -342,16 +376,16 @@
                                    Grid.Row="2"
                                    Foreground="#6B6B6B"
                                    TextWrapping="Wrap">
-                            <Run Text="Newly created folder data sources will use this pattern to select files which shall be displayed." />
+                            <Run Text="{x:Static loc:Strings.FolderPatternHint1}" />
                             <LineBreak />
-                            <Run Text="A pattern such as '*.log' (without quotes) selects files which end in .log." />
+                            <Run Text="{x:Static loc:Strings.FolderPatternHint2}" />
                             <LineBreak />
-                            <Run Text="'*.txt;*.log' (without quotes) selects files which end in either .txt or .log." />
+                            <Run Text="{x:Static loc:Strings.FolderPatternHint3}" />
                             <LineBreak />
-                            <Run Text="'*bb*' (without quotes) selects files which have bb in their file name." />
+                            <Run Text="{x:Static loc:Strings.FolderPatternHint4}" />
                         </TextBlock>
 
-                        <TextBlock Text="Default text file encoding"
+                        <TextBlock Text="{x:Static loc:Strings.DefaultTextFileEncoding}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="3"
@@ -366,15 +400,15 @@
                                    Grid.Row="4"
                                    Foreground="#6B6B6B"
                                    TextWrapping="Wrap">
-                            <Run Text="If anything else but 'Auto detect' is selected, then tailviewer will only use the given encoding to decode text-based log files." />
+                            <Run Text="{x:Static loc:Strings.EncodingHint1}" />
                             <LineBreak />
-                            <Run Text="Changing this value requires tailviewer to be restarted in order to take effect." />
+                            <Run Text="{x:Static loc:Strings.EncodingHint2}" />
                         </TextBlock>
 
                     </Grid>
                 </controls:FlatGroupBox>
 
-                <controls:FlatGroupBox Header="Custom Log file Formats"
+                <controls:FlatGroupBox Header="{x:Static loc:Strings.CustomFormatsGroup}"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}"
                                        Grid.Row="1"
                                        VerticalAlignment="Top" Margin="8">
@@ -382,14 +416,14 @@
                 </controls:FlatGroupBox>
 
                 <controls:FlatGroupBox Grid.Row="2"
-                                       Header="Window" VerticalAlignment="Top" Margin="8"
+                                       Header="{x:Static loc:Strings.WindowGroup}" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
-                        <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
+                        <CheckBox Content="{x:Static loc:Strings.AlwaysOnTop}" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
                     </Grid>
                 </controls:FlatGroupBox>
 
-                <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8"
+                <controls:FlatGroupBox Header="{x:Static loc:Strings.UpdatesGroup}" VerticalAlignment="Top" Margin="8"
                                        Grid.Row="3">
                     <controls:FlatGroupBox.HeaderTemplate>
                         <DataTemplate>
@@ -406,20 +440,20 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <CheckBox x:Name="PART_CheckForUpdates" IsChecked="{Binding CheckForUpdates, Mode=TwoWay}"
-                                      Content="Notify me when an update becomes available" Margin="0,4,4,4" />
-                            <!--<CheckBox Grid.Row="1" IsChecked="{Binding AutomaticallyInstallUpdates, Mode=TwoWay}" Content="Automatically install the newest versions" IsEnabled="{Binding IsChecked,ElementName=PART_CheckForUpdates}"></CheckBox>-->
+                                      Content="{x:Static loc:Strings.NotifyWhenUpdateAvailable}" Margin="0,4,4,4" />
+                            <!--<CheckBox Grid.Row="1" IsChecked="{Binding AutomaticallyInstallUpdates, Mode=TwoWay}" Content="{x:Static loc:Strings.AutoInstallNewest}" IsEnabled="{Binding IsChecked,ElementName=PART_CheckForUpdates}"></CheckBox>-->
                             <TextBlock Grid.Row="2" TextWrapping="Wrap" Margin="0,4,0,0"
-                                       Text="If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available." />
+                                       Text="{x:Static loc:Strings.ProxyHint}" />
                             <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
-                                <controls:EditorTextBox Watermark="Proxy username" Width="110"
+                                <controls:EditorTextBox Watermark="{x:Static loc:Strings.ProxyUsername}" Width="110"
                                                            Text="{Binding ProxyUsername}" Margin="0,0,4,0"
                                                            IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                                <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
+                                <controls:FlatPasswordBox Watermark="{x:Static loc:Strings.ProxyPassword}" Width="110"
                                                           x:Name="PART_ProxyPassword"
                                                           PasswordChanged="OnPasswordChanged"
                                                           Margin="0,0,4,0"
                                                           IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                                <controls:EditorTextBox Watermark="Proxy server" Width="150"
+                                <controls:EditorTextBox Watermark="{x:Static loc:Strings.ProxyServer}" Width="150"
                                                            Text="{Binding ProxyServer}" Margin="0"
                                                            IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
                             </StackPanel>
@@ -432,7 +466,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Margin="4"
-                                       Text="Third party plugins will be automatically updated from the following repositories:"/>
+                                       Text="{x:Static loc:Strings.PluginRepositoriesHint}"/>
 
                             <controls:EditorTextBox Grid.Row="1" Text="{Binding PluginRepositories}"
                                                     TextWrapping="Wrap"

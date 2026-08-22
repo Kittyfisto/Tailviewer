@@ -51,6 +51,72 @@ namespace Tailviewer.Tests.Settings
 
 		public static IEnumerable<bool> Bool => new[] {true, false};
 		public static IEnumerable<DataSourceDisplayMode> DisplayModes => new[] {DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode };
+		public static IEnumerable<FilterCombinationMode> FilterCombinationModes => new[] {FilterCombinationMode.And, FilterCombinationMode.Or};
+
+		[Test]
+		public void TestSaveRestoreFilterCombinationMode([ValueSource(nameof(FilterCombinationModes))] FilterCombinationMode mode)
+		{
+			var id = DataSourceId.CreateNew();
+
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = XmlWriter.Create(stream))
+				{
+					writer.WriteStartElement("Test");
+
+					var dataSource = new DataSource
+					{
+						Id = id,
+						FilterCombinationMode = mode
+					};
+					dataSource.Save(writer);
+				}
+
+				stream.Position = 0;
+
+				using (var reader = XmlReader.Create(stream))
+				{
+					reader.MoveToContent();
+
+					var dataSource = new DataSource();
+					bool unused;
+					dataSource.Restore(reader, out unused);
+					dataSource.FilterCombinationMode.Should().Be(mode);
+				}
+			}
+		}
+
+		[Test]
+		public void TestDefaultFilterCombinationMode()
+		{
+			new DataSource().FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+		}
+
+		[Test]
+		[Description("Verifies that a settings file saved before this feature still loads and defaults to AND")]
+		public void TestRestoreWithoutFilterCombinationMode()
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = XmlWriter.Create(stream))
+				{
+					writer.WriteStartElement("Test");
+					writer.WriteAttributeString("file", @"F:\foo.db");
+				}
+
+				stream.Position = 0;
+
+				using (var reader = XmlReader.Create(stream))
+				{
+					reader.MoveToContent();
+
+					var dataSource = new DataSource();
+					bool unused;
+					dataSource.Restore(reader, out unused);
+					dataSource.FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+				}
+			}
+		}
 
 		[Test]
 		public void TestClone1([ValueSource(nameof(Bool))] bool hideEmptyLines,

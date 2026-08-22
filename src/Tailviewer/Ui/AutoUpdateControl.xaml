@@ -1,5 +1,5 @@
 ﻿<UserControl x:Class="Tailviewer.Ui.AutoUpdateControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:loc="clr-namespace:Tailviewer.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,10 +9,10 @@
              d:DesignHeight="50" d:DesignWidth="400">
 
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource BackgroundBrushSelected}">
+    <Grid Background="{DynamicResource PrimaryBrush}">
         <Grid Margin="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -23,9 +23,9 @@
 
             <TextBlock Foreground="{StaticResource ForegroundBrushInverted}"
                    VerticalAlignment="Center">
-            <Run Text="A newer version" />
+            <Run Text="{x:Static loc:Strings.AIsAvailable}" />
             <Run Text="{Binding LatestVersion, Mode=OneWay, StringFormat='({0})'}" />
-            <Run Text="is available." />
+            <Run Text="{x:Static loc:Strings.IsAvailable}" />
             </TextBlock>
 
             <Button Content="{Binding InstallTitle}"
@@ -33,7 +33,7 @@
                 Grid.Column="2"
                 Margin="4" Padding="4" />
 
-            <Button Content="Got it"
+            <Button Content="{x:Static loc:Strings.GotIt}"
                 Command="{Binding GotItCommand}"
                 Grid.Column="3"
                 Margin="4" Padding="4" />

@@ -10,6 +10,8 @@ using Metrolib;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui
 {
 	public sealed class AutoUpdateViewModel
@@ -44,7 +46,7 @@ namespace Tailviewer.Ui
 			_installCommand = new DelegateCommand(Install, CanInstall);
 			_gotItCommand = new DelegateCommand(GotIt);
 			_checkForUpdatesCommand = new DelegateCommand(CheckForUpdates);
-			_installTitle = "Install";
+			_installTitle = Strings.Install;
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
 		}
@@ -137,7 +139,7 @@ namespace Tailviewer.Ui
 			_installationTask = _updater.Install(_latest);
 			_installationTask.ContinueWith(Shutdown);
 
-			InstallTitle = "Downloading...";
+			InstallTitle = Strings.Downloading;
 			_installCommand.RaiseCanExecuteChanged();
 		}
 

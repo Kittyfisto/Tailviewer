@@ -15,7 +15,7 @@ namespace Tailviewer.Ui.DataSourceTree
 		                                DataSourceDropType dropType)
 			: base(dropTarget)
 		{
-			_pen = new Pen(Brushes.DodgerBlue, 2);
+			_pen = new Pen(new SolidColorBrush(ThemeManager.CurrentPrimary), 2);
 			_type = dropType;
 		}
 

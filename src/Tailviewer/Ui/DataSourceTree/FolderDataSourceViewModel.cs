@@ -14,6 +14,8 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.DataSourceTree
 {
 	internal sealed class FolderDataSourceViewModel
@@ -55,7 +57,7 @@ namespace Tailviewer.Ui.DataSourceTree
 			{
 				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
 				{
-					Header = "Open Containing Folder",
+					Header = Strings.OpenContainingFolder,
 					ToolTip = "Opens the Folder being watched in Windows Explorer"
 				}
 			});

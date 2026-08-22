@@ -10,15 +10,15 @@ namespace Tailviewer.Ui.LogView
 	public sealed class TextBrushes
 	{
 		public static readonly Brush SelectedForegroundBrush;
-		public static readonly Brush SelectedBackgroundBrush;
+		public static readonly SolidColorBrush SelectedBackgroundBrush;
 		public static readonly Brush SelectedUnfocusedBackgroundBrush;
 		public static readonly Brush HighlightedForegroundBrush;
 		public static readonly Brush HighlightedBackgroundBrush;
 		public static readonly Brush HighlightedSelectedForegroundBrush;
 		public static readonly Brush HighlightedSelectedBackgroundBrush;
-		public static readonly Brush LineNumberForegroundBrush;
+		public static readonly SolidColorBrush LineNumberForegroundBrush;
 		public static readonly Brush DataSourceFilenameForegroundBrush;
-		public static readonly Brush DataSourceCharacterCodeForegroundBrush;
+		public static readonly SolidColorBrush DataSourceCharacterCodeForegroundBrush;
 
 		private readonly Dictionary<LevelFlags, Brush> _foregroundBrushes;
 		private readonly Dictionary<LevelFlags, Brush> _backgroundBrushes;
@@ -26,7 +26,7 @@ namespace Tailviewer.Ui.LogView
 
 		static TextBrushes()
 		{
-			SelectedBackgroundBrush = CreateBrush(Color.FromRgb(57, 152, 214));
+			SelectedBackgroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
 
 			SelectedForegroundBrush = Brushes.White;
 
@@ -38,10 +38,20 @@ namespace Tailviewer.Ui.LogView
 			HighlightedSelectedForegroundBrush = Brushes.Black;
 			HighlightedSelectedBackgroundBrush = CreateBrush(Color.FromRgb(255, 150, 50));
 			
-			LineNumberForegroundBrush = CreateBrush(Color.FromRgb(43, 145, 175));
+			LineNumberForegroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
 
 			DataSourceFilenameForegroundBrush = CreateBrush(Color.FromRgb(128, 128, 128));
-			DataSourceCharacterCodeForegroundBrush = CreateBrush(Color.FromRgb(43, 145, 175));
+			DataSourceCharacterCodeForegroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
+		}
+
+		/// <summary>
+		///     Updates the colors of those brushes which are derived from the theme's accent color.
+		/// </summary>
+		public static void UpdateTheme(Color primary)
+		{
+			SelectedBackgroundBrush.Color = primary;
+			LineNumberForegroundBrush.Color = primary;
+			DataSourceCharacterCodeForegroundBrush.Color = primary;
 		}
 
 		public TextBrushes(ILogViewerSettings settings)
@@ -140,6 +150,12 @@ namespace Tailviewer.Ui.LogView
 			var brush = new SolidColorBrush(color);
 			brush.Freeze();
 			return brush;
+		}
+
+		[Pure]
+		private static SolidColorBrush CreateMutableBrush(Color color)
+		{
+			return new SolidColorBrush(color);
 		}
 
 		[Pure]

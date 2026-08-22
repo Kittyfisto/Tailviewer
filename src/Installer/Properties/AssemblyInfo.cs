@@ -8,7 +8,7 @@ using System.Windows;
 
 [assembly: AssemblyTitle("Installer")]
 [assembly: AssemblyDescription("Installer for Tailviewer")]
-[assembly: AssemblyProduct("Tailviewer")]
+[assembly: AssemblyProduct("Tailviewer NEXT")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

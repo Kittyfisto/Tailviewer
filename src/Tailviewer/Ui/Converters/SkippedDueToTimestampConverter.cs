@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Data;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Converters
 {
 	public sealed class SkippedDueToTimestampConverter
@@ -17,11 +19,11 @@ namespace Tailviewer.Ui.Converters
 			bool plural = count != 1;
 			var builder = new StringBuilder();
 
-			builder.AppendFormat("{0} log entry", count);
-			builder.Append(plural ? "s are" : " is");
-			builder.Append(" not displayed in the group because ");
-			builder.AppendFormat(plural ? "they do" : "it does");
-			builder.Append(" not contain a timestamp or because its timestamp was not recognized");
+			builder.AppendFormat(Strings.LogEntriesSuffix, count);
+			builder.Append(plural ? Strings.LogEntriesAre : Strings.LogEntryIs);
+			builder.Append(Strings.NotDisplayedBecause);
+			builder.AppendFormat(plural ? Strings.TheyDo : Strings.ItDoes);
+			builder.Append(Strings.NoTimestampReason);
 
 			return builder.ToString();
 		}

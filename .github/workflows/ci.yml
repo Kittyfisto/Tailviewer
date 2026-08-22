@@ -1,0 +1,172 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Build & Test (.NET Framework 4.8)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download NuGet
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" `
+            -OutFile "$env:RUNNER_TEMP\nuget.exe"
+
+      - name: Restore packages
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP\nuget.exe" restore Tailviewer.sln
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build test projects
+        shell: pwsh
+        run: |
+          # Debug 配置下所有项目的 OutputPath 统一为仓库根 bin\，
+          # 而 Tailviewer.Formats.Serilog.Tests 的 Release OutputPath 是 bin\Release\（csproj 缺陷），
+          # 故统一用 Debug 构建。
+          $projects = @(
+            'src\Tailviewer.Api.Tests\Tailviewer.Api.Tests.csproj',
+            'src\Tailviewer.Core.Tests\Tailviewer.Core.Tests.csproj',
+            'src\Tailviewer.Tests\Tailviewer.Tests.csproj',
+            'src\Tailviewer.System.Tests\Tailviewer.System.Tests.csproj',
+            'src\Tailviewer.Archiver.Tests\Tailviewer.Archiver.Tests.csproj',
+            'src\Tailviewer.PluginRepository.Tests\Tailviewer.PluginRepository.Tests.csproj',
+            'src\Plugins\Tailviewer.Formats.Serilog.Tests\Tailviewer.Formats.Serilog.Tests.csproj'
+          )
+          foreach ($p in $projects) {
+            Write-Host "==> msbuild $p"
+            msbuild $p /t:Build /p:Configuration=Debug /m /v:minimal
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Install NUnit console runner
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP\nuget.exe" install NUnit.ConsoleRunner -Version 3.12.0 `
+            -OutputDirectory "$env:RUNNER_TEMP"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          $runner = Join-Path $env:RUNNER_TEMP 'NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe'
+          # SerilogAcceptanceTest 依赖未提交的 TestData\Formats\Serilog\Serilog.txt，
+          # 在干净 CI 环境必然失败，故只跳过该验收测试，保留纯单元测试。
+          $tests = @(
+            @{ Dll = 'bin\Tailviewer.Api.Tests.dll' },
+            @{ Dll = 'bin\Tailviewer.Core.Tests.dll' },
+            @{ Dll = 'bin\Tailviewer.Tests.dll' },
+            @{ Dll = 'bin\Tailviewer.SystemTests.dll' },
+            @{ Dll = 'bin\Tailviewer.Archiver.Tests.dll' },
+            @{ Dll = 'bin\Tailviewer.PluginRepository.Tests.dll' },
+            @{ Dll = 'bin\Tailviewer.Serilog.Test.dll'; Where = "class != 'Tailviewer.Serilog.Test.SerilogAcceptanceTest'" }
+          )
+          $failed = $false
+          foreach ($t in $tests) {
+            $name = [System.IO.Path]::GetFileNameWithoutExtension($t.Dll)
+            Write-Host "==> nunit3-console $($t.Dll)"
+            $args = @($t.Dll, "--result=TestResult-$name.xml", '--labels=Before')
+            if ($t.Where) { $args += "--where=$($t.Where)" }
+            & $runner @args
+            if ($LASTEXITCODE -ne 0) { $failed = $true }
+          }
+          if ($failed) { exit 1 }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResult-*.xml
+          if-no-files-found: ignore
+
+  build:
+    name: Build app + installer (Release)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download NuGet
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" `
+            -OutFile "$env:RUNNER_TEMP\nuget.exe"
+
+      - name: Restore packages
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP\nuget.exe" restore Tailviewer.sln
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build app
+        shell: pwsh
+        run: |
+          # Serilog 插件 PostBuildEvent 以裸名调用 archive.exe，故把 bin\ 加入 PATH。
+          $env:PATH = "$pwd\bin;$env:PATH"
+          $projects = @(
+            'src\Tailviewer.Archiver\Tailviewer.Archiver.csproj',
+            'src\Plugins\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj',
+            'src\Tailviewer\Tailviewer.csproj'
+          )
+          foreach ($p in $projects) {
+            Write-Host "==> msbuild $p"
+            msbuild $p /t:Build /p:Configuration=Release /m /v:minimal
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Stage portable
+        shell: pwsh
+        run: |
+          ./scripts/stage-portable.ps1
+
+      - name: Create portable zip
+        shell: pwsh
+        run: |
+          $zip = "Tailviewer-NEXT-portable-dev.zip"
+          Compress-Archive -Path artifacts\portable\* -DestinationPath $zip -Force
+          if (-not (Test-Path $zip)) { Write-Error "Failed to create $zip"; exit 1 }
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          msbuild src\Installer\Installer.csproj /t:Build /p:Configuration=Release /m /v:minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare installer artifact
+        shell: pwsh
+        run: |
+          $setup = "Tailviewer-NEXT-setup-dev.exe"
+          Copy-Item bin\Tailviewer-setup.exe $setup -Force
+          if (-not (Test-Path $setup)) { Write-Error "Missing $setup"; exit 1 }
+          Get-ChildItem "Tailviewer-NEXT-*-dev.*" | ForEach-Object { Write-Host "  $($_.Name)" }
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: Tailviewer-NEXT-setup-*.exe
+          if-no-files-found: error
+
+      - name: Upload portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: portable
+          path: Tailviewer-NEXT-portable-*.zip
+          if-no-files-found: error

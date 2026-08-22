@@ -110,6 +110,26 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
+		public ILogEntryFilter TimeFilter
+		{
+			get { return _mergedDataSource.TimeFilter; }
+			set
+			{
+				_mergedDataSource.TimeFilter = value;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
+			}
+		}
+
+		public FilterCombinationMode FilterCombinationMode
+		{
+			get { return _mergedDataSource.FilterCombinationMode; }
+			set
+			{
+				_mergedDataSource.FilterCombinationMode = value;
+				_filteredLogSourceProxy.InnerLogSource = _mergedDataSource.FilteredLogSource;
+			}
+		}
+
 		public ILogEntryFilter LogEntryFilter => _mergedDataSource.LogEntryFilter;
 
 		public ILogSource OriginalLogSource

@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using Tailviewer.Api;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter
 {
 	public sealed class TimeFiltersViewModel
@@ -181,28 +183,28 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter
 		{
 			if (SelectEverything)
 			{
-				return "Select: Everything";
+				return Strings.SelectEverything;
 			}
 
 			if (SelectBySpecialInterval)
 			{
-				return string.Format("Select: {0}", _selectedSpecialInterval?.Title);
+				return string.Format(Strings.SelectTitle, _selectedSpecialInterval?.Title);
 			}
 
 			if (Minimum != null)
 			{
 				if (Maximum != null)
-					return string.Format("Select from {0} to {1}", Minimum, Maximum);
+					return string.Format(Strings.SelectRange, Minimum, Maximum);
 
-				return string.Format("Select from {0}", Minimum);
+				return string.Format(Strings.SelectFrom, Minimum);
 			}
 
 			if (Maximum != null)
 			{
-				return string.Format("Select until {0}", Maximum);
+				return string.Format(Strings.SelectUntil, Maximum);
 			}
 
-			return "Select from - to -";
+			return Strings.SelectFromTo;
 		}
 
 		private void SetFilterMode(TimeFilterMode mode)

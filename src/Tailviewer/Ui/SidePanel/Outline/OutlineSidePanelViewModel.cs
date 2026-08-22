@@ -12,6 +12,8 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Outline
 {
 	public sealed class OutlineSidePanelViewModel
@@ -33,7 +35,7 @@ namespace Tailviewer.Ui.SidePanel.Outline
 		{
 			_services = services;
 			_plugins = services.Retrieve<IPluginLoader>().LoadAllOfType<ILogFileOutlinePlugin>();
-			Tooltip = "Show outline of the current log file";
+			Tooltip = Strings.ShowOutlineOfCurrentLogFile;
 			_viewModelsByDataSource = new Dictionary<IDataSource, IInternalLogFileOutlineViewModel>();
 			UpdateEmptyReason();
 		}
@@ -90,15 +92,15 @@ namespace Tailviewer.Ui.SidePanel.Outline
 				}
 				else
 				{
-					EmptyStatement = "Outline creation failed";
-					EmptyExplanation = "An error occurred while trying to present the outline: check the log";
+					EmptyStatement = Strings.OutlineCreationFailed;
+					EmptyExplanation = Strings.OutlinePresentationError;
 				}
 			}
 			else
 			{
-				EmptyStatement = "No outline plugin installed";
+				EmptyStatement = Strings.NoOutlinePluginInstalled;
 				EmptyExplanation =
-					"There is no plugin installed which is able to present an outline for the current data source's log format.";
+					Strings.NoOutlinePluginForFormat;
 			}
 		}
 

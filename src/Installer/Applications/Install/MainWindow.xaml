@@ -65,7 +65,7 @@
                         License Terms
                     </Hyperlink>
                     <Run
-                        Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available." />
+                        Text=" before you can install the product. Tailviewer NEXT automatically notifies you when an update becomes available." />
                 </TextBlock>
 
                 <CheckBox

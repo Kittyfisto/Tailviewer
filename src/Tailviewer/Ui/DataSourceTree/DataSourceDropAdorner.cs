@@ -13,7 +13,7 @@ namespace Tailviewer.Ui.DataSourceTree
 		public DataSourceDropAdorner(TreeViewItem dropTarget)
 			: base(dropTarget)
 		{
-			_pen = new Pen(Brushes.DodgerBlue, 2);
+			_pen = new Pen(new SolidColorBrush(ThemeManager.CurrentPrimary), 2);
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)

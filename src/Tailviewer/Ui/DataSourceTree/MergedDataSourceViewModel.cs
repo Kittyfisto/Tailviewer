@@ -16,6 +16,8 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.LogView;
 using Tailviewer.Ui.Menu;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.DataSourceTree
 {
 	/// <summary>
@@ -50,16 +52,16 @@ namespace Tailviewer.Ui.DataSourceTree
 			{
 				new CommandMenuViewModel(new DelegateCommand2(OpenInExplorer))
 				{
-					Header = "Open Containing Folder(s)",
-					ToolTip = "Opens the Folder(s) of the Child Data sources"
+					Header = Strings.OpenContainingFolders,
+					ToolTip = Strings.OpenContainingFoldersHint
 				}
 			});
 			AddViewMenuItems(new[]
 			{
 				new ToggleMenuViewModel(DisplayMode == DataSourceDisplayMode.Filename, OnToggleShowFileNames)
 				{
-					Header = "Show source name",
-					ToolTip = "Toggles between showing the full name of the data source or a character code representing the original data source"
+					Header = Strings.ShowSourceName,
+					ToolTip = Strings.ShowSourceNameHint
 				}
 			});
 			SetContextMenuItems(new IMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });

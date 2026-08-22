@@ -4,6 +4,8 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Ui.DataSourceTree;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Menu
 {
 	public sealed class ExcludeAllInGroupViewModel
@@ -31,7 +33,7 @@ namespace Tailviewer.Ui.Menu
 
 		public string Header
 		{
-			get { return "Exclude all"; }
+			get { return Strings.ExcludeAll; }
 		}
 
 		public string ToolTip => null;

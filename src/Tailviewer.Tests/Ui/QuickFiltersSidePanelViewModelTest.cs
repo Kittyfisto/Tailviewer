@@ -283,5 +283,44 @@ namespace Tailviewer.Tests.Ui
 			model.QuickFilters.ElementAt(1).IsActive = false;
 			model.QuickInfo.Should().BeNull();
 		}
+
+		[Test]
+		[Description("Verifies that the time filter is NOT part of the quick filter chain anymore")]
+		public void TestCreateFilterChainExcludesTimeFilter()
+		{
+			_quickFilters.AddQuickFilter().Value = "foo";
+
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
+				new DataSource("daw") {Id = DataSourceId.CreateNew()});
+			model.CurrentDataSource = CreateViewModel(dataSource);
+			model.QuickFilters.First().IsActive = true;
+
+			model.CreateFilterChain().ToList().Should().HaveCount(1,
+				"because only the text quick filter should be part of the chain");
+			model.CreateTimeFilter().Should().BeNull("because the time filter defaults to 'everything'");
+		}
+
+		[Test]
+		[Description("Verifies that the combination mode is read from and written to the current data source")]
+		public void TestFilterCombinationMode()
+		{
+			var dataSource = new FileDataSource(_logSourceFactory, _scheduler,
+				new DataSource("adw") {Id = DataSourceId.CreateNew()});
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
+			{
+				CurrentDataSource = CreateViewModel(dataSource)
+			};
+
+			model.FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+
+			var numFilterChanges = 0;
+			model.OnFiltersChanged += () => ++numFilterChanges;
+
+			model.FilterCombinationMode = FilterCombinationMode.Or;
+			model.FilterCombinationMode.Should().Be(FilterCombinationMode.Or);
+			dataSource.FilterCombinationMode.Should().Be(FilterCombinationMode.Or);
+			numFilterChanges.Should().Be(1, "because changing the mode should re-evaluate the currently displayed log");
+		}
 	}
 }

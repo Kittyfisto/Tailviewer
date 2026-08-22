@@ -1,5 +1,5 @@
 ﻿<UserControl x:Class="Tailviewer.Ui.SidePanel.QuickFilters.TimeFilter.TimeChooserControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:loc="clr-namespace:Tailviewer.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -51,10 +51,10 @@
               Margin="8">
 
             <tab:FlatTabControl>
-                <controls:FlatTabItem Header="Everything"
+                <controls:FlatTabItem Header="{x:Static loc:Strings.Everything}"
                                       IsSelected="{Binding SelectEverything, Mode=TwoWay}" />
 
-                <controls:FlatTabItem Header="Quick"
+                <controls:FlatTabItem Header="{x:Static loc:Strings.Quick}"
                                       IsSelected="{Binding SelectBySpecialInterval, Mode=TwoWay}">
                     <controls:FlatListView ItemsSource="{Binding AvailableSpecialRanges}"
                                            SelectedItem="{Binding SelectedSpecialInterval, Mode=TwoWay}" >
@@ -66,7 +66,7 @@
                     </controls:FlatListView>
                 </controls:FlatTabItem>
 
-                <controls:FlatTabItem Header="Absolute"
+                <controls:FlatTabItem Header="{x:Static loc:Strings.Absolute}"
                                       IsSelected="{Binding SelectByInterval, Mode=TwoWay}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -78,7 +78,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <controls:FlatTextBlock Text="From"
+                        <controls:FlatTextBlock Text="{x:Static loc:Strings.From}"
                                                 VerticalAlignment="Center" />
                         <DatePicker Grid.Row="0"
                                     Grid.Column="1"
@@ -86,7 +86,7 @@
                                     SelectedDate="{Binding Minimum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <controls:FlatTextBlock Grid.Row="1"
                                                 Grid.Column="0"
-                                                Text="To"
+                                                Text="{x:Static loc:Strings.To}"
                                                 VerticalAlignment="Center" />
                         <DatePicker Grid.Row="1"
                                     Grid.Column="1"

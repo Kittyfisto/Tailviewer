@@ -3,6 +3,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.Archiver.Plugins.Description;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Plugins
 {
 	public sealed class InstalledPluginViewModel
@@ -26,7 +28,7 @@ namespace Tailviewer.Ui.Plugins
 
 		public string Name => string.IsNullOrEmpty(_description.Name) ? _description.Id.ToString() : _description.Name;
 		public Version Version => _description.Version;
-		public string Author => _description.Author ?? "N/A";
+		public string Author => _description.Author ?? Strings.NotAvailable;
 		public string Description => _description.Description;
 		public string Error => _description.Error;
 		public Uri Website => _description.Website;

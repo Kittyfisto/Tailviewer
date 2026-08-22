@@ -43,6 +43,7 @@ namespace Tailviewer.Settings
 
 		public DateTime LastViewed;
 		public LevelFlags LevelFilter;
+		public FilterCombinationMode FilterCombinationMode;
 		public int Order;
 
 		/// <summary>
@@ -103,6 +104,7 @@ namespace Tailviewer.Settings
 			_activatedQuickFilters = new List<QuickFilterId>();
 
 			LevelFilter = LevelFlags.All;
+			FilterCombinationMode = FilterCombinationMode.And;
 			ColorByLevel = true;
 			ShowLineNumbers = true;
 			IsExpanded = true;
@@ -138,6 +140,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("showelapsedtime", ShowElapsedTime);
 			writer.WriteAttributeString("searchterm", SearchTerm);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
+			writer.WriteAttributeEnum("filtercombinationmode", FilterCombinationMode);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 			writer.WriteAttributeBool("hideemptylines", HideEmptyLines);
 			writer.WriteAttributeBool("singleline", IsSingleLine);
@@ -219,6 +222,10 @@ namespace Tailviewer.Settings
 
 					case "levelfilter":
 						LevelFilter = reader.ReadContentAsEnum<LevelFlags>();
+						break;
+
+					case "filtercombinationmode":
+						FilterCombinationMode = reader.ReadContentAsEnum<FilterCombinationMode>();
 						break;
 
 					case "colorbylevel":
@@ -384,6 +391,7 @@ namespace Tailviewer.Settings
 				IsSingleLine = IsSingleLine,
 				LastViewed = LastViewed,
 				LevelFilter = LevelFilter,
+				FilterCombinationMode = FilterCombinationMode,
 				Order = Order,
 				LogFileFolderPath = LogFileFolderPath,
 				LogFileSearchPattern = LogFileSearchPattern,

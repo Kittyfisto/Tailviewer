@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tailviewer.Core</RootNamespace>
     <AssemblyName>Tailviewer.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -41,8 +41,8 @@
     <AssemblyOriginatorKeyFile>../../sig/key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=3.3.0.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.3.3.0\lib\net462\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Metrolib, Version=0.3.0.162, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Metrolib.0.3.0.162\lib\net45\Metrolib.dll</HintPath>
@@ -217,6 +217,7 @@
     <Compile Include="Settings\QuickFilterSettings.cs" />
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\FilterMatchType.cs" />
+    <Compile Include="Settings\FilterCombinationMode.cs" />
     <Compile Include="Settings\QuickFiltersSettings.cs" />
     <Compile Include="Settings\TimeFilterSettings.cs" />
     <Compile Include="Settings\TimeFilterMode.cs" />

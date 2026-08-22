@@ -1,0 +1,18 @@
+{
+  "tag_name": "v0.9.2",
+  "prerelease": false,
+  "assets": [
+    {
+      "name": "Tailviewer-portable-0.9.2.zip",
+      "browser_download_url": "https://github.com/brofea/Tailviewer-NEXT/releases/download/v0.9.2/Tailviewer-portable-0.9.2.zip"
+    },
+    {
+      "name": "Tailviewer-setup-0.9.2.exe",
+      "browser_download_url": "https://github.com/brofea/Tailviewer-NEXT/releases/download/v0.9.2/Tailviewer-setup-0.9.2.exe"
+    },
+    {
+      "name": "Source code (zip)",
+      "browser_download_url": "https://github.com/brofea/Tailviewer-NEXT/archive/refs/tags/v0.9.2.zip"
+    }
+  ]
+}

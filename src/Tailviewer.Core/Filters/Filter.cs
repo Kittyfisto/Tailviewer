@@ -63,6 +63,17 @@ namespace Tailviewer.Core
 		/// <returns></returns>
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{
+			return Create(filters, FilterCombinationMode.And);
+		}
+
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="filters"></param>
+		/// <param name="mode">How the given filters shall be combined with each other.</param>
+		/// <returns></returns>
+		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters, FilterCombinationMode mode)
+		{
 			var tmp = filters.Where(x => x != null).ToList();
 			if (tmp.Count == 0)
 				return null;
@@ -73,6 +84,10 @@ namespace Tailviewer.Core
 					return null;
 				return filter;
 			}
+
+			if (mode == FilterCombinationMode.Or)
+				return new OrFilter(tmp);
+
 			return new AndFilter(tmp);
 		}
 
@@ -144,6 +159,31 @@ namespace Tailviewer.Core
 			var filters = new List<ILogEntryFilter> {Create(levelFilter)};
 			if (andFilters != null)
 				filters.AddRange(andFilters);
+			return Create(filters);
+		}
+
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		///     The <paramref name="levelFilter" /> and <paramref name="timeFilter" /> are always combined
+		///     via a logical AND, regardless of <paramref name="mode" />. The <paramref name="quickFilters" />
+		///     are combined with each other according to <paramref name="mode" />.
+		/// </summary>
+		/// <param name="levelFilter"></param>
+		/// <param name="timeFilter"></param>
+		/// <param name="quickFilters"></param>
+		/// <param name="mode"></param>
+		/// <returns></returns>
+		public static ILogEntryFilter Create(LevelFlags levelFilter,
+			ILogEntryFilter timeFilter,
+			IEnumerable<ILogEntryFilter> quickFilters,
+			FilterCombinationMode mode)
+		{
+			var filters = new List<ILogEntryFilter>
+			{
+				Create(levelFilter),
+				timeFilter,
+				Create(quickFilters ?? Enumerable.Empty<ILogEntryFilter>(), mode)
+			};
 			return Create(filters);
 		}
 

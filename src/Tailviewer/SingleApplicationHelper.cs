@@ -57,7 +57,7 @@ namespace Tailviewer
 		public static IEnumerable<Process> FindOtherTailviewers()
 		{
 			var processes = new List<Process>();
-			processes.AddRange(Process.GetProcessesByName("Tailviewer"));
+			processes.AddRange(Process.GetProcessesByName("Tailviewer NEXT"));
 			processes.AddRange(Process.GetProcessesByName("Tailviewer.vshost"));
 			using (var current = Process.GetCurrentProcess())
 			{

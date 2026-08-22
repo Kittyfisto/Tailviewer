@@ -10,6 +10,8 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Issues
 {
 	internal sealed class IssuesSidePanelViewModel
@@ -85,7 +87,7 @@ namespace Tailviewer.Ui.SidePanel.Issues
 					return;
 
 				_issueCount = value;
-				QuickInfo = $"{_issueCount} issue(s)";
+				QuickInfo = string.Format(Strings.IssuesCount, _issueCount);
 			}
 		}
 
@@ -202,9 +204,9 @@ namespace Tailviewer.Ui.SidePanel.Issues
 			}
 			else
 			{
-				EmptyStatement = "No issues plugin installed";
+				EmptyStatement = Strings.NoIssuesPluginInstalled;
 				EmptyExplanation =
-					"There is no plugin installed which is able to present a list of issues for the current data source's log format.";
+					Strings.NoIssuesPluginForFormat;
 			}
 		}
 	}

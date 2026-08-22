@@ -144,7 +144,11 @@ namespace Tailviewer.Ui.LogView
 		{
 			var source = CurrentDataSource;
 			if (source != null)
+			{
 				source.QuickFilterChain = _quickFilters.CreateFilterChain();
+				source.TimeFilter = _quickFilters.CreateTimeFilter();
+				source.FilterCombinationMode = _quickFilters.FilterCombinationMode;
+			}
 		}
 
 		public bool CanBeDragged(IDataSourceViewModel source)
@@ -181,7 +185,10 @@ namespace Tailviewer.Ui.LogView
 		private void ChangeDataSource(IDataSourceViewModel value)
 		{
 			if (value != null)
+			{
 				value.QuickFilterChain = _quickFilters.CreateFilterChain();
+				value.TimeFilter = _quickFilters.CreateTimeFilter();
+			}
 
 			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;

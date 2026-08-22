@@ -8,6 +8,8 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Settings.CustomFormats;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Settings.CustomFormats
 {
 	public sealed class CustomFormatPluginViewModel
@@ -45,7 +47,7 @@ namespace Tailviewer.Ui.Settings.CustomFormats
 		private void Add()
 		{
 			var customFormat = new CustomLogFileFormat(_pluginId,
-			                                           $"My custom {_name} format",
+			                                           string.Format(Strings.MyCustomFormat, _name),
 			                                           null,
 			                                           _encodings.First().Encoding);
 			Add(customFormat);

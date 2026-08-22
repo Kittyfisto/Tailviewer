@@ -17,6 +17,7 @@ using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Sources;
 using Tailviewer.Core;
+using Tailviewer.Localization;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using Tailviewer.Ui.DataSourceTree;
@@ -102,7 +103,7 @@ namespace Tailviewer.Tests.Ui
 		public void TestShowLog()
 		{
 			_dataSources.Sources.Should().BeEmpty();
-			var showLog = _mainWindow.MainMenu.Help.Items.First(x => x != null && x.Header == "Show Log");
+			var showLog = _mainWindow.MainMenu.Help.Items.First(x => x != null && x.Header == Strings.MenuShowLog);
 			showLog.Command.Should().NotBeNull();
 			showLog.Command.CanExecute(null).Should().BeTrue();
 			showLog.Command.Execute(null);
@@ -160,7 +161,7 @@ namespace Tailviewer.Tests.Ui
 			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeFalse();
 			_mainWindow.AddFileOrDirectory("foo");
 			
-			var goToDataSourceItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Data Source...");
+			var goToDataSourceItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == Strings.MenuGoToDataSource);
 			goToDataSourceItem.Command.Should().NotBeNull();
 			goToDataSourceItem.Command.CanExecute(null).Should().BeTrue();
 			goToDataSourceItem.Command.Execute(null);
@@ -173,7 +174,7 @@ namespace Tailviewer.Tests.Ui
 			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeFalse();
 			_mainWindow.AddFileOrDirectory("foo");
 
-			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == "Go To Line...");
+			var goToLineItem = _mainWindow.MainMenu.Edit.Items.First(x => x != null && x.Header == Strings.MenuGoToLine);
 			goToLineItem.Command.Should().NotBeNull();
 			goToLineItem.Command.CanExecute(null).Should().BeTrue();
 			goToLineItem.Command.Execute(null);

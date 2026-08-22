@@ -25,6 +25,7 @@ namespace Tailviewer.Tests.Ui.Controls.MainPanel.Settings
 			_settings.SetupAllProperties();
 			_applicationSettings.Setup(x => x.AutoUpdate).Returns(_settings.Object);
 			_applicationSettings.Setup(x => x.LogViewer).Returns(new Mock<ILogViewerSettings>().Object);
+			_applicationSettings.Setup(x => x.Ui).Returns(new UISettings());
 			_control = new SettingsControl();
 			_control.ProxyPasswordBox.ApplyTemplate();
 		}

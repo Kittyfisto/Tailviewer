@@ -9,6 +9,8 @@ using Tailviewer.Api;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Property
 {
 	/// <summary>
@@ -28,7 +30,7 @@ namespace Tailviewer.Ui.SidePanel.Property
 
 		public PropertiesSidePanelViewModel(IServiceContainer serviceContainer)
 		{
-			Tooltip = "Show properties of the current log file";
+			Tooltip = Strings.ShowPropertiesOfCurrentLogFile;
 			_propertyValues = new PropertiesBufferList();
 			_presentersByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter>();
 			_presenters = new ObservableCollection<IPropertyPresenter>();

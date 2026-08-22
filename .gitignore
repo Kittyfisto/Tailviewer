@@ -31,6 +31,7 @@ $tf*/
 .vs/
 
 /packages
+/artifacts/
 /Live
 
 # Visual C++ cache files
@@ -43,4 +44,4 @@ ipch/
 
 *.psess
 *.vspx
-*.etl
+*.etl.idea/

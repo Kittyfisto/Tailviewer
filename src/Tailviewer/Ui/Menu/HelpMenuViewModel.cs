@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Menu
 {
 	public sealed class HelpMenuViewModel
@@ -22,17 +24,17 @@ namespace Tailviewer.Ui.Menu
 			{
 				new CommandMenuViewModel(reportIssue)
 				{
-					Header = "Report a Problem...",
+					Header = Strings.MenuReportProblem,
 					Icon = Icons.AlertCircleOutline
 				},
 				new CommandMenuViewModel(suggestFeature)
 				{
-					Header = "Suggest a Feature...",
+					Header = Strings.MenuSuggestFeature,
 					Icon = Icons.ChatOutline
 				},
 				new CommandMenuViewModel(askQuestion)
 				{
-					Header = "Ask a Question...",
+					Header = Strings.MenuAskQuestion,
 					Icon = Icons.ChatQuestionOutline
 				}
 			};
@@ -40,21 +42,21 @@ namespace Tailviewer.Ui.Menu
 			{
 				new ParentMenuViewModel(feedbackMenuItems)
 				{
-					Header = "Send Feedback",
+					Header = Strings.MenuSendFeedback,
 				},
 				null,
 				new CommandMenuViewModel(checkForUpdates)
 				{
-					Header = "Check For Updates"
+					Header = Strings.MenuCheckForUpdates
 				},
 				new CommandMenuViewModel(showLogCommand)
 				{
-					Header = "Show Log"
+					Header = Strings.MenuShowLog
 				},
 				null,
 				new CommandMenuViewModel(showAboutFlyout)
 				{
-					Header = "About"
+					Header = Strings.MenuAbout
 				}
 			};
 		}

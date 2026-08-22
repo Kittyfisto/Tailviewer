@@ -28,6 +28,7 @@ namespace Tailviewer.Settings
 		private readonly LogViewerSettings _logViewer;
 		private readonly LogFileSettings _logFile;
 		private readonly CustomFormatsSettings _customFormats;
+		private readonly UISettings _ui;
 		private int _numSaved;
 
 		private bool _allowSave;
@@ -63,6 +64,7 @@ namespace Tailviewer.Settings
 			_logViewer = other._logViewer.Clone();
 			_logFile = other._logFile.Clone();
 			_customFormats = other._customFormats.Clone();
+			_ui = other._ui.Clone();
 			_allowSave = true;
 		}
 
@@ -79,6 +81,7 @@ namespace Tailviewer.Settings
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
 			_customFormats = new CustomFormatsSettings();
+			_ui = new UISettings();
 			_allowSave = true;
 		}
 
@@ -97,6 +100,7 @@ namespace Tailviewer.Settings
 		public IExportSettings Export => _export;
 
 		public ICustomFormatsSettings CustomFormats => _customFormats;
+		public UISettings Ui => _ui;
 
 		public static ApplicationSettings Create()
 		{
@@ -165,6 +169,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("customformats");
 						_customFormats.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("ui");
+						_ui.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -246,6 +254,10 @@ namespace Tailviewer.Settings
 
 							case "customformats":
 								_customFormats.Restore(reader);
+								break;
+
+							case "ui":
+								_ui.Restore(reader);
 								break;
 						}
 					}

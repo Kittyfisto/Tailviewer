@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -27,8 +28,8 @@ namespace Tailviewer.Core
 		static Constants()
 		{
 			var assembly = Assembly.GetExecutingAssembly();
-			var name = assembly.GetName();
-			ApplicationVersion = name.Version;
+			var fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
+			ApplicationVersion = Version.Parse(fileVersion);
 			ApplicationFolder = assembly.GetFolder();
 			BuildDate = GetLinkerTime(assembly);
 		}

@@ -7,6 +7,8 @@ namespace Tailviewer
 	public static class Constants
 	{
 		public static readonly string ApplicationTitle;
+
+		private const string ApplicationFolderName = "Tailviewer NEXT";
 		public static readonly string MainWindowTitle;
 		public static readonly Version ApplicationVersion;
 		public static readonly DateTime BuildDate;
@@ -40,16 +42,16 @@ namespace Tailviewer
 
 		static Constants()
 		{
-			ApplicationTitle = "Tailviewer";
+			ApplicationTitle = "Tailviewer NEXT";
 			ApplicationVersion = Core.Constants.ApplicationVersion;
 			BuildDate = Core.Constants.BuildDate;
-			MainWindowTitle = string.Format("Tailviewer, v{0}", ApplicationVersion.Format());
-			ProjectPage = new Uri("https://kittyfisto.github.io/Tailviewer/");
-			GithubPage = new Uri("https://github.com/Kittyfisto/Tailviewer");
-			ReportBugPage = new Uri("https://github.com/Kittyfisto/Tailviewer/issues/new");
+			MainWindowTitle = string.Format("Tailviewer NEXT, v{0}", ApplicationVersion.Format());
+			ProjectPage = new Uri("https://github.com/brofea/Tailviewer-NEXT");
+			GithubPage = new Uri("https://github.com/brofea/Tailviewer-NEXT");
+			ReportBugPage = new Uri("https://github.com/brofea/Tailviewer-NEXT/issues/new");
 			ApplicationFolder = Core.Constants.ApplicationFolder;
 			PluginPath = Path.Combine(ApplicationFolder, "Plugins");
-			AppDataLocalFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationTitle);
+			AppDataLocalFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationFolderName);
 
 			#if DEBUG
 			ApplicationLogFile = Path.Combine(ApplicationFolder, "Tailviewer.log");
@@ -60,7 +62,7 @@ namespace Tailviewer
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
 			DownloadedPluginsPath = Path.Combine(DownloadFolder, "Plugins");
 
-			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationTitle);
+			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationFolderName);
 			ExportDirectory = Path.Combine(MyDocumentsFolder, "Export");
 
 			SnapshotDirectory = Path.Combine(MyDocumentsFolder, "Snapshots");

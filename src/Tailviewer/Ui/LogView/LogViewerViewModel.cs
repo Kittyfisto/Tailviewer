@@ -17,6 +17,8 @@ using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.LogView
 {
 	public sealed class LogViewerViewModel
@@ -273,46 +275,46 @@ namespace Tailviewer.Ui.LogView
 				else if (folderDataSource != null && folderDataSource.UnfilteredFileCount == 0)
 				{
 					NoEntriesIcon = null;
-					NoEntriesExplanation = $"The folder \"{Path.GetFileName(dataSource.FullFileName)}\" does not contain any file";
+					NoEntriesExplanation = string.Format(Strings.FolderDoesNotContainAnyFile, Path.GetFileName(dataSource.FullFileName));
 					NoEntriesAction = dataSource.FullFileName;
 				}
 				else if (folderDataSource != null && folderDataSource.FilteredFileCount == 0)
 				{
 					NoEntriesIcon = null;
-					NoEntriesExplanation = $"The folder \"{Path.GetFileName(dataSource.FullFileName)}\" does not contain any file matching \"{folderDataSource.LogFileSearchPattern}\"";
+					NoEntriesExplanation = string.Format(Strings.FolderDoesNotContainMatchingFile, Path.GetFileName(dataSource.FullFileName), folderDataSource.LogFileSearchPattern);
 					NoEntriesAction = dataSource.FullFileName;
 				}
 				else if (source.GetProperty(Properties.Size) == Size.Zero)
 				{
 					NoEntriesIcon = Icons.File;
-					NoEntriesExplanation = "Data source is empty";
+					NoEntriesExplanation = Strings.DataSourceIsEmpty;
 					NoEntriesAction = null;
 				}
 				else if (dataSource.LevelFilter != LevelFlags.All)
 				{
 					NoEntriesIcon = Icons.FileSearch;
-					NoEntriesExplanation = "Nothing matches level filter";
-					NoEntriesAction = "Try filtering by different levels or display everything regardless of its level again";
+					NoEntriesExplanation = Strings.NothingMatchesLevelFilter;
+					NoEntriesAction = Strings.TryDifferentLevels;
 				}
 				else if (dataSource.ScreenCleared)
 				{
 					NoEntriesIcon = Icons.PlaylistRemove;
-					NoEntriesExplanation = "The screen was cleared";
-					NoEntriesAction = "No new log entries have been added to the data source since the screen was cleared. Try waiting for a little longer or show all log entries again.";
+					NoEntriesExplanation = Strings.ScreenWasCleared;
+					NoEntriesAction = Strings.NoNewEntriesAfterClear;
 				}
 				else if (filter != null)
 				{
 					NoEntriesIcon = Icons.FileSearch;
-					NoEntriesExplanation = "Nothing matches quick filter";
+					NoEntriesExplanation = Strings.NothingMatchesQuickFilter;
 					NoEntriesAction = filter is FilterExpression
-						? $"No log entry matches \"{filter}\".\r\nTry changing your filter(s) or disable them again"
-						: "Try filtering by different terms or disable all quick filters";
+						? string.Format(Strings.NoLogEntryMatchesFilter, filter)
+						: Strings.TryDifferentQuickFilterTerms;
 				}
 				else if (source is MergedLogSource)
 				{
 					NoEntriesIcon = null;
-					NoEntriesExplanation = "No log entries with timestamps";
-					NoEntriesAction = "Try merging different data sources, change the timestamp format of the data or create a plugin to help Tailviewer parse its timestamp";
+					NoEntriesExplanation = Strings.NoLogEntriesWithTimestamps;
+					NoEntriesAction = Strings.TryMergingDataSources;
 				}
 				else
 				{

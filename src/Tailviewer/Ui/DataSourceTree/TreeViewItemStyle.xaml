@@ -60,7 +60,7 @@
 
                         <!-- When we're selected -->
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
                             <Setter Property="controls:Properties.IsInverted" Value="True" />
                         </Trigger>
                         

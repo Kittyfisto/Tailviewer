@@ -33,4 +33,6 @@ using Tailviewer.Api;
 
 [assembly: PluginId("Tailviewer.Formats", "Serilog")]
 [assembly: PluginVersion(1, 0, 0, 0)]
+[assembly: PluginWebsite("https://github.com/Kittyfisto/Tailviewer/tree/master/src/Plugins/Tailviewer.Formats.Serilog")]
 [assembly: PluginAuthor("Simon Mießler")]
+[assembly: PluginDescription("Parses log files in Serilog's default text format.")]

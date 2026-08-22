@@ -6,6 +6,8 @@ using Tailviewer.Collections;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.LogView;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Menu
 {
 	/// <summary>
@@ -52,7 +54,7 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.G
 				})
 				{
-					Header = "Go To Line..."
+					Header = Strings.MenuGoToLine
 				},
 				null,
 				new CommandMenuViewModel(new KeyBindingCommand(_goToDataSource)
@@ -61,7 +63,7 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.T
 				})
 				{
-					Header = "Go To Data Source..."
+					Header = Strings.MenuGoToDataSource
 				},
 				new CommandMenuViewModel(new KeyBindingCommand(_goToPreviousDataSource)
 				{
@@ -69,7 +71,7 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.Tab
 				})
 				{
-					Header = "Go To Previous Data Source"
+					Header = Strings.MenuGoToPreviousDataSource
 				},
 				new CommandMenuViewModel(new KeyBindingCommand(_goToNextDataSource)
 				{
@@ -77,7 +79,7 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.Tab
 				})
 				{
-					Header = "Go To Next Data Source"
+					Header = Strings.MenuGoToNextDataSource
 				},
 				null,
 				new CommandMenuViewModel(new KeyBindingCommand(_mainPanel.AddBookmarkCommand)
@@ -86,12 +88,12 @@ namespace Tailviewer.Ui.Menu
 					GestureKey = Key.B
 				})
 				{
-					Header = "Add Bookmark",
+					Header = Strings.MenuAddBookmark,
 					Icon = Icons.BookmarkPlusOutline
 				},
 				new CommandMenuViewModel(_mainPanel.RemoveAllBookmarkCommand)
 				{
-					Header = "Remove All Bookmarks",
+					Header = Strings.MenuRemoveAllBookmarks,
 					Icon = Icons.BookmarkRemoveOutline
 				}
 			};

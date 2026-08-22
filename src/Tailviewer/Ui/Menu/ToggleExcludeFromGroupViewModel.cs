@@ -6,6 +6,8 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Ui.DataSourceTree;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Menu
 {
 	public sealed class ToggleExcludeFromGroupViewModel
@@ -35,9 +37,9 @@ namespace Tailviewer.Ui.Menu
 			// The text describes what Command() does, and thus if we're currently excluding the file,
 			// then executing the command will include it (and vice versa).
 			if (_dataSource.ExcludeFromParent)
-				Header = "Include in group";
+				Header = Strings.IncludeInGroup;
 			else
-				Header = "Exclude from group";
+				Header = Strings.ExcludeFromGroup;
 		}
 
 		#region Implementation of IContextMenuViewModel

@@ -12,6 +12,8 @@ using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.SidePanel.Bookmarks
 {
 	public sealed class BookmarksViewModel
@@ -52,8 +54,8 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 		private void UpdateTooltip()
 		{
 			Tooltip = IsSelected
-				? "Hide the list of bookmarks"
-				: "Show the list of bookmarks";
+				? Strings.HideBookmarkList
+				: Strings.ShowBookmarkList;
 		}
 
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -167,9 +169,9 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 				return null;
 
 			if (count == 1)
-				return "1 bookmark";
+				return Strings.OneBookmark;
 
-			return string.Format("{0} bookmarks", count);
+			return string.Format(Strings.BookmarksCount, count);
 		}
 
 		private void OnNavigateToBookmark(BookmarkViewModel viewModel)
@@ -245,10 +247,10 @@ namespace Tailviewer.Ui.SidePanel.Bookmarks
 			}
 			else
 			{
-				EmptyStatement = "No Bookmarks added";
+				EmptyStatement = Strings.NoBookmarksAdded;
 				EmptyExplanation = _addBookmarkCommand.CanBeExecuted
-					? "Try clicking Add Bookmark"
-					: "Try selecting a log entry /or line and click Add Bookmark";
+					? Strings.TryClickingAddBookmark
+					: Strings.TrySelectingLogEntry;
 			}
 		}
 	}

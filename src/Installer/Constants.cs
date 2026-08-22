@@ -6,7 +6,7 @@ namespace Installer
 {
 	public static class Constants
 	{
-		public const string ApplicationTitle = "Tailviewer";
+		public const string ApplicationTitle = "Tailviewer NEXT";
 		public static readonly string ApplicationExecutable = $"{ApplicationTitle}.exe";
 		public static readonly Version ApplicationVersion;
 		public static readonly string MainWindowTitle;
@@ -17,10 +17,10 @@ namespace Installer
 		static Constants()
 		{
 			ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version;
-			MainWindowTitle = string.Format("Installing Tailviewer, v{0}", ApplicationVersion);
+			MainWindowTitle = string.Format("Installing Tailviewer NEXT, v{0}", ApplicationVersion);
 			InstallationLog = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-			                               "Tailviewer", "Installation.log");
-			Publisher = "Kittyfisto";
+			                               "Tailviewer NEXT", "Installation.log");
+			Publisher = "brofea";
 			DefaultApplicationFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), ApplicationTitle);
 		}
 	}

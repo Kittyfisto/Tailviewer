@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Cache;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using System.Xml;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.Settings;
 using log4net;
@@ -19,9 +21,8 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		: IAutoUpdater
 		, IDisposable
 	{
-		private const string Server = "https://kittyfisto.github.io";
-		private const string VersionFile = "Tailviewer/downloads/version.xml";
-		private const string DownloadServer = "https://github.com/Kittyfisto/Tailviewer/releases/download/";
+		private const string LatestReleaseUri = "https://api.github.com/repos/brofea/Tailviewer-NEXT/releases/latest";
+		private const string UserAgent = "Tailviewer-NEXT";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -157,9 +158,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		public static Uri BuildVersionCheckUri()
 		{
-			string address = string.Format("{0}/{1}", Server, VersionFile);
-			var uri = new Uri(address);
-			return uri;
+			return new Uri(LatestReleaseUri);
 		}
 
 		private void DownloadAndInstall(Version version, Uri uri)
@@ -240,15 +239,16 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					client.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
 					client.UseDefaultCredentials = true;
 					client.Proxy = _settings.GetWebProxy();
+					client.Headers[HttpRequestHeader.UserAgent] = UserAgent;
 
 					Uri uri = BuildVersionCheckUri();
 
-					// For some reason, DownloadData does not accept the certificate offered by kittyfisto.github.io
-					// anymore (I've found this out in May 2019). Forcing the SPM to accept TLS 1.2 on top of its defaults
+					// For some reason, DownloadData does not accept the certificate offered by some
+					// github.io hosts anymore. Forcing the SPM to accept TLS 1.2 on top of its defaults
 					// fixes that, but sucks because older client's won't update automatically...
 					ServicePointManager.SecurityProtocol |= (SecurityProtocolType)SslProtocols.Tls12;
 
-					Log.InfoFormat("Looking for newest version on '{0}", uri);
+					Log.InfoFormat("Looking for newest version on '{0}'", uri);
 					byte[] data = client.DownloadData(uri);
 
 					Log.DebugFormat("Parsing response ({0} bytes)",
@@ -285,65 +285,74 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			latestVersions = new VersionInfo(null, null, null, null);
 
 			using (var stream = new MemoryStream(data))
-			using (XmlReader reader = XmlReader.Create(stream))
 			{
-				while (reader.Read())
-				{
-					switch (reader.Name)
-					{
-						case "versions":
-							ReadVersions(reader.ReadSubtree(), out latestVersions);
-							break;
-					}
-				}
+				var serializer = new DataContractJsonSerializer(typeof(GitHubRelease));
+				var release = (GitHubRelease) serializer.ReadObject(stream);
+
+				Version stable = ParseVersion(release.TagName);
+				Uri stableAddress = FindInstallerAsset(release.Assets);
+				latestVersions = new VersionInfo(null, null, stable, stableAddress);
 			}
 		}
 
-		private static void ReadVersions(XmlReader versions, out VersionInfo latestVersions)
+		private static Version ParseVersion(string tagName)
 		{
-			Version beta = null;
-			Uri betaAddress = null;
-			Version stable = null;
-			Uri stableAddress = null;
+			if (string.IsNullOrEmpty(tagName))
+				return null;
 
-			while (versions.Read())
-			{
-				switch (versions.Name)
-				{
-					case "stable":
-						stable = ReadVersion(versions, out stableAddress);
-						break;
+			string withoutPrefix = tagName.StartsWith("v", StringComparison.InvariantCultureIgnoreCase)
+				? tagName.Substring(1)
+				: tagName;
 
-					case "beta":
-						beta = ReadVersion(versions, out betaAddress);
-						break;
-				}
-			}
+			Version version;
+			if (!Version.TryParse(withoutPrefix, out version))
+				return null;
 
-			latestVersions = new VersionInfo(beta, betaAddress, stable, stableAddress);
+			return version;
 		}
 
-		private static Version ReadVersion(XmlReader versions, out Uri address)
+		private static Uri FindInstallerAsset(GitHubAsset[] assets)
 		{
-			var path = versions.GetAttribute("path");
-			var fullPath = string.Format("{0}{1}", DownloadServer, path);
-			if (!Uri.TryCreate(fullPath, UriKind.Absolute, out address))
+			if (assets == null)
 				return null;
 
-			int major;
-			int minor;
-			int patch;
-			int build;
-			if (!int.TryParse(versions.GetAttribute("major"), NumberStyles.Integer, CultureInfo.InvariantCulture, out major))
-				return null;
-			if (!int.TryParse(versions.GetAttribute("minor"), NumberStyles.Integer, CultureInfo.InvariantCulture, out minor))
-				return null;
-			if (!int.TryParse(versions.GetAttribute("patch"), NumberStyles.Integer, CultureInfo.InvariantCulture, out patch))
-				return null;
-			if (!int.TryParse(versions.GetAttribute("build"), NumberStyles.Integer, CultureInfo.InvariantCulture, out build))
+			GitHubAsset setup = assets.FirstOrDefault(x =>
+				x.Name != null &&
+				x.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) &&
+				x.Name.IndexOf("setup", StringComparison.InvariantCultureIgnoreCase) >= 0);
+
+			GitHubAsset installer = setup ?? assets.FirstOrDefault(x =>
+				x.Name != null &&
+				x.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase));
+
+			if (installer == null)
 				return null;
 
-			return new Version(major, minor, patch, build);
+			Uri address;
+			return Uri.TryCreate(installer.BrowserDownloadUrl, UriKind.Absolute, out address) ? address : null;
+		}
+
+		[DataContract]
+		public sealed class GitHubRelease
+		{
+			[DataMember(Name = "tag_name")]
+			public string TagName { get; set; }
+
+			[DataMember(Name = "prerelease")]
+			public bool Prerelease { get; set; }
+
+			[DataMember(Name = "assets")]
+			public GitHubAsset[] Assets { get; set; }
+		}
+
+		[DataContract]
+		public sealed class GitHubAsset
+		{
+			[DataMember(Name = "name")]
+			public string Name { get; set; }
+
+			[DataMember(Name = "browser_download_url")]
+			public string BrowserDownloadUrl { get; set; }
 		}
 	}
 }

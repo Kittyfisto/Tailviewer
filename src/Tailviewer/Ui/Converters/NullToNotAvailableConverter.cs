@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
+using Tailviewer.Localization;
+
 namespace Tailviewer.Ui.Converters
 {
 	/// <summary>
@@ -14,7 +16,7 @@ namespace Tailviewer.Ui.Converters
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null)
-				return "N/A";
+				return Strings.NotAvailable;
 
 			return value;
 		}

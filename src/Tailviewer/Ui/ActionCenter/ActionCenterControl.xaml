@@ -1,5 +1,5 @@
 ﻿<UserControl x:Class="Tailviewer.Ui.ActionCenter.ActionCenterControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:loc="clr-namespace:Tailviewer.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,7 +19,6 @@
                 <ResourceDictionary Source="ActionCenterItem.xaml" />
                 <ResourceDictionary Source="NotificationTemplate.xaml" />
                 <ResourceDictionary Source="BugTemplate.xaml" />
-                <ResourceDictionary Source="ChangeTemplate.xaml" />
                 <ResourceDictionary Source="ExportTemplate.xaml" />
                 <ResourceDictionary Source="BuildTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -38,8 +37,8 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Border Background="{StaticResource BackgroundBrushSelected}">
-            <TextBlock Text="Action Center"
+        <Border Background="{DynamicResource PrimaryBrush}">
+            <TextBlock Text="{x:Static loc:Strings.ActionCenter}"
                        FontSize="28"
                        VerticalAlignment="Center"
                        Margin="8"
@@ -53,7 +52,7 @@
                                    ItemContainerStyle="{StaticResource ActionCenterItemStyle}"/>
         </controls:FlatScrollViewer>
 
-        <TextBlock Text="No new messages"
+        <TextBlock Text="{x:Static loc:Strings.NoNewMessages}"
                    TextWrapping="Wrap"
                    Grid.Row="1"
                    Margin="8"

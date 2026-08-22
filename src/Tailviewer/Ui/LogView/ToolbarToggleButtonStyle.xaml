@@ -12,7 +12,7 @@
 
     <Style TargetType="{x:Type local:ToolbarToggleButton}">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
         <Setter Property="Margin" Value="4,2,4,2" />
         <Setter Property="Padding" Value="4" />
         <Setter Property="MaxWidth" Value="60" />
@@ -77,7 +77,7 @@
                 <MultiTrigger.Conditions>
                     <Condition Property="IsMouseOver" Value="True" />
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
+                <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}" />
             </MultiTrigger>
             <Trigger Property="IsChecked" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
