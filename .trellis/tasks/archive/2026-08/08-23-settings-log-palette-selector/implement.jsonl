@@ -1,0 +1,4 @@
+{"file":".trellis/spec/ui/mvvm.md","reason":"SettingsFlyoutViewModel and binding patterns."}
+{"file":".trellis/spec/ui/project-structure.md","reason":"UISettings ownership and localization generation rules."}
+{"file":".trellis/spec/ui/theming.md","reason":"Palette/default-color interaction with ThemeManager and custom levels."}
+{"file":".trellis/spec/testing/index.md","reason":"Settings and VM regression-test conventions."}

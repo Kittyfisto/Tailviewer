@@ -82,7 +82,7 @@ namespace Tailviewer.Ui.LogView.DataSource
 			var actualWidth = ActualWidth;
 			var actualHeight = ActualHeight;
 
-			drawingContext.DrawRectangle(Brushes.White, pen: null,
+			drawingContext.DrawRectangle(TextBrushes.CanvasBackgroundBrush, pen: null,
 				rectangle: new Rect(x: 0, y: 0, width: actualWidth, height: actualHeight));
 
 			var y = _yOffset;
@@ -221,7 +221,7 @@ namespace Tailviewer.Ui.LogView.DataSource
 					break;
 
 				default:
-					brush = Brushes.Black;
+					brush = TextBrushes.DefaultForegroundBrush;
 					break;
 			}
 

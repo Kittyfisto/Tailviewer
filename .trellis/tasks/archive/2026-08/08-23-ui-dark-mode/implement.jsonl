@@ -1,0 +1,12 @@
+{"file": ".trellis/spec/ui/index.md", "reason": "WPF UI 总览：无 MVVM 框架、Bootstrapper 启动、Metrolib 依赖"}
+{"file": ".trellis/spec/ui/theming.md", "reason": "主题/强调色架构、DynamicResource 规则、冻结画刷陷阱、Metrolib 覆盖方法——本任务核心约束"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "视图/ViewModel 绑定约定，设置开关不得违反命令/绑定约定"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Ui/Settings/Themes 目录职责与本地化再生流程"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48/UseWPF/TreatWarningsAsErrors、SDK 项目差异、签名"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "迁移硬编码色值前先搜索、避免遗漏引用"}
+{"file": ".trellis/tasks/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "主负责人批准结论与附加护栏，作为实现边界"}
+{"file": ".trellis/tasks/08-23-ui-dark-mode/research/theme-architecture.md", "reason": "资源链、ThemeManager、渲染器画刷、设置持久化的仓库证据"}
+{"file": ".trellis/tasks/08-23-ui-dark-mode/research/hardcoded-color-inventory.md", "reason": "硬编码中性色迁移目标清单（逐文件）"}
+{"file": ".trellis/tasks/08-23-ui-dark-mode/research/dark-palette-and-contrast.md", "reason": "深色调色板基线、对比度、强调色交互分析"}
+{"file": ".trellis/tasks/08-23-ui-dark-mode/design.md", "reason": "边界、调色板、覆盖范围、渲染器参与设计、性能与回滚"}
+{"file": ".trellis/tasks/archive/2026-08/08-22-ui-semantic-layout/design.md", "reason": "任务 1 语义资源架构与本任务的延续关系"}

@@ -31,8 +31,8 @@
                     <Border Padding="2"
                             BorderThickness="1"
                             CornerRadius="2"
-                            BorderBrush="Gray"
-                            Background="LightGray">
+                            BorderBrush="{DynamicResource DividerBrush}"
+                            Background="{DynamicResource SurfaceMutedBrush}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -54,8 +54,8 @@
                     <Border Padding="2"
                             BorderThickness="1"
                             CornerRadius="2"
-                            BorderBrush="Gray"
-                            Background="LightGray">
+                            BorderBrush="{DynamicResource DividerBrush}"
+                            Background="{DynamicResource SurfaceMutedBrush}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

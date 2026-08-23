@@ -1,0 +1,12 @@
+{"file": ".trellis/spec/ui/index.md", "reason": "WPF UI 总览：无 MVVM 框架、Bootstrapper 启动、Metrolib 依赖与第三方包"}
+{"file": ".trellis/spec/ui/theming.md", "reason": "主题/强调色架构、DynamicResource 规则、冻结画刷陷阱、Metrolib 覆盖方法——本任务模板替换与 setter 改形状的核心约束"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "视图/ViewModel 绑定约定，模板替换不得引入 XAML 事件处理器或违反命令绑定"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Ui/Settings/Themes 目录职责与本地化再生流程"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48/UseWPF/TreatWarningsAsErrors、SDK 项目差异、签名"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "迁移/统一样式前先搜索、避免遗漏引用与重复"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/research/control-inventory.md", "reason": "真实控件清单、Metrolib 公开属性面、低风险 setter vs 需模板替换的分类——分阶段依据"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/research/fluent-design-tokens.md", "reason": "圆角/密度/字号/状态色/无障碍 token 基线，实现取值依据"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/research/metrolib-wpf-compat.md", "reason": "模板替换兼容性红线（PART_*/VSM/TemplateBinding）、DynamicResource 行为、性能与回滚"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/design.md", "reason": "边界、token 规格、分期映射、CheckBox/ComboBox 模板规格、回滚点"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/design.md", "reason": "任务 2 语义 token/主题管线与渲染器红线的延续关系，避免越界"}
+{"file": ".trellis/tasks/archive/2026-08/08-22-ui-semantic-layout/design.md", "reason": "任务 1 语义资源架构与本任务的延续关系"}

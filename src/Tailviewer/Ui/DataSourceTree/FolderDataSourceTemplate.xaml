@@ -46,12 +46,12 @@
 
                 <!-- Folder -->
                 <controls:FlatTextBlock Text="{Binding DataSourceOrigin}"
-                                        Foreground="{StaticResource TextBrushUnimportant}"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                         ToolTip="{Binding DataSourceOrigin}"
                                         TextTrimming="CharacterEllipsis"
                                         Grid.Row="1" />
 
-                <controls:FlatTextBlock Foreground="{StaticResource TextBrushUnimportant}"
+                <controls:FlatTextBlock Foreground="{DynamicResource TextSecondaryBrush}"
                                         Text="{Binding FileReport}"
                                         TextWrapping="Wrap"
                                         Grid.Row="2" />

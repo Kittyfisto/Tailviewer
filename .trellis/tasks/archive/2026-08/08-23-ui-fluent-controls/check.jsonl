@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "核对强调色 DynamicResource、冻结画刷、Metrolib 覆盖是否被模板替换破坏"}
+{"file": ".trellis/spec/ui/index.md", "reason": "UI 层整体规范与第三方依赖基线"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "核对模板替换未引入 XAML 事件处理器或违反命令/绑定约定"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "核对未越界改动 BusinessLogic/ViewModel/本地化产物"}
+{"file": ".trellis/spec/build/index.md", "reason": "核对 warning-free 构建与项目格式约束"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "核对样式统一完整性、无重复遗漏"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/prd.md", "reason": "验收标准与红线清单，作为 check 的判定依据"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/design.md", "reason": "边界、token 规格、模板替换规格与回滚点，作为 check 的判定依据"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/research/metrolib-wpf-compat.md", "reason": "核对模板替换保留 PART_*/VSM/TemplateBinding，无冻结画刷/StaticResource 回归"}
+{"file": ".trellis/tasks/08-23-ui-fluent-controls/research/control-inventory.md", "reason": "核对红线文件零改动（渲染器/BusinessLogic/ViewModel）与分阶段范围"}

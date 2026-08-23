@@ -15,6 +15,7 @@ namespace Tailviewer.Settings
 
 		private Color _foregroundColor;
 		private Color _backgroundColor;
+		private bool _isCustom;
 
 		public LogLevelSettings()
 		{
@@ -40,12 +41,31 @@ namespace Tailviewer.Settings
 			set { _backgroundColor = value; }
 		}
 
+		/// <summary>
+		///     Whether the user has explicitly configured this level's colors. When
+		///     false, the level follows the current theme's default palette.
+		/// </summary>
+		public bool IsCustom
+		{
+			get { return _isCustom; }
+			set { _isCustom = value; }
+		}
+
+		/// <summary>
+		///     Compares this level's colors against the given foreground/background pair.
+		/// </summary>
+		public bool Matches(Color foregroundColor, Color backgroundColor)
+		{
+			return _foregroundColor == foregroundColor && _backgroundColor == backgroundColor;
+		}
+
 		public LogLevelSettings Clone()
 		{
 			return new LogLevelSettings
 			{
 				ForegroundColor = _foregroundColor,
-				BackgroundColor = _backgroundColor
+				BackgroundColor = _backgroundColor,
+				IsCustom = _isCustom
 			};
 		}
 
@@ -53,12 +73,24 @@ namespace Tailviewer.Settings
 		{
 			writer.WriteAttributeColor("foregroundcolor", _foregroundColor);
 			writer.WriteAttributeColor("backgroundcolor", _backgroundColor);
+			writer.WriteAttributeString("iscustom", _isCustom ? "true" : "false");
 		}
 
-		public void Restore(XmlReader reader)
+		/// <summary>
+		///     Restores this level's colors and custom flag from the given reader.
+		///     Returns true when an explicit <c>iscustom</c> attribute was present,
+		///     false for legacy files that only contain the two colors.
+		/// </summary>
+		public bool Restore(XmlReader reader)
 		{
 			reader.ReadAttributeAsColor("foregroundcolor", Log, _foregroundColor, out _foregroundColor);
 			reader.ReadAttributeAsColor("backgroundcolor", Log, _backgroundColor, out _backgroundColor);
+
+			if (!reader.MoveToAttribute("iscustom"))
+				return false;
+
+			_isCustom = bool.TryParse(reader.ReadContentAsString(), out var isCustom) && isCustom;
+			return true;
 		}
 	}
 }

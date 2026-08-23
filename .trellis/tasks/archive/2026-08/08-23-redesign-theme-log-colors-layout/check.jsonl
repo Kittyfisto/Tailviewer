@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "质量检查依据：无 {StaticResource Primary*/Surface*} 回归、冻结画刷禁止经 {x:Static} 暴露、Color 键只在应用作用域"}
+{"file": ".trellis/spec/testing/index.md", "reason": "测试约定：UISettingsTest（新强调色/ThemeMode 迁移）、LogViewerSettingsTest/LogLevelSettingsTest（新浅色默认）、TextBrushesTest 新用例"}
+{"file": ".trellis/spec/build/index.md", "reason": "构建门禁：net48 warning-free、SDK-style csproj 无需登记新文件"}
+{"file": ".trellis/spec/guides/index.md", "reason": "评审防误报：AI 评审信任边界/变量误读校验规则；改值前 grep"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "红线审计对照：D2 批准文件集之外不得被触碰"}

@@ -19,7 +19,7 @@ namespace Tailviewer.Tests.Settings
 			Colors.Magenta,
 			Colors.Teal
 		};
-		
+
 		[Pure]
 		private static LogLevelSettings Restore(string file)
 		{
@@ -60,6 +60,45 @@ namespace Tailviewer.Tests.Settings
 			var settings = new LogLevelSettings();
 			settings.ForegroundColor.Should().Be(Colors.Black);
 			settings.BackgroundColor.Should().Be(Colors.Transparent);
+			settings.IsCustom.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestIsCustomRoundtrip()
+		{
+			var settings = new LogLevelSettings
+			{
+				ForegroundColor = Colors.Red,
+				BackgroundColor = Colors.Blue,
+				IsCustom = true
+			};
+			var restored = Restore(Save(settings));
+			restored.ForegroundColor.Should().Be(Colors.Red);
+			restored.BackgroundColor.Should().Be(Colors.Blue);
+			restored.IsCustom.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestIsCustomNotPresentRestoresFalse()
+		{
+			var restored = Restore("<Test foregroundcolor=\"#FF0000\" backgroundcolor=\"#0000FF\" />");
+			restored.ForegroundColor.Should().Be(Colors.Red);
+			restored.BackgroundColor.Should().Be(Colors.Blue);
+			restored.IsCustom.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestMatches()
+		{
+			var settings = new LogLevelSettings
+			{
+				ForegroundColor = Color.FromRgb(0x01, 0x02, 0x03),
+				BackgroundColor = Color.FromRgb(0x04, 0x05, 0x06)
+			};
+
+			settings.Matches(Color.FromRgb(0x01, 0x02, 0x03), Color.FromRgb(0x04, 0x05, 0x06)).Should().BeTrue();
+			settings.Matches(Color.FromRgb(0x09, 0x09, 0x09), Color.FromRgb(0x04, 0x05, 0x06)).Should().BeFalse();
+			settings.Matches(Color.FromRgb(0x01, 0x02, 0x03), Color.FromRgb(0x09, 0x09, 0x09)).Should().BeFalse();
 		}
 
 		[Test]

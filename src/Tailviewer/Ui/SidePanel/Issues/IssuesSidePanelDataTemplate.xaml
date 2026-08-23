@@ -10,7 +10,7 @@
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type issues:IssuesSidePanelViewModel}">
-        <Border Background="White">
+        <Border Background="{DynamicResource SurfaceBrush}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -20,7 +20,7 @@
 
                 <Grid Height="26">
                     <TextBlock Text="{x:Static loc:Strings.Issues}"
-                               Foreground="DarkGray"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                VerticalAlignment="Center"
                                FontSize="14"
                                Margin="8,0,0,0" />

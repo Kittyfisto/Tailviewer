@@ -97,7 +97,7 @@ namespace Tailviewer.Ui.LogView
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			drawingContext.DrawRectangle(Brushes.White, pen: null,
+			drawingContext.DrawRectangle(TextBrushes.CanvasBackgroundBrush, pen: null,
 			                             rectangle: new Rect(x: 0, y: 0, width: ActualWidth, height: ActualHeight));
 
 			var y = _yOffset;

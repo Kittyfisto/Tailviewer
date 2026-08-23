@@ -221,6 +221,7 @@ namespace Tailviewer.Localization
 		public static string Regexp => _rm.GetString("Regexp") ?? "Regexp";
 		public static string RemoveMergedDataSource => _rm.GetString("RemoveMergedDataSource") ?? "RemoveMergedDataSource";
 		public static string ReportBug => _rm.GetString("ReportBug") ?? "ReportBug";
+		public static string RestoreDefaultColors => _rm.GetString("RestoreDefaultColors") ?? "RestoreDefaultColors";
 		public static string RunningLatestVersion => _rm.GetString("RunningLatestVersion") ?? "RunningLatestVersion";
 		public static string ScreenWasCleared => _rm.GetString("ScreenWasCleared") ?? "ScreenWasCleared";
 		public static string ScrollSpeed => _rm.GetString("ScrollSpeed") ?? "ScrollSpeed";
@@ -253,6 +254,9 @@ namespace Tailviewer.Localization
 		public static string Tailviewer => _rm.GetString("Tailviewer") ?? "Tailviewer";
 		public static string ThemeColor => _rm.GetString("ThemeColor") ?? "ThemeColor";
 		public static string ThemeGroup => _rm.GetString("ThemeGroup") ?? "ThemeGroup";
+		public static string ThemeModeDark => _rm.GetString("ThemeModeDark") ?? "ThemeModeDark";
+		public static string ThemeModeLight => _rm.GetString("ThemeModeLight") ?? "ThemeModeLight";
+		public static string ThemeModeSystem => _rm.GetString("ThemeModeSystem") ?? "ThemeModeSystem";
 		public static string TheyDo => _rm.GetString("TheyDo") ?? "TheyDo";
 		public static string ThisMonth => _rm.GetString("ThisMonth") ?? "ThisMonth";
 		public static string ThisWeek => _rm.GetString("ThisWeek") ?? "ThisWeek";

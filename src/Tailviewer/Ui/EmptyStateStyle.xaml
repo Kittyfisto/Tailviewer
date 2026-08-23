@@ -4,7 +4,7 @@
 
 
     <Style TargetType="{x:Type local:EmptyState}">
-        <Setter Property="Foreground" Value="#A0A0A0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         <Setter Property="Margin" Value="20" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />

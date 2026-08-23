@@ -35,6 +35,10 @@ STRINGS = {
     # --- Settings: Theme ---
     "ThemeGroup": ("Theme", "主题"),
     "ThemeColor": ("Theme color", "主题色"),
+    "ThemeModeLight": ("Light", "浅色"),
+    "ThemeModeDark": ("Dark", "深色"),
+    "ThemeModeSystem": ("System", "跟随系统"),
+    "RestoreDefaultColors": ("Restore default colors", "恢复默认配色"),
 
     # --- Menus (MainWindow.xaml) ---
     "MenuFile": ("_File", "文件(_F)"),

@@ -9,16 +9,32 @@ namespace Tailviewer.Ui.LogView
 {
 	public sealed class TextBrushes
 	{
-		public static readonly Brush SelectedForegroundBrush;
-		public static readonly SolidColorBrush SelectedBackgroundBrush;
-		public static readonly Brush SelectedUnfocusedBackgroundBrush;
-		public static readonly Brush HighlightedForegroundBrush;
-		public static readonly Brush HighlightedBackgroundBrush;
-		public static readonly Brush HighlightedSelectedForegroundBrush;
-		public static readonly Brush HighlightedSelectedBackgroundBrush;
-		public static readonly SolidColorBrush LineNumberForegroundBrush;
-		public static readonly Brush DataSourceFilenameForegroundBrush;
-		public static readonly SolidColorBrush DataSourceCharacterCodeForegroundBrush;
+		private static readonly IReadOnlyList<LevelFlags> Levels = new[]
+		{
+			LevelFlags.Other,
+			LevelFlags.Trace,
+			LevelFlags.Debug,
+			LevelFlags.Info,
+			LevelFlags.Warning,
+			LevelFlags.Error,
+			LevelFlags.Fatal
+		};
+
+		public static Brush SelectedForegroundBrush { get; private set; }
+		public static SolidColorBrush SelectedBackgroundBrush { get; private set; }
+		public static SolidColorBrush SelectedUnfocusedBackgroundBrush { get; private set; }
+		public static Brush HighlightedForegroundBrush { get; private set; }
+		public static Brush HighlightedBackgroundBrush { get; private set; }
+		public static Brush HighlightedSelectedForegroundBrush { get; private set; }
+		public static Brush HighlightedSelectedBackgroundBrush { get; private set; }
+		public static SolidColorBrush LineNumberForegroundBrush { get; private set; }
+		public static SolidColorBrush DataSourceFilenameForegroundBrush { get; private set; }
+		public static SolidColorBrush DataSourceCharacterCodeForegroundBrush { get; private set; }
+		public static SolidColorBrush CanvasBackgroundBrush { get; private set; }
+		public static SolidColorBrush DefaultForegroundBrush { get; private set; }
+		public static SolidColorBrush DefaultBackgroundBrush { get; private set; }
+		public static SolidColorBrush AlternatingBackgroundBrush { get; private set; }
+		public static SolidColorBrush SeparatorBrush { get; private set; }
 
 		private readonly Dictionary<LevelFlags, Brush> _foregroundBrushes;
 		private readonly Dictionary<LevelFlags, Brush> _backgroundBrushes;
@@ -26,76 +42,89 @@ namespace Tailviewer.Ui.LogView
 
 		static TextBrushes()
 		{
-			SelectedBackgroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
-
+			SelectedBackgroundBrush = CreateBrush(UISettings.DefaultThemeColor);
 			SelectedForegroundBrush = Brushes.White;
-
 			SelectedUnfocusedBackgroundBrush = CreateBrush(Color.FromRgb(215, 215, 215));
-
 			HighlightedForegroundBrush = Brushes.Black;
 			HighlightedBackgroundBrush = CreateBrush(Color.FromRgb(255, 255, 77));
-
 			HighlightedSelectedForegroundBrush = Brushes.Black;
 			HighlightedSelectedBackgroundBrush = CreateBrush(Color.FromRgb(255, 150, 50));
-			
-			LineNumberForegroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
-
+			LineNumberForegroundBrush = CreateBrush(UISettings.DefaultThemeColor);
 			DataSourceFilenameForegroundBrush = CreateBrush(Color.FromRgb(128, 128, 128));
-			DataSourceCharacterCodeForegroundBrush = CreateMutableBrush(UISettings.DefaultThemeColor);
+			DataSourceCharacterCodeForegroundBrush = CreateBrush(UISettings.DefaultThemeColor);
+			CanvasBackgroundBrush = CreateBrush(Colors.White);
+			DefaultForegroundBrush = CreateBrush(Colors.Black);
+			DefaultBackgroundBrush = CreateBrush(Colors.Transparent);
+			AlternatingBackgroundBrush = CreateBrush(Color.FromRgb(0xE8, 0xF1, 0xF7));
+			SeparatorBrush = CreateBrush(Color.FromRgb(0xE1, 0xE4, 0xE8));
 		}
 
 		/// <summary>
-		///     Updates the colors of those brushes which are derived from the theme's accent color.
+		///     Replaces the accent-derived brushes with new (frozen) instances for the
+		///     given accent color. Replacing references (rather than mutating a shared
+		///     Freezable) keeps every brush thread-safe.
 		/// </summary>
 		public static void UpdateTheme(Color primary)
 		{
-			SelectedBackgroundBrush.Color = primary;
-			LineNumberForegroundBrush.Color = primary;
-			DataSourceCharacterCodeForegroundBrush.Color = primary;
+			SelectedBackgroundBrush = CreateBrush(primary);
+			LineNumberForegroundBrush = CreateBrush(primary);
+			DataSourceCharacterCodeForegroundBrush = CreateBrush(primary);
+		}
+
+		/// <summary>
+		///     Replaces the neutral brushes with new (frozen) instances for the given
+		///     light/dark mode.
+		/// </summary>
+		public static void UpdateNeutral(bool darkMode)
+		{
+			if (darkMode)
+			{
+				CanvasBackgroundBrush = CreateBrush(Color.FromRgb(0x1E, 0x1E, 0x1E));
+				DefaultForegroundBrush = CreateBrush(Color.FromRgb(0xDC, 0xDC, 0xDC));
+				DefaultBackgroundBrush = CreateBrush(Colors.Transparent);
+				SelectedUnfocusedBackgroundBrush = CreateBrush(Color.FromRgb(0x3F, 0x3F, 0x46));
+				AlternatingBackgroundBrush = CreateBrush(Color.FromRgb(0x25, 0x25, 0x26));
+				DataSourceFilenameForegroundBrush = CreateBrush(Color.FromRgb(0x9E, 0x9E, 0x9E));
+				SeparatorBrush = CreateBrush(Color.FromRgb(0x3F, 0x3F, 0x46));
+			}
+			else
+			{
+				CanvasBackgroundBrush = CreateBrush(Colors.White);
+				DefaultForegroundBrush = CreateBrush(Colors.Black);
+				DefaultBackgroundBrush = CreateBrush(Colors.Transparent);
+				SelectedUnfocusedBackgroundBrush = CreateBrush(Color.FromRgb(0xD7, 0xD7, 0xD7));
+				AlternatingBackgroundBrush = CreateBrush(Color.FromRgb(0xE8, 0xF1, 0xF7));
+				DataSourceFilenameForegroundBrush = CreateBrush(Color.FromRgb(0x80, 0x80, 0x80));
+				SeparatorBrush = CreateBrush(Color.FromRgb(0xE1, 0xE4, 0xE8));
+			}
 		}
 
 		public TextBrushes(ILogViewerSettings settings)
+			: this(settings, LogLevelPalette.Light)
+		{}
+
+		public TextBrushes(ILogViewerSettings settings, LogLevelPalette palette)
 		{
 			_foregroundBrushes = new Dictionary<LevelFlags, Brush>();
 			_backgroundBrushes = new Dictionary<LevelFlags, Brush>();
 			_alternateBackgroundBrushes = new Dictionary<LevelFlags, Brush>();
-			if (settings != null)
+
+			var defaults = LogLevelDefaults.For(palette);
+			foreach (var level in Levels)
 			{
-				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Other, CreateBrush(GetAlternatingColor(settings.Other.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Trace, CreateBrush(GetAlternatingColor(settings.Trace.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Debug, CreateBrush(settings.Debug.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Debug, CreateBrush(settings.Debug.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Debug, CreateBrush(GetAlternatingColor(settings.Debug.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Info, CreateBrush(settings.Info.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Info, CreateBrush(settings.Info.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Info, CreateBrush(GetAlternatingColor(settings.Info.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Warning, CreateBrush(settings.Warning.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Warning, CreateBrush(settings.Warning.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Warning, CreateBrush(GetAlternatingColor(settings.Warning.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Error, CreateBrush(settings.Error.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Error, CreateBrush(settings.Error.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Error, CreateBrush(GetAlternatingColor(settings.Error.BackgroundColor)));
-
-				_foregroundBrushes.Add(LevelFlags.Fatal, CreateBrush(settings.Fatal.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Fatal, CreateBrush(settings.Fatal.BackgroundColor));
-				_alternateBackgroundBrushes.Add(LevelFlags.Fatal, CreateBrush(GetAlternatingColor(settings.Fatal.BackgroundColor)));
-			}
-			else
-			{
-				foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
+				var levelSettings = settings != null ? GetLevelSettings(settings, level) : null;
+				if (levelSettings != null && levelSettings.IsCustom)
 				{
-					_foregroundBrushes.Add(level, Brushes.Black);
-					_backgroundBrushes.Add(level, Brushes.White);
-					_alternateBackgroundBrushes.Add(level, Brushes.White);
+					_foregroundBrushes.Add(level, CreateBrush(levelSettings.ForegroundColor));
+					_backgroundBrushes.Add(level, CreateBrush(levelSettings.BackgroundColor));
+					_alternateBackgroundBrushes.Add(level, GetAlternatingBrush(levelSettings.BackgroundColor));
+				}
+				else
+				{
+					var levelDefaults = defaults.Get(level);
+					_foregroundBrushes.Add(level, CreateBrush(levelDefaults.ForegroundColor));
+					_backgroundBrushes.Add(level, CreateBrush(levelDefaults.BackgroundColor));
+					_alternateBackgroundBrushes.Add(level, GetAlternatingBrush(levelDefaults.BackgroundColor));
 				}
 			}
 		}
@@ -107,16 +136,21 @@ namespace Tailviewer.Ui.LogView
 				if (isFocused)
 					return SelectedForegroundBrush;
 
-				return _foregroundBrushes[LevelFlags.Info];
+				if (colorByLevel)
+					return _foregroundBrushes[LevelFlags.Info];
+
+				return DefaultForegroundBrush;
 			}
 
 			if (colorByLevel)
 			{
 				if (_foregroundBrushes.TryGetValue(level, out var brush))
 					return brush;
+
+				return _foregroundBrushes[LevelFlags.Other];
 			}
 
-			return _foregroundBrushes[LevelFlags.Other];
+			return DefaultForegroundBrush;
 		}
 
 		public Brush BackgroundBrush(bool isSelected, bool isFocused, bool colorByLevel, LevelFlags level, int lineIndex)
@@ -145,28 +179,35 @@ namespace Tailviewer.Ui.LogView
 		}
 
 		[Pure]
-		private static Brush CreateBrush(Color color)
+		private static SolidColorBrush CreateBrush(Color color)
 		{
 			var brush = new SolidColorBrush(color);
 			brush.Freeze();
 			return brush;
 		}
 
-		[Pure]
-		private static SolidColorBrush CreateMutableBrush(Color color)
-		{
-			return new SolidColorBrush(color);
-		}
-
-		[Pure]
-		private static Color GetAlternatingColor(Color color)
+		private static Brush GetAlternatingBrush(Color color)
 		{
 			if (color.A == 0 || Colors.White.Equals(color))
 			{
-				return Color.FromRgb(0xE8, 0xF1, 0xF7);
+				return AlternatingBackgroundBrush;
 			}
 
-			return color;
+			return CreateBrush(color);
+		}
+
+		private static LogLevelSettings GetLevelSettings(ILogViewerSettings settings, LevelFlags level)
+		{
+			switch (level)
+			{
+				case LevelFlags.Trace: return settings.Trace;
+				case LevelFlags.Debug: return settings.Debug;
+				case LevelFlags.Info: return settings.Info;
+				case LevelFlags.Warning: return settings.Warning;
+				case LevelFlags.Error: return settings.Error;
+				case LevelFlags.Fatal: return settings.Fatal;
+				default: return settings.Other;
+			}
 		}
 	}
 }

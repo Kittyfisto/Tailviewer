@@ -11,8 +11,8 @@
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance settings:SettingsFlyoutViewModel}"
-             Foreground="#333333"
-             Background="White">
+             Foreground="{DynamicResource TextPrimaryBrush}"
+             Background="{DynamicResource SurfaceBrush}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -21,7 +21,7 @@
                 <ResourceDictionary Source="CustomFormats/CustomFormatsSettingsDataTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="HeaderDataTemplate">
-                <TextBlock FontSize="22" Text="{Binding}" />
+                <TextBlock FontSize="{StaticResource FontSizeSubtitle}" Text="{Binding}" />
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -51,7 +51,7 @@
                                   SelectedItem="{Binding Language, Mode=TwoWay}"
                                   DisplayMemberPath="DisplayName" />
                         <TextBlock Text="{x:Static loc:Strings.LanguageRestartNotice}"
-                                   Foreground="#6B6B6B"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
                                    Margin="0,4,0,0" />
                     </StackPanel>
@@ -314,6 +314,11 @@
                 <controls:FlatGroupBox Grid.Row="4" Header="{x:Static loc:Strings.ThemeGroup}" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
                             <ColumnDefinition />
@@ -321,11 +326,33 @@
                         <TextBlock Text="{x:Static loc:Strings.ThemeColor}"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
+                                   Grid.Row="0"
                                    Grid.Column="0" />
-                        <xctk:ColorPicker Grid.Column="1"
+                        <xctk:ColorPicker Grid.Row="0"
+                                          Grid.Column="1"
                                           Margin="0,6,6,6"
                                           SelectedColor="{Binding ThemeColor}"
                                           AvailableColorsSortingMode="HueSaturationBrightness" />
+                        <ComboBox Grid.Row="1"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Margin="0,6,6,6"
+                                  VerticalAlignment="Center"
+                                  ItemsSource="{Binding ThemeModes}"
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding ThemeMode, Mode=TwoWay}" />
+                        <Button Grid.Row="2"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="0,6,6,6"
+                                Padding="12,4"
+                                HorizontalAlignment="Left"
+                                Content="{x:Static loc:Strings.RestoreDefaultColors}"
+                                Command="{Binding RestoreDefaultColorsCommand}"
+                                Background="{DynamicResource PrimaryBrush}"
+                                Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                BorderBrush="{DynamicResource PrimaryDarkBrush}" />
                     </Grid>
                 </controls:FlatGroupBox>
             </Grid>
@@ -374,7 +401,7 @@
                                                 />
                         <TextBlock Grid.Column="1"
                                    Grid.Row="2"
-                                   Foreground="#6B6B6B"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap">
                             <Run Text="{x:Static loc:Strings.FolderPatternHint1}" />
                             <LineBreak />
@@ -398,7 +425,7 @@
                                   SelectedItem="{Binding DefaultTextFileEncoding}"/>
                         <TextBlock Grid.Column="1"
                                    Grid.Row="4"
-                                   Foreground="#6B6B6B"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap">
                             <Run Text="{x:Static loc:Strings.EncodingHint1}" />
                             <LineBreak />
@@ -427,7 +454,7 @@
                                        Grid.Row="3">
                     <controls:FlatGroupBox.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock FontSize="22" Text="{Binding}" />
+                            <TextBlock FontSize="{StaticResource FontSizeSubtitle}" Text="{Binding}" />
                         </DataTemplate>
                     </controls:FlatGroupBox.HeaderTemplate>
                     <StackPanel>

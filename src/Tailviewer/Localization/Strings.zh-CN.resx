@@ -648,6 +648,9 @@
   <data name="ReportBug" xml:space="preserve">
     <value>报告一个 bug！</value>
   </data>
+  <data name="RestoreDefaultColors" xml:space="preserve">
+    <value>恢复默认配色</value>
+  </data>
   <data name="RunningLatestVersion" xml:space="preserve">
     <value>你正在运行最新版本！</value>
   </data>
@@ -743,6 +746,15 @@
   </data>
   <data name="ThemeGroup" xml:space="preserve">
     <value>主题</value>
+  </data>
+  <data name="ThemeModeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="ThemeModeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeModeSystem" xml:space="preserve">
+    <value>跟随系统</value>
   </data>
   <data name="TheyDo" xml:space="preserve">
     <value>它们</value>

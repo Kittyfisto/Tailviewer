@@ -25,6 +25,7 @@ using Tailviewer.Ui.LogView.LineNumbers;
 using Tailviewer.Ui.LogView.LogLevels;
 using Tailviewer.Ui.LogView.Messages;
 using Tailviewer.Ui.LogView.Timestamps;
+using Tailviewer.Ui;
 using Properties = Tailviewer.Core.Properties;
 
 namespace Tailviewer.Ui.LogView
@@ -105,6 +106,7 @@ namespace Tailviewer.Ui.LogView
 		private int _pendingModificationsCount;
 		private TextSettings _textSettings;
 		private TextBrushes _textBrushes;
+		private readonly Rectangle _separator;
 
 		static LogEntryListView()
 		{
@@ -189,21 +191,21 @@ namespace Tailviewer.Ui.LogView
 
 			ChangeTextSettings(textSettings, textBrushes);
 
-			var separator = new Rectangle
+			_separator = new Rectangle
 			{
-				Fill = new SolidColorBrush(Color.FromRgb(225, 228, 232)),
+				Fill = TextBrushes.SeparatorBrush,
 				Width = 2
 			};
-			separator.SetValue(RowProperty, value: 0);
-			separator.SetValue(ColumnProperty, value: messageColumnIndex);
-			separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
+			_separator.SetValue(RowProperty, value: 0);
+			_separator.SetValue(ColumnProperty, value: messageColumnIndex);
+			_separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 
 			Children.Add(_lineNumberColumn);
 			Children.Add(_dataSourceCanvas);
 			Children.Add(_deltaTimesColumn);
 			Children.Add(_elapsedTimeColumn);
-			Children.Add(separator);
+			Children.Add(_separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
@@ -320,11 +322,28 @@ namespace Tailviewer.Ui.LogView
 		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
 			_timer.Start();
+			ThemeManager.ThemeChanged += OnThemeChanged;
 		}
 
 		private void OnUnloaded(object sender, RoutedEventArgs routedEventArgs)
 		{
 			_timer.Stop();
+			ThemeManager.ThemeChanged -= OnThemeChanged;
+		}
+
+		private void OnThemeChanged(bool darkMode)
+		{
+			var settings = Settings;
+			if (settings == null)
+				return;
+
+			var textSettings = new TextSettings(settings.FontSize, settings.TabWidth);
+			var textBrushes = new TextBrushes(settings, ThemeManager.CurrentLogLevelPalette);
+			ChangeTextSettings(textSettings, textBrushes);
+			_separator.Fill = TextBrushes.SeparatorBrush;
+
+			if (LogSource != null)
+				PartTextCanvas.UpdateVisibleLines();
 		}
 
 		private void ChangeDisplay(bool gridDisplay)
@@ -646,7 +665,7 @@ namespace Tailviewer.Ui.LogView
 			var textSettings = settings != null
 				? new TextSettings(settings.FontSize, settings.TabWidth)
 				: TextSettings.Default;
-			var textBrushes = new TextBrushes(settings);
+			var textBrushes = new TextBrushes(settings, ThemeManager.CurrentLogLevelPalette);
 			ChangeTextSettings(textSettings, textBrushes);
 		}
 

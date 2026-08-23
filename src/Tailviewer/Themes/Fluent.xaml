@@ -1,0 +1,23 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Fluent UI visual tokens. Corner radius / density / typography only.
+         No Color keys are declared here (see .trellis/spec/ui/theming.md: Color
+         keys live at application scope, published by ThemeManager.Apply). -->
+
+    <!-- Corner radius (CornerRadius-typed so Border.CornerRadius can bind statically).
+         FlatButton.BorderRadius is a double DP and uses the literal value 4. -->
+    <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="SurfaceCornerRadius">8</CornerRadius>
+
+    <!-- Density -->
+    <sys:Double x:Key="ControlHeightStandard">32</sys:Double>
+    <sys:Double x:Key="ControlHeightCompact">24</sys:Double>
+
+    <!-- Typography -->
+    <sys:Double x:Key="FontSizeCaption">12</sys:Double>
+    <sys:Double x:Key="FontSizeBody">14</sys:Double>
+    <sys:Double x:Key="FontSizeSubtitle">20</sys:Double>
+
+</ResourceDictionary>

@@ -191,7 +191,7 @@ namespace Tailviewer.Tests.Ui.Controls
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultTrace.ForegroundColor);
 
 			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
-			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultOther.ForegroundColor);
 		}
 
 		[Test]
@@ -231,7 +231,7 @@ namespace Tailviewer.Tests.Ui.Controls
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultDebug.BackgroundColor);
 
 			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
-			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultTrace.BackgroundColor);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultOther.BackgroundColor);
 		}
 		/*
 		[Test]

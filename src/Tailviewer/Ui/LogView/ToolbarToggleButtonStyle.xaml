@@ -25,7 +25,8 @@
                 <ControlTemplate TargetType="{x:Type local:ToolbarToggleButton}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource ControlCornerRadius}">
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -80,7 +81,7 @@
                 <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}" />
             </MultiTrigger>
             <Trigger Property="IsChecked" Value="False">
-                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

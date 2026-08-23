@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "检查无 {StaticResource Primary*/Surface*} 回归、Color 键只在应用作用域、新强调色派生契约"}
+{"file": ".trellis/spec/testing/index.md", "reason": "UISettingsTest 迁移/roundtrip/新强调色断言、SystemThemeDetectorTest（fake provider）、本地化安全断言"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 warning-free 门禁"}
+{"file": ".trellis/spec/guides/index.md", "reason": "评审防误报与改值前 grep 规则"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "红线审计：D2 渲染器文件本任务不得触碰；Apply(Color,bool) 主体不改"}

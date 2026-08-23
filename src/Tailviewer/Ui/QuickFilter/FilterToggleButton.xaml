@@ -4,6 +4,8 @@
                     xmlns:controls="clr-namespace:Tailviewer.Ui.QuickFilter">
 
     <Style TargetType="{x:Type controls:FilterToggleButton}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="{DynamicResource SurfaceMutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -11,7 +13,7 @@
                         <Viewbox>
                             <Canvas Width="24" Height="24">
                                 <Path x:Name="PART_Icon"
-                                      Fill="#444444" />
+                                      Fill="{DynamicResource TextPrimaryBrush}" />
                             </Canvas>
                         </Viewbox>
                     </Grid>

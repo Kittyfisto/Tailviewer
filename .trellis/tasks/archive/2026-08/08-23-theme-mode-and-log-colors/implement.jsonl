@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "主题管线契约：App 作用域 Color 键、DynamicResource 规则、冻结画刷陷阱；ThemePalette 默认强调色派生（新默认 #0F62FE）"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "SettingsFlyoutViewModel 三态属性/选项集合的 INotifyPropertyChanged 与绑定模式"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Settings POCO 持久化（UISettings Save/Restore/Clone）与本地化重生规则"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 SDK-style、TreatWarningsAsErrors、新 .cs 文件无需登记 csproj"}
+{"file": ".trellis/spec/testing/index.md", "reason": "UISettingsTest（ThemeMode/新强调色）、SystemThemeDetectorTest 约定与本地化安全断言"}
+{"file": ".trellis/spec/guides/index.md", "reason": "改 DarkMode→ThemeMode 与 #0047AB→#0F62FE 前先 grep 全部引用（Pre-Modification Rule）"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/theme-architecture.md", "reason": "两态现状证据（Apply 调用点、UISettings 持久化、资源所有权）——本任务在其上做三态扩展"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "D1「两态不做跟随系统」已批准；本任务将其升级为三态（文档化变更），其余 D2–D7 边界沿用"}

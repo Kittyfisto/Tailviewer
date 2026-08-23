@@ -13,7 +13,7 @@
 
     <DataTemplate DataType="{x:Type local:PluginsMainPanelViewModel}">
 
-        <Grid Background="White">
+        <Grid Background="{DynamicResource SurfaceBrush}">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -63,11 +63,11 @@
 
                     <TextBlock Text="{x:Static loc:Strings.Installed}"
                                FontSize="14"
-                               Foreground="DarkGray"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Center" />
                     <TextBlock Text="{x:Static loc:Strings.All}"
                                FontSize="14"
-                               Foreground="DarkGray"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Center"
                                Grid.Column="2"
                                Grid.Row="0" />
@@ -104,7 +104,7 @@
                     <Rectangle Grid.Row="1"
                                Grid.Column="1"
                                Width="1"
-                               Fill="Black"
+                               Fill="{DynamicResource DividerBrush}"
                                Margin="8" />
 
                     <!-- List of all (installed + available) plugins -->

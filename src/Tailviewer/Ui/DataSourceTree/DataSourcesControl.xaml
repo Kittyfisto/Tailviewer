@@ -28,14 +28,15 @@
     <converters:EmptyToCollapsedConverter x:Key="EmptyToCollapsedConverter" />
 
     <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type dataSourceTree:DataSourcesControl}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource SurfaceCornerRadius}">
 
                         <Grid>
                             <Grid.RowDefinitions>

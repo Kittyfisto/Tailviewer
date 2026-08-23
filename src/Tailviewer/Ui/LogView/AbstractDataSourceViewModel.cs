@@ -513,6 +513,7 @@ namespace Tailviewer.Ui.LogView
 			private bool _isEmpty;
 			private string _errorMessage;
 			private IEnumerable<LogLineIndex> _selectedFindAllLogLines;
+			private int _count;
 
 			public FindAllViewModel(AbstractDataSourceViewModel dataSourceViewModel, IDataSource dataSource)
 			{
@@ -550,6 +551,24 @@ namespace Tailviewer.Ui.LogView
 			public ILogSource LogSource => _dataSource.FindAllLogSource;
 
 			public ILogSourceSearch Search => _dataSource.FindAllSearch;
+
+			public int Count
+			{
+				get { return _count; }
+				private set
+				{
+					if (value == _count)
+						return;
+
+					_count = value;
+					EmitPropertyChanged();
+				}
+			}
+
+			public void Update()
+			{
+				Count = _dataSource.FindAllSearch?.Count ?? 0;
+			}
 
 			public string SearchTerm
 			{
@@ -799,6 +818,7 @@ namespace Tailviewer.Ui.LogView
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			_search.Update();
+			_findAll.Update();
 			Progress = _dataSource.FilteredLogSource?.GetProperty(Properties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)

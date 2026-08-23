@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/ui/index.md", "reason": "WPF UI 总览：无 MVVM 框架、Bootstrapper 启动、Metrolib 依赖"}
+{"file": ".trellis/spec/ui/theming.md", "reason": "主题与强调色架构、DynamicResource 规则、Metrolib 覆盖与冻结画刷陷阱，本任务核心约束"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "视图/ViewModel 绑定约定与命令注入方式，重排时不得违反"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Ui/BusinessLogic/Themes 目录职责与本地化流程"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48/UseWPF/TreatWarningsAsErrors、SDK 与经典项目差异、签名"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "迁移硬编码色值前先搜索、避免遗漏引用"}
+{"file": ".trellis/tasks/08-22-ui-semantic-layout/design.md", "reason": "本任务技术设计：边界、布局方向、资源分类、性能基线与回滚形状"}

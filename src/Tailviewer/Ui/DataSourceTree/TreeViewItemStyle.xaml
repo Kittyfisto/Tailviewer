@@ -31,7 +31,8 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <Border Grid.ColumnSpan="2" Background="{TemplateBinding Background}" />
+                        <Border Grid.ColumnSpan="2" Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource ControlCornerRadius}" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -39,7 +40,7 @@
                             </Grid.ColumnDefinitions>
                             <controls:ExpanderToggleButton x:Name="PART_Expander"
                                                            IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                           Foreground="Black"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                                            Margin="2"
                                                            Padding="0"
                                                            Width="20"
@@ -71,7 +72,7 @@
                                 <Condition Property="IsFocused" Value="False" />
                                 <Condition SourceName="PART_Expander" Property="IsFocused" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelectedUnfocused}" />
+                            <Setter Property="Background" Value="{DynamicResource SurfaceMutedBrush}" />
                             <Setter Property="controls:Properties.IsInverted" Value="False" />
                         </MultiTrigger>
                         
@@ -90,7 +91,7 @@
                                 <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter Property="Background"
-                                    Value="{StaticResource BackgroundBrushHovered}" />
+                                    Value="{DynamicResource SurfaceMutedBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -13,6 +13,7 @@ using Metrolib.Controls;
 using Tailviewer.Settings;
 using Tailviewer.Ui.DataSourceTree;
 using Tailviewer.Ui.Menu;
+using Tailviewer.Ui.LogView;
 
 namespace Tailviewer.Ui
 {
@@ -163,12 +164,17 @@ namespace Tailviewer.Ui
 
 		private void FocusLogFileSearch()
 		{
-			PartSearchBox.Focus();
+			FindLogViewer()?.FocusSearch();
 		}
 
 		private void FocusLogFileSearchAll()
 		{
-			PartFindAllBox.Focus();
+			FindLogViewer()?.FocusFindAll();
+		}
+
+		private LogViewerControl FindLogViewer()
+		{
+			return this.FindChildrenOfType<LogViewerControl>().FirstOrDefault();
 		}
 
 		private void FocusDataSourceSearch()

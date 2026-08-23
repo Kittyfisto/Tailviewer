@@ -54,5 +54,10 @@
 		///    The settings concerning fatal-level log entries.
 		/// </summary>
 		LogLevelSettings Fatal { get; }
+
+		/// <summary>
+		///     Restores all log-level colors to the default theme-following state.
+		/// </summary>
+		void RestoreDefaultColors();
 	}
 }

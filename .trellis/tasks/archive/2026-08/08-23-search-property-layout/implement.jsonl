@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "属性页整页前景走语义 Token TextPrimaryBrush 且用 {DynamicResource}；Metrolib 控件换型不引入 StaticResource 回归"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "IFindAllViewModel.Count 的 INotifyPropertyChanged 与绑定模式（镜像 SearchViewModel.ResultCount）"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "XAML 视图/数据模板位置与 <Page> 约定；本地化字符串引用方式"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 SDK-style、TreatWarningsAsErrors、XAML 无需登记 csproj"}
+{"file": ".trellis/spec/testing/index.md", "reason": "LogViewerControlTest/MainWindowTest 与 Moq 对 IFindAllViewModel.Count 的约定"}
+{"file": ".trellis/spec/guides/index.md", "reason": "改 LogViewerControl.xaml 顶部网格前先 grep PART_SearchBox/PART_FindAllBox/Grid.Row 引用（Pre-Modification Rule）"}

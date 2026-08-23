@@ -1,0 +1,2 @@
+{"file":".trellis/spec/ui/theming.md","reason":"Check palette independence and exact default pairs."}
+{"file":".trellis/spec/testing/index.md","reason":"Check persistence and VM regression coverage."}

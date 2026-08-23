@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "核对强调色 DynamicResource、冻结画刷、Metrolib 覆盖是否被破坏"}
+{"file": ".trellis/spec/ui/index.md", "reason": "UI 层整体规范与第三方依赖基线"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "核对重排未引入 XAML 事件处理器或违反命令绑定约定"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "核对未越界改动 BusinessLogic/ViewModel/本地化产物"}
+{"file": ".trellis/spec/build/index.md", "reason": "核对 warning-free 构建与项目格式约束"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "核对硬编码色迁移完整性、无重复遗漏"}
+{"file": ".trellis/tasks/08-22-ui-semantic-layout/prd.md", "reason": "验收标准与红线清单，作为 check 的判定依据"}
+{"file": ".trellis/tasks/08-22-ui-semantic-layout/design.md", "reason": "边界、性能基线与回滚点，作为 check 的判定依据"}

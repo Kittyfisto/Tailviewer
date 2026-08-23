@@ -10,7 +10,7 @@
              d:DesignWidth="300"
              d:DesignHeight="300"
              d:DataContext="{d:DesignInstance actionCenter:ActionCenterViewModel}"
-             Background="White">
+             Background="{DynamicResource SurfaceBrush}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -28,7 +28,7 @@
     </UserControl.Resources>
 
     <UserControl.Foreground>
-        <StaticResource ResourceKey="ForegroundBrush" />
+        <DynamicResource ResourceKey="TextPrimaryBrush" />
     </UserControl.Foreground>
 
     <Grid>

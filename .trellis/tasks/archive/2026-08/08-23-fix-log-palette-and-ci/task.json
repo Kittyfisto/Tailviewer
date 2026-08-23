@@ -1,0 +1,29 @@
+{
+  "id": "fix-log-palette-and-ci",
+  "name": "fix-log-palette-and-ci",
+  "title": "修正日志配色选择与 CI 画刷稳定性",
+  "description": "在设置菜单中提供可见的浅色与深色日志配色选项，并修复 Build & Test 中 TextLineTest 的 WPF 画刷跨线程失败；完成验证后归档并推送。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "brofea",
+  "assignee": "brofea",
+  "createdAt": "2026-08-23",
+  "completedAt": "2026-08-23",
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-23-settings-log-palette-selector",
+    "08-23-fix-textline-brush-threading"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

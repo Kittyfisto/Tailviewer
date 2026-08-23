@@ -1,0 +1,3 @@
+{"file":".trellis/spec/ui/theming.md","reason":"Verify explicit palette and frozen-brush changes against theming contracts."}
+{"file":".trellis/spec/testing/index.md","reason":"Verify NUnit and regression-test requirements."}
+{"file":".trellis/spec/build/index.md","reason":"Verify build/test commands and classic project constraints."}

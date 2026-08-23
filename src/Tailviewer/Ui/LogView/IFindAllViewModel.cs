@@ -13,6 +13,7 @@ namespace Tailviewer.Ui.LogView
 		ILogSource LogSource { get; }
 		ILogSourceSearch Search { get; }
 		string SearchTerm { get; set; }
+		int Count { get; }
 		bool Show { get; }
 		string ErrorMessage { get; }
 		bool IsEmpty { get; }

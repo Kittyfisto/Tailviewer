@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "主题管线契约：DynamicResource 规则、冻结画刷陷阱、Color 键只在应用作用域、ThemePalette 默认强调色派生——三子任务均需遵守"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "SettingsFlyoutViewModel 三态属性、等级 ColorPicker 有效色与属性页绑定的 MVVM 模式"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Settings POCO 持久化（UISettings/LogViewerSettings）与本地化三件套重生规则"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 SDK-style + TreatWarningsAsErrors 零警告约束"}
+{"file": ".trellis/spec/testing/index.md", "reason": "NUnit/FluentAssertions/Moq 约定、Test<Behavior> 命名、本地化安全断言；UISettingsTest/LogViewerSettingsTest 需随新默认更新"}
+{"file": ".trellis/spec/guides/index.md", "reason": "改任何值前先 grep 的 Pre-Modification Rule 与 Code Reuse 触发条件"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/theme-architecture.md", "reason": "启动/资源合并链、语义所有权规则与设置持久化证据（本任务在其上扩展）"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "D1–D7 批准边界与 D2 红线文件集；D1「两态不做跟随系统」本任务升级为三态（文档化变更）"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/dark-palette-and-contrast.md", "reason": "深色中性调色板与 WCAG 对比度依据；新等级色阶与强调色对比的参考"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/hardcoded-color-inventory.md", "reason": "硬编码中性色清单——属性页/搜索框相关迁移与等级色硬编码的历史位置"}

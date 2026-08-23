@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "冻结画刷陷阱（等级默认画刷须静态可变不 Freeze）、TextBrushes 可变画刷范式、DynamicResource 规则"}
+{"file": ".trellis/spec/ui/mvvm.md", "reason": "LogLevelSettingsViewModel 有效色 getter/setter 与 INotifyPropertyChanged 模式（订阅 ThemeChanged）"}
+{"file": ".trellis/spec/ui/project-structure.md", "reason": "Settings POCO 持久化与 Clone 约定；LogViewerSettings 静态 Default* 语义改为新浅色色阶"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 SDK-style、TreatWarningsAsErrors、新 .cs 无需登记 csproj"}
+{"file": ".trellis/spec/testing/index.md", "reason": "LogLevelDefaultsTest/LogLevelSettingsTest/LogViewerSettingsTest/TextBrushesTest 更新为新色阶值的测试约定"}
+{"file": ".trellis/spec/guides/index.md", "reason": "改 Default* 前先 grep 全部引用；Code Reuse 触发（等级循环去重）"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "D3「ColorByLevel 用户显式色保持、仅默认路径随主题翻转」的边界依据"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/dark-palette-and-contrast.md", "reason": "深色中性色对比依据（TextPrimary/TextSecondary/Surface 值），供等级深色色阶取景"}

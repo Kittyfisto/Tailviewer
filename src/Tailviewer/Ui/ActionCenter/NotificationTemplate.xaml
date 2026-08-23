@@ -33,7 +33,7 @@
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding Level}" Value="Info">
                 <Setter TargetName="PART_Icon" Property="Data" Value="{StaticResource Info}" />
-                <Setter TargetName="PART_Icon" Property="Fill" Value="#333333" />
+                <Setter TargetName="PART_Icon" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Warning">
                 <Setter TargetName="PART_Icon" Property="Data" Value="{StaticResource Warning}" />

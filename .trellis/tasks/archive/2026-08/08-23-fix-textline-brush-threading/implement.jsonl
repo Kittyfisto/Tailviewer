@@ -1,0 +1,3 @@
+{"file":".trellis/spec/ui/theming.md","reason":"Freezable/thread-affinity and TextBrushes runtime-update constraints."}
+{"file":".trellis/spec/testing/index.md","reason":"NUnit parallel regression-test requirements."}
+{"file":".trellis/spec/build/index.md","reason":"Debug build and .NET Framework verification constraints."}

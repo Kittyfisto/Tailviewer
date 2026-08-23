@@ -5,7 +5,7 @@
                     xmlns:mainPanel="clr-namespace:Tailviewer.Ui.About">
 
     <DataTemplate DataType="{x:Type mainPanel:AboutFlyoutViewModel}">
-        <tab:FlatTabControl Padding="0" Foreground="#333333"
+        <tab:FlatTabControl Padding="0" Foreground="{DynamicResource TextPrimaryBrush}"
                             HorizontalContentAlignment="Center">
             <controls:FlatTabItem Header="{x:Static loc:Strings.Tailviewer}"
                                   HorizontalContentAlignment="Stretch">

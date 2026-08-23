@@ -12,7 +12,7 @@
                 <ControlTemplate TargetType="{x:Type list:FlatListViewItem}">
                     <Grid>
                         <Rectangle x:Name="PART_HoveredRect"
-                                   Fill="{StaticResource BackgroundBrushHovered}"
+                                   Fill="{DynamicResource SurfaceMutedBrush}"
                                    Opacity="0" />
                         <Grid>
                             <Grid.ColumnDefinitions>

@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Windows.Media;
 using System.Xml;
+using Tailviewer.Api;
 using Tailviewer.Core;
 
 namespace Tailviewer.Settings
@@ -17,47 +18,13 @@ namespace Tailviewer.Settings
 		public const int DefaultFontSize = 12;
 		public const int DefaultTabWidth = 4;
 
-		public static LogLevelSettings DefaultOther => new LogLevelSettings
-		{
-			ForegroundColor = Colors.Black,
-			BackgroundColor = Colors.Transparent
-		};
-
-		public static LogLevelSettings DefaultTrace => new LogLevelSettings
-		{
-			ForegroundColor = Color.FromRgb(128, 128, 128),
-			BackgroundColor = Colors.Transparent
-		};
-
-		public static LogLevelSettings DefaultDebug => new LogLevelSettings
-		{
-			ForegroundColor = Color.FromRgb(128, 128, 128),
-			BackgroundColor = Colors.Transparent
-		};
-
-		public static LogLevelSettings DefaultInfo => new LogLevelSettings
-		{
-			ForegroundColor = Colors.Black,
-			BackgroundColor = Colors.Transparent
-		};
-
-		public static LogLevelSettings DefaultWarning => new LogLevelSettings
-		{
-			ForegroundColor = Colors.White,
-			BackgroundColor = Color.FromRgb(255, 195, 0)
-		};
-
-		public static LogLevelSettings DefaultError => new LogLevelSettings
-		{
-			ForegroundColor = Colors.White,
-			BackgroundColor = Color.FromRgb(232, 17, 35)
-		};
-
-		public static LogLevelSettings DefaultFatal => new LogLevelSettings
-		{
-			ForegroundColor = Colors.White,
-			BackgroundColor = Color.FromRgb(232, 17, 35)
-		};
+		public static LogLevelSettings DefaultOther => LogLevelDefaults.Light.Get(LevelFlags.Other).Clone();
+		public static LogLevelSettings DefaultTrace => LogLevelDefaults.Light.Get(LevelFlags.Trace).Clone();
+		public static LogLevelSettings DefaultDebug => LogLevelDefaults.Light.Get(LevelFlags.Debug).Clone();
+		public static LogLevelSettings DefaultInfo => LogLevelDefaults.Light.Get(LevelFlags.Info).Clone();
+		public static LogLevelSettings DefaultWarning => LogLevelDefaults.Light.Get(LevelFlags.Warning).Clone();
+		public static LogLevelSettings DefaultError => LogLevelDefaults.Light.Get(LevelFlags.Error).Clone();
+		public static LogLevelSettings DefaultFatal => LogLevelDefaults.Light.Get(LevelFlags.Fatal).Clone();
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -204,34 +171,94 @@ namespace Tailviewer.Settings
 				switch (subtree.Name)
 				{
 					case "other":
-						_other.Restore(subtree);
+						RestoreLevel(_other, subtree, LevelFlags.Other);
 						break;
 
 					case "trace":
-						_trace.Restore(subtree);
+						RestoreLevel(_trace, subtree, LevelFlags.Trace);
 						break;
 
 					case "debug":
-						_debug.Restore(subtree);
+						RestoreLevel(_debug, subtree, LevelFlags.Debug);
 						break;
 
 					case "info":
-						_info.Restore(subtree);
+						RestoreLevel(_info, subtree, LevelFlags.Info);
 						break;
 
 					case "warning":
-						_warning.Restore(subtree);
+						RestoreLevel(_warning, subtree, LevelFlags.Warning);
 						break;
 
 					case "error":
-						_error.Restore(subtree);
+						RestoreLevel(_error, subtree, LevelFlags.Error);
 						break;
 
 					case "fatal":
-						_fatal.Restore(subtree);
+						RestoreLevel(_fatal, subtree, LevelFlags.Fatal);
 						break;
 				}
 			}
+		}
+
+		/// <summary>
+		///     Restores a single level, inferring the legacy custom flag when the
+		///     settings file predates the <c>iscustom</c> attribute.
+		/// </summary>
+		private void RestoreLevel(LogLevelSettings level, XmlReader reader, LevelFlags flag)
+		{
+			if (!level.Restore(reader))
+			{
+				var light = LogLevelDefaults.Light.Get(flag);
+				level.IsCustom = !level.Matches(light.ForegroundColor, light.BackgroundColor);
+			}
+		}
+
+		/// <summary>
+		///     Applies the given theme's default palette to every level that has not
+		///     been customized by the user. Custom levels are left untouched.
+		/// </summary>
+		public void ApplyThemeDefaults(bool darkMode)
+		{
+			var defaults = LogLevelDefaults.For(darkMode);
+			ApplyLevelDefault(_other, defaults.Other);
+			ApplyLevelDefault(_trace, defaults.Trace);
+			ApplyLevelDefault(_debug, defaults.Debug);
+			ApplyLevelDefault(_info, defaults.Info);
+			ApplyLevelDefault(_warning, defaults.Warning);
+			ApplyLevelDefault(_error, defaults.Error);
+			ApplyLevelDefault(_fatal, defaults.Fatal);
+		}
+
+		/// <summary>
+		///     Restores the persisted light-palette baseline and makes every log level
+		///     follow the currently active light/dark theme again.
+		/// </summary>
+		public void RestoreDefaultColors()
+		{
+			RestoreLevelDefault(_other, LogLevelDefaults.Light.Other);
+			RestoreLevelDefault(_trace, LogLevelDefaults.Light.Trace);
+			RestoreLevelDefault(_debug, LogLevelDefaults.Light.Debug);
+			RestoreLevelDefault(_info, LogLevelDefaults.Light.Info);
+			RestoreLevelDefault(_warning, LogLevelDefaults.Light.Warning);
+			RestoreLevelDefault(_error, LogLevelDefaults.Light.Error);
+			RestoreLevelDefault(_fatal, LogLevelDefaults.Light.Fatal);
+		}
+
+		private static void ApplyLevelDefault(LogLevelSettings level, LogLevelSettings defaults)
+		{
+			if (level.IsCustom)
+				return;
+
+			level.ForegroundColor = defaults.ForegroundColor;
+			level.BackgroundColor = defaults.BackgroundColor;
+		}
+
+		private static void RestoreLevelDefault(LogLevelSettings level, LogLevelSettings defaults)
+		{
+			level.ForegroundColor = defaults.ForegroundColor;
+			level.BackgroundColor = defaults.BackgroundColor;
+			level.IsCustom = false;
 		}
 
 		[Pure]

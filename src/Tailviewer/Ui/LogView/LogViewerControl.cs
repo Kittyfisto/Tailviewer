@@ -118,6 +118,16 @@ namespace Tailviewer.Ui.LogView
 			PART_ListView.HorizontalScrollBar.ValueChanged += HorizontalScrollBarOnValueChanged;
 		}
 
+		public void FocusSearch()
+		{
+			PART_SearchBox?.Focus();
+		}
+
+		public void FocusFindAll()
+		{
+			PART_FindAllBox?.Focus();
+		}
+
 		public DataSourceDisplayMode MergedDataSourceDisplayMode
 		{
 			get { return (DataSourceDisplayMode) GetValue(MergedDataSourceDisplayModeProperty); }

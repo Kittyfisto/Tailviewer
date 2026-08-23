@@ -3,6 +3,8 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Semantic.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Fluent.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!--
@@ -14,13 +16,8 @@
     <Color x:Key="PrimaryForeground">#FFFFFF</Color>
     -->
 
-    <Color x:Key="UnfocusedOverlay">#30FFFFFF</Color>
-    <Color x:Key="TitleBar">#EAEDF2</Color>
-
-    <Color x:Key="OverlayBackground">#55000000</Color>
-
-    <SolidColorBrush x:Key="UnfocusedOverlayBrush" Color="{StaticResource UnfocusedOverlay}" />
-    <SolidColorBrush x:Key="TitleBarBrush" Color="{StaticResource TitleBar}" />
+    <SolidColorBrush x:Key="UnfocusedOverlayBrush" Color="{DynamicResource UnfocusedOverlay}" />
+    <SolidColorBrush x:Key="TitleBarBrush" Color="{DynamicResource TitleBar}" />
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource Primary}" />
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{DynamicResource PrimaryLight}" />
@@ -35,6 +32,9 @@
     <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{DynamicResource SecondaryDark}" />
     <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="{DynamicResource SecondaryForeground}" />
 
-    <SolidColorBrush x:Key="OverlayBackgroundBrush" Color="{StaticResource OverlayBackground}" />
+    <SolidColorBrush x:Key="OverlayBackgroundBrush" Color="{DynamicResource OverlayBackground}" />
+
+    <!-- Shadows Metrolib's light-gray SeparatorBrush so that the neutral separator/border color follows the theme. -->
+    <SolidColorBrush x:Key="SeparatorBrush" Color="{DynamicResource Divider}" />
 
 </ResourceDictionary>

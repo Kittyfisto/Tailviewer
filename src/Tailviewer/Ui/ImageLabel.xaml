@@ -12,10 +12,10 @@
                 <ControlTemplate TargetType="{x:Type local:ImageLabel}">
                     <ControlTemplate.Triggers>
                         <Trigger Property="UseLightColors" Value="True">
-                            <Setter Property="Foreground" Value="#E0E0E0" />
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
                         </Trigger>
                         <Trigger Property="UseLightColors" Value="False">
-                            <Setter Property="Foreground" Value="#B7B7B7" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                     <Grid Background="Transparent">

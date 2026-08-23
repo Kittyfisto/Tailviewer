@@ -129,6 +129,7 @@
     <Compile Include="Settings\DataSourceSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Settings\ExportSettingsTest.cs" />
+    <Compile Include="Settings\LogLevelDefaultsTest.cs" />
     <Compile Include="Settings\LogLevelSettingsTest.cs" />
     <Compile Include="Settings\LogViewerSettingsTest.cs" />
     <Compile Include="Settings\MainWindowSettingsTest.cs" />
@@ -179,9 +180,12 @@
     <Compile Include="Ui\FolderDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Menu\EditMenuViewModelTest.cs" />
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\Settings\LogLevelSettingsViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
     <Compile Include="Ui\TextBrushesTest.cs" />
     <Compile Include="Ui\ThemePaletteTest.cs" />
+    <Compile Include="Ui\ThemeManagerTest.cs" />
+    <Compile Include="Ui\SemanticPaletteTest.cs" />
     <Compile Include="Ui\FileDataSourceViewModelTest.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="Ui\Controls\LogViewerControlTest.cs" />

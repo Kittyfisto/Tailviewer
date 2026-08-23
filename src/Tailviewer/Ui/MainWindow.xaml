@@ -68,8 +68,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -99,34 +97,7 @@
                           ItemsSource="{Binding MainMenu.Help.Items}" />
             </Menu>
 
-            <metrolib:SearchTextBox x:Name="PartSearchBox"
-                                    Grid.Column="2"
-                                    Margin="8,2,8,2"
-                                    Padding="2"
-                                    VerticalAlignment="Center"
-                                    Height="24"
-                                    Width="200"
-                                    RequiresExplicitSearchStart="False"
-                                    AcceptsTab="True"
-                                    Visibility="{Binding LogViewPanel.CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
-                                    Text="{Binding LogViewPanel.Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    OccurenceCount="{Binding LogViewPanel.Search.ResultCount}"
-                                    CurrentOccurenceIndex="{Binding LogViewPanel.Search.CurrentResultIndex, Mode=TwoWay}"
-                                    Watermark="{x:Static loc:Strings.SearchLogFile}" />
-
-            <metrolib:FilterTextBox x:Name="PartFindAllBox"
-                                    Grid.Column="3"
-                                    Margin="0,2,8,2"
-                                    Padding="2"
-                                    VerticalAlignment="Center"
-                                    Height="24"
-                                    Width="200"
-                                    AcceptsTab="True"
-                                    Visibility="{Binding LogViewPanel.CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
-                                    FilterText="{Binding LogViewPanel.FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Watermark="{x:Static loc:Strings.FindAllInLogFile}" />
-
-            <TextBlock Grid.Column="4"
+            <TextBlock Grid.Column="2"
                        Margin="8,0,0,0"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
@@ -135,7 +106,7 @@
                        Foreground="{DynamicResource PrimaryForegroundBrush}"
                        Text="{Binding WindowTitleSuffix}" />
 
-            <metrolib:EmailToggleButton Grid.Column="5"
+            <metrolib:EmailToggleButton Grid.Column="3"
                                         VerticalContentAlignment="Top"
                                         HorizontalContentAlignment="Right"
                                         IsChecked="{Binding ActionCenter.IsOpen}"
@@ -192,7 +163,7 @@
                 <!-- Overlay to darken the main window content to show that a flyout (a popup) is laid over the window-->
                 <Grid Grid.Row="2"
                       Visibility="{Binding CurrentFlyout, Converter={StaticResource NullToCollapsedConverter}}">
-                    <Rectangle Fill="{StaticResource OverlayBackgroundBrush}"
+                    <Rectangle Fill="{DynamicResource OverlayBackgroundBrush}"
                                MouseDown="OnClickOverlay"
                                Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
                 </Grid>
@@ -200,7 +171,7 @@
                 <!-- Application wide flyout (popup) which shows content which is not regularly needed (settings, plugins, about, etc...) -->
                 <Grid Grid.Row="2"
                       Visibility="{Binding CurrentFlyout, Converter={StaticResource NullToCollapsedConverter}}"
-                      Background="{DynamicResource PrimaryForegroundBrush}"
+                      Background="{DynamicResource SurfaceBrush}"
                       Margin="200, 100, 200, 100">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -217,6 +188,7 @@
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Center"
                                    Text="{Binding CurrentFlyout.Name}"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                    FontSize="32" />
 
                         <metrolib:CloseButton Grid.Column="1"
@@ -224,7 +196,7 @@
                     </Grid>
 
                     <Rectangle Grid.Row="1"
-                               Fill="Gray"
+                               Fill="{DynamicResource DividerBrush}"
                                Height="1"
                                Margin="8" />
 

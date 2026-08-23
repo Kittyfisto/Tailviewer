@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Windows.Media;
 using System.Xml;
@@ -45,12 +45,13 @@ namespace Tailviewer.Tests.Settings
 			var settings = new UISettings();
 			settings.Language.Should().Be(UISettings.DefaultLanguage);
 			settings.ThemeColor.Should().Be(UISettings.DefaultThemeColor);
+			settings.ThemeMode.Should().Be(ThemeMode.Light);
 		}
 
 		[Test]
-		public void TestDefaultThemeColorIs0047AB()
+		public void TestDefaultThemeColorIsFF222280()
 		{
-			UISettings.DefaultThemeColor.Should().Be(Color.FromRgb(0x00, 0x47, 0xAB));
+			UISettings.DefaultThemeColor.Should().Be(Color.FromArgb(0xFF, 0x22, 0x22, 0x80));
 		}
 
 		[Test]
@@ -59,13 +60,15 @@ namespace Tailviewer.Tests.Settings
 			var settings = new UISettings
 			{
 				Language = "zh-CN",
-				ThemeColor = Colors.Red
+				ThemeColor = Colors.Red,
+				ThemeMode = ThemeMode.System
 			};
 
 			var clone = settings.Clone();
 			clone.Should().NotBeSameAs(settings);
 			clone.Language.Should().Be("zh-CN");
 			clone.ThemeColor.Should().Be(Colors.Red);
+			clone.ThemeMode.Should().Be(ThemeMode.System);
 		}
 
 		[Test]
@@ -74,12 +77,14 @@ namespace Tailviewer.Tests.Settings
 			var settings = new UISettings
 			{
 				Language = "zh-CN",
-				ThemeColor = Color.FromRgb(0x12, 0x34, 0x56)
+				ThemeColor = Color.FromRgb(0x12, 0x34, 0x56),
+				ThemeMode = ThemeMode.Dark
 			};
 
 			var restored = Restore(Save(settings));
 			restored.Language.Should().Be("zh-CN");
 			restored.ThemeColor.Should().Be(Color.FromRgb(0x12, 0x34, 0x56));
+			restored.ThemeMode.Should().Be(ThemeMode.Dark);
 		}
 
 		[Test]
@@ -88,6 +93,7 @@ namespace Tailviewer.Tests.Settings
 			var restored = Restore("<Test />");
 			restored.Language.Should().Be(UISettings.DefaultLanguage);
 			restored.ThemeColor.Should().Be(UISettings.DefaultThemeColor);
+			restored.ThemeMode.Should().Be(ThemeMode.Light);
 		}
 
 		[Test]
@@ -96,5 +102,28 @@ namespace Tailviewer.Tests.Settings
 			var restored = Restore("<Test themecolor=\"banana\" />");
 			restored.ThemeColor.Should().Be(UISettings.DefaultThemeColor);
 		}
+
+		[Test]
+		public void TestRestoreThemeMode()
+		{
+			Restore("<Test thememode=\"Dark\" />").ThemeMode.Should().Be(ThemeMode.Dark);
+			Restore("<Test thememode=\"System\" />").ThemeMode.Should().Be(ThemeMode.System);
+			Restore("<Test thememode=\"light\" />").ThemeMode.Should().Be(ThemeMode.Light);
+		}
+
+		[Test]
+		public void TestRestoreFromInvalidThemeMode()
+		{
+			Restore("<Test thememode=\"banana\" />").ThemeMode.Should().Be(ThemeMode.Light);
+			Restore("<Test thememode=\"99\" />").ThemeMode.Should().Be(ThemeMode.Light);
+		}
+
+		[Test]
+		public void TestRestoreInvalidThemeModeDoesNotFallBackToLegacyDarkMode()
+		{
+			Restore("<Test thememode=\"99\" darkmode=\"true\" />").ThemeMode.Should().Be(ThemeMode.Light);
+			Restore("<Test thememode=\"banana\" darkmode=\"true\" />").ThemeMode.Should().Be(ThemeMode.Light);
+		}
+
 	}
 }

@@ -9,7 +9,7 @@
              xmlns:sidePanel="clr-namespace:Tailviewer.Ui.SidePanel"
              xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
-             Background="White">
+             Background="{DynamicResource SurfaceBrush}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -56,13 +56,21 @@
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <converters:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
 
+            <Style x:Key="LogSearchTextBoxStyle" TargetType="{x:Type controls:SearchTextBox}" BasedOn="{StaticResource {x:Type controls:SearchTextBox}}">
+                <Setter Property="Height" Value="24" />
+                <Setter Property="Width" Value="200" />
+                <Setter Property="Padding" Value="2" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="RequiresExplicitSearchStart" Value="False" />
+                <Setter Property="AcceptsTab" Value="True" />
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="3*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -72,6 +80,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -190,15 +199,35 @@
                 </WrapPanel>
             </Border>
 
+            <!-- Search and Find All, aligned to the right of the toolbar -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"
+                        Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
+                <controls:SearchTextBox x:Name="PART_SearchBox"
+                                        Style="{StaticResource LogSearchTextBoxStyle}"
+                                        Margin="0,0,8,0"
+                                        Text="{Binding Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        OccurenceCount="{Binding Search.ResultCount}"
+                                        CurrentOccurenceIndex="{Binding Search.CurrentResultIndex, Mode=TwoWay}"
+                                        Watermark="{x:Static loc:Strings.SearchLogFile}" />
+                <controls:SearchTextBox x:Name="PART_FindAllBox"
+                                        Style="{StaticResource LogSearchTextBoxStyle}"
+                                        Text="{Binding FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        OccurenceCount="{Binding FindAll.Count}"
+                                        Watermark="{x:Static loc:Strings.FindAllInLogFile}" />
+            </StackPanel>
+
             <!-- Filters, Bookmarks, Outline and Issues Selector -->
-            <Border Grid.Column="2"
+            <Border Grid.Column="3"
                     Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
                 <sidePanel:SidePanelControl SidePanels="{Binding SidePanels}"
                                             SelectedPanel="{Binding SelectedSidePanel, Mode=TwoWay}" />
             </Border>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -249,7 +278,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Ellipse  Grid.Row="0"
-                              Fill="#D8D8D8"
+                              Fill="{DynamicResource SurfaceMutedBrush}"
                               VerticalAlignment="Stretch"
                               HorizontalAlignment="Stretch"
                               Margin="10"/>
@@ -257,18 +286,18 @@
                              Margin="20">
                         <Canvas Width="24" Height="24">
                             <Path Data="{Binding ErrorIcon, ElementName=This}"
-                                  Fill="White" />
+                                  Fill="{DynamicResource SurfaceBrush}" />
                         </Canvas>
                     </Viewbox>
                     <TextBlock Grid.Row="1"
                                HorizontalAlignment="Center"
                                FontWeight="Bold"
                                FontSize="18"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                Text="{Binding ErrorMessage, ElementName=This}"
                                TextWrapping="Wrap" />
                     <TextBlock Grid.Row="2"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                Text="{Binding ErrorMessageAction, ElementName=This}"
                                TextWrapping="Wrap" />
                 </Grid>
@@ -286,7 +315,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{x:Static loc:Strings.FindAllResults}"
-                                   Foreground="White"
+                                   Foreground="{DynamicResource PrimaryForegroundBrush}"
                                    Margin="8,4,8,4" />
                         <controls:CloseButton Grid.Column="1"
                                               Height="26"
@@ -321,15 +350,15 @@
         </Grid>
 
         <!-- Overlay to visualize that a fly-out has been opened, but we only show it when the fly-out is opened AND NOT pinned -->
-        <Grid Grid.Row="2"
+        <Grid Grid.Row="1"
               Visibility="{Binding DataSources.IsPinned, Converter={StaticResource BoolTrueToCollapsedConverter}}">
-            <Rectangle Fill="{StaticResource OverlayBackgroundBrush}"
+            <Rectangle Fill="{DynamicResource OverlayBackgroundBrush}"
                        MouseDown="OverlayOnMouseDown"
                        Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
         </Grid>
 
         <!-- Data Sources -->
-        <dataSourceTree:DataSourcesControl Grid.Row="2"
+        <dataSourceTree:DataSourcesControl Grid.Row="1"
                                            Width="300"
                                            VerticalAlignment="Stretch"
                                            HorizontalAlignment="Left"
@@ -340,8 +369,8 @@
                                            IsPinned="{Binding IsPinned, Mode=TwoWay}" />
 
         <!-- Bottom information "Strip" -->
-        <Border Grid.Row="3"
-                Background="{StaticResource TitleBarBrush}">
+        <Border Grid.Row="2"
+                Background="{DynamicResource TitleBarBrush}">
             <Grid
                 Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}, FallbackValue=Hidden}">
                 <Grid.ColumnDefinitions>

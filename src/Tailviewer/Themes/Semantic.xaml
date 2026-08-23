@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Semantic design brushes (baseline values reusing existing colors).
+
+        Mirrors the accent-color architecture (see .trellis/spec/ui/theming.md):
+        the Color keys themselves are published at application scope (App ctor /
+        a future dark-mode step), NOT declared here. Declaring them locally would
+        shadow the application-scope value and break live replacement. Brushes and
+        their consumers therefore all use {DynamicResource}.
+    -->
+
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{DynamicResource Surface}" />
+    <SolidColorBrush x:Key="SurfaceMutedBrush" Color="{DynamicResource SurfaceMuted}" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{DynamicResource TextPrimary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{DynamicResource TextSecondary}" />
+    <SolidColorBrush x:Key="DividerBrush" Color="{DynamicResource Divider}" />
+
+</ResourceDictionary>

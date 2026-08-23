@@ -1,0 +1,30 @@
+{
+  "id": "redesign-theme-log-colors-layout",
+  "name": "redesign-theme-log-colors-layout",
+  "title": "重做深色主题、日志等级配色与日志界面布局",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "brofea",
+  "assignee": "brofea",
+  "createdAt": "2026-08-23",
+  "completedAt": "2026-08-23",
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-23-theme-mode-and-log-colors",
+    "08-23-log-level-default-colors",
+    "08-23-search-property-layout"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

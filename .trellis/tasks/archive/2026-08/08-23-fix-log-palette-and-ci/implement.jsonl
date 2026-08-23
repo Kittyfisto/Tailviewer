@@ -1,0 +1,6 @@
+{"file":".trellis/spec/ui/index.md","reason":"UI layer scope, WPF startup and theming architecture."}
+{"file":".trellis/spec/ui/mvvm.md","reason":"View-model and binding conventions for the settings selector."}
+{"file":".trellis/spec/ui/project-structure.md","reason":"Settings ownership and localization source rules."}
+{"file":".trellis/spec/ui/theming.md","reason":"ThemeManager, LogLevelDefaults, DynamicResource and Freezable constraints."}
+{"file":".trellis/spec/testing/index.md","reason":"NUnit, regression-test and assertion conventions."}
+{"file":".trellis/spec/build/index.md","reason":".NET Framework build and project conventions."}

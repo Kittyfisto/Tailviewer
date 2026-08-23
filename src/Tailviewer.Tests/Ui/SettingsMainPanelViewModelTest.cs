@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
 using Tailviewer.Settings;
+using Tailviewer.Ui;
 using Tailviewer.Ui.Settings;
 
 namespace Tailviewer.Tests.Ui
@@ -23,6 +25,61 @@ namespace Tailviewer.Tests.Ui
 
 			model.FolderDataSourceRecursive.Should().Be(recursive);
 			model.FolderDataSourcePatterns.Should().Be("*.log;*.txt");
+		}
+
+		[Test]
+		public void TestRestoreDefaultColors()
+		{
+			var settings = new ApplicationSettings("foo");
+			settings.AllowSave = false;
+			settings.Ui.ThemeColor = Colors.Red;
+			settings.Ui.ThemeMode = ThemeMode.Dark;
+
+			foreach (var level in new[]
+			{
+				settings.LogViewer.Other,
+				settings.LogViewer.Trace,
+				settings.LogViewer.Debug,
+				settings.LogViewer.Info,
+				settings.LogViewer.Warning,
+				settings.LogViewer.Error,
+				settings.LogViewer.Fatal
+			})
+			{
+				level.IsCustom = true;
+				level.ForegroundColor = Colors.Pink;
+				level.BackgroundColor = Colors.Blue;
+			}
+
+			var model = new SettingsFlyoutViewModel(settings, new ServiceContainer());
+			try
+			{
+				model.RestoreDefaultColorsCommand.Execute(null);
+
+				settings.Ui.ThemeColor.Should().Be(UISettings.DefaultThemeColor);
+
+				AssertReset(settings.LogViewer.Other, model.OtherLevel, LogLevelDefaults.Light.Other, LogLevelDefaults.Dark.Other);
+				AssertReset(settings.LogViewer.Trace, model.TraceLevel, LogLevelDefaults.Light.Trace, LogLevelDefaults.Dark.Trace);
+				AssertReset(settings.LogViewer.Debug, model.DebugLevel, LogLevelDefaults.Light.Debug, LogLevelDefaults.Dark.Debug);
+				AssertReset(settings.LogViewer.Info, model.InfoLevel, LogLevelDefaults.Light.Info, LogLevelDefaults.Dark.Info);
+				AssertReset(settings.LogViewer.Warning, model.WarningLevel, LogLevelDefaults.Light.Warning, LogLevelDefaults.Dark.Warning);
+				AssertReset(settings.LogViewer.Error, model.ErrorLevel, LogLevelDefaults.Light.Error, LogLevelDefaults.Dark.Error);
+				AssertReset(settings.LogViewer.Fatal, model.FatalLevel, LogLevelDefaults.Light.Fatal, LogLevelDefaults.Dark.Fatal);
+			}
+			finally
+			{
+				ThemeManager.Apply(UISettings.DefaultThemeColor, ThemeMode.Light);
+			}
+		}
+
+		private static void AssertReset(LogLevelSettings settings, LogLevelSettingsViewModel viewModel, LogLevelSettings light, LogLevelSettings dark)
+		{
+			settings.IsCustom.Should().BeFalse("because the reset must restore the theme-following state");
+			settings.ForegroundColor.Should().Be(light.ForegroundColor);
+			settings.BackgroundColor.Should().Be(light.BackgroundColor);
+
+			viewModel.ForegroundColor.Should().Be(dark.ForegroundColor);
+			viewModel.BackgroundColor.Should().Be(dark.BackgroundColor);
 		}
 
 		public static IEnumerable<Encoding> Encodings => new[] {null, Encoding.Default, Encoding.UTF7, Encoding.UTF8};

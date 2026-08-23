@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "检查属性页整页前景 {DynamicResource TextPrimaryBrush}、无主题键 StaticResource 回归"}
+{"file": ".trellis/spec/testing/index.md", "reason": "UI STA 与接口变更（IFindAllViewModel.Count）的编译/断言约定"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 warning-free 门禁"}
+{"file": ".trellis/spec/guides/index.md", "reason": "评审防误报与改值前 grep 规则"}

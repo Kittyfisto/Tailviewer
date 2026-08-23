@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -40,6 +41,18 @@ namespace Tailviewer
 
 		public App()
 		{
+			// Semantic neutral tokens: published at application scope (not in Semantic.xaml) so they can be swapped at runtime by the dark-mode step. The real light/dark values are applied by ThemeManager.Apply.
+			var neutral = SemanticPalette.Compute(darkMode: false);
+			Resources["Surface"] = neutral.Surface;
+			Resources["SurfaceMuted"] = neutral.SurfaceMuted;
+			Resources["TextPrimary"] = neutral.TextPrimary;
+			Resources["TextSecondary"] = neutral.TextSecondary;
+			Resources["Divider"] = neutral.Divider;
+			Resources["TitleBar"] = neutral.TitleBar;
+			Resources["OverlayBackground"] = neutral.OverlayBackground;
+			Resources["UnfocusedOverlay"] = neutral.UnfocusedOverlay;
+			Resources["DisabledForeground"] = neutral.DisabledForeground;
+
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Tailviewer;component/Themes/MetrolibTheme.xaml") });
 		}
@@ -236,7 +249,21 @@ namespace Tailviewer
 
 						actionCenter.Add(Build.Current);
 						var application = new App();
-						ThemeManager.Apply(settings.Ui.ThemeColor);
+
+						var systemThemeProvider = new WindowsSystemThemeProvider();
+						ThemeManager.SystemThemeProvider = systemThemeProvider;
+						systemThemeProvider.Changed += () =>
+						{
+							if (ThemeManager.CurrentThemeMode != ThemeMode.System)
+								return;
+
+							var darkMode = ThemeManager.ResolveDarkMode(ThemeMode.System);
+							if (darkMode != ThemeManager.CurrentDarkMode)
+								ThemeManager.Apply(settings.Ui.ThemeColor, ThemeMode.System);
+						};
+						application.Exit += (sender, e) => systemThemeProvider.Dispose();
+
+						ThemeManager.Apply(settings.Ui.ThemeColor, settings.Ui.ThemeMode);
 						var dispatcher = Dispatcher.CurrentDispatcher;
 						var uiDispatcher = new UiDispatcher(dispatcher);
 						services.RegisterInstance<IDispatcher>(uiDispatcher);

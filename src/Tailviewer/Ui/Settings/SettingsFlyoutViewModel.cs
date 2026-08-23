@@ -59,6 +59,7 @@ namespace Tailviewer.Ui.Settings
 		private string _pluginRepositories;
 		private EncodingViewModel _defaultTextFileEncoding;
 		private readonly CustomFormatsSettingsViewModel _customFormats;
+		private readonly ICommand _restoreDefaultColorsCommand;
 
 		public SettingsFlyoutViewModel(IApplicationSettings applicationSettings,
 		                                  IServiceContainer serviceContainer)
@@ -78,14 +79,15 @@ namespace Tailviewer.Ui.Settings
 				_defaultTextFileEncoding = @default;
 			}
 
-			_otherLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Other);
-			_traceLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Trace);
-			_debugLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Debug);
-			_infoLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Info);
-			_warnLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Warning);
-			_errorLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Error);
-			_fatalLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Fatal);
+			_otherLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Other, LevelFlags.Other);
+			_traceLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Trace, LevelFlags.Trace);
+			_debugLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Debug, LevelFlags.Debug);
+			_infoLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Info, LevelFlags.Info);
+			_warnLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Warning, LevelFlags.Warning);
+			_errorLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Error, LevelFlags.Error);
+			_fatalLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Fatal, LevelFlags.Fatal);
 			_customFormats = new CustomFormatsSettingsViewModel(_settings, serviceContainer, Encodings);
+			_restoreDefaultColorsCommand = new DelegateCommand2(RestoreDefaultColors);
 			_language = Languages.FirstOrDefault(x => string.Equals(x.Code, applicationSettings.Ui.Language, StringComparison.InvariantCultureIgnoreCase)) ?? Languages.First();
 		}
 
@@ -243,6 +245,41 @@ namespace Tailviewer.Ui.Settings
 			}
 		}
 
+		public IReadOnlyList<ThemeModeOption> ThemeModes { get; } = new[]
+		{
+			new ThemeModeOption(ThemeMode.Light, Strings.ThemeModeLight),
+			new ThemeModeOption(ThemeMode.Dark, Strings.ThemeModeDark),
+			new ThemeModeOption(ThemeMode.System, Strings.ThemeModeSystem)
+		};
+
+		public ThemeMode ThemeMode
+		{
+			get { return _settings.Ui.ThemeMode; }
+			set
+			{
+				if (value == _settings.Ui.ThemeMode)
+					return;
+
+				_settings.Ui.ThemeMode = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+
+				// Defer the theme application until the selection has finished updating,
+				// otherwise mutating the application resources during the toggle's own
+				// callback re-enters the layout/rendering pass.
+				var dispatcher = Application.Current?.Dispatcher;
+				if (dispatcher != null)
+				{
+					dispatcher.BeginInvoke(new Action(() => ThemeManager.Apply(ThemeColor, value)));
+				}
+				else
+				{
+					ThemeManager.Apply(ThemeColor, value);
+				}
+			}
+		}
+
 		public Color ThemeColor
 		{
 			get { return _settings.Ui.ThemeColor; }
@@ -262,14 +299,16 @@ namespace Tailviewer.Ui.Settings
 				var dispatcher = Application.Current?.Dispatcher;
 				if (dispatcher != null)
 				{
-					dispatcher.BeginInvoke(new Action(() => ThemeManager.Apply(value)));
+					dispatcher.BeginInvoke(new Action(() => ThemeManager.Apply(value, _settings.Ui.ThemeMode)));
 				}
 				else
 				{
-					ThemeManager.Apply(value);
+					ThemeManager.Apply(value, _settings.Ui.ThemeMode);
 				}
 			}
 		}
+
+		public ICommand RestoreDefaultColorsCommand => _restoreDefaultColorsCommand;
 
 		public LogLevelSettingsViewModel OtherLevel => _otherLevel;
 		public LogLevelSettingsViewModel TraceLevel => _traceLevel;
@@ -379,6 +418,31 @@ namespace Tailviewer.Ui.Settings
 			if (dialog.ShowDialog() == true)
 			{
 				ExportFolder = dialog.SelectedPath;
+			}
+		}
+
+		private void RestoreDefaultColors()
+		{
+			var themeColorChanged = _settings.Ui.ThemeColor != UISettings.DefaultThemeColor;
+			_settings.Ui.ThemeColor = UISettings.DefaultThemeColor;
+			_settings.LogViewer.RestoreDefaultColors();
+			if (themeColorChanged)
+				EmitPropertyChanged(nameof(ThemeColor));
+
+			_settings.SaveAsync();
+
+			// Re-apply even when the accent color was already the default: resetting
+			// custom log colors still needs to refresh the visible log viewer and the
+			// color pickers through ThemeChanged.
+			var dispatcher = Application.Current?.Dispatcher;
+			Action applyTheme = () => ThemeManager.Apply(UISettings.DefaultThemeColor, _settings.Ui.ThemeMode);
+			if (dispatcher != null)
+			{
+				dispatcher.BeginInvoke(applyTheme);
+			}
+			else
+			{
+				applyTheme();
 			}
 		}
 

@@ -243,3 +243,174 @@ Re-themed all remaining hardcoded Metrolib blue accents (#3998D6 family) to the 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: 完成语义化 UI 与主界面重排
+
+**Date**: 2026-08-23
+**Task**: 完成语义化 UI 与主界面重排
+**Branch**: `ui`
+
+### Summary
+
+完成语义化中性资源、主窗口搜索区重排与焦点桥接；保持日志自绘热路径不变，并为后续深色模式将语义资源改为 DynamicResource。应用与测试项目构建 0 警告/0 错误，目标 UI STA 测试 94 总/91 通过/0 失败/3 跳过。完整解决方案因当前 SDK 不支持 Installer ResolveComReference 未通过；其余全量失败与基线及偶发测试竞态相关。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `712ef7d1` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 9: 完成深色模式主题管线
+
+**Date**: 2026-08-23
+**Task**: 完成深色模式主题管线
+**Branch**: `ui`
+
+### Summary
+
+完成可持久化、即时切换的 Light/Dark 主题管线，覆盖窗口、日志渲染器、侧栏、flyout 与 Metrolib 中性色，并通过独立构建、目标测试和运行时资源验收。
+
+### Main Changes
+
+- Theme pipeline: two-state Light/Dark setting, persisted in UI XML, immediate Dispatcher-applied switching.
+- SemanticPalette publishes Surface, SurfaceMuted, TextPrimary, TextSecondary, Divider, TitleBar, OverlayBackground, UnfocusedOverlay and DisabledForeground.
+- Migrated chrome, settings, side panels, flyouts, menus, data-source tree and Metrolib neutral controls to DynamicResource; retained accent, severity, inverted and explicit ColorByLevel colors.
+- Extended the approved renderer brush-only scope for canvas backgrounds, default/selected/alternating text brushes and separator brush without changing rendering algorithms, virtualization, paging or hit testing.
+- Independent verification: app/tests builds 0 warnings and 0 errors; target UI/semantic test set 114 total, 111 passed, 0 failed, 3 ignored; runtime App/resource/style load passed; neutral StaticResource audit and git diff --check passed. A broader parallel NUnit filter including TextLineTest exposed the existing static Freezable cross-STA test scheduling race; the task-target filter passed.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b5999cdb` | (see git log) |
+| `beddd227` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 10: 完成 Fluent 控件视觉化
+
+**Date**: 2026-08-23
+**Task**: 完成 Fluent 控件视觉化
+**Branch**: `ui`
+
+### Summary
+
+由 OpenCode 实现并经主负责人复核：新增 Fluent 视觉 token；为 FlatButton 族、文本框、自研模板、进度指示器、CheckBox、ComboBox 落地圆角/语义色/排版；补齐 CheckBox 内容绑定与 ComboBox 键盘焦点态；完成实际控件覆盖审计并记录无法安全替换的编译模板控件。两项目构建 0 警告/0 错误，目标 UI STA 测试 102 项中 99 通过、3 个既有忽略；任务已提交并归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `80f3e582` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 11: 重做主题、日志等级配色与日志布局
+
+**Date**: 2026-08-23
+**Task**: 重做主题、日志等级配色与日志布局
+**Branch**: `ui`
+
+### Summary
+
+完成浅色/深色/跟随系统三态主题、双套日志等级配色与自定义保留、默认强调色重设计、属性页文字修复及顶部统一搜索框布局。OpenCode DeepSeek V4 Pro Max 完成最终审查；构建 0 warning/0 error，受影响测试 189 通过、0 失败、3 个既有忽略。归档父任务及三个子任务。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `77d7d632` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 12: 修复独立日志配色与 CI 画刷线程问题
+
+**Date**: 2026-08-23
+**Task**: 修复独立日志配色与 CI 画刷线程问题
+**Branch**: `ui`
+
+### Summary
+
+在设置中增加独立的浅色/深色日志级别配色选择，保留应用主题浅色/深色/跟随系统三选项；完成持久化迁移、实时日志视图刷新和冻结画刷线程安全修复。应用及全部 CI 测试项目 Debug 编译通过，相关 NUnit 聚焦测试 54/54 通过；已归档父任务及两个子任务。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f75f44f8` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

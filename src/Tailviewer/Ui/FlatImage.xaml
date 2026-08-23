@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui">
 
     <Style TargetType="{x:Type local:FlatImage}">
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:FlatImage}">

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/ui/theming.md", "reason": "检查等级默认画刷为静态可变（非冻结）、无 {StaticResource Primary*} 回归"}
+{"file": ".trellis/spec/testing/index.md", "reason": "新色阶逐值断言、迁移推断/自定义保留/画刷选择等新用例约定"}
+{"file": ".trellis/spec/build/index.md", "reason": "net48 warning-free 门禁"}
+{"file": ".trellis/spec/guides/index.md", "reason": "评审防误报与改值前 grep 规则"}
+{"file": ".trellis/tasks/archive/2026-08/08-23-ui-dark-mode/research/approved-decisions.md", "reason": "红线审计：仅 D3 边界内改动，渲染算法/虚拟化不得触碰"}

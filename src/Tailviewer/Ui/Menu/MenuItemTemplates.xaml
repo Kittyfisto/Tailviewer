@@ -15,10 +15,10 @@
         </Separator>
     </ControlTemplate>
 
-    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="White" />
-    <SolidColorBrush x:Key="MenuForegroundBrush" Color="Black" />
-    <SolidColorBrush x:Key="MenuBorderBrush" Color="Gray" />
-    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="Gray" />
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="{DynamicResource Surface}" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="{DynamicResource TextPrimary}" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="{DynamicResource Divider}" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="{DynamicResource Divider}" />
 
     <Style x:Key="MainSubMenuItemStyle" TargetType="{x:Type MenuItem}">
         <Setter Property="Foreground" Value="{StaticResource MenuForegroundBrush}" />
@@ -72,7 +72,7 @@
                             <!-- Shortcuts, if available -->
                             <TextBlock Grid.Column="2"
                                        VerticalAlignment="Center"
-                                       Foreground="{StaticResource TextBrushUnimportant}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        Visibility="{Binding Shortcut, Converter={StaticResource NullToCollapsedConverter}}"
                                        Margin="4,0,4,0"
                                        Text="{Binding Shortcut}" />
@@ -99,6 +99,7 @@
                                Placement="Right" VerticalOffset="-1">
 
                             <Border BorderThickness="1,1,1,1" BorderBrush="{StaticResource MenuSeparatorBrush}" Background="{StaticResource MenuBackgroundBrush}"
+                                    CornerRadius="{StaticResource SurfaceCornerRadius}"
                                     Visibility="{Binding ItemsSource, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToCollapsedConverter}}">
                                 <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true"
                                               Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
@@ -125,7 +126,7 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter Property="IsSubmenuOpen" Value="True" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceMutedBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -167,7 +168,8 @@
                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                Placement="Bottom" VerticalOffset="-1">
 
-                            <Border BorderThickness="1,0,1,1" BorderBrush="Gray" Background="{StaticResource MenuBackgroundBrush}">
+                            <Border BorderThickness="1,0,1,1" BorderBrush="{DynamicResource MenuBorderBrush}" Background="{StaticResource MenuBackgroundBrush}"
+                                    CornerRadius="{StaticResource SurfaceCornerRadius}">
                                 <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true"
                                               Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
                                     <Grid RenderOptions.ClearTypeHint="Enabled">

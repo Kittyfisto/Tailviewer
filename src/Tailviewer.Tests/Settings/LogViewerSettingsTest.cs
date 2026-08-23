@@ -55,26 +55,13 @@ namespace Tailviewer.Tests.Settings
 			settings.FontSize.Should().Be(12);
 			settings.TabWidth.Should().Be(4);
 
-			settings.Other.ForegroundColor.Should().Be(Colors.Black);
-			settings.Other.BackgroundColor.Should().Be(Colors.Transparent);
-
-			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
-			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent);
-
-			settings.Debug.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
-			settings.Debug.BackgroundColor.Should().Be(Colors.Transparent);
-
-			settings.Info.ForegroundColor.Should().Be(Colors.Black);
-			settings.Info.BackgroundColor.Should().Be(Colors.Transparent);
-
-			settings.Warning.ForegroundColor.Should().Be(Colors.White);
-			settings.Warning.BackgroundColor.Should().Be(Color.FromRgb(255, 195, 0));
-
-			settings.Error.ForegroundColor.Should().Be(Colors.White);
-			settings.Error.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
-
-			settings.Fatal.ForegroundColor.Should().Be(Colors.White);
-			settings.Fatal.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
+			AssertMatches(settings.Other, LogLevelDefaults.Light.Other);
+			AssertMatches(settings.Trace, LogLevelDefaults.Light.Trace);
+			AssertMatches(settings.Debug, LogLevelDefaults.Light.Debug);
+			AssertMatches(settings.Info, LogLevelDefaults.Light.Info);
+			AssertMatches(settings.Warning, LogLevelDefaults.Light.Warning);
+			AssertMatches(settings.Error, LogLevelDefaults.Light.Error);
+			AssertMatches(settings.Fatal, LogLevelDefaults.Light.Fatal);
 		}
 
 		[Test]
@@ -130,7 +117,7 @@ namespace Tailviewer.Tests.Settings
 					writer.WriteEndDocument();
 				}
 
-				empty =  Encoding.UTF8.GetString(stream.ToArray());
+				empty = Encoding.UTF8.GetString(stream.ToArray());
 			}
 
 			var settings = Restore(empty);
@@ -140,26 +127,108 @@ namespace Tailviewer.Tests.Settings
 			settings.FontSize.Should().Be(12, reason);
 			settings.TabWidth.Should().Be(4, reason);
 
-			settings.Other.ForegroundColor.Should().Be(Colors.Black);
-			settings.Other.BackgroundColor.Should().Be(Colors.Transparent);
+			AssertMatches(settings.Other, LogLevelDefaults.Light.Other);
+			AssertMatches(settings.Trace, LogLevelDefaults.Light.Trace);
+			AssertMatches(settings.Debug, LogLevelDefaults.Light.Debug);
+			AssertMatches(settings.Info, LogLevelDefaults.Light.Info);
+			AssertMatches(settings.Warning, LogLevelDefaults.Light.Warning);
+			AssertMatches(settings.Error, LogLevelDefaults.Light.Error);
+			AssertMatches(settings.Fatal, LogLevelDefaults.Light.Fatal);
+		}
 
-			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128), reason);
-			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent, reason);
+		[Test]
+		[Description("Legacy files without iscustom that hold non-default colors are treated as custom")]
+		public void TestRestoreLegacyCustomLevel()
+		{
+			var settings = Restore("<Test><warning foregroundcolor=\"#FF112233\" backgroundcolor=\"#FF445566\" /></Test>");
+			settings.Warning.IsCustom.Should().BeTrue();
+			settings.Warning.ForegroundColor.Should().Be(Color.FromRgb(0x11, 0x22, 0x33));
+			settings.Warning.BackgroundColor.Should().Be(Color.FromRgb(0x44, 0x55, 0x66));
+		}
 
-			settings.Debug.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
-			settings.Debug.BackgroundColor.Should().Be(Colors.Transparent);
+		[Test]
+		[Description("Legacy files without iscustom that hold the light default colors stay non-custom")]
+		public void TestRestoreLegacyDefaultLevel()
+		{
+			var lightInfo = LogLevelDefaults.Light.Info;
+			var xml = string.Format(
+				"<Test><info foregroundcolor=\"{0}\" backgroundcolor=\"{1}\" /></Test>",
+				lightInfo.ForegroundColor,
+				lightInfo.BackgroundColor);
+			var settings = Restore(xml);
+			settings.Info.IsCustom.Should().BeFalse();
+		}
 
-			settings.Info.ForegroundColor.Should().Be(Colors.Black);
-			settings.Info.BackgroundColor.Should().Be(Colors.Transparent);
+		[Test]
+		[Description("Explicit iscustom flags are honored regardless of the stored colors")]
+		public void TestRestoreExplicitCustomFlag()
+		{
+			var settings = Restore("<Test><info iscustom=\"true\" foregroundcolor=\"#FF333333\" backgroundcolor=\"#00FFFFFF\" /></Test>");
+			settings.Info.IsCustom.Should().BeTrue();
+		}
 
-			settings.Warning.ForegroundColor.Should().Be(Colors.White);
-			settings.Warning.BackgroundColor.Should().Be(Color.FromRgb(255, 195, 0));
+		[Test]
+		[Description("ApplyThemeDefaults only rewrites non-custom levels")]
+		public void TestApplyThemeDefaultsOnlyChangesNonCustomLevels()
+		{
+			var settings = new LogViewerSettings();
+			settings.Warning.IsCustom = true;
+			settings.Warning.ForegroundColor = Colors.Pink;
+			settings.Warning.BackgroundColor = Colors.Blue;
 
-			settings.Error.ForegroundColor.Should().Be(Colors.White);
-			settings.Error.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
+			settings.ApplyThemeDefaults(darkMode: true);
 
-			settings.Fatal.ForegroundColor.Should().Be(Colors.White);
-			settings.Fatal.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
+			settings.Warning.IsCustom.Should().BeTrue();
+			settings.Warning.ForegroundColor.Should().Be(Colors.Pink);
+			settings.Warning.BackgroundColor.Should().Be(Colors.Blue);
+
+			settings.Info.IsCustom.Should().BeFalse();
+			settings.Info.ForegroundColor.Should().Be(LogLevelDefaults.Dark.Info.ForegroundColor);
+			settings.Info.BackgroundColor.Should().Be(LogLevelDefaults.Dark.Info.BackgroundColor);
+			settings.Fatal.ForegroundColor.Should().Be(LogLevelDefaults.Dark.Fatal.ForegroundColor);
+			settings.Fatal.BackgroundColor.Should().Be(LogLevelDefaults.Dark.Fatal.BackgroundColor);
+		}
+
+		[Test]
+		[Description("Restoring default colors clears every custom level and restores the light baseline")]
+		public void TestRestoreDefaultColors()
+		{
+			var settings = new LogViewerSettings();
+			var levels = new[]
+			{
+				settings.Other,
+				settings.Trace,
+				settings.Debug,
+				settings.Info,
+				settings.Warning,
+				settings.Error,
+				settings.Fatal
+			};
+			var defaults = new[]
+			{
+				LogLevelDefaults.Light.Other,
+				LogLevelDefaults.Light.Trace,
+				LogLevelDefaults.Light.Debug,
+				LogLevelDefaults.Light.Info,
+				LogLevelDefaults.Light.Warning,
+				LogLevelDefaults.Light.Error,
+				LogLevelDefaults.Light.Fatal
+			};
+
+			foreach (var level in levels)
+			{
+				level.IsCustom = true;
+				level.ForegroundColor = Colors.Pink;
+				level.BackgroundColor = Colors.Blue;
+			}
+
+			settings.RestoreDefaultColors();
+
+			for (var i = 0; i < levels.Length; ++i)
+			{
+				levels[i].IsCustom.Should().BeFalse("because restored levels must follow the active theme defaults");
+				AssertMatches(levels[i], defaults[i]);
+			}
 		}
 
 		[Test]
@@ -240,6 +309,12 @@ namespace Tailviewer.Tests.Settings
 			actualSettings.Error.ForegroundColor.Should().Be(Colors.CadetBlue);
 			actualSettings.Fatal.BackgroundColor.Should().Be(Colors.Coral);
 			actualSettings.Fatal.ForegroundColor.Should().Be(Colors.HotPink);
+		}
+
+		private static void AssertMatches(LogLevelSettings actual, LogLevelSettings expected)
+		{
+			actual.ForegroundColor.Should().Be(expected.ForegroundColor);
+			actual.BackgroundColor.Should().Be(expected.BackgroundColor);
 		}
 	}
 }
