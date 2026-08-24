@@ -8,8 +8,8 @@
         <a href="https://github.com/brofea/Tailviewer-NEXT/actions/workflows/ci.yml">
             <img src="https://github.com/brofea/Tailviewer-NEXT/actions/workflows/ci.yml/badge.svg" alt="CI Status">
         </a>
-        <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
-            <img src="https://img.shields.io/badge/license-GPL--3.0-orange" />
+        <a href="https://mit-license.org/">
+            <img src="https://img.shields.io/badge/license-MIT-orange" />
         </a>
         <a href="https://github.com/brofea/Tailviewer-NEXT/releases/latest">
             <img src="https://img.shields.io/github/v/release/brofea/Tailviewer-NEXT?label=release" alt="Release Version">
