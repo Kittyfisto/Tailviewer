@@ -171,8 +171,11 @@
         </Style.Triggers>
     </Style>
 
-    <!-- OneWayToggle: checked segment uses the theme color -->
+    <!-- OneWayToggle: checked segment uses the theme color, unchecked segment follows the surface -->
     <Style TargetType="{x:Type controls:OneWayToggle}" BasedOn="{StaticResource {x:Type controls:OneWayToggle}}">
+        <Setter Property="Background" Value="{DynamicResource SurfaceMutedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -181,6 +184,7 @@
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -191,6 +195,12 @@
                 <Setter Property="BorderBrush" Value="{StaticResource DisabledForegroundBrush}" />
             </MultiTrigger>
         </Style.Triggers>
+    </Style>
+
+    <!-- NotificationBadge: red notification bubble (semantic color, not accent) -->
+    <Style TargetType="{x:Type controls:NotificationBadge}" BasedOn="{StaticResource {x:Type controls:NotificationBadge}}">
+        <Setter Property="Background" Value="#E53935" />
+        <Setter Property="Foreground" Value="White" />
     </Style>
 
     <!-- PinToggleButton: always white, matching the adjacent white text on the themed header -->

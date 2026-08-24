@@ -5,7 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using log4net;
 using Metrolib;
@@ -73,6 +76,39 @@ namespace Tailviewer.Ui
 			DataContext = mainWindowViewModel;
 			SynchronizeInputBindings();
 			mainWindowViewModel.KeyBindings.CollectionChanged += KeyBindingsOnCollectionChanged;
+		}
+
+		protected override void OnContentRendered(EventArgs e)
+		{
+			base.OnContentRendered(e);
+
+			RemoveInactiveTitleBarOverlay();
+		}
+
+		/// <summary>
+		///     Metrolib's ChromelessWindow template draws a white translucent rectangle over the
+		///     title bar while the window is inactive. We want the header to keep its normal
+		///     theme appearance, so that overlay is removed from the visual tree for good.
+		/// </summary>
+		private void RemoveInactiveTitleBarOverlay()
+		{
+			var titleBar = GetTemplateChild("PART_TitleBar") as Panel;
+			if (titleBar == null)
+				return;
+
+			var overlays = titleBar.Children.OfType<Rectangle>()
+				.Where(rectangle =>
+				{
+					var brush = rectangle.Fill as SolidColorBrush;
+					return brush != null &&
+					       brush.Color.R == byte.MaxValue &&
+					       brush.Color.G == byte.MaxValue &&
+					       brush.Color.B == byte.MaxValue;
+				})
+				.ToList();
+
+			foreach (var overlay in overlays)
+				titleBar.Children.Remove(overlay);
 		}
 
 		public ICommand FocusDataSourceSearchCommand

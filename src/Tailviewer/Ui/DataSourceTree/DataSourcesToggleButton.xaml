@@ -36,10 +36,12 @@
 
                     <Grid Margin="12,4,4,4">
                         <StackPanel Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
-                            <TextBlock Text="{x:Static loc:Strings.CurrentDataSource}" />
+                            <TextBlock Text="{x:Static loc:Strings.CurrentDataSource}"
+                                       Foreground="{DynamicResource PrimaryForegroundBrush}" />
                             <TextBlock Text="{Binding CurrentDataSource.DisplayName}"
                                        FontWeight="SemiBold"
-                                       FontSize="14" />
+                                       FontSize="14"
+                                       Foreground="{DynamicResource PrimaryForegroundBrush}" />
                         </StackPanel>
                         <TextBlock Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToVisibleConverter}}"
                                    FontSize="18"

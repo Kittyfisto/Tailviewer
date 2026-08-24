@@ -21,6 +21,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
+            <converters:DoubleLessThanToCollapsedConverter x:Key="DoubleLessThanToCollapsedConverter" />
             <converters1:TimeSpanConverter x:Key="TimeSpanConverter">
                 <converters1:TimeSpanConverter.IgnoredUnits>
                     <x:Array Type="{x:Type converters1:Unit}">
@@ -76,7 +77,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Background="{DynamicResource SecondaryBrush}">
+        <Grid Background="{DynamicResource SecondaryBrush}" x:Name="PartToolbarRow">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -107,7 +108,7 @@
             <Border Grid.Column="1"
                     BorderThickness="1,0,0,1"
                     BorderBrush="{DynamicResource PrimarySeparatorBrush}">
-                <WrapPanel Orientation="Horizontal"
+                <StackPanel Orientation="Horizontal"
                            VerticalAlignment="Center"
                            Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}"
                            Margin="8">
@@ -196,28 +197,32 @@
                             </controls:FlatContextMenu>
                         </controls:FlatToggleButton.ContextMenu>
                     </controls:PluginToggleButton>
-                </WrapPanel>
+                </StackPanel>
             </Border>
 
-            <!-- Search and Find All, aligned to the right of the toolbar -->
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="0,0,8,0"
-                        Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
-                <controls:SearchTextBox x:Name="PART_SearchBox"
-                                        Style="{StaticResource LogSearchTextBoxStyle}"
-                                        Margin="0,0,8,0"
-                                        Text="{Binding Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        OccurenceCount="{Binding Search.ResultCount}"
-                                        CurrentOccurenceIndex="{Binding Search.CurrentResultIndex, Mode=TwoWay}"
-                                        Watermark="{x:Static loc:Strings.SearchLogFile}" />
-                <controls:SearchTextBox x:Name="PART_FindAllBox"
-                                        Style="{StaticResource LogSearchTextBoxStyle}"
-                                        Text="{Binding FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        OccurenceCount="{Binding FindAll.Count}"
-                                        Watermark="{x:Static loc:Strings.FindAllInLogFile}" />
-            </StackPanel>
+            <!-- Search and Find All, aligned to the right of the toolbar.
+                 The wrapping Grid collapses when the toolbar is too narrow so the
+                 search boxes yield their space to the (never-wrapping) filter buttons. -->
+            <Grid Grid.Column="2"
+                  VerticalAlignment="Center"
+                  Margin="0,0,8,0"
+                  Visibility="{Binding ActualWidth, ElementName=PartToolbarRow, Converter={StaticResource DoubleLessThanToCollapsedConverter}, ConverterParameter=1440}">
+                <StackPanel Orientation="Horizontal"
+                            Visibility="{Binding CurrentDataSource, Converter={StaticResource NullToCollapsedConverter}}">
+                    <controls:SearchTextBox x:Name="PART_SearchBox"
+                                            Style="{StaticResource LogSearchTextBoxStyle}"
+                                            Margin="0,0,8,0"
+                                            Text="{Binding Search.Term, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            OccurenceCount="{Binding Search.ResultCount}"
+                                            CurrentOccurenceIndex="{Binding Search.CurrentResultIndex, Mode=TwoWay}"
+                                            Watermark="{x:Static loc:Strings.SearchLogFile}" />
+                    <controls:SearchTextBox x:Name="PART_FindAllBox"
+                                            Style="{StaticResource LogSearchTextBoxStyle}"
+                                            Text="{Binding FindAll.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            OccurenceCount="{Binding FindAll.Count}"
+                                            Watermark="{x:Static loc:Strings.FindAllInLogFile}" />
+                </StackPanel>
+            </Grid>
 
             <!-- Filters, Bookmarks, Outline and Issues Selector -->
             <Border Grid.Column="3"

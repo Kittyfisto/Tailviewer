@@ -162,7 +162,7 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 			get
 			{
 				var dataSource = CurrentDataSource?.DataSource;
-				return dataSource?.FilterCombinationMode ?? FilterCombinationMode.And;
+				return dataSource?.FilterCombinationMode ?? FilterCombinationMode.Or;
 			}
 			set
 			{

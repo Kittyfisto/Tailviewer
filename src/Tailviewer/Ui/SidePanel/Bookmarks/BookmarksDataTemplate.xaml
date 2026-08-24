@@ -39,7 +39,7 @@
                         VerticalAlignment="Center"
                         Command="{Binding AddBookmarkCommand}">
                         <controls:FlatIconButton.Style>
-                            <Style TargetType="{x:Type controls:FlatIconButton}">
+                            <Style TargetType="{x:Type controls:FlatIconButton}" BasedOn="{StaticResource {x:Type controls:FlatIconButton}}">
                                 <Style.Triggers>
                                     <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="ToolTip" Value="Select a line to add a bookmark" />

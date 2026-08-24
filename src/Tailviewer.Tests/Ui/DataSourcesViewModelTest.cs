@@ -159,6 +159,14 @@ namespace Tailviewer.Tests.Ui
 		}
 
 		[Test]
+		[Description("Verifies that a null drag source does not crash the eligibility check")]
+		public void TestCanBeDraggedNullSource()
+		{
+			new Action(() => _model.CanBeDragged(null)).Should().NotThrow("because the drag source can legitimately be null before the selection container is realized");
+			_model.CanBeDragged(null).Should().BeTrue();
+		}
+
+		[Test]
 		public void TestCanBeDropped1()
 		{
 			var a = _model.GetOrAddFile("A");

@@ -74,14 +74,12 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True" />
-                </MultiTrigger.Conditions>
+            <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}" />
-            </MultiTrigger>
-            <Trigger Property="IsChecked" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource PrimaryForegroundBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

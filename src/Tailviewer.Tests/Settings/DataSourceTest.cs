@@ -89,11 +89,11 @@ namespace Tailviewer.Tests.Settings
 		[Test]
 		public void TestDefaultFilterCombinationMode()
 		{
-			new DataSource().FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+			new DataSource().FilterCombinationMode.Should().Be(FilterCombinationMode.Or);
 		}
 
 		[Test]
-		[Description("Verifies that a settings file saved before this feature still loads and defaults to AND")]
+		[Description("Verifies that a settings file saved before this feature still loads and defaults to OR")]
 		public void TestRestoreWithoutFilterCombinationMode()
 		{
 			using (var stream = new MemoryStream())
@@ -113,7 +113,7 @@ namespace Tailviewer.Tests.Settings
 					var dataSource = new DataSource();
 					bool unused;
 					dataSource.Restore(reader, out unused);
-					dataSource.FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+					dataSource.FilterCombinationMode.Should().Be(FilterCombinationMode.Or);
 				}
 			}
 		}

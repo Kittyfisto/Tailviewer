@@ -104,7 +104,7 @@ namespace Tailviewer.Settings
 			_activatedQuickFilters = new List<QuickFilterId>();
 
 			LevelFilter = LevelFlags.All;
-			FilterCombinationMode = FilterCombinationMode.And;
+			FilterCombinationMode = FilterCombinationMode.Or;
 			ColorByLevel = true;
 			ShowLineNumbers = true;
 			IsExpanded = true;

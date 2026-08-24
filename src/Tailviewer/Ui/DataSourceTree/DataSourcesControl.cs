@@ -409,14 +409,17 @@ namespace Tailviewer.Ui.DataSourceTree
 
 		private void PartDataSourcesOnMouseMove(object sender, MouseEventArgs e)
 		{
-			if (DragLayer.ShouldStartDrag(e))
-			{
-				var source = SelectedItem;
-				var treeViewItem = SelectedTreeViewItem;
+			if (!DragLayer.ShouldStartDrag(e))
+				return;
 
-				if (treeViewItem.IsMouseOver && ((DataSourcesViewModel) DataContext).CanBeDragged(source))
-					DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
-			}
+			var source = SelectedItem;
+			var treeViewItem = SelectedTreeViewItem;
+			var model = DataContext as DataSourcesViewModel;
+			if (treeViewItem == null || model == null || source == null)
+				return;
+
+			if (treeViewItem.IsMouseOver && model.CanBeDragged(source))
+				DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
 		}
 
 		private void PartDataSourcesOnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> args)

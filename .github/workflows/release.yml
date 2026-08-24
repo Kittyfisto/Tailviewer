@@ -38,21 +38,25 @@ jobs:
           Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" `
             -OutFile "$env:RUNNER_TEMP\nuget.exe"
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.1.11
-        with:
-          versionSpec: '5.x'
-
-      - name: Determine version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.1.11
-        with:
-          useConfigFile: true
+      - name: Derive version from tag
+        id: version
+        shell: pwsh
+        run: |
+          # The version comes straight from the tag (e.g. v1.2.0 -> 1.2.0). GitVersion's
+          # Mainline mode computes the *next* version and bumps a detached tag head, which
+          # would turn a v1.2.0 tag into 1.2.1 -- so we do not use it here.
+          $version = $env:GITHUB_REF_NAME -replace '^[vV]', ''
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            Write-Error "Unsupported tag '$env:GITHUB_REF_NAME': expected v<major>.<minor>.<patch>"
+            exit 1
+          }
+          "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Release version: $version"
 
       - name: Inject version
         shell: pwsh
         run: |
-          ./scripts/set-version.ps1 -Version $env:GITVERSION_MAJORMINORPATCH
+          ./scripts/set-version.ps1 -Version $env:RELEASE_VERSION
 
       - name: Restore packages
         shell: pwsh
@@ -84,7 +88,7 @@ jobs:
       - name: Create portable zip
         shell: pwsh
         run: |
-          $version = $env:GITVERSION_MAJORMINORPATCH
+          $version = $env:RELEASE_VERSION
           $zip = "Tailviewer-NEXT-portable-$version.zip"
           Compress-Archive -Path artifacts\portable\* -DestinationPath $zip -Force
           if (-not (Test-Path $zip)) {
@@ -101,7 +105,7 @@ jobs:
       - name: Prepare release artifacts
         shell: pwsh
         run: |
-          $version = $env:GITVERSION_MAJORMINORPATCH
+          $version = $env:RELEASE_VERSION
           $setup = "Tailviewer-NEXT-setup-$version.exe"
           $zip = "Tailviewer-NEXT-portable-$version.zip"
           Copy-Item bin\Tailviewer-setup.exe $setup -Force

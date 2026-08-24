@@ -13,15 +13,15 @@ namespace Tailviewer.Ui.SidePanel.QuickFilters
 	{
 		public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(
 			"Mode", typeof(FilterCombinationMode), typeof(FilterCombinationModeToggleButton),
-			new PropertyMetadata(FilterCombinationMode.And, OnModeChanged));
+			new PropertyMetadata(FilterCombinationMode.Or, OnModeChanged));
 
 		public static readonly DependencyProperty IsAndCheckedProperty = DependencyProperty.Register(
 			"IsAndChecked", typeof(bool), typeof(FilterCombinationModeToggleButton),
-			new PropertyMetadata(true, OnIsAndCheckedChanged));
+			new PropertyMetadata(false, OnIsAndCheckedChanged));
 
 		public static readonly DependencyProperty IsOrCheckedProperty = DependencyProperty.Register(
 			"IsOrChecked", typeof(bool), typeof(FilterCombinationModeToggleButton),
-			new PropertyMetadata(false, OnIsOrCheckedChanged));
+			new PropertyMetadata(true, OnIsOrCheckedChanged));
 
 		static FilterCombinationModeToggleButton()
 		{

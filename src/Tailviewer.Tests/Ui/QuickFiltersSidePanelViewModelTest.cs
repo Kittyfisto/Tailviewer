@@ -312,7 +312,7 @@ namespace Tailviewer.Tests.Ui
 				CurrentDataSource = CreateViewModel(dataSource)
 			};
 
-			model.FilterCombinationMode.Should().Be(FilterCombinationMode.And);
+			model.FilterCombinationMode.Should().Be(FilterCombinationMode.Or);
 
 			var numFilterChanges = 0;
 			model.OnFiltersChanged += () => ++numFilterChanges;
